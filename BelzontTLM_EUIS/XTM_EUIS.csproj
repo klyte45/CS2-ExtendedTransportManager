@@ -7,8 +7,8 @@
     <ProjectGuid>{A92BC2E1-85A5-430D-A42B-AD40FFA29765}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>BelzontTLM_EUIS</RootNamespace>
-    <AssemblyName>BelzontTLM_EUIS</AssemblyName>
+    <RootNamespace>XTM_EUIS</RootNamespace>
+    <AssemblyName>XTM_EUIS</AssemblyName>
     <TargetFrameworkVersion>v4.8</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <Deterministic>true</Deterministic>
@@ -39,25 +39,25 @@
       <Private>True</Private>
       <EmbedInteropTypes>False</EmbedInteropTypes>
     </Reference>
-	<Reference Include="System">
+    <Reference Include="System">
       <HintPath>$(K45_CS2_ALLROOT)\_Managed DLLs\System.dll</HintPath>
       <Private>False</Private>
-	</Reference>
-    <Reference Include="System.Xml" >
+    </Reference>
+    <Reference Include="System.Xml">
       <HintPath>$(K45_CS2_ALLROOT)\_Managed DLLs\System.Xml.dll</HintPath>
       <Private>False</Private>
-	</Reference>
-    <Reference Include="mscorlib" >
+    </Reference>
+    <Reference Include="mscorlib">
       <HintPath>$(K45_CS2_ALLROOT)\_Managed DLLs\mscorlib.dll</HintPath>
       <Private>False</Private>
-	</Reference>
-    <Reference Include="System.Xml.Linq" >
+    </Reference>
+    <Reference Include="System.Xml.Linq">
       <HintPath>$(K45_CS2_ALLROOT)\_Managed DLLs\System.Xml.Linq.dll</HintPath>
       <Private>False</Private>
-	</Reference>
+    </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="BTLM_EUIS.cs" />
+    <Compile Include="XTM_EUIS.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

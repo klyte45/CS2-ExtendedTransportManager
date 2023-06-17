@@ -10,7 +10,7 @@
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>BelzontTLM</RootNamespace>
-    <AssemblyName>BelzontTLM</AssemblyName>
+    <AssemblyName>XTrransportManager</AssemblyName>
     <TargetFrameworkVersion>v4.8</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <Deterministic>false</Deterministic>
@@ -79,19 +79,19 @@
     <Reference Include="System">
       <HintPath>$(K45_CS2_ALLROOT)\_Managed DLLs\System.dll</HintPath>
       <Private>False</Private>
-	</Reference>
-    <Reference Include="System.Xml" >
+    </Reference>
+    <Reference Include="System.Xml">
       <HintPath>$(K45_CS2_ALLROOT)\_Managed DLLs\System.Xml.dll</HintPath>
       <Private>False</Private>
-	</Reference>
-    <Reference Include="mscorlib" >
+    </Reference>
+    <Reference Include="mscorlib">
       <HintPath>$(K45_CS2_ALLROOT)\_Managed DLLs\mscorlib.dll</HintPath>
       <Private>False</Private>
-	</Reference>
-    <Reference Include="System.Xml.Linq" >
+    </Reference>
+    <Reference Include="System.Xml.Linq">
       <HintPath>$(K45_CS2_ALLROOT)\_Managed DLLs\System.Xml.Linq.dll</HintPath>
       <Private>False</Private>
-	</Reference>
+    </Reference>
     <Reference Include="Unity.Entities">
       <HintPath>$(K45_CS2_ALLROOT)\_Managed DLLs\Unity.Entities.dll</HintPath>
       <Private>False</Private>
@@ -114,7 +114,13 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="**\*.cs" Exclude="obj\**\*.cs"/>
+    <Compile Include="**\*.cs" Exclude="obj\**\*.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\BelzontTLM_EUIS\XTM_EUIS.csproj">
+      <Project>{a92bc2e1-85a5-430d-a42b-ad40ffa29765}</Project>
+      <Name>XTM_EUIS</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
@@ -125,7 +131,7 @@ mkdir "%25ModDir%25"
 xcopy /y /e "$(TargetDir)*" "%25ModDir%25"
 del "%25ModDir%25*.pdb"
 
-rem mkdir "%25ModDir%25UI\"
-rem xcopy /y /e "$(SolutionDir)UI\dist\*" "%25ModDir%25UI\"</PostBuildEvent>
+mkdir "%25ModDir%25UI\"
+xcopy /y /e "$(SolutionDir)UI\dist\*" "%25ModDir%25UI\"</PostBuildEvent>
   </PropertyGroup>
 </Project>

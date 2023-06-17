@@ -5,10 +5,7 @@ VisualStudioVersion = 17.3.32929.385
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BelzontTLM", "BelzontTLM\BelzontTLM.csproj", "{38911405-6695-4DE5-9B63-857718EC55C0}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BelzontTLM_EUIS", "BelzontTLM_EUIS\BelzontTLM_EUIS.csproj", "{A92BC2E1-85A5-430D-A42B-AD40FFA29765}"
-	ProjectSection(ProjectDependencies) = postProject
-		{38911405-6695-4DE5-9B63-857718EC55C0} = {38911405-6695-4DE5-9B63-857718EC55C0}
-	EndProjectSection
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "XTM_EUIS", "BelzontTLM_EUIS\XTM_EUIS.csproj", "{A92BC2E1-85A5-430D-A42B-AD40FFA29765}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

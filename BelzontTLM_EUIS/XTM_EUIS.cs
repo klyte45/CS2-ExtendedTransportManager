@@ -2,21 +2,21 @@
 using System;
 using System.Collections.Generic;
 
-namespace BelzontTLM_EUIS
+namespace XTM_EUIS
 {
-    public class BTLM_EUIS : IEUISAppRegister
+    public class XTM_EUIS : IEUISAppRegister 
     {
-        public string AppName => "@k45/btlm";
+        public string AppName => "@k45/xtm-line-viewer";
 
-        public string DisplayName => "Transport Lines Manager Belzont Edition";
+        public string DisplayName => "XTM - Line viewer";
 
-        public string UrlJs => "coui://k45.euis/UI/k45-euis-root.js";
+        public string UrlJs => "http://localhost:8500/k45-xtm-line-viewer.js";//"coui://k45.euis/UI/k45-euis-root.js";
 
         public string UrlIcon => "coui://gameui/Media/Game/Icons/TramLine.svg";
 
         public string ModderIdentifier => "k45";
 
-        public string ModAcronym => "tlmb";
+        public string ModAcronym => "xtm";
 
         public Dictionary<string, Delegate> EventsToBind => new Dictionary<string, Delegate>();
 
