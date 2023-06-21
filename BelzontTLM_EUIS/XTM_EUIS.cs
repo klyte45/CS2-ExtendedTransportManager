@@ -11,6 +11,7 @@ namespace XTM_EUIS
         public string DisplayName => "XTM - Line viewer";
 
         public string UrlJs => "http://localhost:8500/k45-xtm-line-viewer.js";//"coui://k45.euis/UI/k45-euis-root.js";
+        public string UrlCss => "http://localhost:8500/k45-xtm-line-viewer.css";//"coui://k45.euis/UI/k45-euis-root.js";
 
         public string UrlIcon => "coui://gameui/Media/Game/Icons/TramLine.svg";
 
