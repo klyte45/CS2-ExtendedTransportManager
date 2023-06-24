@@ -60,6 +60,10 @@
       <HintPath>$(K45_CS2_ALLROOT)\_Managed DLLs\Colossal.Logging.dll</HintPath>
       <Private>False</Private>
     </Reference>
+    <Reference Include="Colossal.Mathematics">
+      <HintPath>$(K45_CS2_ALLROOT)\_Managed DLLs\Colossal.Mathematics.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
     <Reference Include="Colossal.OdinSerializer">
       <HintPath>$(K45_CS2_ALLROOT)\_Managed DLLs\Colossal.OdinSerializer.dll</HintPath>
       <Private>False</Private>
@@ -92,8 +96,16 @@
       <HintPath>$(K45_CS2_ALLROOT)\_Managed DLLs\System.Xml.Linq.dll</HintPath>
       <Private>False</Private>
     </Reference>
+    <Reference Include="Unity.Collections">
+      <HintPath>$(K45_CS2_ALLROOT)\_Managed DLLs\Unity.Collections.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
     <Reference Include="Unity.Entities">
       <HintPath>$(K45_CS2_ALLROOT)\_Managed DLLs\Unity.Entities.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="Unity.Mathematics">
+      <HintPath>$(K45_CS2_ALLROOT)\_Managed DLLs\Unity.Mathematics.dll</HintPath>
       <Private>False</Private>
     </Reference>
     <Reference Include="Unity.RenderPipelines.HighDefinition.Runtime">
@@ -115,12 +127,6 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="**\*.cs" Exclude="obj\**\*.cs" />
-  </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\BelzontTLM_EUIS\XTM_EUIS.csproj">
-      <Project>{a92bc2e1-85a5-430d-a42b-ad40ffa29765}</Project>
-      <Name>XTM_EUIS</Name>
-    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>

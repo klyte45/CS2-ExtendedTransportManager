@@ -1,12 +1,13 @@
-﻿using K45EUIS_Ext;
+﻿using BelzontTLM;
+using Colossal.UI.Binding;
+using K45EUIS_Ext;
 using System;
-using System.Collections.Generic;
 
 namespace XTM_EUIS
 {
-    public class XTM_EUIS : IEUISAppRegister 
+    public class XTM_EUIS : IEUISAppRegister
     {
-        public string AppName => "@k45/xtm-line-viewer";
+        public string ModAppIdentifier => "line-viewer";
 
         public string DisplayName => "XTM - Line viewer";
 
@@ -19,8 +20,12 @@ namespace XTM_EUIS
 
         public string ModAcronym => "xtm";
 
-        public Dictionary<string, Delegate> EventsToBind => new Dictionary<string, Delegate>();
+        public Action<Action<string, object[]>> OnGetEventEmitter => (eventCaller) => ExtendedTransportManagerMod.Instance.GetManagedSystem<XTMLineViewerController>().SetupCaller(eventCaller);
 
-        public Dictionary<string, Delegate> CallsToBind => new Dictionary<string, Delegate>();
+        public Action<Action<string, Delegate>> OnGetEventsBinder => (eventCaller) => ExtendedTransportManagerMod.Instance.GetManagedSystem<XTMLineViewerController>().SetupEventBinder(eventCaller);
+
+        public Action<Action<string, Delegate>> OnGetCallsBinder => (eventCaller) => ExtendedTransportManagerMod.Instance.GetManagedSystem<XTMLineViewerController>().SetupCallBinder(eventCaller);
+
+        public Action<Func<string, Action<IJsonWriter>, RawValueBinding>> OnGetRawValueBindingRegisterer => (eventCaller) => ExtendedTransportManagerMod.Instance.GetManagedSystem<XTMLineViewerController>().SetupRawBindings(eventCaller);
     }
 }

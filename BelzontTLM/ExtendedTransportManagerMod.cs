@@ -1,10 +1,11 @@
 ﻿using Belzont.Interfaces;
-using Belzont.Utils;
 using Game;
 using Game.Modding;
 using Game.UI.Menu;
+using System;
 using System.Collections.Generic;
 using System.Reflection;
+using Unity.Entities;
 
 [assembly: AssemblyVersion("0.0.0.*")]
 namespace BelzontTLM
@@ -21,9 +22,12 @@ namespace BelzontTLM
 
         public override string Description => "!!!";
 
+        private UpdateSystem m_updateSystem;
+
         public override void DoOnCreateWorld(UpdateSystem updateSystem)
         {
-            LogUtils.DoWarnLog("LOADED!!!!");
+            m_updateSystem = updateSystem;
+            updateSystem.UpdateAfter<XTMLineViewerController>(SystemUpdatePhase.UIUpdate);
         }
 
         public override void OnDispose()
@@ -43,5 +47,11 @@ namespace BelzontTLM
         {
             return new XTMModData();
         }
+
+        public T GetManagedSystem<T>() where T : ComponentSystemBase
+        {
+            return m_updateSystem.World.GetOrCreateSystemManaged<T>();
+        }
+
     }
 }

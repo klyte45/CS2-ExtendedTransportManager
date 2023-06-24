@@ -36,8 +36,12 @@
   <ItemGroup>
     <Reference Include="0K45EUIS_Ext">
       <HintPath>$(K45_CS2_ALLROOT)\ExtraUIScreens\K45EUIS_Ext\bin\Debug\0K45EUIS_Ext.dll</HintPath>
-      <Private>True</Private>
+      <Private>False</Private>
       <EmbedInteropTypes>False</EmbedInteropTypes>
+    </Reference>
+    <Reference Include="Colossal.UI.Binding">
+      <HintPath>$(K45_CS2_ALLROOT)\_Managed DLLs\Colossal.UI.Binding.dll</HintPath>
+      <Private>False</Private>
     </Reference>
     <Reference Include="System">
       <HintPath>$(K45_CS2_ALLROOT)\_Managed DLLs\System.dll</HintPath>
@@ -55,14 +59,26 @@
       <HintPath>$(K45_CS2_ALLROOT)\_Managed DLLs\System.Xml.Linq.dll</HintPath>
       <Private>False</Private>
     </Reference>
+    <Reference Include="Unity.Entities">
+      <HintPath>$(K45_CS2_ALLROOT)\_Managed DLLs\Unity.Entities.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="XTM_EUIS.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\BelzontTLM\BelzontTLM.csproj">
+      <Project>{38911405-6695-4de5-9b63-857718ec55c0}</Project>
+      <Name>BelzontTLM</Name>
+      <Private>False</Private>
+    </ProjectReference>
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
-    <PostBuildEvent>
-    </PostBuildEvent>
+    <PostBuildEvent>set "ModDir=$(SolutionDir)..\_appdataMods\$(SolutionName)\"
+xcopy /y /e "$(TargetDir)*" "%25ModDir%25"
+del "%25ModDir%25*.pdb"</PostBuildEvent>
   </PropertyGroup>
 </Project>

@@ -1,8 +1,31 @@
 ///<reference path="euis.d.ts" />
+import React, { Component } from "react";
 import "./root.scss"
+import LineList from "./components/line-list.component";
 
-export default function Root(props) {
-  return <>
-    <h1>ON!</h1>
-  </>;
+type State = {
+  lastIdx: number
+  otherX: number
 }
+
+export default class Root extends Component<any, State> {
+  constructor(props) {
+    super(props);
+    this.state = {
+      lastIdx: -1,
+      otherX: 92
+    }
+  }
+  componentDidMount() {
+  }
+
+  render() {
+    return <>
+      <button onClick={() => location.reload()}>RELOAD!!!</button>
+      <br/>
+      <LineList></LineList>
+    </>;
+  }
+}
+
+
