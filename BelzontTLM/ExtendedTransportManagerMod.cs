@@ -1,9 +1,11 @@
 ﻿using Belzont.Interfaces;
+using Belzont.Utils;
 using Game;
 using Game.Modding;
 using Game.UI.Menu;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Reflection;
 using Unity.Entities;
 
@@ -36,6 +38,19 @@ namespace BelzontTLM
 
         public override void DoOnLoad()
         {
+            LogUtils.DoWarnLog("Loaded component count: " + TypeManager.GetTypeCount());
+
+            var AddAllComponents = typeof(TypeManager).GetMethod("AddAllComponentTypes", RedirectorUtils.allFlags);
+
+            Type[] newComponents = ReflectionUtils.GetStructForInterfaceImplementations(typeof(IComponentData), new[] { GetType().Assembly }).ToArray();
+            int startTypeIndex = TypeManager.GetTypeCount();
+            Dictionary<int, HashSet<TypeIndex>> writeGroupByType = new();
+            Dictionary<Type, int> descendantCountByType = newComponents.Select(x => (x, 0)).ToDictionary(x => x.x, x => x.Item2);
+
+            AddAllComponents.Invoke(null, new object[] { newComponents, startTypeIndex, writeGroupByType, descendantCountByType });
+
+            LogUtils.DoWarnLog("Post loaded component count: " + TypeManager.GetTypeCount());
+
         }
 
         protected override IEnumerable<OptionsUISystem.Section> GenerateModOptionsSections()
@@ -52,6 +67,5 @@ namespace BelzontTLM
         {
             return m_updateSystem.World.GetOrCreateSystemManaged<T>();
         }
-
     }
 }
