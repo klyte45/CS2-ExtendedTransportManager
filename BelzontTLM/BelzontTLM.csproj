@@ -138,6 +138,7 @@ xcopy /y /e "$(TargetDir)*" "%25ModDir%25"
 del "%25ModDir%25*.pdb"
 
 mkdir "%25ModDir%25UI\"
-xcopy /y /e "$(SolutionDir)UI\dist\*" "%25ModDir%25UI\"</PostBuildEvent>
+xcopy /y /e "$(SolutionDir)UI\dist\*" "%25ModDir%25UI\"
+xcopy /y /e "$(SolutionDir)UI\images\*" "%25ModDir%25UI\images\"</PostBuildEvent>
   </PropertyGroup>
 </Project>
