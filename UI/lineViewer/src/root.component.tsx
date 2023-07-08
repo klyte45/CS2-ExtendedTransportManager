@@ -2,6 +2,7 @@
 import React, { Component } from "react";
 import "./root.scss"
 import LineList from "./components/line-list.component";
+import PaletteEditor from "./components/palette-editor.component";
 
 type State = {
   lastIdx: number
@@ -22,7 +23,8 @@ export default class Root extends Component<any, State> {
   render() {
     return <>
       <button onClick={() => location.reload()}>RELOAD!!!</button>
-      <br/>
+      <br />
+      <PaletteEditor></PaletteEditor>
       <LineList></LineList>
     </>;
   }

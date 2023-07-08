@@ -130,9 +130,13 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-  
     <!--<Compile Include="**\*.cs" Exclude="obj/**" />-->
     <Compile Include="**\*.cs" Exclude="obj/**" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="i18n\i18n.csv">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>

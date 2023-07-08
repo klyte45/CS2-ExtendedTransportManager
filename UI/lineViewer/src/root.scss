@@ -1,5 +1,5 @@
 :root {
-    background-color: black;
+    background-color: rgba(0, 0, 0, 0.288);
     color: white;
 }
 
@@ -72,7 +72,7 @@ div.tableRegularRow {
                 font-size: 10px;
                 height: auto;
                 line-height: 0;
-                
+
                 &.chars5 {
                     font-size: 12px;
                 }
@@ -80,16 +80,19 @@ div.tableRegularRow {
                 &.chars4 {
                     font-size: 12px;
                 }
+
                 &.chars3 {
                     font-size: 16px;
                 }
+
                 &.chars2 {
                     font-size: 22px;
                 }
+
                 &.chars1 {
                     font-size: 26px;
                 }
-                
+
             }
         }
     }
@@ -161,4 +164,25 @@ div.tableRegularRow {
 
 .w90 {
     width: 90%;
+}
+
+section {
+    background-color: var(--menuPanel1);
+
+    .sectionColumnContainer {
+        display: flex;
+
+        section {
+            border-left-style: solid;
+            border-right-style: solid;
+            border-left-width: 1px;
+            border-right-width: 1px;
+            border-left-color: var(--menuBorderColor1);
+            border-right-color: var(--menuBorderColor1);
+        }
+
+        h3 {
+            text-align: center;
+        }
+    }
 }
