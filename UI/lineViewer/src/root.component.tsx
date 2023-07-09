@@ -1,6 +1,7 @@
 ///<reference path="euis.d.ts" />
 import React, { Component } from "react";
 import "./root.scss"
+import "./components/common/cs2-select.scss"
 import LineList from "./components/line-list.component";
 import PaletteEditor from "./components/palette-editor.component";
 

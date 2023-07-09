@@ -166,6 +166,7 @@ div.tableRegularRow {
     width: 90%;
 }
 
+
 section {
     background-color: var(--menuPanel1);
 
@@ -179,6 +180,28 @@ section {
             border-right-width: 1px;
             border-left-color: var(--menuBorderColor1);
             border-right-color: var(--menuBorderColor1);
+
+            .valueConainerDD {
+                display: flex;
+
+                label {
+                    padding-top: 4.000000rem;
+                    padding-left: 8.000000rem;
+                    padding-right: 8.000000rem;
+                    padding-bottom: 4.000000rem;
+                    width: 50%;
+                    font-size: var(--fontSizeL);
+                }
+
+                div.react-select-container {
+                    width: 50%;
+                    padding-top: 4.000000rem;
+                    padding-left: 8.000000rem;
+                    padding-right: 8.000000rem;
+                    padding-bottom: 4.000000rem;
+                }
+
+            }
         }
 
         h3 {
