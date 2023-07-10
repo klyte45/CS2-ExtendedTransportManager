@@ -1,4 +1,5 @@
-﻿using Belzont.Utils;
+﻿using Belzont.Interfaces;
+using Belzont.Utils;
 using Colossal.Entities;
 using Colossal.Serialization.Entities;
 using Colossal.UI.Binding;
@@ -16,19 +17,14 @@ using Unity.Entities;
 
 namespace BelzontTLM
 {
-    public class XTMLineViewerController : SystemBase
+
+    public class XTMLineViewerController : SystemBase, IBelzontBindable
     {
-        private Action<string, object[]> eventCaller;
-        public void SetupCaller(Action<string, object[]> eventCaller)
+        public Action<string, object[]> EventCaller { get; set; }
+        protected void SendEvent(string eventName, params object[] eventArgs)
         {
-            this.eventCaller = eventCaller;
+            EventCaller?.Invoke(eventName, eventArgs);
         }
-
-        private void SendEvent(string eventName, params object[] eventArgs)
-        {
-            eventCaller?.Invoke(eventName, eventArgs);
-        }
-
         internal void OnTick(uint version)
         {
             SendEvent("tickDone", version);
@@ -217,6 +213,11 @@ namespace BelzontTLM
             m_EndFrameBarrier = World.GetOrCreateSystemManaged<EndFrameBarrier>();
 
             CheckedStateRef.RequireAnyForUpdate(m_UnititalizedXTMLineQuery, m_ModifiedLineQuery);
+        }
+
+        public void SetupCaller(Action<string, object[]> eventCaller)
+        {
+            EventCaller = eventCaller;
         }
     }
 

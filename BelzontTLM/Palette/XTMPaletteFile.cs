@@ -1,5 +1,6 @@
 ﻿using Belzont.Utils;
 using Colossal;
+using Colossal.UI.Binding;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -23,16 +24,14 @@ namespace BelzontTLM.Palettes
                 Guid = GuidUtils.Create(XTMPaletteManager.GUID_NAMESPACE, value);
             }
         }
+        public List<string> ColorsRGB => Colors.Select(x => x.ToRGB(true)).ToList();
+        public string GuidString => Guid.ToString();
+        public string ChecksumString => Checksum.ToString();
 
-        public Guid Guid
-        {
-            get; private set;
-        }
-
-        public int Count => Colors.Count;
-
-        public List<Color32> Colors { get; }
-        public Guid Checksum { get; private set; }
+        internal Guid Guid { get; private set; }
+        internal int Count => Colors.Count;
+        internal List<Color32> Colors { get; }
+        internal Guid Checksum { get; private set; }
 
         public void Add()
         {
@@ -69,23 +68,6 @@ namespace BelzontTLM.Palettes
             RecalculateChecksum();
         }
 
-        public Color32 this[int key]
-        {
-            get => Colors[key];
-            set
-            {
-                if ((Color)value == default)
-                {
-                    Colors.RemoveAt(key);
-                }
-                else
-                {
-                    Colors[key] = value;
-                }
-                RecalculateChecksum();
-            }
-        }
-
         public string ToFileContent() => string.Join(ENTRY_SEPARATOR.ToString(), Colors.Select(x => x.ToRGB()).ToArray());
 
         public static XTMPaletteFile FromFileContent(string name, string[] fileContentLines)
@@ -96,6 +78,20 @@ namespace BelzontTLM.Palettes
 
         public void Save() => File.WriteAllText(Path.Combine(ExtendedTransportManagerMod.Instance.PalettesFolder, $"{Name}{EXT_PALETTE}"), ToFileContent());
 
+        public void Write(IJsonWriter writer)
+        {
+            writer.PropertyName("guid");
+            writer.Write(Guid.ToString());
+            writer.PropertyName("name");
+            writer.Write(name);
+            writer.PropertyName("colors");
+            writer.ArrayBegin(Colors.Count);
+            foreach (var color in Colors)
+            {
+                writer.Write(color.ToRGB());
+            }
+            writer.ArrayEnd();
+        }
     }
 
 }

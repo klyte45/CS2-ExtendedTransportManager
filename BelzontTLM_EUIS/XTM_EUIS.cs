@@ -1,12 +1,11 @@
 ﻿using Belzont.Interfaces;
-using BelzontTLM;
 using Colossal.UI.Binding;
 using K45EUIS_Ext;
 using System;
 
 namespace XTM_EUIS
 {
-    public class XTM_EUIS : IEUISAppRegister
+    public class XTM_EUIS_LineViewer : IEUISAppRegister
     {
         public string ModAppIdentifier => "line-viewer";
 
@@ -20,13 +19,15 @@ namespace XTM_EUIS
         public string ModderIdentifier => "k45";
 
         public string ModAcronym => "xtm";
+    }
 
-        public Action<Action<string, object[]>> OnGetEventEmitter => (eventCaller) => ExtendedTransportManagerMod.Instance.GetManagedSystem<XTMLineViewerController>().SetupCaller(eventCaller);
-
-        public Action<Action<string, Delegate>> OnGetEventsBinder => (eventCaller) => ExtendedTransportManagerMod.Instance.GetManagedSystem<XTMLineViewerController>().SetupEventBinder(eventCaller);
-
-        public Action<Action<string, Delegate>> OnGetCallsBinder => (eventCaller) => ExtendedTransportManagerMod.Instance.GetManagedSystem<XTMLineViewerController>().SetupCallBinder(eventCaller);
-
-        public Action<Func<string, Action<IJsonWriter>, RawValueBinding>> OnGetRawValueBindingRegisterer => (eventCaller) => ExtendedTransportManagerMod.Instance.GetManagedSystem<XTMLineViewerController>().SetupRawBindings(eventCaller);
+    public class XTM_EUIS : IEUISModRegister
+    {
+        public string ModderIdentifier => "k45";
+        public string ModAcronym => "xtm";
+        public Action<Action<string, object[]>> OnGetEventEmitter => (eventCaller) => BasicIMod.Instance.SetupCaller(eventCaller);
+        public Action<Action<string, Delegate>> OnGetEventsBinder => (eventCaller) => BasicIMod.Instance.SetupEventBinder(eventCaller);
+        public Action<Action<string, Delegate>> OnGetCallsBinder => (eventCaller) => BasicIMod.Instance.SetupCallBinder(eventCaller);
+        public Action<Func<string, Action<IJsonWriter>, RawValueBinding>> OnGetRawValueBindingRegisterer => (eventCaller) => BasicIMod.Instance.SetupRawBindings(eventCaller);
     }
 }

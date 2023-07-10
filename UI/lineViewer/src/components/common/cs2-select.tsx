@@ -1,10 +1,12 @@
 
-import Select, { ActionMeta, GroupBase, OnChangeValue, OptionsOrGroups, PropsValue } from 'react-select';
+import Select, { ActionMeta, GetOptionLabel, GetOptionValue, GroupBase, OnChangeValue, OptionsOrGroups, PropsValue } from 'react-select';
 
 export default <Option, Group extends GroupBase<Option>>(props: {
-    options: OptionsOrGroups<Option, Group>,
+    value?: PropsValue<Option>,
+    options?: OptionsOrGroups<Option, Group>,
     onChange?: (newValue: Option, actionMeta: ActionMeta<Option>) => void
-    value?: PropsValue<Option>
+    getOptionLabel?: GetOptionLabel<Option>,
+    getOptionValue?: GetOptionValue<Option>,
 }) => <>
         <Select
             options={props.options}
@@ -20,7 +22,10 @@ export default <Option, Group extends GroupBase<Option>>(props: {
                 option: () => "option",
                 input: () => "input"
             }}
+            getOptionLabel={props.getOptionLabel}
+            getOptionValue={props.getOptionValue}
             onChange={props.onChange}
             value={props.value}
+            
         />
     </>

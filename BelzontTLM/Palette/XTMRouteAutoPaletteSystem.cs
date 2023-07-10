@@ -1,12 +1,17 @@
-﻿using Belzont.Utils;
+﻿using Belzont.Interfaces;
+using Belzont.Utils;
 using Colossal.UI.Binding;
 using Game;
 using Game.Common;
 using Game.Notifications;
 using Game.Prefabs;
 using Game.Routes;
+using Game.SceneFlow;
 using Game.Tools;
 using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Linq;
 using System.Runtime.CompilerServices;
 using Unity.Burst.Intrinsics;
 using Unity.Collections;
@@ -15,7 +20,7 @@ using Unity.Jobs;
 
 namespace BelzontTLM.Palettes
 {
-    public class XTMRouteAutoPaletteSystem : GameSystemBase
+    public class XTMRouteAutoPaletteSystem : GameSystemBase, IBelzontBindable
     {
         private Action<string, object[]> eventCaller;
         public void SetupCaller(Action<string, object[]> eventCaller)
@@ -64,15 +69,24 @@ namespace BelzontTLM.Palettes
         public void SetupEventBinder(Action<string, Delegate> eventCaller)
         {
         }
-
+        private TransportType[] PassengerLineAllowed = new[] { TransportType.Bus, TransportType.Tram, TransportType.Subway, TransportType.Train, TransportType.Ship, TransportType.Airplane };
+        private TransportType[] CargoLineAllowed = new[] { TransportType.Train, TransportType.Ship, TransportType.Airplane };
         public void SetupCallBinder(Action<string, Delegate> eventCaller)
         {
+            eventCaller.Invoke("palettes.listPalettes", ListPalettes);
+            eventCaller.Invoke("palettes.passengerModalSettings", () => ExtendedTransportManagerMod.Instance.ModData.PaletteSettingsPassenger.ToDictionary(x => x.Key.ToString(), x => x.Value.ToString()));
+            eventCaller.Invoke("palettes.cargoModalSettings", () => ExtendedTransportManagerMod.Instance.ModData.PaletteSettingsCargo.ToDictionary(x => x.Key.ToString(), x => x.Value.ToString()));
+            eventCaller.Invoke("palettes.passengerModalAvailable", () => PassengerLineAllowed.Select(x => x.ToString()).ToList());
+            eventCaller.Invoke("palettes.cargoModalAvailable", () => CargoLineAllowed.Select(x => x.ToString()).ToList());
 
+       //     File.WriteAllLines(Path.Combine(BasicIMod.Instance.ModRootFolder, "localeDump.txt"), GameManager.instance.localizationManager.activeDictionary.entries.Select(x => $"{x.Key}\t{x.Value.Replace("\n", "\\n").Replace("\r", "\\r")}").ToArray());
         }
         public void SetupRawBindings(Func<string, Action<IJsonWriter>, RawValueBinding> eventBinder)
         {
 
         }
+
+        private List<XTMPaletteFile> ListPalettes() => XTMPaletteManager.Instance.PaletteListForEditing.ToList();
 
         private EntityQuery m_linesWithNoData;
         private EntityQuery m_linesToUpdateData;

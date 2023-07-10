@@ -1,45 +1,60 @@
 import { Component } from "react";
-import translate from "../utility/translate";
+import translate from "#utility/translate";
 import Cs2Select from "./common/cs2-select";
+import { TransportType } from "#enum/TransportType";
+import { PaletteData, PaletteService } from "#service/palette.service";
+import { ObjectTyped } from "object-typed";
 
 type State = {
-    value: { value: string, label: string }
+    availablePalettes: Record<string, PaletteData>,
+    availablePassenger: TransportType[],
+    availableCargo: TransportType[],
+    passengerSettings: Partial<Record<TransportType, string>>,
+    cargoSettings: Partial<Record<TransportType, string>>
 }
 
-const options = [
-    { value: 'chocolate', label: 'Chocolate' },
-    { value: 'strawberry', label: 'Strawberry' },
-    { value: 'vanilla', label: 'Vanilla' },
-    { value: 'vanilla2', label: 'Vanilla2' },
-    { value: 'vanilla3', label: 'Vanilla3' },
-    { value: 'vanilla4', label: 'Vanilla4' },
-    { value: 'vanilla5', label: 'Vanilla5' },
-    { value: 'vanilla6', label: 'Vanilla6' },
-    { value: 'vanilla7', label: 'Vanilla7' },
-    { value: 'vanilla8', label: 'Vanilla8' },
-    { value: 'vanilla9', label: 'Vanilla9' },
-    { value: 'vanilla10', label: 'Vanilla10' },
-    { value: 'vanilla12', label: 'Vanilla12' },
-    { value: 'vanilla13', label: 'Vanilla13' },
-    { value: 'vanilla14', label: 'Vanilla14' },
-    { value: 'vanilla15', label: 'Vanilla15' },
-    { value: 'vanilla16', label: 'Vanilla16' },
-    { value: 'vanilla17', label: 'Vanilla17' },
-    { value: 'vanilla18', label: 'Vanilla18' },
-    { value: 'vanilla19', label: 'Vanilla19' },
-    { value: 'vanilla11', label: 'Vanilla11' },
-    { value: 'vanilla22', label: 'Vanilla22' },
-    { value: 'vanilla23', label: 'Vanilla23' },
-    { value: 'vanilla24', label: 'Vanilla24' },
-    { value: 'vanilla25', label: 'Vanilla25' },
-    { value: 'vanilla26', label: 'Vanilla26' },
-    { value: 'vanilla27', label: 'Vanilla27' },
-    { value: 'vanilla28', label: 'Vanilla28' },
-    { value: 'vanilla29', label: 'Vanilla29' },
-    { value: 'vanilla21', label: 'Vanilla21' }
-]
+function cargoNameFor(modal: TransportType) {
+    return engine.translate(`Transport.ROUTES[${modal}]`);
+}
+function passengerNameFor(modal: TransportType) {
+    return engine.translate(`Transport.LINES[${modal}]`);
+}
+
+
 
 export default class PaletteEditor extends Component<any, State> {
+
+    constructor(props) {
+        super(props);
+        this.state = {
+            availableCargo: [],
+            availablePalettes: {},
+            availablePassenger: [],
+            cargoSettings: {},
+            passengerSettings: {}
+        }
+    }
+    componentDidMount() {
+        const _this = this;
+        engine.whenReady.then(async () => {
+            PaletteService.cargoModalAvailable().then(x => _this.setState({ availableCargo: x }))
+            this.updatePalettes();
+            PaletteService.passengerModalAvailable().then(x => _this.setState({ availablePassenger: x }))
+            PaletteService.passengerModalSettings().then(x => _this.setState({ passengerSettings: x }))
+            PaletteService.cargoModalSettings().then(x => _this.setState({ cargoSettings: x }))
+        })
+    }
+    private async updatePalettes() {
+        const palettesSaved = await PaletteService.listPalettes();
+        const defaultOptions = ([[void 0,
+        {
+            Name: translate("autoColorDisabled")
+        } as PaletteData]] as [string, PaletteData][])
+        this.setState({
+            availablePalettes: ObjectTyped.fromEntries(defaultOptions.concat(palettesSaved.sort((a, b) => a.Name.localeCompare(b.Name)).map(x => [x.GuidString, x])) as [string, PaletteData][])
+        });
+    }
+
     render() {
         return <>
             <h1>{translate("palettes.title")}</h1>
@@ -48,16 +63,42 @@ export default class PaletteEditor extends Component<any, State> {
                 <div className="sectionColumnContainer">
                     <section className="w50">
                         <h3>{translate("passengerModalsTitle")}</h3>
-                        <div className="valueConainerDD">
-                            <label>TST</label>
-                            <Cs2Select options={options} value={this.state?.value} onChange={(x) => this.setState({ value: x })} />
-                        </div>
+                        {this.state.availablePassenger.map((tt, i) => {
+                            return <div className="valueConainerDD" key={i}>
+                                <label>{passengerNameFor(tt)}</label>
+                                <Cs2Select
+                                    options={Object.values(this.state.availablePalettes)}
+                                    getOptionLabel={(x) => x?.Name}
+                                    getOptionValue={(x) => x?.GuidString}
+                                    onChange={(x) => this.setPassengerPaletteGuid(tt, x.GuidString)}
+                                    value={this.state.availablePalettes[this.state.passengerSettings[tt]]}
+                                />
+                            </div>
+                        })}
                     </section>
                     <section className="w50">
                         <h3>{translate("cargoModalsTitle")}</h3>
+                        {this.state.availableCargo.map((tt, i) => {
+                            return <div className="valueConainerDD" key={i}>
+                                <label>{passengerNameFor(tt)}</label>
+                                <Cs2Select
+                                    options={Object.values(this.state.availablePalettes)}
+                                    getOptionLabel={(x) => x?.Name}
+                                    getOptionValue={(x) => x?.GuidString}
+                                    onChange={(x) => this.setCargoPaletteGuid(tt, x.GuidString)}
+                                    value={this.state.availablePalettes[this.state.cargoSettings[tt]]}
+                                />
+                            </div>
+                        })}
                     </section>
                 </div>
             </section>
         </>;
+    }
+    setPassengerPaletteGuid(tt: TransportType, x: string): void {
+
+    }
+    setCargoPaletteGuid(tt: TransportType, x: string): void {
+
     }
 }

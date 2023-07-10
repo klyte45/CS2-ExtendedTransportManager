@@ -1,6 +1,7 @@
 using Belzont.Utils;
 using Colossal;
 using Colossal.OdinSerializer.Utilities;
+using Colossal.Serialization.Entities;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -42,7 +43,7 @@ namespace BelzontTLM.Palettes
 
         public string[] PaletteList => new string[] { null }.Union(m_palettes.Values.Select(x => x.Name)).OrderBy(x => x).ToArray();
 
-        public string[] PaletteListForEditing => m_palettes.Values.Select(x => x.Name).OrderBy(x => x).ToArray();
+        public XTMPaletteFile[] PaletteListForEditing => m_palettes.Values.ToArray();
 
         private XTMPaletteManager()
         {
@@ -128,7 +129,7 @@ namespace BelzontTLM.Palettes
                     XTMPaletteFile palette = m_palettes[paletteName];
                     if (!randomOnPaletteOverflow || number <= palette.Colors.Count)
                     {
-                        return palette[number % palette.Count];
+                        return palette.Colors[number % palette.Count];
                     }
                 }
             }
@@ -181,15 +182,41 @@ namespace BelzontTLM.Palettes
         internal void OnLinesColorsReprocessed() => isDirty = false;
     }
 
-    public struct XTMPaletteSettedUpInformation : IComponentData, IQueryTypeParameter
+    public struct XTMPaletteSettedUpInformation : IComponentData, IQueryTypeParameter, ISerializable
     {
         public Guid paletteGuid;
         public Guid paletteChecksum;
         public int lineNumberRef;
         public bool paletteEnabled;
+
+        const uint CURRENT_VERSION = 0;
+
+        public void Serialize<TWriter>(TWriter writer) where TWriter : IWriter
+        {
+            writer.Write(CURRENT_VERSION);
+            writer.Write(paletteEnabled);
+            writer.Write(lineNumberRef);
+            writer.Write(paletteGuid.ToString());
+            writer.Write(paletteChecksum.ToString());
+        }
+
+        public void Deserialize<TReader>(TReader reader) where TReader : IReader
+        {
+            reader.Read(out uint version);
+            if (version > CURRENT_VERSION)
+            {
+                throw new Exception("Invalid version of XTMPaletteSettedUpInformation!");
+            }
+            reader.Read(out paletteEnabled);
+            reader.Read(out lineNumberRef);
+            reader.Read(out string guidPalette);
+            reader.Read(out string checksumPalette);
+            paletteGuid = new Guid(guidPalette);
+            paletteChecksum = new Guid(checksumPalette);
+        }
     }
     public struct XTMPaletteRequireUpdate : IComponentData, IQueryTypeParameter { }
-    public struct XTMPaletteLockedColor : IComponentData, IQueryTypeParameter { }
+    public struct XTMPaletteLockedColor : IComponentData, IQueryTypeParameter, IEmptySerializable { }
 
 }
 

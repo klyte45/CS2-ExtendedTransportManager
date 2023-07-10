@@ -1,6 +1,6 @@
 import { CSSProperties, Component } from "react";
-import { NameCustom, NameFormatted, NameLocalized, nameToString } from "../utility/name.utils";
-import { Color01, ColorUtils } from "../utility/ColorUtils";
+import { NameCustom, NameFormatted, NameLocalized, nameToString } from "#utility/name.utils";
+import { Color01, ColorUtils } from "#utility/ColorUtils";
 
 type LineData = {
     __Type: string,
@@ -41,13 +41,11 @@ export default class LineList extends Component<any, State> {
     }
     componentDidMount() {
         engine.whenReady.then(async () => {
-            engine.on("k45::xtm-line-viewer.lineList.update", (res: LineData[]) => {
+            engine.on("k45::xtm.lineList.update", (res: LineData[]) => {
                 this.setState({ linesList: res });
-
-                console.log(res)
             });
             try {
-                engine.trigger("k45::xtm-line-viewer.lineList.subscribe")
+                engine.trigger("k45::xtm.lineList.subscribe")
             } catch (e) { console.log(e) }
         })
     }
@@ -87,7 +85,7 @@ export default class LineList extends Component<any, State> {
 async function sendAcronym(index: number, newAcronym: string) {
     try {
         console.log("sending: " + index + "|" + newAcronym)
-        const response = await engine.call("k45::xtm-line-viewer.setAcronym", index, newAcronym)
+        const response = await engine.call("k45::xtm.setAcronym", index, newAcronym)
         console.log("Response: " + response);
     } catch (e) {
         console.warn(e);
