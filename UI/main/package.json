@@ -1,5 +1,5 @@
 {
-  "name": "@k45/xtm-line-viewer",
+  "name": "@k45/xtm-main",
   "scripts": {
     "start": "webpack serve",
     "start:standalone": "webpack serve --env standalone",
