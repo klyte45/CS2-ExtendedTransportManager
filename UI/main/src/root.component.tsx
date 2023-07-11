@@ -2,8 +2,9 @@
 import React, { Component } from "react";
 import "./root.scss"
 import "#components/common/cs2-select.scss"
-import LineList from "#components/line-list.component";
-import PaletteEditor from "#components/palette-editor.component";
+import LineListCmp from "#components/LineListCmp";
+import PaletteEditorCmp from "#components/PaletteEditorCmp";
+import PaletteListCmp from "#components/PaletteListCmp";
 
 type State = {
   lastIdx: number
@@ -25,10 +26,11 @@ export default class Root extends Component<any, State> {
     return <>
       <button onClick={() => location.reload()}>RELOAD!!!</button>
       <br />
-      <PaletteEditor></PaletteEditor>
-      <LineList></LineList>
+      <PaletteListCmp />
     </>;
   }
 }
 
-
+/*
+ <PaletteEditorCmp></PaletteEditorCmp>
+      <LineListCmp></LineListCmp>*/

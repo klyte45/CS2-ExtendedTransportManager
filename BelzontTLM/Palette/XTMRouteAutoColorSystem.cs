@@ -1,32 +1,63 @@
 ﻿using Belzont.Interfaces;
 using Belzont.Utils;
+using Colossal.Serialization.Entities;
 using Colossal.UI.Binding;
 using Game;
 using Game.Common;
 using Game.Notifications;
 using Game.Prefabs;
 using Game.Routes;
-using Game.SceneFlow;
 using Game.Tools;
 using System;
-using System.Collections.Generic;
-using System.IO;
 using System.Linq;
 using System.Runtime.CompilerServices;
 using Unity.Burst.Intrinsics;
 using Unity.Collections;
 using Unity.Entities;
 using Unity.Jobs;
+using ISerializable = Colossal.Serialization.Entities.ISerializable;
 
 namespace BelzontTLM.Palettes
 {
-    public class XTMRouteAutoPaletteSystem : GameSystemBase, IBelzontBindable
+    public class XTMRouteAutoColorSystem : GameSystemBase, IBelzontBindable, ISerializable
     {
+        public const int CURRENT_VERSION = 0;
+
+        public void Deserialize<TReader>(TReader reader) where TReader : IReader
+        {
+            reader.Read(out uint version);
+            if (version > CURRENT_VERSION)
+            {
+                throw new Exception("Invalid version of XTMRouteAutoColorSystem!");
+            }
+            reader.Read(out string paletteListXML);
+            reader.Read(out string paletteSettingsPassenger);
+            reader.Read(out string paletteSettingsCargo);
+            try
+            {
+                PaletteSettingsPassenger = XmlUtils.DefaultXmlDeserialize<SimpleEnumerableList<TransportType, Guid>>(paletteSettingsPassenger);
+                PaletteSettingsCargo = XmlUtils.DefaultXmlDeserialize<SimpleEnumerableList<TransportType, Guid>>(paletteSettingsCargo);
+            }
+            catch (Exception e)
+            {
+                LogUtils.DoWarnLog($"XTMPaletteSystem: Could not load palettes for the City!!!\n{e}");
+            }
+        }
+
+        public void Serialize<TWriter>(TWriter writer) where TWriter : IWriter
+        {
+            LogUtils.DoLog("Serializing XTMRouteAutoColorSystem");
+            writer.Write(CURRENT_VERSION);
+            writer.Write(XmlUtils.DefaultXmlSerialize(PaletteSettingsPassenger));
+            writer.Write(XmlUtils.DefaultXmlSerialize(PaletteSettingsCargo));
+        }
+
         private Action<string, object[]> eventCaller;
         public void SetupCaller(Action<string, object[]> eventCaller)
         {
             this.eventCaller = eventCaller;
         }
+
 
         protected override void OnUpdate()
         {
@@ -73,20 +104,19 @@ namespace BelzontTLM.Palettes
         private TransportType[] CargoLineAllowed = new[] { TransportType.Train, TransportType.Ship, TransportType.Airplane };
         public void SetupCallBinder(Action<string, Delegate> eventCaller)
         {
-            eventCaller.Invoke("palettes.listPalettes", ListPalettes);
-            eventCaller.Invoke("palettes.passengerModalSettings", () => ExtendedTransportManagerMod.Instance.ModData.PaletteSettingsPassenger.ToDictionary(x => x.Key.ToString(), x => x.Value.ToString()));
-            eventCaller.Invoke("palettes.cargoModalSettings", () => ExtendedTransportManagerMod.Instance.ModData.PaletteSettingsCargo.ToDictionary(x => x.Key.ToString(), x => x.Value.ToString()));
-            eventCaller.Invoke("palettes.passengerModalAvailable", () => PassengerLineAllowed.Select(x => x.ToString()).ToList());
-            eventCaller.Invoke("palettes.cargoModalAvailable", () => CargoLineAllowed.Select(x => x.ToString()).ToList());
-
-       //     File.WriteAllLines(Path.Combine(BasicIMod.Instance.ModRootFolder, "localeDump.txt"), GameManager.instance.localizationManager.activeDictionary.entries.Select(x => $"{x.Key}\t{x.Value.Replace("\n", "\\n").Replace("\r", "\\r")}").ToArray());
+            eventCaller.Invoke("autoColor.passengerModalAvailable", () => PassengerLineAllowed.Select(x => x.ToString()).ToList());
+            eventCaller.Invoke("autoColor.cargoModalAvailable", () => CargoLineAllowed.Select(x => x.ToString()).ToList());
+            eventCaller.Invoke("autoColor.passengerModalSettings", () => PaletteSettingsPassenger.ToDictionary(x => x.Key.ToString(), x => x.Value.ToString()));
+            eventCaller.Invoke("autoColor.cargoModalSettings", () => PaletteSettingsCargo.ToDictionary(x => x.Key.ToString(), x => x.Value.ToString()));
+            //     File.WriteAllLines(Path.Combine(BasicIMod.Instance.ModRootFolder, "localeDump.txt"), GameManager.instance.localizationManager.activeDictionary.entries.Select(x => $"{x.Key}\t{x.Value.Replace("\n", "\\n").Replace("\r", "\\r")}").ToArray());
         }
         public void SetupRawBindings(Func<string, Action<IJsonWriter>, RawValueBinding> eventBinder)
         {
-
         }
 
-        private List<XTMPaletteFile> ListPalettes() => XTMPaletteManager.Instance.PaletteListForEditing.ToList();
+        public SimpleEnumerableList<TransportType, Guid> PaletteSettingsPassenger = new();
+        public SimpleEnumerableList<TransportType, Guid> PaletteSettingsCargo = new();
+
 
         private EntityQuery m_linesWithNoData;
         private EntityQuery m_linesToUpdateData;
@@ -94,6 +124,7 @@ namespace BelzontTLM.Palettes
         private EndFrameBarrier m_EndFrameBarrier;
         private IconCommandSystem m_IconCommandSystem;
         private TypeHandle typeHandle;
+        private XTMPaletteSystem paletteSystem;
         protected override void OnCreate()
         {
             m_EndFrameBarrier = World.GetOrCreateSystemManaged<EndFrameBarrier>();
@@ -161,7 +192,9 @@ namespace BelzontTLM.Palettes
             });
 
             CheckedStateRef.RequireAnyForUpdate(m_linesWithNoData, m_linesToUpdateData);
+            paletteSystem = World.GetOrCreateSystemManaged<XTMPaletteSystem>();
             XTMPaletteManager.Instance.Reload();
+
         }
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private void __AssignQueries(ref SystemState state)
@@ -172,6 +205,7 @@ namespace BelzontTLM.Palettes
             base.OnCreateForCompiler();
             __AssignQueries(ref CheckedStateRef);
             typeHandle.AssignHandles(ref CheckedStateRef);
+            typeHandle.m_autoColorSystem = this;
         }
         private struct TypeHandle
         {
@@ -182,6 +216,7 @@ namespace BelzontTLM.Palettes
             public ComponentLookup<PrefabRef> m_PrefabRefLookup;
             public ComponentLookup<TransportLine> m_TransportLineLookup;
             public ComponentLookup<RouteNumber> m_RouteNumberLookup;
+            public XTMRouteAutoColorSystem m_autoColorSystem;
 
             public void AssignHandles(ref SystemState state)
             {
@@ -220,7 +255,7 @@ namespace BelzontTLM.Palettes
                         continue;
                     }
 
-                    var refPalletList = transportLineData.m_CargoTransport ? ExtendedTransportManagerMod.Instance.ModData.PaletteSettingsCargo : ExtendedTransportManagerMod.Instance.ModData.PaletteSettingsPassenger;
+                    var refPalletList = transportLineData.m_CargoTransport ? m_TypeHandle.m_autoColorSystem.PaletteSettingsCargo : m_TypeHandle.m_autoColorSystem.PaletteSettingsPassenger;
                     var targetPaletteGuid = refPalletList.TryGetValue(transportLineData.m_TransportType, out var paletteValue) ? paletteValue as Guid? : null;
 
                     XTMPaletteSettedUpInformation info = new()
@@ -238,7 +273,7 @@ namespace BelzontTLM.Palettes
                         }
                         else
                         {
-                            var targetIdx = ((routeNumber.m_Number % targetColorList.Count) + targetColorList.Count) % targetColorList.Count;
+                            var targetIdx = ((routeNumber.m_Number % targetColorList.Count) + targetColorList.Count - 1) % targetColorList.Count;
                             m_CommandBuffer.SetComponent(unfilteredChunkIndex, unitializedLines[i], new Game.Routes.Color(targetColorList[targetIdx]));
                         }
                     }
@@ -282,7 +317,7 @@ namespace BelzontTLM.Palettes
                         continue;
                     }
 
-                    var refPalletList = transportLineData.m_CargoTransport ? ExtendedTransportManagerMod.Instance.ModData.PaletteSettingsCargo : ExtendedTransportManagerMod.Instance.ModData.PaletteSettingsPassenger;
+                    var refPalletList = transportLineData.m_CargoTransport ? m_TypeHandle.m_autoColorSystem.PaletteSettingsCargo : m_TypeHandle.m_autoColorSystem.PaletteSettingsPassenger;
                     var targetPaletteGuid = refPalletList.TryGetValue(transportLineData.m_TransportType, out var paletteValue) ? paletteValue as Guid? : null;
                     var checksum = XTMPaletteManager.Instance.GetChecksum(paletteValue);
 
@@ -303,7 +338,7 @@ namespace BelzontTLM.Palettes
                     else
                     {
                         xtmInfo.paletteEnabled = true;
-                        var targetIdx = ((routeNumber.m_Number % targetColorList.Count) + targetColorList.Count) % targetColorList.Count;
+                        var targetIdx = ((routeNumber.m_Number % targetColorList.Count) + targetColorList.Count - 1) % targetColorList.Count;
                         m_CommandBuffer.SetComponent(unfilteredChunkIndex, unitializedLines[i], new Game.Routes.Color(targetColorList[targetIdx]));
                     }
 

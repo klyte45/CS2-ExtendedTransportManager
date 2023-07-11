@@ -2,8 +2,9 @@ import { Component } from "react";
 import translate from "#utility/translate";
 import Cs2Select from "./common/cs2-select";
 import { TransportType } from "#enum/TransportType";
-import { PaletteData, PaletteService } from "#service/palette.service";
+import { PaletteService, PaletteData } from "#service/PaletteService";
 import { ObjectTyped } from "object-typed";
+import { AutoColorService } from "#service/AutoColorService";
 
 type State = {
     availablePalettes: Record<string, PaletteData>,
@@ -22,7 +23,7 @@ function passengerNameFor(modal: TransportType) {
 
 
 
-export default class PaletteEditor extends Component<any, State> {
+export default class PaletteEditorCmp extends Component<any, State> {
 
     constructor(props) {
         super(props);
@@ -37,15 +38,15 @@ export default class PaletteEditor extends Component<any, State> {
     componentDidMount() {
         const _this = this;
         engine.whenReady.then(async () => {
-            PaletteService.cargoModalAvailable().then(x => _this.setState({ availableCargo: x }))
+            AutoColorService.cargoModalAvailable().then(x => _this.setState({ availableCargo: x }))
             this.updatePalettes();
-            PaletteService.passengerModalAvailable().then(x => _this.setState({ availablePassenger: x }))
-            PaletteService.passengerModalSettings().then(x => _this.setState({ passengerSettings: x }))
-            PaletteService.cargoModalSettings().then(x => _this.setState({ cargoSettings: x }))
+            AutoColorService.passengerModalAvailable().then(x => _this.setState({ availablePassenger: x }))
+            AutoColorService.passengerModalSettings().then(x => _this.setState({ passengerSettings: x }))
+            AutoColorService.cargoModalSettings().then(x => _this.setState({ cargoSettings: x }))
         })
     }
     private async updatePalettes() {
-        const palettesSaved = await PaletteService.listPalettes();
+        const palettesSaved = await PaletteService.listCityPalettes();
         const defaultOptions = ([[void 0,
         {
             Name: translate("autoColorDisabled")
@@ -80,7 +81,7 @@ export default class PaletteEditor extends Component<any, State> {
                         <h3>{translate("cargoModalsTitle")}</h3>
                         {this.state.availableCargo.map((tt, i) => {
                             return <div className="valueConainerDD" key={i}>
-                                <label>{passengerNameFor(tt)}</label>
+                                <label>{cargoNameFor(tt)}</label>
                                 <Cs2Select
                                     options={Object.values(this.state.availablePalettes)}
                                     getOptionLabel={(x) => x?.Name}

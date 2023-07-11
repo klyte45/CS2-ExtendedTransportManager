@@ -25,25 +25,31 @@ namespace BelzontTLM.Palettes
         private readonly Dictionary<Guid, XTMPaletteFile> m_palettes = new();
         private bool isDirty;
         public readonly XTMPaletteFile[] defaultPaletteArray = new XTMPaletteFile[] {
-                    new XTMPaletteFile("São Paulo 2035",XTMPresetPalettes. SaoPaulo2035),
-                    new XTMPaletteFile("London 2016", XTMPresetPalettes.London2016),
-                    new XTMPaletteFile("Rainbow",XTMPresetPalettes. Rainbow),
-                    new XTMPaletteFile("Rainbow Short", XTMPresetPalettes.RainbowShort),
-                    new XTMPaletteFile("World Metro Mix", XTMPresetPalettes.WorldMix),
-                    new XTMPaletteFile("MS Metro UI", XTMPresetPalettes.MSMetroUI),
-                    new XTMPaletteFile("Material Color (100)", XTMPresetPalettes.MatColor100),
-                    new XTMPaletteFile("Material Color (500)", XTMPresetPalettes.MatColor500),
-                    new XTMPaletteFile("Material Color (900)", XTMPresetPalettes.MatColor900),
-                    new XTMPaletteFile("Material Color (A200)", XTMPresetPalettes.MatColorA200),
-                    new XTMPaletteFile("Material Color (A400)", XTMPresetPalettes.MatColorA400),
-                    new XTMPaletteFile("Material Color (A700)", XTMPresetPalettes.MatColorA700),
-                    new XTMPaletteFile("São Paulo CPTM 2000", XTMPresetPalettes.CPTM_SP_2000),
-                    new XTMPaletteFile("São Paulo Bus Area 2000", XTMPresetPalettes.SP_BUS_2000),
+                    new XTMPaletteFile("BRA/São Paulo 2035",XTMPresetPalettes. SaoPaulo2035,true),
+                    new XTMPaletteFile("UK/London 2016", XTMPresetPalettes.London2016,true),
+                    new XTMPaletteFile("Generic/Rainbow",XTMPresetPalettes. Rainbow,true),
+                    new XTMPaletteFile("Generic/Rainbow Short", XTMPresetPalettes.RainbowShort,true),
+                    new XTMPaletteFile("Generic/World Metro Mix", XTMPresetPalettes.WorldMix,true),
+                    new XTMPaletteFile("Generic/MS Metro UI", XTMPresetPalettes.MSMetroUI,true),
+                    new XTMPaletteFile("Generic/Material Color (100)", XTMPresetPalettes.MatColor100,true),
+                    new XTMPaletteFile("Generic/Material Color (500)", XTMPresetPalettes.MatColor500,true),
+                    new XTMPaletteFile("Generic/Material Color (900)", XTMPresetPalettes.MatColor900,true),
+                    new XTMPaletteFile("Generic/Material Color (A200)", XTMPresetPalettes.MatColorA200,true),
+                    new XTMPaletteFile("Generic/Material Color (A400)", XTMPresetPalettes.MatColorA400,true),
+                    new XTMPaletteFile("Generic/Material Color (A700)", XTMPresetPalettes.MatColorA700,true),
+                    new XTMPaletteFile("BRA/São Paulo CPTM 2000", XTMPresetPalettes.CPTM_SP_2000,true),
+                    new XTMPaletteFile("BRA/São Paulo City Bus Area 2000", XTMPresetPalettes.SP_BUS_2000,true),
+                    new XTMPaletteFile("USA/1972 New York Subway", XTMPresetPalettes.NYC_SUBWAY_1972,true),
+                    new XTMPaletteFile("USA/1979 New York Subway", XTMPresetPalettes.NYC_SUBWAY_1979,true),
+                    new XTMPaletteFile("USA/Official Modern NYC Subway", XTMPresetPalettes.NYC_SUBWAY_MODERN_OFFICIAL,true),
+                    new XTMPaletteFile("USA/BART Modern", XTMPresetPalettes.SF_BART_MODERN,true),
+                    new XTMPaletteFile("USA/2012 Vignelli Modern NYC Subway", XTMPresetPalettes.NYC_SUBWAY_MODERN_VIGNELLI_2012,true),
                 };
 
         public string[] PaletteList => new string[] { null }.Union(m_palettes.Values.Select(x => x.Name)).OrderBy(x => x).ToArray();
 
-        public XTMPaletteFile[] PaletteListForEditing => m_palettes.Values.ToArray();
+        public XTMPaletteFile[] FullLibrary => m_palettes.Values.Concat(defaultPaletteArray).ToArray();
+        public XTMPaletteFile[] EditableLibrary => m_palettes.Values.ToArray();
 
         private XTMPaletteManager()
         {
@@ -108,15 +114,6 @@ namespace BelzontTLM.Palettes
 
                 m_palettes[value.Guid] = value;
                 LogUtils.DoLog("LOADED PALETTE ({0}) QTT: {1}", filename, m_palettes[value.Guid].Count);
-            }
-
-            foreach (var palette in defaultPaletteArray)
-            {
-                if (!m_palettes.ContainsKey(palette.Guid))
-                {
-                    m_palettes[palette.Guid] = palette;
-                    Save(palette.Guid);
-                }
             }
         }
 

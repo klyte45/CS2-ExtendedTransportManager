@@ -32,7 +32,7 @@ type State = {
 }
 
 
-export default class LineList extends Component<any, State> {
+export default class LineListCmp extends Component<any, State> {
     constructor(props: any) {
         super(props);
         this.state = {

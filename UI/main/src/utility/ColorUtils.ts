@@ -9,6 +9,11 @@ export type Color01 = { a: number, r: number, g: number, b: number }
 
 
 export class ColorUtils {
+    static toColor01(x: string): Color01 {
+        let colors = /#([0-9a-fA-F]{2})([0-9a-fA-F]{2})([0-9a-fA-F]{2})/.exec(x)?.splice(1, 3)
+            .map(y => Math.min(Math.round(parseInt(y, 16)), 255) / 255);
+        return { r: colors[0], g: colors[1], b: colors[2], a: 1 };;
+    }
     public static calculateRGBfromHSL(H: number, S: number, L: number): Color01 {
         let colour = { r: 0, g: 0, b: 0, a: 1 };
 
