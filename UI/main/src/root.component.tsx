@@ -1,10 +1,8 @@
 ///<reference path="euis.d.ts" />
-import React, { Component } from "react";
-import "./root.scss"
-import "#components/common/cs2-select.scss"
-import LineListCmp from "#components/LineListCmp";
-import PaletteEditorCmp from "#components/PaletteEditorCmp";
 import PaletteListCmp from "#components/PaletteListCmp";
+import "#components/common/cs2-select.scss";
+import { Component } from "react";
+import "./root.scss";
 
 type State = {
   lastIdx: number
