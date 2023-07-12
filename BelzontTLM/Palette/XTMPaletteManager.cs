@@ -43,7 +43,13 @@ namespace BelzontTLM.Palettes
                     new XTMPaletteFile("USA/1979 New York Subway", XTMPresetPalettes.NYC_SUBWAY_1979,true),
                     new XTMPaletteFile("USA/Official Modern NYC Subway", XTMPresetPalettes.NYC_SUBWAY_MODERN_OFFICIAL,true),
                     new XTMPaletteFile("USA/BART Modern", XTMPresetPalettes.SF_BART_MODERN,true),
-                    new XTMPaletteFile("USA/2012 Vignelli Modern NYC Subway", XTMPresetPalettes.NYC_SUBWAY_MODERN_VIGNELLI_2012,true),
+                    new XTMPaletteFile("USA/Chicago CTA", XTMPresetPalettes.CHICAGO_CTA ,true),
+                    new XTMPaletteFile("USA/Washington DC Metro", XTMPresetPalettes.WDC_METRO ,true),
+                    new XTMPaletteFile("USA/LA Metro", XTMPresetPalettes.LA_METRO ,true),
+                    new XTMPaletteFile("USA/MBTA (Boston)", XTMPresetPalettes.BOSTON_MBTA ,true),
+                    new XTMPaletteFile("Generic/IBM Design Library Accessible Palette", XTMPresetPalettes.IBM_ACCESSIBLE ,true),
+                    new XTMPaletteFile("Generic/Wong Accessible Palette", XTMPresetPalettes.WONG_ACCESSIBLE ,true),
+                    new XTMPaletteFile("Generic/Tol Vibrant Accessible Palette", XTMPresetPalettes.TOL_VIBRANT_ACCESSIBLE ,true),
                 };
 
         public string[] PaletteList => new string[] { null }.Union(m_palettes.Values.Select(x => x.Name)).OrderBy(x => x).ToArray();

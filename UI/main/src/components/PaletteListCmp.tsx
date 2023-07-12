@@ -33,6 +33,7 @@ export default class PaletteListCmp extends Component<any, State> {
     render() {
         return <>
             <h1>{translate("palettesLibrary.title")}</h1>
+            <h3>{translate("palettesLibrary.subtitle")}</h3>
             <section>
                 {
                     this.state?.availablePalettes?.map((tt, i) =>

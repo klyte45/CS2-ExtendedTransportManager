@@ -181,6 +181,13 @@ new Color32(0xb7,0x1c,0x1c,255),   new Color32(0x88,0x0e,0x4f,255),    new Color
         public static readonly List<Color32> NYC_SUBWAY_MODERN_OFFICIAL = "EE352E#00933C#B933AD#0039A6#FF6319#FCCC0A#6CBE45#996633#A7A9AC#808183".Split("#").Select(x => ColorExtensions.FromRGB(x)).ToList();
         public static readonly List<Color32> NYC_SUBWAY_MODERN_VIGNELLI_2012 = "F15A22#06B14B#BD60A5#1C9AD6#F99D1C#FFCB05#B2D235#B97C0F#999999#939598".Split("#").Select(x => ColorExtensions.FromRGB(x)).ToList();
         public static readonly List<Color32> SF_BART_MODERN = "ED1C24#FAA61A#FFE600#50B848#00A6E9#903F98#20BEC6#E1058C#838E95".Split("#").Select(x => ColorExtensions.FromRGB(x)).ToList();
+        public static readonly List<Color32> CHICAGO_CTA = "c60c30#00a1de#62361b#009b3a#f9461c#e27ea6#522398#f9e300".Split("#").Select(x => ColorExtensions.FromRGB(x)).ToList();
+        public static readonly List<Color32> WDC_METRO = "BF0D3E#ED8B00#009CDE#00B140#FFD100#919D9D#002F6C#C8102E".Split("#").Select(x => ColorExtensions.FromRGB(x)).ToList();
+        public static readonly List<Color32> LA_METRO = "0072BC#EB131B#58A738#A05DA5#FDB913#E470AB#FC4C02#ADB8BF#D11242#E16710".Split("#").Select(x => ColorExtensions.FromRGB(x)).ToList();
+        public static readonly List<Color32> BOSTON_MBTA = "00843d#da291c#ed8b00#003da5#7c878e#ffc72c#82076c#008eaa#59bec9".Split("#").Select(x => ColorExtensions.FromRGB(x)).ToList();
+        public static readonly List<Color32> IBM_ACCESSIBLE = "648fff#785ef0#dc267f#fe6100#ffb000".Split("#").Select(x => ColorExtensions.FromRGB(x)).ToList();
+        public static readonly List<Color32> WONG_ACCESSIBLE = "e69f00#56b4e9#009e73#f0e442#0072b2#d55e00#cc79a7#000000".Split("#").Select(x => ColorExtensions.FromRGB(x)).ToList();
+        public static readonly List<Color32> TOL_VIBRANT_ACCESSIBLE = "0077BB#33BBEE#009988#EE7733#CC3311#EE3377#BBBBBB".Split("#").Select(x => ColorExtensions.FromRGB(x)).ToList();
     }
 
 }
