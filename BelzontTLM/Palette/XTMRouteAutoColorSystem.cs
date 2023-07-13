@@ -1,6 +1,6 @@
 ﻿using Belzont.Interfaces;
+using Belzont.Serialization;
 using Belzont.Utils;
-using Colossal;
 using Colossal.Serialization.Entities;
 using Colossal.UI.Binding;
 using Game;
@@ -21,8 +21,10 @@ using Unity.Jobs;
 
 namespace BelzontTLM.Palettes
 {
-    public class XTMRouteAutoColorSystem : GameSystemBase, IBelzontBindable, IJobSerializable
+    public class XTMRouteAutoColorSystem : GameSystemBase, IBelzontBindable, IBelzontSerializableSingleton<XTMRouteAutoColorSystem>
     {
+        private const int CURRENT_VERSION = 1;
+
         #region Bindings
         private Action<string, object[]> eventCaller;
         public void SetupCaller(Action<string, object[]> eventCaller)
@@ -350,106 +352,45 @@ namespace BelzontTLM.Palettes
             return xml;
         }
 
-        public JobHandle Serialize<TWriter>(EntityWriterData writerData, JobHandle inputDeps) where TWriter : struct, IWriter
-        {
-            SerializeJob<TWriter> jobData = default;
-            jobData.m_paletteDataToWrite = new NativeArray<char>(XmlUtils.DefaultXmlSerialize(ToXml()).ToCharArray(), Allocator.Persistent);
-            jobData.m_WriterData = writerData;
-            return jobData.Schedule(inputDeps);
-        }
-
-        public JobHandle Deserialize<TReader>(EntityReaderData readerData, JobHandle inputDeps) where TReader : struct, IReader
-        {
-            DeserializeJob<TReader> jobData = default;
-            jobData.m_ReaderData = readerData;
-            jobData.m_paletteDataRead = new NativeCharArrayContainer();
-            inputDeps = jobData.Schedule(inputDeps);
-            inputDeps.GetAwaiter().OnCompleted(() => OnDataRead(jobData));
-            return inputDeps;
-        }
-
-        private void OnDataRead<TReader>(DeserializeJob<TReader> jobData) where TReader : struct, IReader
-        {
-            try
-            {
-                LogUtils.DoLog("XTMRouteAutoColorSystem Size 2: {0} {1}", jobData.m_paletteDataRead.m_Value.Length, jobData.m_ReaderData);
-                var settings = XmlUtils.DefaultXmlDeserialize<XTMRouteAutoColorSystemXML>(new string(jobData.m_paletteDataRead.m_Value.ToArray()));
-                PaletteSettingsPassenger.Clear();
-                PaletteSettingsPassenger.AddRange(settings.PaletteSettingsPassenger.ToDictionary(x => x.Key, x => new Guid(x.Value)));
-                PaletteSettingsCargo.Clear();
-                PaletteSettingsCargo.AddRange(settings.PaletteSettingsCargo.ToDictionary(x => x.Key, x => new Guid(x.Value)));
-
-                LogUtils.DoInfoLog("Route auto color data read!");
-            }
-            catch (Exception e)
-            {
-                LogUtils.DoWarnLog("Error loading route auto color data! {0}", e);
-            }
-            finally
-            {
-                jobData.m_paletteDataRead.m_Value.Clear();
-            }
-        }
-
-        public JobHandle SetDefaults(Context context)
-        {
-            return default;
-        }
-
-        private struct NativeCharArrayContainer
-        {
-            public NativeCharArrayContainer()
-            {
-                m_Value = new DynamicBuffer<char>();
-            }
-            public DynamicBuffer<char> m_Value;
-        }
-
-        private struct SerializeJob<TWriter> : IJob where TWriter : struct, IWriter
-        {
-            public void Execute()
-            {
-                TWriter writer = this.m_WriterData.GetWriter<TWriter>();
-                writer.Write(new string(m_paletteDataToWrite.ToArray()));
-                m_paletteDataToWrite.Dispose();
-                LogUtils.DoInfoLog("Route palette data saved!");
-
-            }
-            public NativeArray<char> m_paletteDataToWrite;
-            public EntityWriterData m_WriterData;
-        }
-
-        private struct DeserializeJob<TReader> : IJob where TReader : struct, IReader
-        {
-            public void Execute()
-            {
-                try
-                {
-                    var reader = m_ReaderData.GetReader<TReader>();
-                    reader.Read(out string paletteListXML);
-                    LogUtils.DoLog("XTMRouteAutoColorSystem Content: {0}", paletteListXML);
-                    var chars = new NativeArray<char>(paletteListXML.ToCharArray(), Allocator.Temp);
-                    m_paletteDataRead.m_Value.ResizeUninitialized(chars.Length);
-                    m_paletteDataRead.m_Value.AddRange(chars);
-                    LogUtils.DoLog("XTMRouteAutoColorSystem Size: {0}", m_paletteDataRead.m_Value.Length);
-                }
-                catch (Exception e)
-                {
-                    LogUtils.DoWarnLog($"Error loading deserialization for XTMRouteAutoColorSystem!\n{e}");
-                }
-                m_loadComplete = true;
-            }
-            public bool m_loadComplete;
-            public NativeCharArrayContainer m_paletteDataRead;
-            public EntityReaderData m_ReaderData;
-        }
-
         [XmlRoot("XtmRouteAutoColorSystem")]
         public class XTMRouteAutoColorSystemXML
         {
             public SimpleEnumerableList<TransportType, string> PaletteSettingsPassenger = new();
             public SimpleEnumerableList<TransportType, string> PaletteSettingsCargo = new();
         }
+
+        private void Deserialize<TReader>(TReader reader) where TReader : IReader
+        {
+            reader.Read(out uint version);
+            if (version > CURRENT_VERSION)
+            {
+                throw new Exception("Invalid version of XTMRouteAutoColorSystem!");
+            }
+            reader.Read(out string autoColorData);
+            try
+            {
+                var settings = XmlUtils.DefaultXmlDeserialize<XTMRouteAutoColorSystemXML>(new string(autoColorData));
+                PaletteSettingsPassenger.Clear();
+                PaletteSettingsPassenger.AddRange(settings.PaletteSettingsPassenger.ToDictionary(x => x.Key, x => new Guid(x.Value)));
+                PaletteSettingsCargo.Clear();
+                PaletteSettingsCargo.AddRange(settings.PaletteSettingsCargo.ToDictionary(x => x.Key, x => new Guid(x.Value)));
+            }
+            catch (Exception e)
+            {
+                LogUtils.DoWarnLog($"XTMRouteAutoColorDataSerializer: Could not load palettes for the City!!!\n{e}");
+            }
+        }
+
+        private void Serialize<TWriter>(TWriter writer) where TWriter : IWriter
+        {
+            writer.Write(CURRENT_VERSION);
+            writer.Write(XmlUtils.DefaultXmlSerialize(ToXml()));
+        }
+
+        void IBelzontSerializableSingleton<XTMRouteAutoColorSystem>.Serialize<TWriter>(TWriter writer) => Serialize(writer);
+        void IBelzontSerializableSingleton<XTMRouteAutoColorSystem>.Deserialize<TReader>(TReader reader) => Deserialize(reader);
+        JobHandle IJobSerializable.SetDefaults(Context context) => default;
+
         #endregion
     }
 
