@@ -3,6 +3,7 @@ import PaletteListCmp from "#components/PaletteListCmp";
 import "#components/common/cs2-select.scss";
 import { Component } from "react";
 import "./root.scss";
+import './styles/treeview.scss'
 
 type State = {
   lastIdx: number
