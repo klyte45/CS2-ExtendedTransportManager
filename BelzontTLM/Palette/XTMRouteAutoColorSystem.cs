@@ -1,5 +1,6 @@
 ﻿using Belzont.Interfaces;
 using Belzont.Utils;
+using Colossal;
 using Colossal.Serialization.Entities;
 using Colossal.UI.Binding;
 using Game;
@@ -8,56 +9,44 @@ using Game.Notifications;
 using Game.Prefabs;
 using Game.Routes;
 using Game.Tools;
+using MonoMod.Utils;
 using System;
 using System.Linq;
 using System.Runtime.CompilerServices;
+using System.Xml.Serialization;
 using Unity.Burst.Intrinsics;
 using Unity.Collections;
 using Unity.Entities;
 using Unity.Jobs;
-using ISerializable = Colossal.Serialization.Entities.ISerializable;
 
 namespace BelzontTLM.Palettes
 {
-    public class XTMRouteAutoColorSystem : GameSystemBase, IBelzontBindable, ISerializable
+    public class XTMRouteAutoColorSystem : GameSystemBase, IBelzontBindable, IJobSerializable
     {
-        public const int CURRENT_VERSION = 0;
-
-        public void Deserialize<TReader>(TReader reader) where TReader : IReader
-        {
-            reader.Read(out uint version);
-            if (version > CURRENT_VERSION)
-            {
-                throw new Exception("Invalid version of XTMRouteAutoColorSystem!");
-            }
-            reader.Read(out string paletteListXML);
-            reader.Read(out string paletteSettingsPassenger);
-            reader.Read(out string paletteSettingsCargo);
-            try
-            {
-                PaletteSettingsPassenger = XmlUtils.DefaultXmlDeserialize<SimpleEnumerableList<TransportType, Guid>>(paletteSettingsPassenger);
-                PaletteSettingsCargo = XmlUtils.DefaultXmlDeserialize<SimpleEnumerableList<TransportType, Guid>>(paletteSettingsCargo);
-            }
-            catch (Exception e)
-            {
-                LogUtils.DoWarnLog($"XTMPaletteSystem: Could not load palettes for the City!!!\n{e}");
-            }
-        }
-
-        public void Serialize<TWriter>(TWriter writer) where TWriter : IWriter
-        {
-            LogUtils.DoLog("Serializing XTMRouteAutoColorSystem");
-            writer.Write(CURRENT_VERSION);
-            writer.Write(XmlUtils.DefaultXmlSerialize(PaletteSettingsPassenger));
-            writer.Write(XmlUtils.DefaultXmlSerialize(PaletteSettingsCargo));
-        }
-
+        #region Bindings
         private Action<string, object[]> eventCaller;
         public void SetupCaller(Action<string, object[]> eventCaller)
         {
             this.eventCaller = eventCaller;
         }
 
+        public void SetupEventBinder(Action<string, Delegate> eventCaller)
+        {
+        }
+        private TransportType[] PassengerLineAllowed = new[] { TransportType.Bus, TransportType.Tram, TransportType.Subway, TransportType.Train, TransportType.Ship, TransportType.Airplane };
+        private TransportType[] CargoLineAllowed = new[] { TransportType.Train, TransportType.Ship, TransportType.Airplane };
+        public void SetupCallBinder(Action<string, Delegate> eventCaller)
+        {
+            eventCaller.Invoke("autoColor.passengerModalAvailable", () => PassengerLineAllowed.Select(x => x.ToString()).ToList());
+            eventCaller.Invoke("autoColor.cargoModalAvailable", () => CargoLineAllowed.Select(x => x.ToString()).ToList());
+            eventCaller.Invoke("autoColor.passengerModalSettings", () => PaletteSettingsPassenger.ToDictionary(x => x.Key.ToString(), x => x.Value.ToString()));
+            eventCaller.Invoke("autoColor.cargoModalSettings", () => PaletteSettingsCargo.ToDictionary(x => x.Key.ToString(), x => x.Value.ToString()));
+            //     File.WriteAllLines(Path.Combine(BasicIMod.Instance.ModRootFolder, "localeDump.txt"), GameManager.instance.localizationManager.activeDictionary.entries.Select(x => $"{x.Key}\t{x.Value.Replace("\n", "\\n").Replace("\r", "\\r")}").ToArray());
+        }
+        public void SetupRawBindings(Func<string, Action<IJsonWriter>, RawValueBinding> eventBinder)
+        {
+        }
+        #endregion
 
         protected override void OnUpdate()
         {
@@ -97,22 +86,6 @@ namespace BelzontTLM.Palettes
             Dependency = jobHandle;
         }
 
-        public void SetupEventBinder(Action<string, Delegate> eventCaller)
-        {
-        }
-        private TransportType[] PassengerLineAllowed = new[] { TransportType.Bus, TransportType.Tram, TransportType.Subway, TransportType.Train, TransportType.Ship, TransportType.Airplane };
-        private TransportType[] CargoLineAllowed = new[] { TransportType.Train, TransportType.Ship, TransportType.Airplane };
-        public void SetupCallBinder(Action<string, Delegate> eventCaller)
-        {
-            eventCaller.Invoke("autoColor.passengerModalAvailable", () => PassengerLineAllowed.Select(x => x.ToString()).ToList());
-            eventCaller.Invoke("autoColor.cargoModalAvailable", () => CargoLineAllowed.Select(x => x.ToString()).ToList());
-            eventCaller.Invoke("autoColor.passengerModalSettings", () => PaletteSettingsPassenger.ToDictionary(x => x.Key.ToString(), x => x.Value.ToString()));
-            eventCaller.Invoke("autoColor.cargoModalSettings", () => PaletteSettingsCargo.ToDictionary(x => x.Key.ToString(), x => x.Value.ToString()));
-            //     File.WriteAllLines(Path.Combine(BasicIMod.Instance.ModRootFolder, "localeDump.txt"), GameManager.instance.localizationManager.activeDictionary.entries.Select(x => $"{x.Key}\t{x.Value.Replace("\n", "\\n").Replace("\r", "\\r")}").ToArray());
-        }
-        public void SetupRawBindings(Func<string, Action<IJsonWriter>, RawValueBinding> eventBinder)
-        {
-        }
 
         public SimpleEnumerableList<TransportType, Guid> PaletteSettingsPassenger = new();
         public SimpleEnumerableList<TransportType, Guid> PaletteSettingsCargo = new();
@@ -196,6 +169,8 @@ namespace BelzontTLM.Palettes
             XTMPaletteManager.Instance.Reload();
 
         }
+
+        #region Runtime Jobs
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private void __AssignQueries(ref SystemState state)
         {
@@ -299,7 +274,6 @@ namespace BelzontTLM.Palettes
             }
         }
 
-
         private struct XTMUpdatePalleteJob : IJobChunk
         {
             [ReadOnly]
@@ -364,6 +338,119 @@ namespace BelzontTLM.Palettes
                 return false;
             }
         }
+        #endregion
+
+        #region Serialization
+
+        private XTMRouteAutoColorSystemXML ToXml()
+        {
+            var xml = new XTMRouteAutoColorSystemXML();
+            xml.PaletteSettingsCargo.AddRange(xml.PaletteSettingsCargo.ToDictionary(x => x.Key, x => x.Value.ToString()));
+            xml.PaletteSettingsPassenger.AddRange(xml.PaletteSettingsPassenger.ToDictionary(x => x.Key, x => x.Value.ToString()));
+            return xml;
+        }
+
+        public JobHandle Serialize<TWriter>(EntityWriterData writerData, JobHandle inputDeps) where TWriter : struct, IWriter
+        {
+            SerializeJob<TWriter> jobData = default;
+            jobData.m_paletteDataToWrite = new NativeArray<char>(XmlUtils.DefaultXmlSerialize(ToXml()).ToCharArray(), Allocator.Persistent);
+            jobData.m_WriterData = writerData;
+            return jobData.Schedule(inputDeps);
+        }
+
+        public JobHandle Deserialize<TReader>(EntityReaderData readerData, JobHandle inputDeps) where TReader : struct, IReader
+        {
+            DeserializeJob<TReader> jobData = default;
+            jobData.m_ReaderData = readerData;
+            jobData.m_paletteDataRead = new NativeCharArrayContainer();
+            inputDeps = jobData.Schedule(inputDeps);
+            inputDeps.GetAwaiter().OnCompleted(() => OnDataRead(jobData));
+            return inputDeps;
+        }
+
+        private void OnDataRead<TReader>(DeserializeJob<TReader> jobData) where TReader : struct, IReader
+        {
+            try
+            {
+                LogUtils.DoLog("XTMRouteAutoColorSystem Size 2: {0} {1}", jobData.m_paletteDataRead.m_Value.Length, jobData.m_ReaderData);
+                var settings = XmlUtils.DefaultXmlDeserialize<XTMRouteAutoColorSystemXML>(new string(jobData.m_paletteDataRead.m_Value.ToArray()));
+                PaletteSettingsPassenger.Clear();
+                PaletteSettingsPassenger.AddRange(settings.PaletteSettingsPassenger.ToDictionary(x => x.Key, x => new Guid(x.Value)));
+                PaletteSettingsCargo.Clear();
+                PaletteSettingsCargo.AddRange(settings.PaletteSettingsCargo.ToDictionary(x => x.Key, x => new Guid(x.Value)));
+
+                LogUtils.DoInfoLog("Route auto color data read!");
+            }
+            catch (Exception e)
+            {
+                LogUtils.DoWarnLog("Error loading route auto color data! {0}", e);
+            }
+            finally
+            {
+                jobData.m_paletteDataRead.m_Value.Clear();
+            }
+        }
+
+        public JobHandle SetDefaults(Context context)
+        {
+            return default;
+        }
+
+        private struct NativeCharArrayContainer
+        {
+            public NativeCharArrayContainer()
+            {
+                m_Value = new DynamicBuffer<char>();
+            }
+            public DynamicBuffer<char> m_Value;
+        }
+
+        private struct SerializeJob<TWriter> : IJob where TWriter : struct, IWriter
+        {
+            public void Execute()
+            {
+                TWriter writer = this.m_WriterData.GetWriter<TWriter>();
+                writer.Write(new string(m_paletteDataToWrite.ToArray()));
+                m_paletteDataToWrite.Dispose();
+                LogUtils.DoInfoLog("Route palette data saved!");
+
+            }
+            public NativeArray<char> m_paletteDataToWrite;
+            public EntityWriterData m_WriterData;
+        }
+
+        private struct DeserializeJob<TReader> : IJob where TReader : struct, IReader
+        {
+            public void Execute()
+            {
+                try
+                {
+                    var reader = m_ReaderData.GetReader<TReader>();
+                    reader.Read(out string paletteListXML);
+                    LogUtils.DoLog("XTMRouteAutoColorSystem Content: {0}", paletteListXML);
+                    var chars = new NativeArray<char>(paletteListXML.ToCharArray(), Allocator.Temp);
+                    m_paletteDataRead.m_Value.ResizeUninitialized(chars.Length);
+                    m_paletteDataRead.m_Value.AddRange(chars);
+                    LogUtils.DoLog("XTMRouteAutoColorSystem Size: {0}", m_paletteDataRead.m_Value.Length);
+                }
+                catch (Exception e)
+                {
+                    LogUtils.DoWarnLog($"Error loading deserialization for XTMRouteAutoColorSystem!\n{e}");
+                }
+                m_loadComplete = true;
+            }
+            public bool m_loadComplete;
+            public NativeCharArrayContainer m_paletteDataRead;
+            public EntityReaderData m_ReaderData;
+        }
+
+        [XmlRoot("XtmRouteAutoColorSystem")]
+        public class XTMRouteAutoColorSystemXML
+        {
+            public SimpleEnumerableList<TransportType, string> PaletteSettingsPassenger = new();
+            public SimpleEnumerableList<TransportType, string> PaletteSettingsCargo = new();
+        }
+        #endregion
     }
 
 }

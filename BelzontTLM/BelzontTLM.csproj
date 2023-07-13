@@ -123,10 +123,13 @@
     <Reference Include="UnityEngine.InputLegacyModule">
       <HintPath>$(K45_CS2_ALLROOT)\_Managed DLLs\UnityEngine.InputLegacyModule.dll</HintPath>
       <Private>False</Private>
-    </Reference> 
+    </Reference>
     <Reference Include="Unity.Burst">
       <HintPath>$(K45_CS2_ALLROOT)\_Managed DLLs\Unity.Burst.dll</HintPath>
       <Private>False</Private>
+    </Reference>
+    <Reference Include="UnityEngine.UnityWebRequestModule">
+      <HintPath>S:\SteamLibrary\steamapps\common\Project Beverly Hills\Cities2_Data\Managed\UnityEngine.UnityWebRequestModule.dll</HintPath>
     </Reference>
   </ItemGroup>
   <ItemGroup>
