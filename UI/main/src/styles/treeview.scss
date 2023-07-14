@@ -1,16 +1,25 @@
 /* the tree node's style */
 .tree-view {
     overflow-y: hidden;
+    margin-top: 1px;
+    margin-bottom: 3px;
 }
 
 .tree-view_item {
-    display: flex
+    display: flex;
+    color: var(--menuText1);
+    background-color: var(--accentColorDark);
+
+    &:hover {
+        background-color: var(--accentColorDark-hover);
+        color: var(--menuText1Inverted);
+    }
 }
 
 /* style for the children nodes container */
 .tree-view_children {
     margin-left: 16px;
-    transition: margin-left  1s;
+    transition: margin-left 1s;
     opacity: 1;
 
     &.tree-view_children-collapsed {
@@ -27,6 +36,11 @@
 
 .tree-view_arrow:after {
     content: '\21B3';
+    color: var(--menuText1Inverted);
+
+    &:hover {
+        color: var(--menuText1);
+    }
 }
 
 /* rotate the triangle to close it */
