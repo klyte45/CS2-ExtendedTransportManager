@@ -69,7 +69,7 @@ class PaletteCategoryCmp extends Component<{ entry: PaletteStructureTreeNode }, 
                 return <TreeView
                     nodeLabel={x[0]}
                     key={i}
-                    collapsed={!this.state.showing[x[0]]}
+                    collapsed={!this.state.showing[x[0]]}                    
                     onClick={() => this.toggle(x[0])}
                 ><PaletteCategoryCmp entry={x[1]} /></TreeView>
             })}

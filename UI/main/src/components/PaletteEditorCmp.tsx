@@ -58,12 +58,12 @@ export default class PaletteEditorCmp extends Component<any, State> {
 
     render() {
         return <>
-            <h1>{translate("palettes.title")}</h1>
+            <h1>{translate("palettesSettings.title")}</h1>
             <section>
-                <h2>{translate("modalSettings")}</h2>
+                <h2>{translate("palettesSettings.modalSettings")}</h2>
                 <div className="sectionColumnContainer">
                     <section className="w50">
-                        <h3>{translate("passengerModalsTitle")}</h3>
+                        <h3>{translate("palettesSettings.passengerModalsTitle")}</h3>
                         {this.state.availablePassenger.map((tt, i) => {
                             return <div className="valueConainerDD" key={i}>
                                 <label>{passengerNameFor(tt)}</label>
@@ -78,7 +78,7 @@ export default class PaletteEditorCmp extends Component<any, State> {
                         })}
                     </section>
                     <section className="w50">
-                        <h3>{translate("cargoModalsTitle")}</h3>
+                        <h3>{translate("palettesSettings.cargoModalsTitle")}</h3>
                         {this.state.availableCargo.map((tt, i) => {
                             return <div className="valueConainerDD" key={i}>
                                 <label>{cargoNameFor(tt)}</label>
