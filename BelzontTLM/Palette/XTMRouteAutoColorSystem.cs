@@ -18,6 +18,7 @@ using Unity.Burst.Intrinsics;
 using Unity.Collections;
 using Unity.Entities;
 using Unity.Jobs;
+using TransportType = Game.Prefabs.TransportType;
 
 namespace BelzontTLM.Palettes
 {
@@ -43,12 +44,40 @@ namespace BelzontTLM.Palettes
             eventCaller.Invoke("autoColor.cargoModalAvailable", () => CargoLineAllowed.Select(x => x.ToString()).ToList());
             eventCaller.Invoke("autoColor.passengerModalSettings", () => PaletteSettingsPassenger.ToDictionary(x => x.Key.ToString(), x => x.Value.ToString()));
             eventCaller.Invoke("autoColor.cargoModalSettings", () => PaletteSettingsCargo.ToDictionary(x => x.Key.ToString(), x => x.Value.ToString()));
+            eventCaller.Invoke("autoColor.setAutoColorFor", SetModalAutoColorSettings);
             //     File.WriteAllLines(Path.Combine(BasicIMod.Instance.ModRootFolder, "localeDump.txt"), GameManager.instance.localizationManager.activeDictionary.entries.Select(x => $"{x.Key}\t{x.Value.Replace("\n", "\\n").Replace("\r", "\\r")}").ToArray());
         }
         public void SetupRawBindings(Func<string, Action<IJsonWriter>, RawValueBinding> eventBinder)
         {
         }
         #endregion
+
+        private void SetModalAutoColorSettings(string transportTypeStr, bool isCargo, string guid)
+        {
+            if (Enum.TryParse(transportTypeStr, true, out TransportType transportType))
+            {
+                LogUtils.DoLog($"Called to setup: {transportType} {isCargo} {guid}");
+                var targetArr = isCargo ? PaletteSettingsCargo : PaletteSettingsPassenger;
+                if (Guid.TryParse(guid, out var targetGuid))
+                {
+                    var targetPalette = paletteSystem.GetForGuid(targetGuid);
+                    if (targetPalette != null)
+                    {
+                        targetArr[transportType] = targetPalette.Guid;
+                        OnAutoColorSettingsChanged();
+                    }
+                }
+                else if (targetArr.ContainsKey(transportType))
+                {
+                    targetArr.Remove(transportType);
+                    OnAutoColorSettingsChanged();
+                }
+            }
+        }
+        private void OnAutoColorSettingsChanged()
+        {
+            eventCaller.Invoke("autoColor.onAutoColorSettingsChanged", null);
+        }
 
         protected override void OnUpdate()
         {

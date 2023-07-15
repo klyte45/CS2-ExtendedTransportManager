@@ -38,13 +38,19 @@ export default class PaletteSetupSettings extends Component<any, State> {
     componentDidMount() {
         const _this = this;
         engine.whenReady.then(async () => {
-            AutoColorService.cargoModalAvailable().then(x => _this.setState({ availableCargo: x }))
-            this.updatePalettes();
-            AutoColorService.passengerModalAvailable().then(x => _this.setState({ availablePassenger: x }))
-            AutoColorService.passengerModalSettings().then(x => _this.setState({ passengerSettings: x }))
-            AutoColorService.cargoModalSettings().then(x => _this.setState({ cargoSettings: x }))
+            _this.reloadEverything();
+            AutoColorService.doOnAutoColorSettingsChanged(() => _this.reloadEverything())
+            PaletteService.doOnCityPalettesUpdated(() => _this.updatePalettes())
         })
     }
+    private async reloadEverything() {
+        await this.updatePalettes();
+        await AutoColorService.cargoModalAvailable().then(x => this.setState({ availableCargo: x }));
+        await AutoColorService.passengerModalAvailable().then(x => this.setState({ availablePassenger: x }));
+        await AutoColorService.passengerModalSettings().then(x => this.setState({ passengerSettings: x }));
+        await AutoColorService.cargoModalSettings().then(x => this.setState({ cargoSettings: x }));
+    }
+
     private async updatePalettes() {
         const palettesSaved = await PaletteService.listCityPalettes();
         const defaultOptions = ([[void 0,
@@ -96,10 +102,10 @@ export default class PaletteSetupSettings extends Component<any, State> {
             </section>
         </>;
     }
-    setPassengerPaletteGuid(tt: TransportType, x: string): void {
-
+    setPassengerPaletteGuid(tt: TransportType, guid: string): void {
+        AutoColorService.setModalAutoColor(tt, false, guid)
     }
-    setCargoPaletteGuid(tt: TransportType, x: string): void {
-
+    setCargoPaletteGuid(tt: TransportType, guid: string): void {
+        AutoColorService.setModalAutoColor(tt, true, guid)
     }
 }

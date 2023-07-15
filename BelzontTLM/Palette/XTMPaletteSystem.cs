@@ -45,6 +45,8 @@ namespace BelzontTLM.Palettes
 
         }
         private readonly Dictionary<Guid, XTMPaletteFile> CityPalettes = new();
+
+        internal XTMPaletteFile GetForGuid(Guid guid) => CityPalettes.TryGetValue(guid, out var value) ? value : null;
         private void OnCityPalettesChanged()
         {
             eventCaller.Invoke("palettes.onCityPalettesChanged", null);

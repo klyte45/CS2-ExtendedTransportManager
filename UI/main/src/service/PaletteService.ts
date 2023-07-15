@@ -14,7 +14,7 @@ export class PaletteService {
         await engine.call("k45::xtm.palettes.deleteFromCity", GuidString)
     }
     static doOnCityPalettesUpdated(event: () => void) {
-        engine.on("k45::xtm.palettes.onCityPalettesChanged", () => event())
+        engine.on("k45::xtm.palettes.onCityPalettesChanged", event)
     }
     static async sendPaletteForCity(name: string, colors: `#${string}`[]) {
         await engine.call("k45::xtm.palettes.addPaletteToCity", name, colors)
