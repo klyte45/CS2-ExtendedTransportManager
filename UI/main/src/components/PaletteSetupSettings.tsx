@@ -23,7 +23,7 @@ function passengerNameFor(modal: TransportType) {
 
 
 
-export default class PaletteEditorCmp extends Component<any, State> {
+export default class PaletteSetupSettings extends Component<any, State> {
 
     constructor(props) {
         super(props);

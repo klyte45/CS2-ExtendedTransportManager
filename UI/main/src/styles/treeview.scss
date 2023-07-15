@@ -7,12 +7,17 @@
 
 .tree-view_item {
     display: flex;
-    color: var(--menuText1);
-    background-color: var(--accentColorDark);
+    border: 1px solid;
+    font-weight: 900;
+    transition-property: background-color, color;
+    transition-duration: 0.5s;
+
+    color: var(--accentColorDarker);
+    background-color: var(--accentColorNormal);
 
     &:hover {
-        background-color: var(--accentColorDark-hover);
-        color: var(--menuText1Inverted);
+        background-color: var(--accentColorNormal-hover);
+        color: var(--accentColorDarker-hover);
     }
 }
 

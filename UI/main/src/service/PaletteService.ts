@@ -1,9 +1,9 @@
 
 export type PaletteData = {
-    Name: string,
-    ColorsRGB: `#${string}`[],
-    GuidString: string,
-    ChecksumString: string
+    readonly Name: string,
+    readonly ColorsRGB: `#${string}`[],
+    readonly GuidString: string,
+    readonly ChecksumString: string,
 }
 
 export class PaletteService {

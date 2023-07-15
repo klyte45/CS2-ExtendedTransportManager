@@ -1,14 +1,13 @@
 ///<reference path="euis.d.ts" />
-import PaletteListCmp from "#components/PaletteListCmp";
-import "#components/common/cs2-select.scss";
+import PaletteLibrarySelectorCmp from "#components/PaletteLibrarySelectorCmp";
 import { Component } from "react";
-import "./root.scss";
-import './styles/treeview.scss'
-import './styles/react-tabs.scss';
-import PaletteEditorCmp from "#components/PaletteEditorCmp";
+import PaletteSetupSettings from "#components/PaletteSetupSettings";
 import { Tabs, TabList, Tab, TabPanel } from "react-tabs";
 import LineListCmp from "#components/LineListCmp";
 import translate from "#utility/translate";
+import CityPaletteLibraryCmp from "#components/CityPaletteLibraryCmp";
+import "#styles/root.scss";
+import "#styles/react-tabs.scss"
 
 type State = {
   lastIdx: number
@@ -20,11 +19,16 @@ export default class Root extends Component<any, State> {
     super(props);
     this.state = {
       lastIdx: -1,
-      otherX: 92
+      otherX: 92,
     }
   }
   componentDidMount() {
+    engine.whenReady.then(() => {
+      engine.on("k45::euis.localeChanged", () => this.setState({}))
+    })
   }
+
+
 
   render() {
     return <>
@@ -35,10 +39,12 @@ export default class Root extends Component<any, State> {
           <Tab>{translate("palettesSettings.title")}</Tab>
           <Tab>{translate("palettesLibrary.title")}</Tab>
           <Tab>List of lines</Tab>
+          <Tab>CityPaletteLibraryCmp</Tab>
         </TabList>
-        <TabPanel><PaletteEditorCmp /></TabPanel>
-        <TabPanel><PaletteListCmp /></TabPanel>
+        <TabPanel><PaletteSetupSettings /></TabPanel>
+        <TabPanel><PaletteLibrarySelectorCmp /></TabPanel>
         <TabPanel><LineListCmp /></TabPanel>
+        <TabPanel><CityPaletteLibraryCmp /></TabPanel>
       </Tabs>
     </>;
   }

@@ -1,5 +1,6 @@
 
 import Select, { ActionMeta, GetOptionLabel, GetOptionValue, GroupBase, OnChangeValue, OptionsOrGroups, PropsValue } from 'react-select';
+import '#styles/cs2-select.scss'
 
 export default <Option, Group extends GroupBase<Option>>(props: {
     value?: PropsValue<Option>,

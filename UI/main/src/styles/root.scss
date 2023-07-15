@@ -1,0 +1,311 @@
+:root {
+    background-color: rgba(0, 0, 0, 0.288);
+    color: white;
+}
+
+h1 {
+    color: white;
+    font-size: 60px;
+    margin-top: 5px;
+    margin-bottom: 5px;
+
+    +h3 {
+        margin-top: -5px;
+        padding-left: 10px;
+        font-weight: 100;
+    }
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+    display: inline;
+}
+
+a {
+    padding: 5px;
+    background-color: var(--accentColorDark);
+    color: var(--accentColorLighter);
+    border-radius: 3px;
+    margin-top: -5px;
+
+    &:hover {
+        background-color: var(--accentColorNormal);
+        color: var(--accentColorLightest);
+    }
+}
+
+button {
+    background-color: green;
+}
+
+div.tableTopRow {
+    display: flex;
+    flex-direction: horizontal;
+
+    div {
+        display: block;
+        flex: 1 0;
+        border: 1px solid white;
+        text-align: center;
+        padding-top: 3px;
+        padding-bottom: 3px;
+        font-weight: bold;
+        border-bottom-width: 3px;
+    }
+}
+
+@import './lineIcon.scss';
+
+div.tableRegularRow {
+    display: flex;
+    flex-direction: horizontal;
+
+    div {
+        display: block;
+        flex: 1 0;
+        border: 1px solid white;
+        text-align: center;
+        padding-top: 3px;
+        padding-bottom: 3px;
+        font-weight: 200;
+        border-top: 0;
+    }
+
+    .lineIconParent {
+        position: relative;
+
+        .lineIcon {
+            @extend %lineIcon;
+        }
+    }
+}
+
+.w05 {
+    width: 5%;
+}
+
+.w01 {
+    width: 1%;
+}
+
+.w10 {
+    width: 10%;
+}
+
+.w16 {
+    width: 16%;
+}
+
+.w20 {
+    width: 20%;
+}
+
+.w25 {
+    width: 25%;
+}
+
+.w30 {
+    width: 30%;
+}
+
+.w33 {
+    width: 33%;
+}
+
+.w40 {
+    width: 40%;
+}
+
+.w45 {
+    width: 45%;
+}
+
+.w50 {
+    width: 50%;
+}
+
+.w66 {
+    width: 66%;
+}
+
+.w70 {
+    width: 70%;
+}
+
+.w75 {
+    width: 75%;
+}
+
+.w80 {
+    width: 80%;
+}
+
+.w83 {
+    width: 83%;
+}
+
+.w90 {
+    width: 90%;
+}
+
+
+:root section {
+    background-color: var(--menuPanel1);
+    padding: 3px;
+    border: 2px solid var(--menuBorderColor1);
+
+    .sectionColumnContainer {
+        display: flex;
+
+        section {
+            border-left-style: solid;
+            border-right-style: solid;
+            border-left-width: 1px;
+            border-right-width: 1px;
+            border-left-color: var(--menuBorderColor1);
+            border-right-color: var(--menuBorderColor1);
+
+            .valueConainerDD {
+                display: flex;
+
+                label {
+                    padding-top: 4.000000rem;
+                    padding-left: 8.000000rem;
+                    padding-right: 8.000000rem;
+                    padding-bottom: 4.000000rem;
+                    width: 50%;
+                    font-size: var(--fontSizeL);
+                }
+
+                div.react-select-container {
+                    width: 50%;
+                    padding-top: 4.000000rem;
+                    padding-left: 8.000000rem;
+                    padding-right: 8.000000rem;
+                    padding-bottom: 4.000000rem;
+                }
+
+            }
+        }
+
+        h3 {
+            text-align: center;
+        }
+    }
+}
+
+button, a {
+    transition-property: background-color, color;
+    transition-duration: 0.5s;
+}
+
+%basicBtn {
+    padding: 10rem 10rem;
+    border-style: solid;
+    border-top-width: var(--stroke2);
+    border-left-width: var(--stroke2);
+    border-bottom-width: var(--stroke2);
+    border-right-width: var(--stroke2);
+    border-color: rgba(0, 0, 0, 0);
+    border-radius: 4rem;
+    color: rgba(0, 0, 0, .7);
+    font-size: var(--fontSizeM);
+    font-weight: bold;
+    text-transform: uppercase;
+    transition-property: background-color, color;
+    transition-duration: 0.5s;
+
+    &:focus {
+        border-color: #fff;
+        box-shadow: 0 0 20rem rgba(0, 0, 0, .5);
+    }
+}
+
+.positiveBtn {
+    @extend %basicBtn;
+    background-color: var(--dialogButtonYesColor);
+
+    &:hover {
+        background-color: var(--dialogButtonYesColor-hover);
+    }
+
+    &:active {
+        background-color: var(--dialogButtonYesColor-active);
+    }
+
+    &:focus {
+        background-color: var(--dialogButtonYesColor-focused)
+    }
+}
+
+.negativeBtn {
+    @extend %basicBtn;
+    background-color: var(--dialogButtonNoColor);
+
+    &:hover {
+        background-color: var(--dialogButtonNoColor-hover);
+    }
+
+    &:active {
+        background-color: var(--dialogButtonNoColor-active);
+    }
+
+    &:focus {
+        background-color: var(--dialogButtonNoColor-focused)
+    }
+}
+
+.darkestBtn {
+    @extend %basicBtn;
+    background-color: var(--accentColorDarker);
+
+    &:hover {
+        background-color: var(--accentColorDarker-hover);
+    }
+
+    &:active {
+        background-color: var(--accentColorDarker-pressed);
+    }
+
+    &:focus {
+        background-color: var(--accentColorDarker-pressed)
+    }
+}
+
+.darkBtn {
+    @extend %basicBtn;
+    background-color: var(--accentColorDark);
+
+    &:hover {
+        background-color: var(--accentColorDark-hover);
+    }
+
+    &:active {
+        background-color: var(--accentColorDark-pressed);
+    }
+
+    &:focus {
+        background-color: var(--accentColorDark-focused)
+    }
+}
+
+.normalBtn {
+    @extend %basicBtn;
+    background-color: var(--accentColorNormal);
+
+    &:hover {
+        background-color: var(--accentColorNormal-hover);
+    }
+
+    &:active {
+        background-color: var(--accentColorNormal-pressed);
+    }
+
+    &:focus {
+        background-color: var(--accentColorLighter)
+    }
+}

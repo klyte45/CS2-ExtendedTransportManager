@@ -17,6 +17,9 @@
       "#utility/*": [
         "src/utility/*"
       ],
+      "#styles/*": [
+        "src/styles/*"
+      ],
     }
   },
   "include": ["src/**/*"],
