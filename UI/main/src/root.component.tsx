@@ -1,11 +1,11 @@
 ///<reference path="euis.d.ts" />
-import PaletteLibrarySelectorCmp from "#components/PaletteLibrarySelectorCmp";
+import PaletteLibrarySelectorCmp from "#components/palettes/PaletteLibrarySelectorCmp";
 import { Component } from "react";
-import PaletteSetupSettings from "#components/PaletteSetupSettings";
+import PaletteSetupSettings from "#components/palettes/PaletteSetupSettings";
 import { Tabs, TabList, Tab, TabPanel } from "react-tabs";
 import LineListCmp from "#components/LineListCmp";
 import translate from "#utility/translate";
-import CityPaletteLibraryCmp from "#components/CityPaletteLibraryCmp";
+import CityPaletteLibraryCmp from "#components/palettes/CityPaletteLibraryCmp";
 import "#styles/root.scss";
 import "#styles/react-tabs.scss"
 

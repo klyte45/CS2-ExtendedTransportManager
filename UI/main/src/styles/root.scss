@@ -84,6 +84,10 @@ div.tableRegularRow {
     }
 }
 
+.asFlex {
+    display: flex;
+}
+
 .w05 {
     width: 5%;
 }
@@ -96,8 +100,12 @@ div.tableRegularRow {
     width: 10%;
 }
 
+.w15 {
+    width: 15%;
+}
+
 .w16 {
-    width: 16%;
+    width: 16.6666666666666666666666666666666666666666666666666666666666666666666666%;
 }
 
 .w20 {
@@ -113,7 +121,7 @@ div.tableRegularRow {
 }
 
 .w33 {
-    width: 33%;
+    width: 33.33333333333333333333333333333333333333333333333333333333333333333333333%;
 }
 
 .w40 {
@@ -128,8 +136,12 @@ div.tableRegularRow {
     width: 50%;
 }
 
+.w60 {
+    width: 60%;
+}
+
 .w66 {
-    width: 66%;
+    width: 66.666666666666666666666666666666666666666666666666666%;
 }
 
 .w70 {
@@ -145,7 +157,7 @@ div.tableRegularRow {
 }
 
 .w83 {
-    width: 83%;
+    width: 83.3333333333333333333333333333333333333333333333%;
 }
 
 .w90 {
@@ -156,7 +168,11 @@ div.tableRegularRow {
 :root section {
     background-color: var(--menuPanel1);
     padding: 3px;
-    border: 2px solid var(--menuBorderColor1);
+    border: 2px solid;
+    border-left-color: var(--menuBorderColor1);
+    border-right-color: var(--menuBorderColor1);
+    border-top-color: var(--menuBorderColor1);
+    border-bottom-color: var(--menuBorderColor1);
 
     .sectionColumnContainer {
         display: flex;
@@ -198,12 +214,13 @@ div.tableRegularRow {
     }
 }
 
-button, a {
+button,
+a {
     transition-property: background-color, color;
     transition-duration: 0.5s;
 }
 
-%basicBtn {
+button, %basicBtn {
     padding: 10rem 10rem;
     border-style: solid;
     border-top-width: var(--stroke2);
@@ -308,4 +325,26 @@ button, a {
     &:focus {
         background-color: var(--accentColorLighter)
     }
+}
+
+.fullDivider {
+    margin-top: 5.000000px;
+    margin-bottom: 5.000000px;
+    width: 100.000000%;
+    height: 0.000000px;
+    border-top-style: solid;
+    border-left-style: solid;
+    border-right-style: solid;
+    border-bottom-style: solid;
+    border-top-width: 3.000000px;
+    border-left-width: 3.000000px;
+    border-right-width: 3.000000px;
+    border-bottom-width: 3.000000px;
+    color: var(--dividerColor);
+}
+
+@import './cs2-form-style.scss';
+
+input {
+    @extend %cs2-form-style
 }

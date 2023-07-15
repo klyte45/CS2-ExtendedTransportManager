@@ -21,6 +21,7 @@ namespace BelzontTLM.Palettes
         {
             eventCaller.Invoke("palettes.listCityPalettes", ListCityPalettes);
             eventCaller.Invoke("palettes.listLibraryPalettes", ListLibraryPalettes);
+            eventCaller.Invoke("palettes.addPaletteToCity", AddCityPalette);
         }
 
         private Action<string, object[]> eventCaller;
@@ -45,6 +46,13 @@ namespace BelzontTLM.Palettes
 
         private List<XTMPaletteFile> ListCityPalettes() => CityPalettes.Values.ToList();
         private List<XTMPaletteFile> ListLibraryPalettes() => XTMPaletteManager.Instance.FullLibrary.ToList();
+
+        private void AddCityPalette(string name, string[] colors)
+        {
+            var effectiveNewPalette = new XTMPaletteFile(name, colors.Select(x => ColorExtensions.FromRGB(x, true)));
+            CityPalettes[effectiveNewPalette.Guid] = effectiveNewPalette;
+            eventCaller.Invoke("palettes.onCityPalettesChanged", null);
+        }
 
         #region Serialization
 

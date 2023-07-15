@@ -1,0 +1,27 @@
+%cs2-form-style {
+    padding-top: 4.000000rem;
+    padding-left: 8.000000rem;
+    padding-right: 8.000000rem;
+    padding-bottom: 4.000000rem;
+    border-top-style: solid;
+    border-left-style: solid;
+    border-right-style: solid;
+    border-bottom-style: solid;
+    border-top-width: var(--stroke2);
+    border-left-width: var(--stroke2);
+    border-bottom-width: var(--stroke2);
+    border-right-width: var(--stroke2);
+
+    background-color: var(--menuControl1);
+
+    border-top-color: var(--menuControlBorder);
+    border-left-color: var(--menuControlBorder);
+    border-bottom-color: var(--menuControlBorder);
+    border-right-color: var(--menuControlBorder);
+    border-top-left-radius: 3.000000rem 3.000000rem;
+    border-top-right-radius: 3.000000rem 3.000000rem;
+    border-bottom-left-radius: 3.000000rem 3.000000rem;
+    border-bottom-right-radius: 3.000000rem 3.000000rem;
+    display: flex;
+    color: var(--menuText1Normal);
+}

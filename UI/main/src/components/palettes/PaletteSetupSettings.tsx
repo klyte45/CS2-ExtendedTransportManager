@@ -1,6 +1,6 @@
 import { Component } from "react";
 import translate from "#utility/translate";
-import Cs2Select from "./common/cs2-select";
+import Cs2Select from "#components/common/cs2-select";
 import { TransportType } from "#enum/TransportType";
 import { PaletteService, PaletteData } from "#service/PaletteService";
 import { ObjectTyped } from "object-typed";

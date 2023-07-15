@@ -13,25 +13,25 @@
         min-height: 20px;
         padding: 6px;
     }
+}
 
-    .colorShowcaseContainer {
-        flex-direction: column;
+
+.colorShowcaseContainer {
+    flex-direction: column;
+    display: flex;
+    justify-content: center;
+
+    .colorShowcase {
+        flex-direction: row;
+        flex-wrap: nowrap;
         display: flex;
-        justify-content: center;
 
-        .colorShowcase {
-            flex-direction: row;
-            flex-wrap: nowrap;
+
+        .lineIcon {
+            @extend %lineIcon;
+            position: relative;
             display: flex;
-
-
-            .lineIcon {
-                @extend %lineIcon;
-                position: relative;
-                display: flex;
-                margin-right: 6px;
-            }
+            margin-right: 6px;
         }
     }
-
 }

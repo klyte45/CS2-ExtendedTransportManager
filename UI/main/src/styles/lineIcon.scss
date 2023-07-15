@@ -1,8 +1,15 @@
+:root {
+    --lineIconSizeMultiplier: 1;
+}
+
 %lineIcon {
-    width: 32px;
-    height: 32px;
-    border-radius: 30px;
-    border-width: 0.75px !important;
+    width: calc(32px * var(--lineIconSizeMultiplier));
+    height: calc(32px * var(--lineIconSizeMultiplier));
+    border-radius: 99999px;
+    border-left-width: calc(0.75px * var(--lineIconSizeMultiplier)) !important;
+    border-right-width: calc(0.75px * var(--lineIconSizeMultiplier)) !important;
+    border-top-width: calc(0.75px * var(--lineIconSizeMultiplier)) !important;
+    border-bottom-width: calc(0.75px * var(--lineIconSizeMultiplier)) !important;
     background-color: var(--lineColor);
     border-color: var(--contrastColor) !important;
     color: var(--contrastColor) !important;
@@ -20,29 +27,29 @@
         top: 50%;
         background: none;
         border: none !important;
-        width: 30px;
-        font-size: 10px;
+        width: calc(30px * var(--lineIconSizeMultiplier));
+        font-size: calc(10px * var(--lineIconSizeMultiplier));
         height: auto;
         line-height: 0;
 
         &.chars5 {
-            font-size: 12px;
+            font-size: calc(12px* var(--lineIconSizeMultiplier));
         }
 
         &.chars4 {
-            font-size: 12px;
+            font-size: calc(12px* var(--lineIconSizeMultiplier));
         }
 
         &.chars3 {
-            font-size: 16px;
+            font-size: calc(16px* var(--lineIconSizeMultiplier));
         }
 
         &.chars2 {
-            font-size: 22px;
+            font-size: calc(22px* var(--lineIconSizeMultiplier));
         }
 
         &.chars1 {
-            font-size: 26px;
+            font-size: calc(26px* var(--lineIconSizeMultiplier));
         }
 
     }

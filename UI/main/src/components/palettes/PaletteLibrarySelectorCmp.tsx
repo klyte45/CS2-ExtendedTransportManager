@@ -2,7 +2,7 @@ import { PaletteData, PaletteService } from "#service/PaletteService";
 import { ColorUtils } from "#utility/ColorUtils";
 import translate from "#utility/translate";
 import { CSSProperties, Component } from "react";
-import { ExtendedPaletteData, PaletteCategoryCmp, categorizePalettes } from "./common/PaletteCategoryCmp";
+import { ExtendedPaletteData, PaletteCategoryCmp, categorizePalettes } from "#components/palettes/PaletteCategoryCmp";
 import '#styles/PaletteLineViewer.scss'
 
 type State = {
@@ -69,7 +69,7 @@ class PaletteLineViewer extends Component<{
 }> {
     render() {
         return <div className="paletteViewer">
-            <label className="w10">{this.props.entry._CurrName ?? this.props.entry.Name}</label>
+            <label className="w10"  style={{ flexDirection: "column", justifySelf: "center", alignSelf: "center", display: "flex" }}>{this.props.entry._CurrName ?? this.props.entry.Name}</label>
             <div className="colorShowcaseContainer w70">
                 <div className="colorShowcase">
                     {
@@ -81,7 +81,7 @@ class PaletteLineViewer extends Component<{
                 </div>
             </div>
             {this.props.actionButtons &&
-                <div className="w20">
+                <div className="w20" style={{ flexDirection: "row-reverse", justifySelf: "center", alignSelf: "center", display: "flex" }}>
                     {this.props.actionButtons(this.props.entry)}
                 </div>}
         </div>
