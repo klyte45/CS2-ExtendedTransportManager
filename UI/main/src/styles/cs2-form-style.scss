@@ -25,3 +25,8 @@
     display: flex;
     color: var(--menuText1Normal);
 }
+
+.input_invalidValue {
+    color: var(--negativeColor);
+    text-shadow: 1px 1px black;
+}

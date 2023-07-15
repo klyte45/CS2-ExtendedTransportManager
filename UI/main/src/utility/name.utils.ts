@@ -39,7 +39,7 @@ function translateArgs(nameArgs: Record<string, string>): Record<string, string>
         return prev;
     }), {});
 }
-function replaceArgs(template: string, args: Record<string, string>) {
+export function replaceArgs(template: string, args: Record<string, string>) {
     return template.replace(/{((?!\d)[\w$]+)}/g, (function (original, n) {
         var replacement = args[n];
         return "string" == typeof replacement ? replacement : original

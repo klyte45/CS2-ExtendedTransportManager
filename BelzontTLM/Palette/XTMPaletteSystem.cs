@@ -23,6 +23,7 @@ namespace BelzontTLM.Palettes
             eventCaller.Invoke("palettes.listLibraryPalettes", ListLibraryPalettes);
             eventCaller.Invoke("palettes.addPaletteToCity", AddCityPalette);
             eventCaller.Invoke("palettes.deleteFromCity", DeleteCityPalette);
+            eventCaller.Invoke("palettes.updateForCity", UpdateCityPalette);
         }
 
         private Action<string, object[]> eventCaller;
@@ -66,6 +67,21 @@ namespace BelzontTLM.Palettes
             {
                 CityPalettes.Remove(parsedGuid);
                 OnCityPalettesChanged();
+            }
+        }
+        private void UpdateCityPalette(string guid, string name, string[] colors)
+        {
+            var targetGuid = new Guid(guid);
+            if (CityPalettes.TryGetValue(targetGuid, out var palette))
+            {
+                palette.Name = name;
+                palette.Colors.Clear();
+                palette.Colors.AddRange(colors.Select(x => ColorExtensions.FromRGB(x, true)));
+                OnCityPalettesChanged();
+            }
+            else
+            {
+                LogUtils.DoWarnLog($"Palette not found in the city! {guid}");
             }
         }
 

@@ -23,15 +23,82 @@
 
     .colorShowcase {
         flex-direction: row;
-        flex-wrap: nowrap;
         display: flex;
+        flex-wrap: wrap;
 
-
-        .lineIcon {
-            @extend %lineIcon;
+        .lineIconContainer {
+            @extend %lineIconContainer;
             position: relative;
-            display: flex;
-            margin-right: 6px;
+
+            .excludeBtn,
+            .moveMinus,
+            .movePlus {
+                display: none;
+            }
+
+            .lineIcon {
+                @extend %lineIcon;
+                position: relative;
+                display: flex;
+                margin-right: 6px;
+
+            }
+
+            &:hover {
+                %commonBtn {
+                    display: flex;
+                    position: absolute;
+                    width: calc(8px * var(--lineIconSizeMultiplier));
+                    height: calc(8px * var(--lineIconSizeMultiplier));
+                    font-size: calc(9px* var(--lineIconSizeMultiplier));
+                    line-height: calc(8px* var(--lineIconSizeMultiplier));
+                    text-align: center;
+                    justify-self: center;
+                    justify-content: center;
+                    z-index: 9999;
+                    border-width: 1px;
+                    border-style: solid;
+                }
+
+                .excludeBtn {
+                    @extend %commonBtn;
+                    top: 2px;
+                    right: 2px;
+                    background-color: var(--negativeColor);
+                    color: var(--iconColor);
+                    line-height: calc(6px* var(--lineIconSizeMultiplier));
+
+                    &:hover {
+                        background-color: var(--warningColor);
+                    }
+                }
+
+                .moveMinus {
+                    @extend %commonBtn;
+                    bottom: 2px;
+                    left: 2px;
+                    background-color: var(--accentColorLight);
+                    color: var(--accentColorDarker);
+
+                    &:hover {
+                        background-color: var(--accentColorLightest);
+                        color: var(--accentColorDarker-hover);
+                    }
+                }
+
+                .movePlus {
+                    @extend %commonBtn;
+                    bottom: 2px;
+                    right: 2px;
+                    background-color: var(--accentColorLight);
+                    color: var(--accentColorDarker);
+
+                    &:hover {
+                        background-color: var(--accentColorLightest);
+                        color: var(--accentColorDarker-hover);
+                    }
+                }
+            }
         }
     }
 }

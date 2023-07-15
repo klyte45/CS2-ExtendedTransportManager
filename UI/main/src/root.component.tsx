@@ -36,15 +36,15 @@ export default class Root extends Component<any, State> {
       <br />
       <Tabs>
         <TabList>
+          <Tab>{translate("cityPalettesLibrary.title")}</Tab>
           <Tab>{translate("palettesSettings.title")}</Tab>
           <Tab>{translate("palettesLibrary.title")}</Tab>
           <Tab>List of lines</Tab>
-          <Tab>CityPaletteLibraryCmp</Tab>
         </TabList>
+        <TabPanel><CityPaletteLibraryCmp /></TabPanel>
         <TabPanel><PaletteSetupSettings /></TabPanel>
         <TabPanel><PaletteLibrarySelectorCmp /></TabPanel>
         <TabPanel><LineListCmp /></TabPanel>
-        <TabPanel><CityPaletteLibraryCmp /></TabPanel>
       </Tabs>
     </>;
   }
