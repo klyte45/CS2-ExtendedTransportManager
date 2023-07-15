@@ -6,18 +6,22 @@ import { ColorUtils } from "#utility/ColorUtils";
 import translate from "#utility/translate";
 import { CSSProperties, Component } from "react";
 import PaletteImportingCmp from "./PaletteImportingCmp";
+import PaletteDeletingCmp from "./PaletteDeletingCmp";
+import { PaletteLineViewer } from "./PaletteLineViewer";
 
 enum Screen {
     DEFAULT,
     PALETTE_IMPORT_LIB,
     IMPORTING_PALETTE,
-    AWAITING_ACTION
+    AWAITING_ACTION,
+    DELETE_CONFIRM
 }
 
 type State = {
     availablePalettes: PaletteStructureTreeNode,
     currentScreen: Screen,
-    paletteBeingImported?: PaletteData
+    paletteBeingImported?: PaletteData,
+    paletteBeingDeleted?: PaletteData,
 }
 
 export type PaletteStructureTreeNode = {
@@ -65,11 +69,10 @@ export default class CityPaletteLibraryCmp extends Component<any, State> {
                     <section style={{ overflow: "scroll", position: "absolute", bottom: 52, left: 5, right: 5, top: 107 }}>
                         {Object.keys(this.state?.availablePalettes.subtrees ?? {}).length == 0 && !this.state?.availablePalettes.rootContent.length
                             ? <h2>No palettes registered! <a onClick={() => this.setState({ currentScreen: Screen.PALETTE_IMPORT_LIB })}>Click here to import!</a></h2>
-                            : <PaletteCategoryCmp entry={this.state?.availablePalettes} doWithPaletteData={(x, i) => <PaletteLineViewer entry={x} key={i} />} />}
+                            : <PaletteCategoryCmp entry={this.state?.availablePalettes} doWithPaletteData={(x, i) => <PaletteLineViewer entry={x} key={i} actionButtons={(y) => this.getActionButtons(y)} />} />}
                     </section>
-                    <div style={{ display: "flex", position: "absolute", left: 5, right: 5, bottom: 5 }}>
-                        <div className="w70"></div>
-                        <button className="positiveBtn w30" onClick={() => this.setState({ currentScreen: Screen.PALETTE_IMPORT_LIB })}>{translate("cityPalettesLibrary.importFromLibrary")}</button>
+                    <div style={{ display: "flex", position: "absolute", left: 5, right: 5, bottom: 5, flexDirection: "row-reverse" }}>
+                        <button className="positiveBtn " onClick={() => this.setState({ currentScreen: Screen.PALETTE_IMPORT_LIB })}>{translate("cityPalettesLibrary.importFromLibrary")}</button>
                     </div>
                 </>;
             case Screen.PALETTE_IMPORT_LIB:
@@ -78,8 +81,30 @@ export default class CityPaletteLibraryCmp extends Component<any, State> {
                 return <PaletteImportingCmp paletteData={this.state.paletteBeingImported} onBack={() => this.setState({ currentScreen: Screen.PALETTE_IMPORT_LIB })} onOk={(x) => this.doImportPalette(x)} />
             case Screen.AWAITING_ACTION:
                 return <div>PLEASE WAIT</div>
+            case Screen.DELETE_CONFIRM:
+                return <PaletteDeletingCmp onBack={() => this.setState({ currentScreen: Screen.DEFAULT })} onOk={(x) => this.doDelete(x)} paletteData={this.state.paletteBeingDeleted} />
         }
     }
+    getActionButtons(x: PaletteData): JSX.Element {
+        return <>
+            <button className="negativeBtn" onClick={()=>this.goToDelete(x)}>{translate("cityPalettesLibrary.deletePalette")}</button>
+            <button className="neutralBtn">{translate("cityPalettesLibrary.editPalette")}</button>
+        </>
+    }
+    goToDelete(x: PaletteData): void {
+        this.setState({
+            paletteBeingDeleted: x,
+            currentScreen: Screen.DELETE_CONFIRM
+        });
+
+    }
+
+    async doDelete(x: PaletteData) {
+        await new Promise((resp) => this.setState({ currentScreen: Screen.AWAITING_ACTION }, () => resp(undefined)));
+        await PaletteService.deletePaletteFromCity(x.GuidString);
+        this.setState({ currentScreen: Screen.DEFAULT });
+    }
+
     async doImportPalette({ willRandomize, paletteData, paletteNameImport }: { willRandomize: boolean; paletteData: PaletteData; paletteNameImport: string; }) {
         await new Promise((resp) => this.setState({ currentScreen: Screen.AWAITING_ACTION }, () => resp(undefined)));
         await PaletteService.sendPaletteForCity(paletteNameImport, willRandomize ? ArrayUtils.shuffle(paletteData.ColorsRGB) : paletteData.ColorsRGB);
@@ -92,30 +117,6 @@ export default class CityPaletteLibraryCmp extends Component<any, State> {
             currentScreen: Screen.IMPORTING_PALETTE
         });
 
-    }
-}
-
-class PaletteLineViewer extends Component<{ entry: PaletteData }> {
-    render() {
-        return <div className="paletteViewer">
-            <label className="w10" style={{ flexDirection: "column", justifySelf: "center", alignSelf: "center", display: "flex" }}>{this.props.entry.Name}</label>
-            <div className="colorShowcaseContainer w50">
-                <div className="colorShowcase">
-                    {
-                        this.props.entry.ColorsRGB.map((clr, j) =>
-                            <div className="lineIcon" style={{ "--lineColor": clr, "--contrastColor": ColorUtils.toRGBA(ColorUtils.getContrastColorFor(ColorUtils.toColor01(clr))) } as CSSProperties} key={j}>
-                                <div className={`routeNum chars${(j + 1)?.toString().length}`}> {j + 1}</div>
-                            </div>)
-                    }
-                </div>
-            </div>
-
-            <div className="w40" style={{ display: "flex", justifySelf: "center", alignSelf: "center", flexDirection: "row-reverse" }}>
-                <button>AAA</button>
-                <button>BBB</button>
-                <button>CCC</button>
-            </div>
-        </div>
     }
 }
 

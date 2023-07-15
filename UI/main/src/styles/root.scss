@@ -220,7 +220,8 @@ a {
     transition-duration: 0.5s;
 }
 
-button, %basicBtn {
+button,
+%basicBtn {
     padding: 10rem 10rem;
     border-style: solid;
     border-top-width: var(--stroke2);
@@ -272,24 +273,28 @@ button, %basicBtn {
     }
 
     &:focus {
-        background-color: var(--dialogButtonNoColor-focused)
+        background-color: var(--dialogButtonNoColor-focused);
     }
 }
 
 .darkestBtn {
     @extend %basicBtn;
     background-color: var(--accentColorDarker);
+    color: var(--menuText1Normal);
 
     &:hover {
         background-color: var(--accentColorDarker-hover);
+        color: var(--menuText1Disabled);
     }
 
     &:active {
         background-color: var(--accentColorDarker-pressed);
+        color: var(--menuText1Disabled);
     }
 
     &:focus {
-        background-color: var(--accentColorDarker-pressed)
+        background-color: var(--accentColorDarker-pressed);
+        color: var(--menuText1Disabled);
     }
 }
 
@@ -324,6 +329,23 @@ button, %basicBtn {
 
     &:focus {
         background-color: var(--accentColorLighter)
+    }
+}
+
+.neutralBtn {
+    @extend %basicBtn;
+    background-color: #1e83aa;
+
+    &:hover {
+        background-color: #26a4d5;
+    }
+
+    &:active {
+        background-color: #64c0e4;
+    }
+
+    &:focus {
+        background-color: #00c2ff
     }
 }
 

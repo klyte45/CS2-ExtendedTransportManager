@@ -96,12 +96,16 @@ namespace BelzontTLM.Palettes
         private EntityQuery m_linesWithNoData;
         private EntityQuery m_linesToUpdateData;
         private EntityQuery m_linesWithDataToForceUpdate;
+
+        private static XTMRouteAutoColorSystem Instance { get; set; }
+
         private EndFrameBarrier m_EndFrameBarrier;
         private IconCommandSystem m_IconCommandSystem;
         private TypeHandle typeHandle;
         private XTMPaletteSystem paletteSystem;
         protected override void OnCreate()
         {
+            Instance = this;
             m_EndFrameBarrier = World.GetOrCreateSystemManaged<EndFrameBarrier>();
             m_IconCommandSystem = World.GetOrCreateSystemManaged<IconCommandSystem>();
             m_linesWithNoData = GetEntityQuery(new EntityQueryDesc[] {
@@ -182,7 +186,6 @@ namespace BelzontTLM.Palettes
             base.OnCreateForCompiler();
             __AssignQueries(ref CheckedStateRef);
             typeHandle.AssignHandles(ref CheckedStateRef);
-            typeHandle.m_autoColorSystem = this;
         }
         private struct TypeHandle
         {
@@ -193,7 +196,6 @@ namespace BelzontTLM.Palettes
             public ComponentLookup<PrefabRef> m_PrefabRefLookup;
             public ComponentLookup<TransportLine> m_TransportLineLookup;
             public ComponentLookup<RouteNumber> m_RouteNumberLookup;
-            public XTMRouteAutoColorSystem m_autoColorSystem;
 
             public void AssignHandles(ref SystemState state)
             {
@@ -232,7 +234,7 @@ namespace BelzontTLM.Palettes
                         continue;
                     }
 
-                    var refPalletList = transportLineData.m_CargoTransport ? m_TypeHandle.m_autoColorSystem.PaletteSettingsCargo : m_TypeHandle.m_autoColorSystem.PaletteSettingsPassenger;
+                    var refPalletList = transportLineData.m_CargoTransport ? Instance.PaletteSettingsCargo : Instance.PaletteSettingsPassenger;
                     var targetPaletteGuid = refPalletList.TryGetValue(transportLineData.m_TransportType, out var paletteValue) ? paletteValue as Guid? : null;
 
                     XTMPaletteSettedUpInformation info = new()
@@ -293,7 +295,7 @@ namespace BelzontTLM.Palettes
                         continue;
                     }
 
-                    var refPalletList = transportLineData.m_CargoTransport ? m_TypeHandle.m_autoColorSystem.PaletteSettingsCargo : m_TypeHandle.m_autoColorSystem.PaletteSettingsPassenger;
+                    var refPalletList = transportLineData.m_CargoTransport ? Instance.PaletteSettingsCargo : Instance.PaletteSettingsPassenger;
                     var targetPaletteGuid = refPalletList.TryGetValue(transportLineData.m_TransportType, out var paletteValue) ? paletteValue as Guid? : null;
                     var checksum = XTMPaletteManager.Instance.GetChecksum(paletteValue);
 

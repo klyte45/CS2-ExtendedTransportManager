@@ -7,6 +7,9 @@ export type PaletteData = {
 }
 
 export class PaletteService {
+    static async deletePaletteFromCity(GuidString: string) {
+        await engine.call("k45::xtm.palettes.deleteFromCity", GuidString)
+    }
     static doOnCityPalettesUpdated(event: () => void) {
         engine.on("k45::xtm.palettes.onCityPalettesChanged", () => event())
     }

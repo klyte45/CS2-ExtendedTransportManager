@@ -22,6 +22,7 @@ namespace BelzontTLM.Palettes
             eventCaller.Invoke("palettes.listCityPalettes", ListCityPalettes);
             eventCaller.Invoke("palettes.listLibraryPalettes", ListLibraryPalettes);
             eventCaller.Invoke("palettes.addPaletteToCity", AddCityPalette);
+            eventCaller.Invoke("palettes.deleteFromCity", DeleteCityPalette);
         }
 
         private Action<string, object[]> eventCaller;
@@ -43,6 +44,10 @@ namespace BelzontTLM.Palettes
 
         }
         private readonly Dictionary<Guid, XTMPaletteFile> CityPalettes = new();
+        private void OnCityPalettesChanged()
+        {
+            eventCaller.Invoke("palettes.onCityPalettesChanged", null);
+        }
 
         private List<XTMPaletteFile> ListCityPalettes() => CityPalettes.Values.ToList();
         private List<XTMPaletteFile> ListLibraryPalettes() => XTMPaletteManager.Instance.FullLibrary.ToList();
@@ -51,7 +56,17 @@ namespace BelzontTLM.Palettes
         {
             var effectiveNewPalette = new XTMPaletteFile(name, colors.Select(x => ColorExtensions.FromRGB(x, true)));
             CityPalettes[effectiveNewPalette.Guid] = effectiveNewPalette;
-            eventCaller.Invoke("palettes.onCityPalettesChanged", null);
+            OnCityPalettesChanged();
+        }
+
+        private void DeleteCityPalette(string guid)
+        {
+            var parsedGuid = new Guid(guid);
+            if (CityPalettes.ContainsKey(parsedGuid))
+            {
+                CityPalettes.Remove(parsedGuid);
+                OnCityPalettesChanged();
+            }
         }
 
         #region Serialization
@@ -83,9 +98,15 @@ namespace BelzontTLM.Palettes
             var palettes = XmlUtils.DefaultXmlDeserialize<XTMPaletteSystemXML>(paletteData);
             CityPalettes.Clear();
             CityPalettes.AddRange(palettes.CityPalettes.ToDictionary(x => x.Guid, x => XTMPaletteFile.FromXML(x)));
+            OnCityPalettesChanged();
         }
 
-        JobHandle IJobSerializable.SetDefaults(Context context) => default;
+        JobHandle IJobSerializable.SetDefaults(Context context)
+        {
+            CityPalettes.Clear();
+            OnCityPalettesChanged();
+            return default;
+        }
 
         [XmlRoot("XtmPaletteSystem")]
         public class XTMPaletteSystemXML

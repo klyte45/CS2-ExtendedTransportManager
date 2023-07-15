@@ -85,7 +85,7 @@ namespace BelzontTLM.Palettes
 
         public static XTMPaletteFile FromXML(XTMPaletteFileXML xml)
         {
-            return new XTMPaletteFile(xml.Name, (xml.Colors.Select(x => ColorExtensions.FromRGB(x)).ToList()))
+            return new XTMPaletteFile(xml.Name, (xml.Colors.Select(x => ColorExtensions.FromRGB(x, true)).ToList()))
             {
                 Guid = xml.Guid,
             };
