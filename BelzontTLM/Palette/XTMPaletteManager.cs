@@ -23,7 +23,6 @@ namespace BelzontTLM.Palettes
         public const char SERIALIZER_ITEM_SEPARATOR = '∞';
         private RandomPastelColorGenerator gen = new();
         private readonly Dictionary<Guid, XTMPaletteFile> m_palettes = new();
-        private bool isDirty;
         public readonly XTMPaletteFile[] defaultPaletteArray = new XTMPaletteFile[] {
                     new XTMPaletteFile("BRA/São Paulo 2035",XTMPresetPalettes. SaoPaulo2035,true),
                     new XTMPaletteFile("BRA/São Paulo 1960",XTMPresetPalettes. SaoPaulo1960,true),
@@ -66,7 +65,6 @@ namespace BelzontTLM.Palettes
         {
             LogUtils.DoLog("XTMPaletteFiles init()");
             Reload();
-            isDirty = true;
         }
 
         public void Reload()
@@ -185,9 +183,6 @@ namespace BelzontTLM.Palettes
             }
             return default;
         }
-
-        internal bool RequireLinesColorsReprocess() => isDirty;
-        internal void OnLinesColorsReprocessed() => isDirty = false;
     }
 
     public struct XTMPaletteSettedUpInformation : IComponentData, IQueryTypeParameter, ISerializable

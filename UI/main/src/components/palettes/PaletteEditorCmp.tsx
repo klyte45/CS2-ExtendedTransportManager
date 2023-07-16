@@ -84,9 +84,9 @@ export default class PaletteImportingCmp extends Component<Props, State> {
                                     return rgb ? ColorUtils.toRGBA(ColorUtils.getContrastColorFor(ColorUtils.toColor01(rgb))) : ""
                                 }
                             }}
-                            onTab={(x) => {
+                            onTab={(x, shift) => {
                                 this.setupColor(x);
-                                const newIdx = (this.state.editingIndex + this.state.paletteData.ColorsRGB.length + 1) % this.state.paletteData.ColorsRGB.length;
+                                const newIdx = (this.state.editingIndex + this.state.paletteData.ColorsRGB.length + (shift ? -1 : 1)) % this.state.paletteData.ColorsRGB.length;
                                 this.setState({
                                     editingIndex: newIdx
                                 });

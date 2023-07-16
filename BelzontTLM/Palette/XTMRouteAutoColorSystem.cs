@@ -76,7 +76,9 @@ namespace BelzontTLM.Palettes
         }
         private void OnAutoColorSettingsChanged()
         {
+            LogUtils.DoLog("Forcing OnAutoColorSettingsChanged!!!!!!!");
             eventCaller.Invoke("autoColor.onAutoColorSettingsChanged", null);
+            m_setupIsDirty = true;
         }
 
         protected override void OnUpdate()
@@ -93,15 +95,18 @@ namespace BelzontTLM.Palettes
                 m_IconCommandSystem.AddCommandBufferWriter(jobHandle);
                 Dependency = jobHandle;
             }
-            if (XTMPaletteManager.Instance.RequireLinesColorsReprocess())
+            if ((m_setupIsDirty || paletteSystem.RequireLinesColorsReprocess()) && !m_linesWithDataToForceUpdate.IsEmptyIgnoreFilter)
             {
+                LogUtils.DoLog("Forcing update!");
                 RunUpdatePalettesWithQuery(m_linesWithDataToForceUpdate);
-                XTMPaletteManager.Instance.OnLinesColorsReprocessed();
+                paletteSystem.OnLinesColorsReprocessed();
+                m_setupIsDirty = false;
             }
             else if (!m_linesToUpdateData.IsEmptyIgnoreFilter)
             {
                 RunUpdatePalettesWithQuery(m_linesToUpdateData);
             }
+            
         }
 
         private void RunUpdatePalettesWithQuery(EntityQuery query)
@@ -132,6 +137,8 @@ namespace BelzontTLM.Palettes
         private IconCommandSystem m_IconCommandSystem;
         private TypeHandle typeHandle;
         private XTMPaletteSystem paletteSystem;
+        private bool m_setupIsDirty;
+
         protected override void OnCreate()
         {
             Instance = this;
@@ -147,11 +154,11 @@ namespace BelzontTLM.Palettes
                         ComponentType.ReadWrite<TransportLine>(),
                         ComponentType.ReadOnly<RouteWaypoint>(),
                         ComponentType.ReadOnly<PrefabRef>(),
-                        ComponentType.ReadOnly<Color>()
+                        ComponentType.ReadWrite<Color>()
                     },
                     None = new ComponentType[]
                     {
-                        ComponentType.ReadWrite<XTMPaletteSettedUpInformation>(),
+                        ComponentType.ReadOnly<XTMPaletteSettedUpInformation>(),
                         ComponentType.ReadOnly<XTMPaletteLockedColor>(),
                         ComponentType.ReadOnly<Temp>()
                     },
@@ -169,7 +176,7 @@ namespace BelzontTLM.Palettes
                         ComponentType.ReadOnly<PrefabRef>(),
                         ComponentType.ReadWrite<XTMPaletteSettedUpInformation>(),
                         ComponentType.ReadOnly<XTMPaletteRequireUpdate>(),
-                        ComponentType.ReadOnly<Color>()
+                        ComponentType.ReadWrite<Color>()
                     },
                     None = new ComponentType[]
                     {
@@ -189,7 +196,7 @@ namespace BelzontTLM.Palettes
                         ComponentType.ReadOnly<RouteWaypoint>(),
                         ComponentType.ReadOnly<PrefabRef>(),
                         ComponentType.ReadWrite<XTMPaletteSettedUpInformation>(),
-                        ComponentType.ReadOnly<Color>()
+                        ComponentType.ReadWrite<Color>()
                     },
                     None = new ComponentType[]
                     {
@@ -199,11 +206,12 @@ namespace BelzontTLM.Palettes
                 }
             });
 
-            CheckedStateRef.RequireAnyForUpdate(m_linesWithNoData, m_linesToUpdateData);
             paletteSystem = World.GetOrCreateSystemManaged<XTMPaletteSystem>();
-            XTMPaletteManager.Instance.Reload();
+
 
         }
+
+        private static XTMPaletteSystem PaletteSystem => Instance.paletteSystem;
 
         #region Runtime Jobs
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -274,15 +282,17 @@ namespace BelzontTLM.Palettes
                     };
                     if (targetPaletteGuid is not null)
                     {
-                        var targetColorList = XTMPaletteManager.Instance.GetColors(paletteValue);
+                        var targetColorList = PaletteSystem.GetForGuid(paletteValue)?.Colors;
                         if (targetColorList is null || targetColorList.Count == 0)
                         {
                             info.paletteEnabled = false;
+                            LogUtils.DoLog($"Entity #{unitializedLines[i].Index} tried to be setup to palette {paletteValue}, but it doesn't exists...");
                         }
                         else
                         {
                             var targetIdx = ((routeNumber.m_Number % targetColorList.Count) + targetColorList.Count - 1) % targetColorList.Count;
                             m_CommandBuffer.SetComponent(unfilteredChunkIndex, unitializedLines[i], new Game.Routes.Color(targetColorList[targetIdx]));
+                            LogUtils.DoLog($"Entity #{unitializedLines[i].Index} setup to palette {paletteValue}");
                         }
                     }
 
@@ -324,9 +334,7 @@ namespace BelzontTLM.Palettes
                         continue;
                     }
 
-                    var refPalletList = transportLineData.m_CargoTransport ? Instance.PaletteSettingsCargo : Instance.PaletteSettingsPassenger;
-                    var targetPaletteGuid = refPalletList.TryGetValue(transportLineData.m_TransportType, out var paletteValue) ? paletteValue as Guid? : null;
-                    var checksum = XTMPaletteManager.Instance.GetChecksum(paletteValue);
+                    GetCurrentChecksum(transportLineData, out Guid? targetPaletteGuid, out Guid paletteValue, out Guid? checksum);
 
                     if (((targetPaletteGuid is null && !xtmInfo.paletteEnabled) || (targetPaletteGuid == xtmInfo.paletteGuid && checksum == xtmInfo.paletteChecksum)) && xtmInfo.lineNumberRef == routeNumber.m_Number)
                     {
@@ -337,16 +345,18 @@ namespace BelzontTLM.Palettes
                     xtmInfo.lineNumberRef = routeNumber.m_Number;
                     xtmInfo.paletteGuid = targetPaletteGuid ?? default;
 
-                    var targetColorList = XTMPaletteManager.Instance.GetColors(paletteValue);
+                    var targetColorList = PaletteSystem.GetForGuid(paletteValue)?.Colors;
                     if (targetColorList is null || targetColorList.Count == 0)
                     {
                         xtmInfo.paletteEnabled = false;
+                        LogUtils.DoLog($"Entity #{unitializedLines[i].Index} tried to be setup to palette {paletteValue}, but it doesn't exists...");
                     }
                     else
                     {
                         xtmInfo.paletteEnabled = true;
                         var targetIdx = ((routeNumber.m_Number % targetColorList.Count) + targetColorList.Count - 1) % targetColorList.Count;
                         m_CommandBuffer.SetComponent(unfilteredChunkIndex, unitializedLines[i], new Game.Routes.Color(targetColorList[targetIdx]));
+                        LogUtils.DoLog($"Entity #{unitializedLines[i].Index} setup to palette {paletteValue}");
                     }
 
                     m_CommandBuffer.SetComponent(unfilteredChunkIndex, unitializedLines[i], xtmInfo);
@@ -355,6 +365,14 @@ namespace BelzontTLM.Palettes
                 }
                 LogUtils.DoLog("XTMUpdatePalleteJob JobComplete");
             }
+
+            private static void GetCurrentChecksum(TransportLineData transportLineData, out Guid? targetPaletteGuid, out Guid paletteValue, out Guid? checksum)
+            {
+                var refPalletList = transportLineData.m_CargoTransport ? Instance.PaletteSettingsCargo : Instance.PaletteSettingsPassenger;
+                targetPaletteGuid = refPalletList.TryGetValue(transportLineData.m_TransportType, out paletteValue) ? paletteValue : null;
+                checksum = PaletteSystem.GetForGuid(paletteValue)?.Checksum;
+            }
+
             private bool GetTransportLineData(Entity owner, out RouteNumber routeNum, out TransportLineData lineData, out XTMPaletteSettedUpInformation info)
             {
                 if (m_TypeHandle.m_TransportLineLookup.HasComponent(owner))

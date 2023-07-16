@@ -50,6 +50,7 @@ namespace BelzontTLM.Palettes
         private void OnCityPalettesChanged()
         {
             eventCaller.Invoke("palettes.onCityPalettesChanged", null);
+            isDirty = true;
         }
 
         private List<XTMPaletteFile> ListCityPalettes() => CityPalettes.Values.ToList();
@@ -125,6 +126,11 @@ namespace BelzontTLM.Palettes
             OnCityPalettesChanged();
             return default;
         }
+
+        private bool isDirty;
+        internal bool RequireLinesColorsReprocess() => isDirty;
+
+        internal void OnLinesColorsReprocessed() => isDirty = false;
 
         [XmlRoot("XtmPaletteSystem")]
         public class XTMPaletteSystemXML

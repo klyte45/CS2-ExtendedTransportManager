@@ -5,7 +5,7 @@ interface InputProps {
     getValue: () => string;
     onValueChanged: (newVal: string) => string;
     isValid?: (newVal: string) => boolean
-    onTab?: (newVal: string) => string
+    onTab?: (newVal: string, shiftDown: boolean) => string
     cssCustomOverrides?: {
         backgroundColor?: (value: string) => string,
         color?: (value: string) => string,
@@ -75,7 +75,7 @@ export class Input extends Component<InputProps, { value: string, refValue: stri
             }
         } else if (x.key == "Tab") {
             if (this.props.onTab) {
-                this.setState({ value: this.props.onTab(this.state.value) })
+                this.setState({ value: this.props.onTab(this.state.value, x.shiftKey) })
             }
         }
     }
