@@ -1,13 +1,11 @@
 ///<reference path="euis.d.ts" />
-import PaletteLibrarySelectorCmp from "#components/palettes/PaletteLibrarySelectorCmp";
-import { Component } from "react";
-import PaletteSetupSettings from "#components/palettes/PaletteSetupSettings";
-import { Tabs, TabList, Tab, TabPanel } from "react-tabs";
-import LineListCmp from "#components/LineListCmp";
-import translate from "#utility/translate";
 import CityPaletteLibraryCmp from "#components/palettes/CityPaletteLibraryCmp";
+import PaletteSetupSettings from "#components/palettes/PaletteSetupSettings";
+import "#styles/react-tabs.scss";
 import "#styles/root.scss";
-import "#styles/react-tabs.scss"
+import translate from "#utility/translate";
+import { Component } from "react";
+import { Tab, TabList, TabPanel, Tabs } from "react-tabs";
 
 type State = {
   lastIdx: number
@@ -31,25 +29,19 @@ export default class Root extends Component<any, State> {
 
 
   render() {
-    return <>
-      <button style={{ position: "fixed", right: 0, top: 0, zIndex: 999 }} onClick={() => location.reload()}>RELOAD!!!</button>
-      <br />
+    return <>      
       <Tabs>
         <TabList>
           <Tab>{translate("cityPalettesLibrary.title")}</Tab>
           <Tab>{translate("palettesSettings.title")}</Tab>
-          <Tab>{translate("palettesLibrary.title")}</Tab>
-          <Tab>List of lines</Tab>
         </TabList>
         <TabPanel><CityPaletteLibraryCmp /></TabPanel>
         <TabPanel><PaletteSetupSettings /></TabPanel>
-        <TabPanel><PaletteLibrarySelectorCmp /></TabPanel>
-        <TabPanel><LineListCmp /></TabPanel>
       </Tabs>
     </>;
   }
 }
 
-/*
+/*<button style={{ position: "fixed", right: 0, top: 0, zIndex: 999 }} onClick={() => location.reload()}>RELOAD!!!</button>
  <PaletteEditorCmp></PaletteEditorCmp>
       <LineListCmp></LineListCmp>*/
