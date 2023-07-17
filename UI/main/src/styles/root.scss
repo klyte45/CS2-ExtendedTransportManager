@@ -80,6 +80,8 @@ div.tableRegularRow {
 
         .lineIcon {
             @extend %lineIcon;
+            width: 32px;
+            height: 32px;
         }
     }
 }

@@ -12,7 +12,7 @@ export class PaletteDetailHeaderCmp extends Component<{ paletteData: PaletteData
                     {this.props.paletteData.ColorsRGB.map((clr, j) =>
                         <div className="lineIconContainer" key={j}>
                             <div className="lineIcon" style={{ "--lineColor": clr, "--contrastColor": ColorUtils.toRGBA(ColorUtils.getContrastColorFor(ColorUtils.toColor01(clr))) } as CSSProperties}>
-                                <div className={`routeNum chars${(j + 1)?.toString().length}`}> {j + 1}</div>
+                                <div className={`routeNum singleLine chars${(j + 1)?.toString().length}`}> {j + 1}</div>
                             </div>
                         </div>
                     )}

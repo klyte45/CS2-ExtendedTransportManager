@@ -24,7 +24,7 @@
 
         width: calc(36px * var(--lineIconSizeMultiplier));
         height: calc(36px * var(--lineIconSizeMultiplier));
-        
+
         margin: 0;
 
     }
@@ -51,16 +51,26 @@
     overflow: hidden;
 
     .routeNum {
+        border: none !important;
+        background: none;
+        width: 100%;
         position: absolute;
         top: 50%;
-        background: none;
-        border: none !important;
-        width: 100%;
         padding-left: calc(1px * var(--lineIconSizeMultiplier));
         padding-right: calc(1px * var(--lineIconSizeMultiplier));
         font-size: calc(10px * var(--lineIconSizeMultiplier));
-        height: auto;
-        line-height: 0;
+        text-align: center;
+        position: absolute;
+        transform: translateY(-50.000000%);
+        padding-top: calc(8px * var(--lineIconSizeMultiplier));
+
+        &.singleLine{
+            transform: none;
+            padding-top: 0;
+            line-height: 0;
+        }
+
+
 
         &.chars5 {
             font-size: calc(12px* var(--lineIconSizeMultiplier));

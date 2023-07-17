@@ -1,8 +1,7 @@
 ﻿using Belzont.Interfaces;
 using Belzont.Utils;
+using BelzontTLM.Palettes;
 using Colossal.Entities;
-using Colossal.Serialization.Entities;
-using Colossal.UI.Binding;
 using Game;
 using Game.Common;
 using Game.Prefabs;
@@ -14,68 +13,82 @@ using System;
 using System.Linq;
 using Unity.Collections;
 using Unity.Entities;
+using static Belzont.Utils.NameSystemExtensions;
 
 namespace BelzontTLM
 {
-
-    public class XTMLineViewerController : SystemBase, IBelzontBindable
+    public class XTMLineViewerSystem : SystemBase, IBelzontBindable
     {
         public Action<string, object[]> EventCaller { get; set; }
         protected void SendEvent(string eventName, params object[] eventArgs)
         {
             EventCaller?.Invoke(eventName, eventArgs);
         }
-        internal void OnTick(uint version)
-        {
-            SendEvent("tickDone", version);
-        }
 
-        private void GetCityLines(IJsonWriter binder)
+        private LineItemStruct[] GetCityLines()
         {
             NativeArray<UITransportLineData> sortedLines = TransportUIUtils.GetSortedLines(this.m_linesQueue, base.EntityManager, this.m_PrefabSystem);
-            binder.ArrayBegin(sortedLines.Length);
+            var output = new LineItemStruct[sortedLines.Length];
             for (int i = 0; i < sortedLines.Length; i++)
             {
-                BindLine(sortedLines[i], binder);
+                Entity entity = sortedLines[i].entity;
+                var item = new LineItemStruct
+                {
+                    name = m_NameSystem.GetName(entity).ToValueableName(),
+                    vkName = m_NameSystem.GetNameForVirtualKeyboard(entity).ToValueableName(),
+                };
+                item.FillFromUITransportLine(sortedLines[i]);
+                if (EntityManager.TryGetComponent<XTMRouteExtraData>(entity, out var componentData))
+                {
+                    item.xtmData = componentData;
+                }
+                if (EntityManager.TryGetComponent<RouteNumber>(entity, out var number))
+                {
+                    item.routeNumber = number.m_Number;
+                }
+                output[i] = item;
             }
-            binder.ArrayEnd();
+            return output;
         }
 
-        private void BindLine(UITransportLineData lineData, IJsonWriter binder)
+        private struct LineItemStruct
         {
-            binder.TypeBegin("Game.UI.InGame.UITransportLine");
-            binder.PropertyName("name");
-            m_NameSystem.BindName(binder, lineData.entity);
-            binder.PropertyName("vkName");
-            m_NameSystem.BindNameForVirtualKeyboard(binder, lineData.entity);
-            binder.PropertyName("lineData");
-            binder.Write(lineData);
+            public ValuableName name;
+            public ValuableName vkName;
+            public Entity entity;
+            public bool active;
+            public bool visible;
+            public bool isCargo;
+            public string color;
+            public int schedule;
+            public string type;
+            public float length;
+            public int stops;
+            public int vehicles;
+            public int cargo;
+            public float usage;
+            public XTMRouteExtraData xtmData;
+            public int routeNumber;
 
-            binder.PropertyName("xtmData");
-            if (EntityManager.TryGetComponent<XTMRouteExtraData>(lineData.entity, out var componentData))
+            public void FillFromUITransportLine(UITransportLineData data)
             {
-                binder.Write(componentData);
+                entity = data.entity;
+                active = data.active;
+                visible = data.visible;
+                isCargo = data.isCargo;
+                color = data.color.ToRGB(true);
+                schedule = data.schedule;
+                type = data.type.ToString();
+                length = data.length;
+                stops = data.stops;
+                vehicles = data.vehicles;
+                cargo = data.cargo;
+                usage = data.usage;
             }
-            else
-            {
-                binder.Write(null);
-            }
-            binder.PropertyName("routeNumber");
-            if (EntityManager.TryGetComponent<RouteNumber>(lineData.entity, out var number))
-            {
-                binder.Write(number.m_Number);
-            }
-            else
-            {
-                binder.Write(null);
-            }
-
-            binder.TypeEnd();
         }
 
         protected override void OnUpdate()
         {
-            OnTick((uint)World.Time.ElapsedTime);
             if (!m_UnititalizedXTMLineQuery.IsEmptyIgnoreFilter)
             {
                 NativeArray<Entity> unitializedLines = m_UnititalizedXTMLineQuery.ToEntityArray(Allocator.TempJob);
@@ -88,10 +101,15 @@ namespace BelzontTLM
                     LogUtils.DoInfoLog($"Initialized Line data @ entity id #{unitializedLines[i].Index}");
                 }
             }
-            if (m_linesListingBinding != null && (!m_ModifiedLineQuery.IsEmptyIgnoreFilter || m_UpdateState.Advance()))
+            if (!m_ModifiedLineQuery.IsEmptyIgnoreFilter || m_UpdateState.Advance())
             {
-                m_linesListingBinding.Update();
+                OnLinesUpdated();
             }
+        }
+
+        private void OnLinesUpdated()
+        {
+            SendEvent("lineViewer.onLinesUpdated");
         }
 
         public void SetupEventBinder(Action<string, Delegate> eventCaller)
@@ -100,14 +118,11 @@ namespace BelzontTLM
 
         public void SetupCallBinder(Action<string, Delegate> eventCaller)
         {
-            eventCaller("setAcronym", SetRouteAcronym);
-        }
-        public void SetupRawBindings(Func<string, Action<IJsonWriter>, RawValueBinding> eventBinder)
-        {
-            m_linesListingBinding = eventBinder("lineList", GetCityLines);
+            eventCaller("lineViewer.setAcronym", SetRouteAcronym);
+            eventCaller("lineViewer.setRouteNumber", SetRouteInternalNumber);
+            eventCaller("lineViewer.getCityLines", GetCityLines);
         }
 
-        private RawValueBinding m_linesListingBinding;
         private EntityQuery m_linesQueue;
         private PrefabSystem m_PrefabSystem;
         private NameSystem m_NameSystem;
@@ -117,33 +132,33 @@ namespace BelzontTLM
         private EndFrameBarrier m_EndFrameBarrier;
 
 
-        private string SetRouteAcronym(int index, string acronym)
+        private string SetRouteAcronym(Entity targetEntity, string acronym)
         {
-            if (int.TryParse(acronym, out int routeNum))
+            EntityCommandBuffer entityCommandBuffer = m_EndFrameBarrier.CreateCommandBuffer();            
+            var componentExists = EntityManager.TryGetComponent<XTMRouteExtraData>(targetEntity, out var component);
+            component.SetAcronym(acronym);
+            if (componentExists)
             {
-                var result = m_linesQueue.ToEntityArray(Allocator.TempJob);
-                var targetEntity = result.FirstOrDefault(x => x.Index == index);
-                result.Dispose();
-                if (targetEntity.Index != index)
-                {
-                    return null;
-                }
-                EntityCommandBuffer entityCommandBuffer = this.m_EndFrameBarrier.CreateCommandBuffer();
-                var componentExists = EntityManager.TryGetComponent<RouteNumber>(targetEntity, out var component);
-                component.m_Number = routeNum;
-                //var componentExists = EntityManager.TryGetComponent<XTMRouteExtraData>(targetEntity, out var component);
-                //component.SetAcronym(acronym);
-                //if (componentExists)
-                //{
                 entityCommandBuffer.SetComponent(targetEntity, component);
-                //}
-                //else
-                //{
-                //    entityCommandBuffer.AddComponent(targetEntity, component);
-                //}
-                entityCommandBuffer.AddComponent<Updated>(targetEntity);
             }
+            else
+            {
+                entityCommandBuffer.AddComponent(targetEntity, component);
+            }
+            entityCommandBuffer.AddComponent<Updated>(targetEntity);
+            OnLinesUpdated();
             return acronym;
+        }
+        private int SetRouteInternalNumber(Entity entity, int routeNum)
+        {
+            EntityCommandBuffer entityCommandBuffer = m_EndFrameBarrier.CreateCommandBuffer();
+            EntityManager.TryGetComponent<RouteNumber>(entity, out var component);
+            component.m_Number = routeNum;
+            entityCommandBuffer.SetComponent(entity, component);
+            entityCommandBuffer.AddComponent<Updated>(entity);
+            entityCommandBuffer.AddComponent<XTMPaletteRequireUpdate>(entity);
+            OnLinesUpdated();
+            return routeNum;
         }
 
         protected override void OnCreate()
@@ -211,50 +226,12 @@ namespace BelzontTLM
            });
             m_UpdateState = UIUpdateState.Create(base.World, 32);
             m_EndFrameBarrier = World.GetOrCreateSystemManaged<EndFrameBarrier>();
-
-            CheckedStateRef.RequireAnyForUpdate(m_UnititalizedXTMLineQuery, m_ModifiedLineQuery);
         }
+
 
         public void SetupCaller(Action<string, object[]> eventCaller)
         {
             EventCaller = eventCaller;
-        }
-    }
-
-    public struct XTMRouteExtraData : IComponentData, IQueryTypeParameter, ISerializable, IJsonWritable
-    {
-        const uint CURRENT_VERSION = 0;
-
-        public void Serialize<TWriter>(TWriter writer) where TWriter : IWriter
-        {
-            writer.Write(CURRENT_VERSION);
-            writer.Write(m_acronym.ToString());
-        }
-
-        public void Deserialize<TReader>(TReader reader) where TReader : IReader
-        {
-            reader.Read(out uint version);
-            if (version > CURRENT_VERSION)
-            {
-                throw new Exception("Invalid version of XTMRouteExtraData!");
-            }
-            reader.Read(out string value);
-            m_acronym = new(value);
-        }
-
-        public void Write(IJsonWriter writer)
-        {
-            writer.TypeBegin(GetType().FullName);
-            writer.PropertyName("acronym");
-            writer.Write(m_acronym.ToString());
-            writer.TypeEnd();
-        }
-
-        private FixedString32Bytes m_acronym;
-
-        public void SetAcronym(string acronym)
-        {
-            m_acronym = new(acronym);
         }
     }
 }

@@ -48,7 +48,7 @@ export default class PaletteImportingCmp extends Component<Props, State> {
                         {this.state.paletteData.ColorsRGB.map((clr, j) =>
                             <div className={"lineIconContainer " + (j == this.state.editingIndex ? "currentSelected" : "")} key={j}>
                                 <div className="lineIcon" style={{ "--lineColor": clr, "--contrastColor": ColorUtils.toRGBA(ColorUtils.getContrastColorFor(ColorUtils.toColor01(clr))) } as CSSProperties} onClick={() => this.setState({ editingIndex: j })}>
-                                    <div className={`routeNum chars${(j + 1)?.toString().length}`} > {j + 1}</div>
+                                    <div className={`routeNum singleLine chars${(j + 1)?.toString().length}`} > {j + 1}</div>
                                 </div>
                                 <div className="excludeBtn" onClick={() => this.onExclude(j)}>X</div>
                                 {j > 0 && <div className="moveMinus" onClick={(x) => this.onMoveColor(j, x.shiftKey ? -Infinity : -1)}>⇚</div>}
@@ -57,7 +57,7 @@ export default class PaletteImportingCmp extends Component<Props, State> {
                         )}
                         <div className="lineIconContainer" onClick={() => this.addNewColor()}>
                             <div className="lineIcon" style={{ "--lineColor": "transparent", "--contrastColor": "white" } as CSSProperties} >
-                                <div className={`routeNum chars1`}>+</div>
+                                <div className={`routeNum singleLine chars1`}>+</div>
                             </div>
                         </div>
                     </div>
@@ -92,7 +92,7 @@ export default class PaletteImportingCmp extends Component<Props, State> {
                                 });
                                 return this.state.paletteData.ColorsRGB[newIdx];
                             }}
-                            maxLenght={7}
+                            maxLength={7}
                         />
                     </>}
                 </div>

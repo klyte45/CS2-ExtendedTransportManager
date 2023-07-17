@@ -3,34 +3,50 @@ import { CSSProperties, Component, KeyboardEvent } from "react";
 interface InputProps {
     title: string;
     getValue: () => string;
-    onValueChanged: (newVal: string) => string;
+    onValueChanged: (newVal: string) => string | Promise<string>;
     isValid?: (newVal: string) => boolean
     onTab?: (newVal: string, shiftDown: boolean) => string
     cssCustomOverrides?: {
         backgroundColor?: (value: string) => string,
         color?: (value: string) => string,
     }
-    maxLenght?: number
+    maxLength?: number
 }
 
-export class Input extends Component<InputProps, { value: string, refValue: string }> {
+export class Input extends Component<InputProps, {}> {
+    constructor(props: InputProps) {
+        super(props);
+        this.state = {}
+    }
+
+
+    render() {
+        return (
+            <>
+                <div className="field__MBOM9 field__UuCZq">
+                    <div className="label__DGc7_ label__ZLbNH">
+                        {this.props.title}
+                    </div>
+                    <SimpleInput {...this.props} />
+                </div>
+            </>
+        );
+    }
+
+}
+
+
+export class SimpleInput extends Component<Omit<InputProps, 'title'>, { value: string, refValue: string }> {
     constructor(props: InputProps) {
         super(props);
         this.state = {
             value: this.props.getValue(),
             refValue: this.props.getValue()
         }
-
     }
-    checkInvalidClasses() {
-        if (this.props.isValid && !this.props.isValid(this.state.value)) {
-            return "input_invalidValue"
-        }
-    }
-
 
     render() {
-        const { title, onValueChanged } = this.props;
+        const { onValueChanged } = this.props;
         const currentOuterValue = this.props.getValue();
         let targetValue = this.state.value;
         if (currentOuterValue != this.state.refValue) {
@@ -46,19 +62,14 @@ export class Input extends Component<InputProps, { value: string, refValue: stri
         }
         return (
             <>
-                <div className="field__MBOM9 field__UuCZq">
-                    <div className="label__DGc7_ label__ZLbNH">
-                        {title}
-                    </div>
-                    <input style={overrideStyle}
-                        value={targetValue}
-                        className={"value-field__yJiUY value__PW_tv " + this.checkInvalidClasses()}
-                        onChange={x => this.setState({ value: x.target.value })}
-                        onKeyDown={(x) => this.onKeyDown(x)}
-                        onBlur={() => this.setState({ value: onValueChanged(this.state.value) })}
-                        maxLength={this.props.maxLenght}
-                    />
-                </div>
+                <input style={overrideStyle}
+                    value={targetValue}
+                    className={"value-field__yJiUY value__PW_tv " + this.checkInvalidClasses()}
+                    onChange={x => this.setState({ value: x.target.value })}
+                    onKeyDown={(x) => this.onKeyDown(x)}
+                    onBlur={async () => this.setState({ value: await onValueChanged(this.state.value) })}
+                    maxLength={this.props.maxLength}
+                />
             </>
         );
     }
@@ -77,6 +88,12 @@ export class Input extends Component<InputProps, { value: string, refValue: stri
             if (this.props.onTab) {
                 this.setState({ value: this.props.onTab(this.state.value, x.shiftKey) })
             }
+        }
+    }
+
+    checkInvalidClasses() {
+        if (this.props.isValid && !this.props.isValid(this.state.value)) {
+            return "input_invalidValue"
         }
     }
 }

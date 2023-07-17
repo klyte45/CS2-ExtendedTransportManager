@@ -16,7 +16,7 @@ export type NameLocalized = {
 export type NameFormatted = {
     __Type: NameType.Formatted,
     nameId: string,
-    nameArgs?: Record<string, string>
+    nameArgs?: string[]
 }
 
 export function nameToString(nameObj: NameCustom | NameFormatted | NameLocalized) {
@@ -31,13 +31,14 @@ export function nameToString(nameObj: NameCustom | NameFormatted | NameLocalized
         } return n
     } return nameObj.nameId
 }
-function translateArgs(nameArgs: Record<string, string>): Record<string, string> {
-    return Object.entries(nameArgs).reduce((function (prev, current) {
-        const key = current[0];
-        const value = current[1];
-        prev[key] = engine.translate(value) ?? value
-        return prev;
-    }), {});
+function translateArgs(nameArgs: string[]): Record<string, string> {
+    const kv: Record<string, string> = {}
+    for (let i = 0; i + 1 < nameArgs.length; i += 2) {
+        const key = nameArgs[i];
+        const value = nameArgs[i + 1];
+        kv[key] = engine.translate(value) ?? value
+    }
+    return kv;
 }
 export function replaceArgs(template: string, args: Record<string, string>) {
     return template.replace(/{((?!\d)[\w$]+)}/g, (function (original, n) {

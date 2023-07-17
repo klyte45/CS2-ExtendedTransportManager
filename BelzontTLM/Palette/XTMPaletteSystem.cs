@@ -35,10 +35,6 @@ namespace BelzontTLM.Palettes
         public void SetupEventBinder(Action<string, Delegate> eventCaller)
         {
         }
-
-        public void SetupRawBindings(Func<string, Action<IJsonWriter>, RawValueBinding> eventBinder)
-        {
-        }
         #endregion
         protected override void OnUpdate()
         {

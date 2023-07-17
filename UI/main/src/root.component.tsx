@@ -1,4 +1,5 @@
 ///<reference path="euis.d.ts" />
+import LineListCmp from "#components/LineListCmp";
 import CityPaletteLibraryCmp from "#components/palettes/CityPaletteLibraryCmp";
 import PaletteSetupSettings from "#components/palettes/PaletteSetupSettings";
 import "#styles/react-tabs.scss";
@@ -29,14 +30,17 @@ export default class Root extends Component<any, State> {
 
 
   render() {
-    return <>      
+    return <>
+      <button style={{ position: "fixed", right: 0, top: 0, zIndex: 999 }} onClick={() => location.reload()}>RELOAD!!!</button>
       <Tabs>
         <TabList>
           <Tab>{translate("cityPalettesLibrary.title")}</Tab>
           <Tab>{translate("palettesSettings.title")}</Tab>
+          <Tab>{translate("lineList.title")}</Tab>
         </TabList>
         <TabPanel><CityPaletteLibraryCmp /></TabPanel>
         <TabPanel><PaletteSetupSettings /></TabPanel>
+        <TabPanel><LineListCmp /></TabPanel>
       </Tabs>
     </>;
   }

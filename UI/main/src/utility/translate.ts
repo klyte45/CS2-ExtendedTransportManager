@@ -10,3 +10,4 @@ export default function (key: string, fallback?: string) {
     }
     return tr;
 }
+
