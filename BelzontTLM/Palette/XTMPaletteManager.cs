@@ -7,6 +7,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
+using System.Text.RegularExpressions;
 using Unity.Entities;
 using UnityEngine;
 using Color = UnityEngine.Color;
@@ -117,9 +118,9 @@ namespace BelzontTLM.Palettes
             KFileUtils.EnsureFolderCreation(ExtendedTransportManagerMod.Instance.PalettesFolder);
             foreach (var filename in Directory.GetFiles(ExtendedTransportManagerMod.Instance.PalettesFolder, "*" + XTMPaletteFile.EXT_PALETTE).Select(x => x.Split(Path.DirectorySeparatorChar).Last()))
             {
-                string fileContents = File.ReadAllText(ExtendedTransportManagerMod.Instance.PalettesFolder + Path.DirectorySeparatorChar + filename, Encoding.UTF8);
+                var fileContents = File.ReadAllLines(ExtendedTransportManagerMod.Instance.PalettesFolder + Path.DirectorySeparatorChar + filename, Encoding.UTF8);
                 var name = filename[..^XTMPaletteFile.EXT_PALETTE.Length];
-                var value = XTMPaletteFile.FromFileContent(name, fileContents.Split(XTMPaletteFile.ENTRY_SEPARATOR).Select(x => x?.Trim()).Where(x => !string.IsNullOrEmpty(x)).ToArray());
+                var value = XTMPaletteFile.FromFileContent(name, fileContents.Select(x => x?.Trim()).Where(x => Regex.IsMatch(x, "^#?[a-f0-9]{6}$", RegexOptions.IgnoreCase)).ToArray());
 
                 m_palettes[value.Guid] = value;
                 LogUtils.DoLog("LOADED PALETTE ({0}) QTT: {1}", filename, m_palettes[value.Guid].Count);
