@@ -10,10 +10,10 @@ using Game.Tools;
 using Game.UI;
 using Game.UI.InGame;
 using System;
-using System.Linq;
 using Unity.Collections;
 using Unity.Entities;
 using static Belzont.Utils.NameSystemExtensions;
+using static Game.UI.NameSystem;
 
 namespace BelzontTLM
 {
@@ -119,6 +119,7 @@ namespace BelzontTLM
         public void SetupCallBinder(Action<string, Delegate> eventCaller)
         {
             eventCaller("lineViewer.setAcronym", SetRouteAcronym);
+            eventCaller("lineViewer.setRouteName", SetRouteName);
             eventCaller("lineViewer.setRouteNumber", SetRouteInternalNumber);
             eventCaller("lineViewer.getCityLines", GetCityLines);
         }
@@ -134,7 +135,7 @@ namespace BelzontTLM
 
         private string SetRouteAcronym(Entity targetEntity, string acronym)
         {
-            EntityCommandBuffer entityCommandBuffer = m_EndFrameBarrier.CreateCommandBuffer();            
+            EntityCommandBuffer entityCommandBuffer = m_EndFrameBarrier.CreateCommandBuffer();
             var componentExists = EntityManager.TryGetComponent<XTMRouteExtraData>(targetEntity, out var component);
             component.SetAcronym(acronym);
             if (componentExists)
@@ -159,6 +160,12 @@ namespace BelzontTLM
             entityCommandBuffer.AddComponent<XTMPaletteRequireUpdate>(entity);
             OnLinesUpdated();
             return routeNum;
+        }
+
+        private Name SetRouteName(Entity entity, string newName)
+        {
+            m_NameSystem.SetCustomName(entity, newName ?? String.Empty);
+            return m_NameSystem.GetName(entity);
         }
 
         protected override void OnCreate()

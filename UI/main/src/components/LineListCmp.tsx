@@ -78,7 +78,7 @@ export default class LineListCmp extends Component<any, State> {
                         <div className={`lineIcon`} style={{ "--lineColor": x.color, "--contrastColor": ColorUtils.toRGBA(ColorUtils.getContrastColorFor(ColorUtils.toColor01(x.color))) } as CSSProperties}>
                             <div className={`routeNum chars${(x.xtmData?.Acronym || x.routeNumber?.toString()).length}`}>{x.xtmData?.Acronym || x.routeNumber}</div>
                         </div>
-                        {nameToString(x.name)}
+                        <SimpleInput onValueChanged={(y) => this.sendRouteName(x, y)} getValue={() => nameToString(x.name)} />
                     </div>
                     <div className="w05">{x.vehicles}</div>
                     <div className="w10">{(x.length / 1000).toFixed(2) + " km"}</div>
@@ -86,6 +86,10 @@ export default class LineListCmp extends Component<any, State> {
                 </div>;
             })}
         </>;
+    }
+    async sendRouteName(lineData: LineData, newName: string) {
+        const response: NameFormatted | NameCustom = await engine.call("k45::xtm.lineViewer.setRouteName", lineData.entity, newName)
+        return nameToString(response);
     }
 
     async sendAcronym(entity: Entity, newAcronym: string) {

@@ -12,7 +12,7 @@ namespace BelzontTLM.Palettes
     public class XTMPaletteFile
     {
         public const char ENTRY_SEPARATOR = '\n';
-        public const string EXT_PALETTE = ".xtmpal";
+        public const string EXT_PALETTE = ".hex";
 
         public string Name { get; set; }
         public List<string> ColorsRGB => Colors.Select(x => x.ToRGB(true)).ToList();
