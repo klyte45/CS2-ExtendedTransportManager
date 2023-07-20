@@ -1,11 +1,14 @@
 ﻿using Belzont.Utils;
+using Colossal.Entities;
+using Game.Areas;
 using Game.City;
+using Game.Common;
+using Game.Objects;
 using Game.Prefabs;
 using Game.UI;
 using Unity.Collections;
 using Unity.Entities;
 using Unity.Jobs;
-using UnityEngine;
 using static Belzont.Utils.NameSystemExtensions;
 using static BelzontTLM.XTMLineListingSection;
 using static BelzontTLM.XTMLineViewerSection;
@@ -217,7 +220,7 @@ namespace BelzontTLM
             }
             for (int k = 0; k < m_StopsResult.Length; k++)
             {
-                result.Stops[k] = new(m_StopsResult[k], m_NameSystem);
+                result.Stops[k] = new(m_StopsResult[k], m_NameSystem, EntityManager);
             }
             return result;
 
@@ -268,7 +271,8 @@ namespace BelzontTLM
 
             public bool isOutsideConnection { get; }
 
-            public LineStop(Entity entity, float position, int cargo, bool isCargo = false, bool isOutsideConnection = false)
+
+            public LineStop(Entity entity, float position, int cargo, bool isCargo, bool isOutsideConnection)
             {
                 this.entity = entity;
                 this.position = position;
@@ -305,17 +309,19 @@ namespace BelzontTLM
             public float start { get; }
 
             public float end { get; }
+            public float sizeMeters { get; }
 
             public bool broken { get; }
 
-            public LineSegment(float start, float end, bool broken)
+            public LineSegment(float start, float end, bool broken, float sizeMeters)
             {
                 this.start = start;
                 this.end = end;
                 this.broken = broken;
+                this.sizeMeters = sizeMeters;
             }
         }
-        public readonly struct LineStopNamed
+        public class LineStopNamed
         {
             public Entity entity { get; }
             public float position { get; }
@@ -323,7 +329,12 @@ namespace BelzontTLM
             public bool isCargo { get; }
             public bool isOutsideConnection { get; }
             public ValuableName name { get; }
-            public LineStopNamed(LineStop src, NameSystem nameSystem)
+            public Entity parent { get; }
+            public ValuableName parentName { get; }
+            public Entity district { get; }
+            public ValuableName districtName { get; }
+
+            public LineStopNamed(LineStop src, NameSystem nameSystem, EntityManager em)
             {
                 entity = src.entity;
                 position = src.position;
@@ -331,9 +342,20 @@ namespace BelzontTLM
                 isOutsideConnection = src.isOutsideConnection;
                 isCargo = src.isCargo;
                 name = nameSystem.GetName(src.entity).ToValueableName();
+                parent = em.TryGetComponent<Owner>(src.entity, out var owner) ? owner.m_Owner : Entity.Null;
+                parentName = parent != Entity.Null ? nameSystem.GetName(parent).ToValueableName() : default;
+                district = parent != Entity.Null
+                    ? em.TryGetComponent<CurrentDistrict>(parent, out var currentDistrict) ? currentDistrict.m_District : Entity.Null
+                    : em.TryGetComponent<Attached>(entity, out var attachParent)
+                        ? em.TryGetComponent<BorderDistrict>(attachParent.m_Parent, out var borders)
+                            ? borders.m_Left != Entity.Null
+                                ? borders.m_Left : borders.m_Right
+                            : Entity.Null
+                        : Entity.Null;
+                districtName = district != Entity.Null ? nameSystem.GetName(district).ToValueableName() : default;
             }
         }
-        public readonly struct LineVehicleNamed
+        public class LineVehicleNamed
         {
             public Entity entity { get; }
             public float position { get; }

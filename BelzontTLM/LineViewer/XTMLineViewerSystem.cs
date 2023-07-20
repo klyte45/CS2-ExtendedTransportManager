@@ -99,7 +99,7 @@ namespace BelzontTLM
 
         private void GetRouteDetail(Entity entity, bool force)
         {
-            m_LineVisualizerSection.Enqueue(entity, SendRouteDetail, true);
+            m_LineVisualizerSection.Enqueue(entity, SendRouteDetail, force);
         }
 
         private void SendRouteDetail(XTMLineViewerResult result)

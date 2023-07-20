@@ -51,7 +51,7 @@ export default class LineListCmp extends Component<any, State> {
     }
 
     componentWillUnmount(): void {
-        engine.off("k45::xtm.lineViewer.onLinesUpdated");
+        engine.off("k45::xtm.lineViewer.getCityLines->");
     }
 
     async reloadLines(res: LineData[]) {

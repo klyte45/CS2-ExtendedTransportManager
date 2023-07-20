@@ -26,14 +26,18 @@ export default class LineDetailCmp extends Component<Props, State> {
     }
     componentDidMount() {
         engine.whenReady.then(async () => {
-            engine.off("k45::xtm.lineViewer.getRouteDetail->");
             engine.on("k45::xtm.lineViewer.getRouteDetail->", (x) => {
                 console.log(x);
                 this.setState({ stations: x });
+                this.reloadLines();
             });
         })
         this.reloadLines(true);
     }
+    componentWillUnmount(): void {
+        engine.off("k45::xtm.lineViewer.getRouteDetail->");
+    }
+
     async reloadLines(force: boolean = false) {
         await engine.call("k45::xtm.lineViewer.getRouteDetail", this.props.currentLine.entity, force);
     }
