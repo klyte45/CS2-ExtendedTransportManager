@@ -10,7 +10,36 @@ import translate from "#utility/translate";
 
 
 type State = {
-    stations?: any
+    lineDetails?: {
+        LineData: LineData,
+        StopCapacity: number,
+        Stops: {
+            entity: Entity,
+            position: number,
+            cargo: number,
+            isCargo: boolean,
+            isOutsideConnection: boolean,
+            name: NameCustom | NameFormatted,
+            parent: Entity,
+            parentName: NameCustom | NameFormatted | NameLocalized,
+            district: Entity,
+            districtName: NameCustom | NameFormatted,
+        }[]
+        Vehicles: {
+            entity: Entity,
+            position: number,
+            cargo: number,
+            capacity: number,
+            isCargo: boolean,
+            districtName: NameCustom | NameFormatted | NameLocalized,
+        }[],
+        Segments: {
+            start: number,
+            end: number,
+            sizeMeters: number,
+            broken: boolean
+        }
+    }
 }
 
 type Props = {
@@ -28,7 +57,7 @@ export default class LineDetailCmp extends Component<Props, State> {
         engine.whenReady.then(async () => {
             engine.on("k45::xtm.lineViewer.getRouteDetail->", (x) => {
                 console.log(x);
-                this.setState({ stations: x });
+                this.setState({ lineDetails: x });
                 this.reloadLines();
             });
         })
@@ -50,7 +79,7 @@ export default class LineDetailCmp extends Component<Props, State> {
         </>
         return <>
             <DefaultPanelScreen title={nameToString(this.props.currentLine.name)} subtitle="" buttonsRowContent={buttonsRow}>
-                {JSON.stringify(this.state.stations ?? "LOADING")}
+                {JSON.stringify(this.state.lineDetails ?? "LOADING")}
             </DefaultPanelScreen>
         </>;
     }

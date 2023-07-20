@@ -43,7 +43,8 @@ namespace BelzontTLM
                         float start = stopsPointsDistanceFromStart[j] / num;
                         float end = (j < routeSegments.Length - 1) ? (stopsPointsDistanceFromStart[j + 1] / num) : 1f;
                         bool broken = pathInformation.m_Origin == Entity.Null && pathInformation.m_Destination == Entity.Null;
-                        LineSegment lineSegment = new LineSegment(start, end, broken, j == 0 ? stopsPointsDistanceFromStart[j] : stopsPointsDistanceFromStart[j] - stopsPointsDistanceFromStart[j - 1]);
+                        var distance = pathInformation.m_Distance;
+                        LineSegment lineSegment = new LineSegment(start, end, broken, distance);
                         m_SegmentsResult.Add(lineSegment);
                     }
                 }

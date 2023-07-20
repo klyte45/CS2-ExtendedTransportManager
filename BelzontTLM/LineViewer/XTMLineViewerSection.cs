@@ -208,7 +208,7 @@ namespace BelzontTLM
                 Segments = new LineSegment[m_SegmentsResult.Length],
                 Stops = new LineStopNamed[m_StopsResult.Length],
                 Vehicles = new LineVehicleNamed[m_VehiclesResult.Length],
-                LineData = LineItemStruct.ForEntity(e, EntityManager, m_PrefabSystem)
+                LineData = LineItemStruct.ForEntity(e, EntityManager, m_PrefabSystem, m_NameSystem)
             };
             for (int i = 0; i < m_SegmentsResult.Length; i++)
             {

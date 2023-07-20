@@ -129,7 +129,7 @@ namespace BelzontTLM
             public XTMRouteExtraData xtmData;
             public int routeNumber;
 
-            internal static LineItemStruct ForEntity(Entity entity, EntityManager entityManager, PrefabSystem m_PrefabSystem)
+            internal static LineItemStruct ForEntity(Entity entity, EntityManager entityManager, PrefabSystem m_PrefabSystem, NameSystem nameSystem)
             {
                 Route componentData = entityManager.GetComponentData<Route>(entity);
                 PrefabRef componentData2 = entityManager.GetComponentData<PrefabRef>(entity);
@@ -159,7 +159,9 @@ namespace BelzontTLM
                     stops = stopCount,
                     vehicles = routeVehiclesCount,
                     cargo = cargo,
-                    usage = usage
+                    usage = usage,
+                    name = nameSystem.GetName(entity).ToValueableName(),
+                    vkName = nameSystem.GetNameForVirtualKeyboard(entity).ToValueableName()
                 };
             }
 
