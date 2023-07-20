@@ -358,6 +358,7 @@ namespace BelzontTLM.Palettes
 
                     m_CommandBuffer.SetComponent(unfilteredChunkIndex, unitializedLines[i], xtmInfo);
                     m_CommandBuffer.AddComponent<Updated>(unfilteredChunkIndex, unitializedLines[i]);
+                    m_CommandBuffer.RemoveComponent<XTMPaletteRequireUpdate>(unfilteredChunkIndex, unitializedLines[i]);
                     LogUtils.DoLog($"Updated palette data @ entity id #{unitializedLines[i].Index}");
                 }
                 LogUtils.DoLog("XTMUpdatePalleteJob JobComplete");

@@ -3,9 +3,10 @@ import { NameCustom, NameFormatted, NameLocalized, nameToString } from "#utility
 import { Color01, ColorUtils } from "#utility/ColorUtils";
 import { TransportType } from "#enum/TransportType";
 import { Entity } from "#utility/Entity";
-import { SimpleInput } from "./common/input";
+import { SimpleInput } from "../common/input";
+import LineDetailCmp from "./LineDetailCmp";
 
-type LineData = {
+export type LineData = {
     __Type: string,
     name: NameCustom | NameFormatted,
     vkName: NameLocalized,
@@ -29,6 +30,7 @@ type LineData = {
 
 type State = {
     linesList: LineData[]
+    currentLineViewer?: LineData
 }
 
 
@@ -41,12 +43,18 @@ export default class LineListCmp extends Component<any, State> {
     }
     componentDidMount() {
         engine.whenReady.then(async () => {
-            engine.on("k45::xtm.lineViewer.onLinesUpdated", () => this.reloadLines());
+            engine.on("k45::xtm.lineViewer.getCityLines->", (x) => {
+                this.reloadLines(x);
+            });
         })
-        this.reloadLines();
+        engine.call("k45::xtm.lineViewer.getCityLines", true)
     }
-    async reloadLines() {
-        var res: LineData[] = await engine.call("k45::xtm.lineViewer.getCityLines")
+
+    componentWillUnmount(): void {
+        engine.off("k45::xtm.lineViewer.onLinesUpdated");
+    }
+
+    async reloadLines(res: LineData[]) {
         console.log(res);
         this.setState({
             linesList: res.sort((a, b) => {
@@ -55,8 +63,14 @@ export default class LineListCmp extends Component<any, State> {
                 return a.routeNumber - b.routeNumber
             })
         });
+        if (!this.state.currentLineViewer) {
+            engine.call("k45::xtm.lineViewer.getCityLines", false)
+        }
     }
     render() {
+        if (this.state.currentLineViewer) {
+            return <><LineDetailCmp currentLine={this.state.currentLineViewer} onBack={() => this.setState({ currentLineViewer: undefined, }, () => engine.call("k45::xtm.lineViewer.getCityLines", true))} /></>
+        }
         return <>
             <h1>List of lines</h1>
             <div className="tableTopRow">
@@ -67,6 +81,7 @@ export default class LineListCmp extends Component<any, State> {
                 <div className="w05">Vehicles</div>
                 <div className="w10">Length</div>
                 <div className="w05">Type</div>
+                <div className="w05">Details</div>
             </div>
             {this.state.linesList.map((x, i) => {
 
@@ -83,6 +98,7 @@ export default class LineListCmp extends Component<any, State> {
                     <div className="w05">{x.vehicles}</div>
                     <div className="w10">{(x.length / 1000).toFixed(2) + " km"}</div>
                     <div className="w05">{x.type}</div>
+                    <div className="w05" onClick={() => this.setState({ currentLineViewer: x })} >GO</div>
                 </div>;
             })}
         </>;
@@ -94,9 +110,7 @@ export default class LineListCmp extends Component<any, State> {
 
     async sendAcronym(entity: Entity, newAcronym: string) {
         try {
-            console.log("sending: " + entity.Index + "|" + newAcronym)
             const response = await engine.call("k45::xtm.lineViewer.setAcronym", entity, newAcronym)
-            console.log("Response: " + response);
             return response;
         } catch (e) {
             console.warn(e);
@@ -106,7 +120,6 @@ export default class LineListCmp extends Component<any, State> {
         const numberParsed = parseInt(newNumber);
         if (isFinite(numberParsed)) {
             const response: number = await engine.call("k45::xtm.lineViewer.setRouteNumber", lineData.entity, numberParsed)
-            console.log("Response: " + response);
             return response.toFixed();
         }
         return lineData.routeNumber?.toString();

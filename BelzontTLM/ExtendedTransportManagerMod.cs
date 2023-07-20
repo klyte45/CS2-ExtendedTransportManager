@@ -24,6 +24,8 @@ namespace BelzontTLM
 
         public override void DoOnCreateWorld(UpdateSystem updateSystem)
         {
+            updateSystem.UpdateAfter<XTMLineViewerSection>(SystemUpdatePhase.UIUpdate);
+            updateSystem.UpdateAfter<XTMLineListingSection>(SystemUpdatePhase.UIUpdate);
             updateSystem.UpdateAfter<XTMLineViewerSystem>(SystemUpdatePhase.UIUpdate);
             updateSystem.UpdateAfter<XTMRouteAutoColorSystem>(SystemUpdatePhase.UIUpdate);
         }

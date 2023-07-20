@@ -44,7 +44,6 @@ export default class CityPaletteLibraryCmp extends Component<any, State> {
         }
     }
     componentDidMount() {
-        const _this = this;
         engine.whenReady.then(async () => {
             this.updatePalettes();
             PaletteService.doOnCityPalettesUpdated(() => this.updatePalettes())
