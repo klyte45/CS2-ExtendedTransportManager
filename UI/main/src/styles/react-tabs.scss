@@ -1,5 +1,4 @@
 .react-tabs {
-    -webkit-tap-highlight-color: transparent;
     position: absolute;
     top: 0;
     left: 0;
@@ -26,7 +25,6 @@
         border-bottom: none;
         bottom: -1px;
         position: relative;
-        list-style: none;
         padding: 6px 12px;
         cursor: pointer;
 

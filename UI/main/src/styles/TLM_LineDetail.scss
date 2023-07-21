@@ -62,8 +62,6 @@
     }
 
     .lineBlock text {
-        vertical-align: middle;
-        text-align-last: center;
         text-align: center;
         height: 40px;
         text-shadow: 0 0 6px black;
@@ -87,7 +85,7 @@
             position: absolute;
             width: 60px;
             height: 60px;
-            background: var(--currentBgColor);
+            background-color: var(--currentBgColor);
             clip-path: border-box polygon(nonzero, 20.000000% 0.000000%, 80.000000% 0.000000%, 100.000000% 100.000000%, 0.000000% 100.000000%);
             z-index: -1;
             top: 0;
@@ -108,7 +106,7 @@
             z-index: -1;
             top: 5px;
             left: 5px;
-            background: var(--currentBgColor);
+            background-color: var(--currentBgColor);
         }
 
         .after {
@@ -119,7 +117,7 @@
             z-index: -1;
             top: 5px;
             left: 5px;
-            background: var(--currentBgColor);
+            background-color: var(--currentBgColor);
             transform: rotate(45deg);
         }
     }
