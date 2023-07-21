@@ -132,6 +132,8 @@ namespace BelzontTLM
             internal static LineItemStruct ForEntity(Entity entity, EntityManager entityManager, PrefabSystem m_PrefabSystem, NameSystem nameSystem)
             {
                 Route componentData = entityManager.GetComponentData<Route>(entity);
+                var routeNum = entityManager.GetComponentData<RouteNumber>(entity);
+                entityManager.TryGetComponent<XTMRouteExtraData>(entity, out var xtmData);
                 PrefabRef componentData2 = entityManager.GetComponentData<PrefabRef>(entity);
                 TransportLinePrefab prefab = m_PrefabSystem.GetPrefab<TransportLinePrefab>(componentData2.m_Prefab);
                 TransportLineData componentData3 = entityManager.GetComponentData<TransportLineData>(componentData2.m_Prefab);
@@ -161,7 +163,9 @@ namespace BelzontTLM
                     cargo = cargo,
                     usage = usage,
                     name = nameSystem.GetName(entity).ToValueableName(),
-                    vkName = nameSystem.GetNameForVirtualKeyboard(entity).ToValueableName()
+                    vkName = nameSystem.GetNameForVirtualKeyboard(entity).ToValueableName(),
+                    routeNumber = routeNum.m_Number,
+                    xtmData = xtmData
                 };
             }
 

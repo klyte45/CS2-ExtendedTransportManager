@@ -1,0 +1,18 @@
+#TlmViewer {
+    position: absolute;
+    left: 0;
+    top: 0;
+    bottom: 0;
+    overflow: auto;
+    width: 600px;
+}
+
+#dataPanel {
+
+    position: absolute;
+    left: 600px;
+    top: 0;
+    bottom: 0;
+    overflow: auto;
+    right: 0;
+}

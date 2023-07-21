@@ -1,0 +1,382 @@
+#TlmViewer {
+    .lineBlock {
+        text-align: center;
+
+        &.btn {
+            text-transform: none;
+        }
+    }
+
+    .titleRow {
+        display: relative;
+        margin-top: 8px;
+        margin-bottom: 8px;
+
+        .formatContainer {
+            left: 50%;
+            margin-left: -15px;
+        }
+    }
+
+    .formatContainer {
+        --scaleFormat: 1;
+        --margin-base: calc((var(--scaleFormat) - 1) * 28px + 3px);
+        position: relative;
+        transform: scale(var(--scaleFormat));
+        margin-bottom: calc((var(--scaleFormat) - 1) * 25px);
+        margin-top: calc((var(--scaleFormat) - 1) * 25px - 6px);
+        // margin: var(--margin-base) calc(var(--margin-base) + 3px) var(--margin-base) var(--margin-base) ;    
+        margin-left: 8px;
+        margin-right: 8px;
+        overflow: visible;
+        width: 60px;
+        height: 60px;
+        display: block;
+
+        .format {
+            position: absolute;
+            border: 1px solid #000000;
+            background-color: var(--currentBgColor);
+            height: 60px;
+            width: 60px;
+            display: block;
+
+            .after,
+            .before {
+                background-color: var(--currentBgColor);
+            }
+
+            +.num {
+                position: absolute;
+                display: table-cell;
+                vertical-align: middle;
+                font-size: 28px;
+                clear: none;
+                white-space: pre;
+                font-weight: bold;
+                color: white;
+                z-index: 9;
+                top: 50%;
+                bottom: 50%;
+                line-height: 0;
+                text-align: center;
+                width: 60px;
+                text-shadow: 0 0 5px black;
+            }
+        }
+    }
+
+    .lineBlock text {
+        display: table-cell;
+        vertical-align: middle;
+        text-align-last: center;
+        text-align: center;
+        height: 40px;
+        text-shadow: 0 0 6px black;
+    }
+
+    .format.Bus {
+        height: 60px;
+        width: 34.64px;
+        margin: 0 12.68px;
+        border-left: 0;
+        border-right: 0;
+
+        .before,
+        .after {
+            content: "";
+            position: absolute;
+            z-index: -1;
+            width: 42.43px;
+            height: 42.43px;
+            -webkit-transform: scaleX(0.5774) rotate(-45deg);
+            -ms-transform: scaleX(0.5774) rotate(-45deg);
+            transform: scaleX(0.5774) rotate(-45deg);
+            bottom: 7.7868px;
+        }
+
+        .before {
+            left: -21.2132px;
+            border-left: solid 1.4142px #000000;
+            border-top: solid 1.4142px #000000;
+        }
+
+        .after {
+            right: -21.2132px;
+            border-right: solid 1.4142px #000000;
+            border-bottom: solid 1.4142px #000000;
+        }
+
+        //   .before,
+        //   .after {
+        //     content: "";
+        //     position: absolute;
+        //     width: 0;
+        //     border-top: 30px solid transparent;
+        //     border-bottom: 30px solid transparent;
+        //   }
+
+        //  .before{
+        //     right: 100%;
+        //     border-right: 17.32px solid  var(--currentBgColor);
+        //   }
+
+        //   .after {
+        //     left: 100%;
+        //     top:0;
+        //     width: 0;
+        //     z-index: -1;
+        //     border-left: 17.32px solid  var(--currentBgColor);
+        //   }
+    }
+
+    .format.Tram {
+        background-color: transparent !important;
+        border: 0;
+
+        .before {
+            content: "";
+            position: absolute;
+            width: 50px;
+            height: 50px;
+            background: var(--currentBgColor);
+            transform: perspective(2px) rotateX(1deg);
+            z-index: -1;
+            top: 0;
+            left: 5px;
+            border-bottom: 1px solid #000000;
+            border-left: 2px solid #000000;
+            border-right: 2px solid #000000;
+            border-top: 3px solid #000000;
+        }
+
+    }
+
+
+    .format.Ship {
+        border: none;
+        width: 42.42px;
+        height: 42.42px;
+        margin: 9.3px;
+        background-color: var(--currentBgColor);
+
+        .before,
+        .after {
+            content: "";
+            position: absolute;
+            z-index: -1;
+            margin: -5px;
+        }
+
+        .after {
+            background-color: var(--currentBgColor);
+            transform: rotate(45deg);
+            border: 1px solid #000000;
+            width: 42.42px;
+            height: 42.42px;
+            top: 5px;
+            left: 5px;
+        }
+
+        .before {
+            background: #000000;
+            width: 44.42px;
+            height: 44.42px;
+            top: 4px;
+            left: 4px;
+        }
+
+        +.num {
+            transform: scale(0.8);
+        }
+    }
+
+
+    .format.Ship {
+        background-color: transparent !important;
+        border: none;
+
+        .after {
+            content: "";
+            position: absolute;
+            width: 50px;
+            height: 50px;
+            z-index: -1;
+            top: 5px;
+            left: 5px;
+            background: var(--currentBgColor);
+            transform: rotate(45deg);
+            border: 1px solid #000000;
+        }
+    }
+
+    .format.Train {
+        border-radius: 9999px;
+    }
+
+    .format.Airplane {
+        background-color: transparent !important;
+        border: none;
+
+        .before {
+            content: "";
+            position: absolute;
+            width: 50px;
+            height: 50px;
+            z-index: -1;
+            top: 5px;
+            left: 5px;
+            border-top-left-radius: 999px;
+            background: var(--currentBgColor);
+            transform: translateY(-8px) scaleY(1.2) rotate(45deg);
+            border: 1px solid #000000;
+        }
+    }
+
+    .format.Airplane {
+        border: none;
+        background: transparent;
+
+        .before {
+            content: "";
+            width: 46px;
+            border: 1px solid #000000;
+            position: absolute;
+            left: 7px;
+            height: 31px;
+            bottom: -1px;
+            transform: perspective(0.9px) rotateX(-1deg);
+            border-top: none;
+            background-color: var(--currentBgColor);
+        }
+
+        .after {
+            content: "";
+            position: absolute;
+            z-index: -2;
+            width: 46.5px;
+            height: 46.5px;
+            -webkit-transform: scaleY(0.5774) rotate(-45deg);
+            transform: scaleY(0.6774) rotate(-45deg);
+            left: 7px;
+            top: 0px;
+            border-top: solid 1.4142px #000000;
+            border-right: solid 1.4142px #000000;
+            background-color: var(--currentBgColor);
+        }
+
+        +.num {
+            transform: scale(0.9);
+        }
+    }
+
+    .format.Monorail {
+        border-radius: 20px;
+    }
+
+    .flexContainer .mat-tab-body-content {
+        height: 100%;
+        overflow: visible;
+        display: flex;
+        flex-wrap: wrap;
+        padding: 0 0 25px;
+    }
+
+    //linepath
+    .linePath {
+        position: relative;
+        padding-bottom: 20px;
+
+        >.before {
+            content: "";
+            position: absolute;
+            position: absolute;
+            top: 0.000000px;
+            bottom: 20.000000px;
+            left: 50.000000%;
+            width: 20.000000px;
+            margin-left: 5.000000px;
+            background-color: var(--lineColor);
+            border-radius: 50px;
+        }
+
+        .lineStationContainer {
+            width: 100%;
+        }
+
+        .lineStation {
+            height: 40px;
+            position: relative;
+
+            .stationName {
+                position: absolute;
+                width: 50.000000%;
+                top: 50.000000%;
+                text-align: right;
+                font-weight: bolder;
+                font-size: 21.000000px;
+                transform: translateY(-50.000000%);
+            }
+
+            .stationBullet {
+                position: absolute;
+                left: 50%;
+                margin-left: 7px;
+                top: 50%;
+                margin-top: - 8px;
+                height: 16px;
+                width: 16px;
+                background: white;
+                border: 3px solid var(--lineColor);
+                display: block;
+                border-radius: 9999px;
+            }
+
+            .stationIntersections {
+                position: absolute;
+                left: 50%;
+                margin-left: 40px;
+                height: 30px;
+                overflow-x: auto;
+                overflow-y: hidden;
+                white-space: nowrap;
+                padding: 12px 12px 0 0;
+            }
+
+            .lineIntersection .formatContainer {
+                width: 47px;
+            }
+        }
+
+    }
+
+    .districtDiv {
+        position: relative;
+        height: 40px;
+
+        .before {
+            content: "";
+            height: 2px;
+            background-image: linear-gradient(to left, transparent, transparent 50%, #eee 50%, #eee 75%, transparent 75%);
+            background-size: 20.000000px auto;
+            position: absolute;
+            left: 0;
+            right: 0;
+            top: 19px
+        }
+
+        .oldDistrict {
+            font-size: 82%;
+            position: absolute;
+            top: -5px;
+            font-style: italic;
+        }
+
+        .newDistrict {
+            position: absolute;
+            bottom: 5px;
+            font-size: 80%;
+            font-style: italic;
+        }
+    }
+}
