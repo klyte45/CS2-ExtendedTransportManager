@@ -4,8 +4,9 @@ import "#styles/LineDetailCmp.scss";
 import { Entity } from "#utility/Entity";
 import { NameCustom, NameFormatted, NameLocalized, nameToString } from "#utility/name.utils";
 import translate from "#utility/translate";
-import { CSSProperties, Component } from "react";
+import { CSSProperties, Component, ReactNode } from "react";
 import { LineData } from "./LineListCmp";
+import { ColorUtils } from "#utility/ColorUtils";
 
 
 type State = {
@@ -90,13 +91,16 @@ export default class LineDetailCmp extends Component<Props, State> {
                                             <div className="before"></div>
                                             <div className="after"></div>
                                         </div>
-                                        <div style={{ fontSize: getFontSizeForText(lineCommonData.xtmData?.Acronym || lineCommonData.routeNumber.toFixed()) }} className="num">
+                                        <div style={{
+                                            fontSize: getFontSizeForText(lineCommonData.xtmData?.Acronym || lineCommonData.routeNumber.toFixed()),
+                                            color: ColorUtils.toRGBA(ColorUtils.getContrastColorFor(ColorUtils.toColor01(lineCommonData.color)))
+                                        }} className="num">
                                             {lineCommonData.xtmData?.Acronym || (lineCommonData.routeNumber.toFixed())}
                                         </div>
                                     </div>
                                 </div>
                             </div>
-                            <div className="col">
+                            <div className="lineStationsContainer">
                                 {lineDetails.Stops[0].district.Index > 0 &&
                                     <div className="districtDiv lineStation row col-12 align-items-center">
                                         <div className="newDistrict">{nameToString(lineDetails.Stops[0].districtName)}</div>
@@ -104,39 +108,23 @@ export default class LineDetailCmp extends Component<Props, State> {
                                 <div className="linePath" style={{ "--lineColor": getClampedColor(lineCommonData.color) } as CSSProperties}>
                                     <div className="before"></div>
                                     {lineDetails.Stops.map((station, i, arr) => {
-                                        const last = arr[i - 1];
-                                        const nextStop = arr[(i + 1) % arr.length];
-                                        return <div className="lineStationContainer" key={i}>
-                                            <div className="lineStation row col-12 align-items-center">
-                                                <div className="stationName" >{nameToString(station.name)}</div>
-                                                <div className="stationBullet"></div>
-                                                <div className="stationIntersections lineStation row align-items-center">
-                                                    {([] as any[]).map((lineId: Entity) => {
-                                                        if (lineId.Index == lineCommonData.entity.Index) return;
-                                                        const otherLine = this.getLineById(lineId);
-                                                        return <div className="lineIntersection">
-                                                            <div className="formatContainer" title={nameToString(otherLine.name)} style={{ "--scaleFormat": 0.4 } as CSSProperties} onClick={() => this.setSelection(lineId)}>
-                                                                <div className={`format ${otherLine.type} v????`} style={{ "--currentBgColor": otherLine.color } as CSSProperties}  >
-                                                                    <div className="before"></div>
-                                                                    <div className="after"></div>
-                                                                </div>
-                                                                <div style={{ fontSize: getFontSizeForText(otherLine.xtmData?.Acronym || otherLine.routeNumber.toFixed()) }} className="num">
-                                                                    {otherLine.xtmData?.Acronym || otherLine.routeNumber.toFixed()}
-                                                                </div>
-                                                            </div>
-                                                        </div>
-                                                    })}
-                                                </div>
-                                            </div>
-                                            {nextStop.district.Index != station.district.Index &&
-                                                <div className="districtDiv lineStation row col-12 align-items-center">
-                                                    <div className="before"></div>
-                                                    {station.district.Index > 0 && <div className="oldDistrict" >{nameToString(station.districtName)}</div>}
-                                                    {arr[(i + 1) % arr.length].district.Index > 0 && <div className="newDistrict">{nameToString(nextStop.districtName)}</div >}
-                                                </div>
-                                            }
-                                        </div>
+                                        const nextIdx = (i + 1) % arr.length;
+                                        const nextStop = arr[nextIdx];
+                                        return <StationContainerCmp
+                                            getLineById={(x) => this.getLineById(x)}
+                                            lineData={lineCommonData}
+                                            nextStop={nextStop}
+                                            setSelection={(x) => this.setSelection(x)}
+                                            station={station}
+                                            key={i}
+                                        />
                                     })}
+                                    <StationContainerCmp
+                                        getLineById={(x) => this.getLineById(x)}
+                                        lineData={lineCommonData}
+                                        setSelection={(x) => this.setSelection(x)}
+                                        station={lineDetails.Stops[0]}
+                                    />
                                 </div>
                             </div>
                         </>
@@ -178,7 +166,7 @@ export default class LineDetailCmp extends Component<Props, State> {
 }
 
 function getFontSizeForText(text: string) {
-    switch ((text || "").length) {
+    switch (Math.max(...(text || "").split(" ").map(x => x.length))) {
         case 1:
             return "52px";
         case 2:
@@ -206,4 +194,49 @@ function colorHexToRGB(color: string) {
 function getClampedColor(color: string) {
     var colorRgb = colorHexToRGB(color);
     return 'rgb(' + Math.min(colorRgb[0], 232) + "," + Math.min(colorRgb[1], 232) + "," + Math.min(colorRgb[2], 232) + ")";
+}
+
+type StationData = State['lineDetails']['Stops'] extends (infer X)[] ? X : never;
+class StationContainerCmp extends Component<{
+    station: StationData,
+    lineData: LineData,
+    getLineById: (e: Entity) => LineData,
+    nextStop?: StationData,
+    setSelection: (e: Entity) => void
+}>{
+    render(): ReactNode {
+        const station = this.props.station;
+        const lineCommonData = this.props.lineData;
+        const nextStop = this.props.nextStop;
+        return <div className="lineStationContainer" >
+            <div className="lineStation row col-12 align-items-center">
+                <div className="stationName" >{nameToString(station.name)}</div>
+                <div className="stationBullet"></div>
+                <div className="stationIntersections lineStation row align-items-center">
+                    {([] as any[]).map((lineId: Entity) => {
+                        if (lineId.Index == lineCommonData.entity.Index) return;
+                        const otherLine = this.props.getLineById(lineId);
+                        return <div className="lineIntersection">
+                            <div className="formatContainer" title={nameToString(otherLine.name)} style={{ "--scaleFormat": 0.4 } as CSSProperties} onClick={() => this.props.setSelection(lineId)}>
+                                <div className={`format ${otherLine.type} v????`} style={{ "--currentBgColor": otherLine.color } as CSSProperties}  >
+                                    <div className="before"></div>
+                                    <div className="after"></div>
+                                </div>
+                                <div style={{ fontSize: getFontSizeForText(otherLine.xtmData?.Acronym || otherLine.routeNumber.toFixed()), color: ColorUtils.toRGBA(ColorUtils.getContrastColorFor(ColorUtils.toColor01(otherLine.color))) }} className="num">
+                                    {otherLine.xtmData?.Acronym || otherLine.routeNumber.toFixed()}
+                                </div>
+                            </div>
+                        </div>
+                    })}
+                </div>
+            </div>
+            {nextStop && nextStop.district.Index != station.district.Index &&
+                <div className="districtDiv lineStation row col-12 align-items-center">
+                    <div className="before"></div>
+                    {station.district.Index > 0 && <div className="oldDistrict" >{nameToString(station.districtName)}</div>}
+                    {nextStop.district.Index > 0 && <div className="newDistrict">{nameToString(nextStop.districtName)}</div >}
+                </div>
+            }
+        </div>
+    }
 }
