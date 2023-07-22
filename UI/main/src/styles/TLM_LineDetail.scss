@@ -194,6 +194,10 @@
             height: 40px;
             position: relative;
 
+            * {
+                pointer-events: none;
+            }
+
             .stationName {
                 position: absolute;
                 width: 50.000000%;

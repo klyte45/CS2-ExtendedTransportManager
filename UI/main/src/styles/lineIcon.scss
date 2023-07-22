@@ -39,7 +39,10 @@
     border-top-width: calc(0.75px * var(--lineIconSizeMultiplier)) !important;
     border-bottom-width: calc(0.75px * var(--lineIconSizeMultiplier)) !important;
     background-color: var(--lineColor);
-    border-color: var(--contrastColor) !important;
+    border-left-color: var(--contrastColor) !important;
+    border-right-color: var(--contrastColor) !important;
+    border-top-color: var(--contrastColor) !important;
+    border-bottom-color: var(--contrastColor) !important;
     color: var(--contrastColor) !important;
     border-style: solid !important;
     text-align: center;

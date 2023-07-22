@@ -7,7 +7,10 @@ import translate from "#utility/translate";
 import { CSSProperties, Component, ReactNode } from "react";
 import { LineData } from "./LineListCmp";
 import { ColorUtils } from "#utility/ColorUtils";
-
+import ReactDomServer from 'react-dom/server';
+import ReactDOM from "react-dom";
+import ReactDOMServer from "react-dom/server";
+import renderToString from "#utility/renderToString";
 
 type State = {
     lineDetails?: {
@@ -203,13 +206,27 @@ class StationContainerCmp extends Component<{
     getLineById: (e: Entity) => LineData,
     nextStop?: StationData,
     setSelection: (e: Entity) => void
-}>{
+}, { tooltipContent?: string }>{
+
+    constructor(props) {
+        super(props)
+        this.state = {}
+    }
+    componentDidMount() {
+        renderToString(<>{this.props.lineData.color}</>).then(x => this.setState({ tooltipContent: x }))
+    }
+
     render(): ReactNode {
         const station = this.props.station;
         const lineCommonData = this.props.lineData;
         const nextStop = this.props.nextStop;
+
         return <div className="lineStationContainer" >
-            <div className="lineStation row col-12 align-items-center">
+            <div className="lineStation row col-12 align-items-center"
+                data-tooltip={this.state.tooltipContent}
+                data-tooltip-position="center middle"
+                data-tooltip-pivot="left middle"
+                data-tooltip-distanceX="30">
                 <div className="stationName" >{nameToString(station.name)}</div>
                 <div className="stationBullet"></div>
                 <div className="stationIntersections lineStation row align-items-center">

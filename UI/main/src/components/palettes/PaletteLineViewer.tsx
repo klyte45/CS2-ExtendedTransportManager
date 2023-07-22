@@ -9,7 +9,7 @@ export class PaletteLineViewer extends Component<{
 }> {
     render() {
         return <div className="paletteViewer">
-            <label className="w10" style={{ flexDirection: "column", justifySelf: "center", alignSelf: "center", display: "flex" }}>{this.props.entry._CurrName ?? this.props.entry.Name}</label>
+            <label className="w10" style={{ flexDirection: "column", alignSelf: "center", display: "flex" }}>{this.props.entry._CurrName ?? this.props.entry.Name}</label>
             <div className="colorShowcaseContainer w70">
                 <div className="colorShowcase">
                     {this.props.entry.ColorsRGB.map((clr, j) =>
@@ -21,7 +21,7 @@ export class PaletteLineViewer extends Component<{
                 </div>
             </div>
             {this.props.actionButtons &&
-                <div className="w20" style={{ flexDirection: "row-reverse", justifySelf: "center", alignSelf: "center", display: "flex" }}>
+                <div className="w20" style={{ flexDirection: "row-reverse", alignSelf: "center", display: "flex" }}>
                     {this.props.actionButtons(this.props.entry)}
                 </div>}
         </div>;
