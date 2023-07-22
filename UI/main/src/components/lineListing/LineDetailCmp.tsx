@@ -1,47 +1,53 @@
 import { DefaultPanelScreen } from "#components/common/DefaultPanelScreen";
-import "#styles/TLM_LineDetail.scss";
 import "#styles/LineDetailCmp.scss";
+import "#styles/TLM_LineDetail.scss";
+import { ColorUtils } from "#utility/ColorUtils";
 import { Entity } from "#utility/Entity";
 import { NameCustom, NameFormatted, NameLocalized, nameToString } from "#utility/name.utils";
 import translate from "#utility/translate";
-import { CSSProperties, Component, ReactNode } from "react";
+import { CSSProperties, Component } from "react";
 import { LineData } from "./LineListCmp";
-import { ColorUtils } from "#utility/ColorUtils";
-import ReactDomServer from 'react-dom/server';
-import ReactDOM from "react-dom";
-import ReactDOMServer from "react-dom/server";
-import renderToString from "#utility/renderToString";
+import { StationContainerCmp } from "./StationContainerCmp";
 
+export type StationData = {
+    readonly entity: Entity,
+    readonly position: number,
+    readonly cargo: number,
+    readonly isCargo: boolean,
+    readonly isOutsideConnection: boolean,
+    readonly name: NameCustom | NameFormatted,
+    readonly parent: Entity,
+    readonly parentName: NameCustom | NameFormatted | NameLocalized,
+    readonly district: Entity,
+    readonly districtName: NameCustom | NameFormatted,
+    arrivingVehicle?: VehicleData,
+    arrivingVehicleDistance?: number,
+    arrivingVehicleStops?: number,
+};
+export type VehicleData = {
+    readonly entity: Entity,
+    readonly position: number,
+    readonly cargo: number,
+    readonly capacity: number,
+    readonly isCargo: boolean,
+    readonly name: NameCustom | NameFormatted,
+    normalizedPosition: number,
+    distanceNextStop: number
+    distancePrevStop: number
+};
+type SegmentData = {
+    readonly start: number,
+    readonly end: number,
+    readonly sizeMeters: number,
+    readonly broken: boolean
+}
 type State = {
     lineDetails?: {
         LineData: LineData,
         StopCapacity: number,
-        Stops: {
-            entity: Entity,
-            position: number,
-            cargo: number,
-            isCargo: boolean,
-            isOutsideConnection: boolean,
-            name: NameCustom | NameFormatted,
-            parent: Entity,
-            parentName: NameCustom | NameFormatted | NameLocalized,
-            district: Entity,
-            districtName: NameCustom | NameFormatted,
-        }[]
-        Vehicles: {
-            entity: Entity,
-            position: number,
-            cargo: number,
-            capacity: number,
-            isCargo: boolean,
-            districtName: NameCustom | NameFormatted | NameLocalized,
-        }[],
-        Segments: {
-            start: number,
-            end: number,
-            sizeMeters: number,
-            broken: boolean
-        }
+        Stops: StationData[]
+        Vehicles: VehicleData[],
+        Segments: SegmentData[]
     }
 }
 
@@ -58,13 +64,45 @@ export default class LineDetailCmp extends Component<Props, State> {
     }
     componentDidMount() {
         engine.whenReady.then(async () => {
-            engine.on("k45::xtm.lineViewer.getRouteDetail->", (x) => {
-                console.log(x);
-                this.setState({ lineDetails: x });
+            engine.on("k45::xtm.lineViewer.getRouteDetail->", (details: State['lineDetails']) => {
+                console.log(details);
+
+                details.Vehicles = details.Vehicles.map(x => {
+                    return {
+                        ...x,
+                        ...this.enrichVehicleInfo(x, details.Segments)
+                    }
+                })
+                details.Stops = details.Stops.map((x, _, arr) => {
+                    return {
+                        ...x,
+                        ...this.enrichStopInfo(x, arr, details.Vehicles, details.LineData)
+                    }
+                })
+                this.setState({ lineDetails: details });
                 this.reloadLines();
             });
         })
         this.reloadLines(true);
+    }
+    enrichStopInfo(station: StationData, allStations: StationData[], vehicles: VehicleData[], lineData: LineData): Partial<StationData> {
+        const arrivingVehicle = vehicles.length == 0 ? undefined : vehicles.map(x => [x.position > station.position ? x.position - 1 : x.position, x] as [number, VehicleData]).sort((a, b) => b[0] - a[0])[0]
+
+        return {
+            arrivingVehicle: arrivingVehicle[1],
+            arrivingVehicleDistance: arrivingVehicle ? (station.position - arrivingVehicle[0]) * lineData.length : undefined,
+            arrivingVehicleStops: arrivingVehicle ? allStations.map(x => x.position >= station.position ? x.position - 1 : x.position).filter(x => x > arrivingVehicle[0]).length : undefined,
+        }
+    }
+    enrichVehicleInfo(vehicle: VehicleData, segments: SegmentData[]): Partial<VehicleData> {
+        const currentSegmentIdx = segments.filter(x => x.end < vehicle.position).length;
+        const currentSegment = segments[currentSegmentIdx];
+        const currentSegmentFraction = (vehicle.position - currentSegment.start) / (currentSegment.end - currentSegment.start)
+        return {
+            normalizedPosition: (currentSegmentIdx + currentSegmentFraction) / segments.length,
+            distanceNextStop: (1 - currentSegmentFraction) * currentSegment.sizeMeters,
+            distancePrevStop: currentSegmentFraction * currentSegment.sizeMeters,
+        }
     }
     componentWillUnmount(): void {
         engine.off("k45::xtm.lineViewer.getRouteDetail->");
@@ -109,7 +147,17 @@ export default class LineDetailCmp extends Component<Props, State> {
                                         <div className="newDistrict">{nameToString(lineDetails.Stops[0].districtName)}</div>
                                     </div>}
                                 <div className="linePath" style={{ "--lineColor": getClampedColor(lineCommonData.color) } as CSSProperties}>
-                                    <div className="before"></div>
+                                    <div className="before">
+                                        <div className="vehiclesRailing">
+                                            {lineDetails.Vehicles.map((vehicle, i, arr) => {
+                                                return <div className="vehicle" style={{ top: (vehicle.normalizedPosition * 100) + "%", "--vehicleColor": "gray" } as CSSProperties} key={i}>
+                                                    <div className="vehicleNeedle" />
+                                                    <div className="vehicleName">{nameToString(vehicle.name)}</div>
+                                                    <div className="vehicleFill">{(vehicle.cargo / vehicle.capacity * 100).toFixed() + "%"}</div>
+                                                </div>
+                                            })}
+                                        </div>
+                                    </div>
                                     {lineDetails.Stops.map((station, i, arr) => {
                                         const nextIdx = (i + 1) % arr.length;
                                         const nextStop = arr[nextIdx];
@@ -119,6 +167,7 @@ export default class LineDetailCmp extends Component<Props, State> {
                                             nextStop={nextStop}
                                             setSelection={(x) => this.setSelection(x)}
                                             station={station}
+                                            vehicles={lineDetails.Vehicles}
                                             key={i}
                                         />
                                     })}
@@ -127,14 +176,15 @@ export default class LineDetailCmp extends Component<Props, State> {
                                         lineData={lineCommonData}
                                         setSelection={(x) => this.setSelection(x)}
                                         station={lineDetails.Stops[0]}
+                                        vehicles={lineDetails.Vehicles}
                                     />
                                 </div>
                             </div>
                         </>
                     }
                 </div>
-                <div id="dataPanel">
-                    {JSON.stringify(this.state.lineDetails ?? "LOADING")}
+                <div id="dataPanel" style={{ whiteSpace: 'pre-wrap' }}>
+                    {JSON.stringify(this.state.lineDetails ?? "LOADING", null, 2)}
                 </div>
             </DefaultPanelScreen>
         </>;
@@ -168,7 +218,7 @@ export default class LineDetailCmp extends Component<Props, State> {
     }
 }
 
-function getFontSizeForText(text: string) {
+export function getFontSizeForText(text: string) {
     switch (Math.max(...(text || "").split(" ").map(x => x.length))) {
         case 1:
             return "52px";
@@ -199,61 +249,3 @@ function getClampedColor(color: string) {
     return 'rgb(' + Math.min(colorRgb[0], 232) + "," + Math.min(colorRgb[1], 232) + "," + Math.min(colorRgb[2], 232) + ")";
 }
 
-type StationData = State['lineDetails']['Stops'] extends (infer X)[] ? X : never;
-class StationContainerCmp extends Component<{
-    station: StationData,
-    lineData: LineData,
-    getLineById: (e: Entity) => LineData,
-    nextStop?: StationData,
-    setSelection: (e: Entity) => void
-}, { tooltipContent?: string }>{
-
-    constructor(props) {
-        super(props)
-        this.state = {}
-    }
-    componentDidMount() {
-        renderToString(<>{this.props.lineData.color}</>).then(x => this.setState({ tooltipContent: x }))
-    }
-
-    render(): ReactNode {
-        const station = this.props.station;
-        const lineCommonData = this.props.lineData;
-        const nextStop = this.props.nextStop;
-
-        return <div className="lineStationContainer" >
-            <div className="lineStation row col-12 align-items-center"
-                data-tooltip={this.state.tooltipContent}
-                data-tooltip-position="center middle"
-                data-tooltip-pivot="left middle"
-                data-tooltip-distanceX="30">
-                <div className="stationName" >{nameToString(station.name)}</div>
-                <div className="stationBullet"></div>
-                <div className="stationIntersections lineStation row align-items-center">
-                    {([] as any[]).map((lineId: Entity) => {
-                        if (lineId.Index == lineCommonData.entity.Index) return;
-                        const otherLine = this.props.getLineById(lineId);
-                        return <div className="lineIntersection">
-                            <div className="formatContainer" title={nameToString(otherLine.name)} style={{ "--scaleFormat": 0.4 } as CSSProperties} onClick={() => this.props.setSelection(lineId)}>
-                                <div className={`format ${otherLine.type} v????`} style={{ "--currentBgColor": otherLine.color } as CSSProperties}  >
-                                    <div className="before"></div>
-                                    <div className="after"></div>
-                                </div>
-                                <div style={{ fontSize: getFontSizeForText(otherLine.xtmData?.Acronym || otherLine.routeNumber.toFixed()), color: ColorUtils.toRGBA(ColorUtils.getContrastColorFor(ColorUtils.toColor01(otherLine.color))) }} className="num">
-                                    {otherLine.xtmData?.Acronym || otherLine.routeNumber.toFixed()}
-                                </div>
-                            </div>
-                        </div>
-                    })}
-                </div>
-            </div>
-            {nextStop && nextStop.district.Index != station.district.Index &&
-                <div className="districtDiv lineStation row col-12 align-items-center">
-                    <div className="before"></div>
-                    {station.district.Index > 0 && <div className="oldDistrict" >{nameToString(station.districtName)}</div>}
-                    {nextStop.district.Index > 0 && <div className="newDistrict">{nameToString(nextStop.districtName)}</div >}
-                </div>
-            }
-        </div>
-    }
-}

@@ -1,11 +1,13 @@
 ﻿using Belzont.Utils;
 using Colossal.Entities;
 using Game.Areas;
+using Game.Buildings;
 using Game.City;
 using Game.Common;
 using Game.Objects;
 using Game.Prefabs;
 using Game.UI;
+using System.Linq;
 using Unity.Collections;
 using Unity.Entities;
 using Unity.Jobs;
@@ -345,14 +347,18 @@ namespace BelzontTLM
                 parent = em.TryGetComponent<Owner>(src.entity, out var owner) ? owner.m_Owner : Entity.Null;
                 parentName = parent != Entity.Null ? nameSystem.GetName(parent).ToValueableName() : default;
                 district = parent != Entity.Null
-                    ? em.TryGetComponent<CurrentDistrict>(parent, out var currentDistrict) ? currentDistrict.m_District : Entity.Null
-                    : em.TryGetComponent<Attached>(entity, out var attachParent)
-                        ? em.TryGetComponent<BorderDistrict>(attachParent.m_Parent, out var borders)
-                            ? borders.m_Left != Entity.Null
-                                ? borders.m_Left : borders.m_Right
-                            : Entity.Null
-                        : Entity.Null;
+                                    ? em.TryGetComponent<CurrentDistrict>(parent, out var currentDistrict) ? currentDistrict.m_District : Entity.Null
+                                    : em.TryGetComponent<Attached>(entity, out var attachParent)
+                                        ? TryGetByBorderDistrict(em, attachParent.m_Parent)
+                                        : em.TryGetComponent<Building>(entity, out var building)
+                                            ? TryGetByBorderDistrict(em, building.m_RoadEdge)
+                                            : Entity.Null;
                 districtName = district != Entity.Null ? nameSystem.GetName(district).ToValueableName() : default;
+
+                static Entity TryGetByBorderDistrict(EntityManager em, Entity attachParent) => em.TryGetComponent<BorderDistrict>(attachParent, out var borders)
+                                            ? borders.m_Left != Entity.Null
+                                                ? borders.m_Left : borders.m_Right
+                                            : Entity.Null;
             }
         }
         public class LineVehicleNamed
