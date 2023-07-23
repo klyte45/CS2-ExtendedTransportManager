@@ -1,15 +1,12 @@
-import { ColorUtils } from "#utility/ColorUtils";
-import { Entity } from "#utility/Entity";
-import { MeasureUnit, kilogramsTo, metersTo } from "#utility/MeasureUnitsUtils";
-import { nameToString, replaceArgs } from "#utility/name.utils";
+import { MeasureUnit } from "#utility/MeasureUnitsUtils";
+import { nameToString } from "#utility/name.utils";
 import translate from "#utility/translate";
 import { CSSProperties, Component, ReactNode } from "react";
-import { Tooltip } from 'react-tooltip';
-import { StationData, VehicleData, getFontSizeForText } from "./LineDetailCmp";
-import { LineData } from "./LineListCmp";
+import { StationData, VehicleData } from "../LineDetailCmp";
+import { LineData } from "../LineListCmp";
 
 
-export class DistrictBorderCmp extends Component<{
+export class DistrictBorderContainerCmp extends Component<{
     station: StationData;
     lineData: LineData;
     nextStop: StationData;

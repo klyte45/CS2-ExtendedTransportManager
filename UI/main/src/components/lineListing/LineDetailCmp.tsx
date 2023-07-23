@@ -7,8 +7,9 @@ import { NameCustom, NameFormatted, NameLocalized, nameToString } from "#utility
 import translate from "#utility/translate";
 import { CSSProperties, Component } from "react";
 import { LineData } from "./LineListCmp";
-import { StationContainerCmp } from "./StationContainerCmp";
-import { DistrictBorderCmp } from "./DistrictBorderCmp";
+import { StationContainerCmp } from "./containers/StationContainerCmp";
+import { DistrictBorderContainerCmp } from "./containers/DistrictBorderContainerCmp";
+import { MapVehicleContainerCmp } from "./containers/MapVehicleContainerCmp";
 
 export type StationData = {
     readonly entity: Entity,
@@ -173,9 +174,9 @@ export default class LineDetailCmp extends Component<Props, State> {
                                             />
                                         </div>
                                         <div className="districtRailing">
-                                            {lineDetails.Stops.every(x => x.district.Index == lineDetails.Stops[0].district.Index && x.isOutsideConnection == lineDetails.Stops[0].isOutsideConnection) ?
+                                            {lineDetails.Stops.every(x => !x.isOutsideConnection && x.district.Index == lineDetails.Stops[0].district.Index) ?
                                                 <>
-                                                    <DistrictBorderCmp
+                                                    <DistrictBorderContainerCmp
                                                         lineData={lineCommonData}
                                                         station={lineDetails.Stops[0]}
                                                         vehicles={lineDetails.Vehicles}
@@ -184,7 +185,7 @@ export default class LineDetailCmp extends Component<Props, State> {
                                                         totalStationCount={lineDetails.Stops.length}
                                                         newOnly={true}
                                                     />
-                                                    <DistrictBorderCmp
+                                                    <DistrictBorderContainerCmp
                                                         lineData={lineCommonData}
                                                         station={lineDetails.Stops[0]}
                                                         vehicles={lineDetails.Vehicles}
@@ -197,8 +198,8 @@ export default class LineDetailCmp extends Component<Props, State> {
                                                 : lineDetails.Stops.map((station, i, arr) => {
                                                     const nextIdx = (i + 1) % arr.length;
                                                     const nextStop = arr[nextIdx];
-                                                    if (nextStop.district.Index != station.district.Index || station.isOutsideConnection != nextStop.isOutsideConnection) {
-                                                        return <DistrictBorderCmp
+                                                    if (station.isOutsideConnection || nextStop.isOutsideConnection || nextStop.district.Index != station.district.Index) {
+                                                        return <DistrictBorderContainerCmp
                                                             lineData={lineCommonData}
                                                             station={station}
                                                             vehicles={lineDetails.Vehicles}
@@ -211,39 +212,11 @@ export default class LineDetailCmp extends Component<Props, State> {
                                                 })}
                                         </div>
                                         <div className="vehiclesRailing">
-                                            {lineDetails.Vehicles.map((vehicle, i, arr) => {
-                                                return <div className="vehicleContainer" key={i} style={{ top: (vehicle.normalizedPosition * 100) + "%", "--vehicleColor": "gray" } as CSSProperties}>
-                                                    <div className="vehicle" style={{ zIndex: (vehicle.normalizedPosition * 100) + 2000 } as CSSProperties} >
-                                                        <div className="vehicleNeedle" ><div className="painting" /></div>
-                                                        <div className="vehicleName">{nameToString(vehicle.name) + " " + vehicle.entity.Index}</div>
-                                                        <div className="vehicleFill">{(vehicle.cargo / vehicle.capacity * 100).toFixed() + "%"}</div>
-                                                    </div>
-                                                </div>
+                                            {lineDetails.Vehicles.map((vehicle, i) => {
+                                                return <MapVehicleContainerCmp key={i} vehicle={vehicle} />
                                             })}
                                         </div>
                                     </div>
-                                    {/* {lineDetails.Stops.map((station, i, arr) => {
-                                        const nextIdx = (i + 1) % arr.length;
-                                        const nextStop = arr[nextIdx];
-                                        return <StationContainerCmp
-                                            getLineById={(x) => this.getLineById(x)}
-                                            lineData={lineCommonData}
-                                            nextStop={nextStop}
-                                            setSelection={(x) => this.setSelection(x)}
-                                            station={station}
-                                            vehicles={lineDetails.Vehicles}
-                                            keyId={i}
-                                            key={i}
-                                        />
-                                    })}
-                                    <StationContainerCmp
-                                        getLineById={(x) => this.getLineById(x)}
-                                        lineData={lineCommonData}
-                                        setSelection={(x) => this.setSelection(x)}
-                                        station={lineDetails.Stops[0]}
-                                        vehicles={lineDetails.Vehicles}
-                                        keyId={-1}
-                                    /> */}
                                 </div>
                             </div>
                         </>
