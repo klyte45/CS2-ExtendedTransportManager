@@ -229,6 +229,17 @@
                 }
             }
 
+            .distanceRailing {
+                @extend %commonRailing;
+                right: 0%;
+                left: 0%;
+                pointer-events: none;
+
+                .stationDistanceContainer {
+                    @extend %distanceContainer;
+                }
+            }
+
             .vehiclesRailing {
                 @extend %commonRailing;
                 left: 50%;
@@ -429,5 +440,23 @@
         }
     }
 
+    %distanceContainer {
+        width: 100%;
+        position: absolute;
+        transform: translateY(-50%);
+
+        .distanceLbl {
+            background-color: black;
+            position: absolute;
+            color: white;
+            font-size: calc(var(--fontSizeS) * 0.75);
+            font-style: italic;
+            right: 50%;
+            margin-right: 5px;
+            transform: translateY(-50%);
+            padding-left: 3px;
+            padding-right: 3px;
+        }
+    }
 
 }

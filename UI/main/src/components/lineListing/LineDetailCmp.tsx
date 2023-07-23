@@ -10,6 +10,7 @@ import { LineData } from "./LineListCmp";
 import { StationContainerCmp } from "./containers/StationContainerCmp";
 import { DistrictBorderContainerCmp } from "./containers/DistrictBorderContainerCmp";
 import { MapVehicleContainerCmp } from "./containers/MapVehicleContainerCmp";
+import { MapStationDistanceContainerCmp } from "./containers/MapStationDistanceContainerCmp";
 
 export type StationData = {
     readonly entity: Entity,
@@ -37,7 +38,7 @@ export type VehicleData = {
     distanceNextStop: number
     distancePrevStop: number
 };
-type SegmentData = {
+export type SegmentData = {
     readonly start: number,
     readonly end: number,
     readonly sizeMeters: number,
@@ -73,7 +74,7 @@ export default class LineDetailCmp extends Component<Props, State> {
                 details.Vehicles = details.Vehicles.map(x => {
                     return {
                         ...x,
-                        ...this.enrichVehicleInfo(x, details.Segments)
+                        ...this.enrichVehicleInfo(x, details.Stops, details.LineData.length)
                     }
                 })
                 details.Stops = details.Stops.map((x, _, arr) => {
@@ -97,14 +98,17 @@ export default class LineDetailCmp extends Component<Props, State> {
             arrivingVehicleStops: arrivingVehicle ? allStations.map(x => x.position >= station.position ? x.position - 1 : x.position).filter(x => x > arrivingVehicle[0]).length : undefined,
         }
     }
-    enrichVehicleInfo(vehicle: VehicleData, segments: SegmentData[]): Partial<VehicleData> {
-        const currentSegmentIdx = segments.filter(x => x.end < vehicle.position).length;
-        const currentSegment = segments[currentSegmentIdx];
-        const currentSegmentFraction = (vehicle.position - currentSegment.start) / (currentSegment.end - currentSegment.start)
+    enrichVehicleInfo(vehicle: VehicleData, stations: StationData[], lineLength: number): Partial<VehicleData> {
+        const lastStationIdx = stations.filter(x => x.position < vehicle.position).length % stations.length;
+        const currentStation = stations[lastStationIdx];
+        const nextStation = stations[(lastStationIdx + 1) % stations.length]
+        const nextStationPos = nextStation.position + (nextStation.position < currentStation.position ? 1 : 0)
+        const totalDistanceStations = (nextStationPos - currentStation.position) * lineLength;
+        const currentStationSegmentFraction = (vehicle.position - currentStation.position) / (nextStationPos - currentStation.position)
         return {
-            normalizedPosition: (currentSegmentIdx + currentSegmentFraction) / segments.length,
-            distanceNextStop: (1 - currentSegmentFraction) * currentSegment.sizeMeters,
-            distancePrevStop: currentSegmentFraction * currentSegment.sizeMeters,
+            normalizedPosition: (lastStationIdx + currentStationSegmentFraction) / stations.length,
+            distanceNextStop: (1 - currentStationSegmentFraction) * totalDistanceStations,
+            distancePrevStop: currentStationSegmentFraction * totalDistanceStations,
         }
     }
     componentWillUnmount(): void {
@@ -177,18 +181,14 @@ export default class LineDetailCmp extends Component<Props, State> {
                                             {lineDetails.Stops.every(x => !x.isOutsideConnection && x.district.Index == lineDetails.Stops[0].district.Index) ?
                                                 <>
                                                     <DistrictBorderContainerCmp
-                                                        lineData={lineCommonData}
-                                                        station={lineDetails.Stops[0]}
-                                                        vehicles={lineDetails.Vehicles}
-                                                        normalizedPosition={0}
+                                                        stop={lineDetails.Stops[0]}
                                                         nextStop={lineDetails.Stops[0]}
+                                                        normalizedPosition={0}
                                                         totalStationCount={lineDetails.Stops.length}
                                                         newOnly={true}
                                                     />
                                                     <DistrictBorderContainerCmp
-                                                        lineData={lineCommonData}
-                                                        station={lineDetails.Stops[0]}
-                                                        vehicles={lineDetails.Vehicles}
+                                                        stop={lineDetails.Stops[0]}
                                                         normalizedPosition={2}
                                                         nextStop={lineDetails.Stops[0]}
                                                         totalStationCount={lineDetails.Stops.length}
@@ -200,16 +200,25 @@ export default class LineDetailCmp extends Component<Props, State> {
                                                     const nextStop = arr[nextIdx];
                                                     if (station.isOutsideConnection || nextStop.isOutsideConnection || nextStop.district.Index != station.district.Index) {
                                                         return <DistrictBorderContainerCmp
-                                                            lineData={lineCommonData}
-                                                            station={station}
-                                                            vehicles={lineDetails.Vehicles}
+                                                            stop={station}
+                                                            nextStop={nextStop}
                                                             key={i}
                                                             normalizedPosition={(i + 1) / arr.length}
-                                                            nextStop={nextStop}
                                                             totalStationCount={lineDetails.Stops.length}
                                                         />
                                                     }
                                                 })}
+                                        </div>
+                                        <div className="distanceRailing">
+                                            {lineDetails.Stops.map((station, i, arr) => {
+                                                const nextIdx = (i + 1) % arr.length;
+                                                const nextStop = arr[nextIdx];
+                                                return <MapStationDistanceContainerCmp key={i}
+                                                    stop={station}
+                                                    nextStop={nextStop}
+                                                    segments={this.state.lineDetails.Segments}
+                                                    normalizedPosition={(i + .5) / (arr.length)} />
+                                            })}
                                         </div>
                                         <div className="vehiclesRailing">
                                             {lineDetails.Vehicles.map((vehicle, i) => {

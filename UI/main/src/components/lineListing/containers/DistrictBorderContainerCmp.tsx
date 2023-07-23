@@ -7,33 +7,21 @@ import { LineData } from "../LineListCmp";
 
 
 export class DistrictBorderContainerCmp extends Component<{
-    station: StationData;
-    lineData: LineData;
+    stop: StationData;
     nextStop: StationData;
-    vehicles: VehicleData[];
     normalizedPosition: number;
     totalStationCount: number
     newOnly?: boolean
     oldOnly?: boolean
-}, { measureUnit?: MeasureUnit; }> {
+}> {
 
     constructor(props) {
         super(props);
         this.state = {};
     }
-    private measureCallback = async () => this.setState({ measureUnit: await engine.call("k45::xtm.common.getMeasureUnits") });
-    componentDidMount() {
-        engine.on("k45::xtm.common.onMeasureUnitsChanged", this.measureCallback);
-        engine.call("k45::xtm.common.getMeasureUnits").then(async (x) => {
-            this.setState({ measureUnit: x });
-        });
-    }
-    override componentWillUnmount() {
-        engine.off("k45::xtm.common.onMeasureUnitsChanged", this.measureCallback);
-    }
 
     render(): ReactNode {
-        const station = this.props.station;
+        const station = this.props.stop;
         const nextStop = this.props.nextStop;
         let topOffset: CSSProperties;
         if (this.props.normalizedPosition <= 0) {
