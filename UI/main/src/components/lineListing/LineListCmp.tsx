@@ -55,7 +55,6 @@ export default class LineListCmp extends Component<any, State> {
     }
 
     async reloadLines(res: LineData[]) {
-        console.log(res);
         this.setState({
             linesList: res.sort((a, b) => {
                 if (a.type != b.type) return a.type.localeCompare(b.type);

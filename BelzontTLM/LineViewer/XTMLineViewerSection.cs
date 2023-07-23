@@ -7,7 +7,6 @@ using Game.Common;
 using Game.Objects;
 using Game.Prefabs;
 using Game.UI;
-using System.Linq;
 using Unity.Collections;
 using Unity.Entities;
 using Unity.Jobs;
@@ -151,7 +150,6 @@ namespace BelzontTLM
             __TypeHandle.__Game_Pathfind_PathInformation_RO_ComponentLookup.Update(ref CheckedStateRef);
             __TypeHandle.__Game_Routes_Color_RO_ComponentLookup.Update(ref CheckedStateRef);
             UpdateJob jobData2 = default;
-            jobData2.m_RightHandTraffic = !m_CityConfigurationSystem.leftHandTraffic;
             jobData2.m_RouteEntity = e;
             jobData2.m_Colors = __TypeHandle.__Game_Routes_Color_RO_ComponentLookup;
             jobData2.m_PathInformation = __TypeHandle.__Game_Pathfind_PathInformation_RO_ComponentLookup;
@@ -345,6 +343,10 @@ namespace BelzontTLM
                 isCargo = src.isCargo;
                 name = nameSystem.GetName(src.entity).ToValueableName();
                 parent = em.TryGetComponent<Owner>(src.entity, out var owner) ? owner.m_Owner : Entity.Null;
+                while (em.TryGetComponent<Owner>(parent, out var ownerParent))
+                {
+                    parent = ownerParent.m_Owner;
+                }
                 parentName = parent != Entity.Null ? nameSystem.GetName(parent).ToValueableName() : default;
                 district = parent != Entity.Null
                                     ? em.TryGetComponent<CurrentDistrict>(parent, out var currentDistrict) ? currentDistrict.m_District : Entity.Null

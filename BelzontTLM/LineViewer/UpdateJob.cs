@@ -69,7 +69,7 @@ namespace BelzontTLM
                         int item = cargo.Item1;
                         int item2 = cargo.Item2;
                         float num7 = num6 / num;
-                        LineVehicle lineVehicle = new LineVehicle(vehicle, m_RightHandTraffic ? (1f - num7) : num7, item, item2, flag);
+                        LineVehicle lineVehicle = new LineVehicle(vehicle, num7, item, item2, flag);
                         m_VehiclesResult.Add(lineVehicle);
                         if (item2 > m_StopCapacityResult[0])
                         {
@@ -103,7 +103,7 @@ namespace BelzontTLM
                             }
                             entity = owner.m_Owner;
                         }
-                        LineStop lineStop = new LineStop(entity, m_RightHandTraffic ? (1f - num8) : num8, num9, flag, m_OutsideConnections.HasComponent(entity));
+                        LineStop lineStop = new LineStop(entity, num8, num9, flag, m_OutsideConnections.HasComponent(entity));
                         m_StopsResult.Add(lineStop);
                     }
                 }
@@ -394,9 +394,6 @@ namespace BelzontTLM
                 }
                 return new ValueTuple<int, int>(num, num2);
             }
-
-            [ReadOnly]
-            public bool m_RightHandTraffic;
 
             [ReadOnly]
             public Entity m_RouteEntity;

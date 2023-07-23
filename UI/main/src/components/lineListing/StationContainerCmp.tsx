@@ -2,39 +2,40 @@ import { ColorUtils } from "#utility/ColorUtils";
 import { Entity } from "#utility/Entity";
 import { MeasureUnit, kilogramsTo, metersTo } from "#utility/MeasureUnitsUtils";
 import { nameToString, replaceArgs } from "#utility/name.utils";
-import renderToString from "#utility/renderToString";
 import translate from "#utility/translate";
 import { CSSProperties, Component, ReactNode } from "react";
-import { LineData } from "./LineListCmp";
+import { Tooltip } from 'react-tooltip';
 import { StationData, VehicleData, getFontSizeForText } from "./LineDetailCmp";
+import { LineData } from "./LineListCmp";
+
 
 export class StationContainerCmp extends Component<{
     station: StationData;
     lineData: LineData;
     getLineById: (e: Entity) => LineData;
-    nextStop?: StationData;
     vehicles: VehicleData[];
     setSelection: (e: Entity) => void;
+    keyId: number;
+    normalizedPosition: number;
+    totalStationCount: number
 }, { measureUnit?: MeasureUnit; }> {
 
-    private tooltipContent?: string;
-    private _tooltipDirty: boolean = false;
     constructor(props) {
         super(props);
         this.state = {};
     }
-    private measureCallback = async () => this.setState({ measureUnit: await engine.call("k45::xtm.common.getMeasureUnits") }, () => this.componentDidUpdate());
+    private measureCallback = async () => this.setState({ measureUnit: await engine.call("k45::xtm.common.getMeasureUnits") });
     componentDidMount() {
         engine.on("k45::xtm.common.onMeasureUnitsChanged", this.measureCallback);
         engine.call("k45::xtm.common.getMeasureUnits").then(async (x) => {
-            this.setState({ measureUnit: x }, () => this.componentDidUpdate());
+            this.setState({ measureUnit: x });
         });
     }
     override componentWillUnmount() {
         engine.off("k45::xtm.common.onMeasureUnitsChanged", this.measureCallback);
     }
 
-    private async generateTooltip() {
+    private generateTooltip() {
         if (!isFinite(this.state.measureUnit)) return;
         const station = this.props.station;
         let passengerValueFmt: string;
@@ -56,34 +57,27 @@ export class StationContainerCmp extends Component<{
                 : translate("lineStationDetail.nextVehicleIncoming")
             : "";
 
-        const newContent = await renderToString(<>
+        return <>
             <div style={{ display: "block" }}>{station.parent.Index ? <div>{replaceArgs(translate("lineStationDetail.buildingLbl"), { building: nameToString(station.parentName) })}</div> : ""}
                 <div style={{ display: "block" }}>{replaceArgs(translate(`lineStationDetail.waiting.${station.isCargo ? "cargo" : "passengers"}`), { quantity: passengerValueFmt })}</div>
                 <div>{station.arrivingVehicle
-                    ? <>{translate(`lineStationDetail.nextVehicleData`)} <b>{nameToString(station.arrivingVehicle.name)}</b> ({nextVehicleDistanceFmt} - {stopsYetToPassText})</>
+                    ? <>{translate(`lineStationDetail.nextVehicleData`)} <b>{nameToString(station.arrivingVehicle.name) + " - " + station.arrivingVehicle.entity.Index}</b>
+                        <div style={{ display: "inline", fontSize: "var(--fontSizeXS)" }}>↳<i> {nextVehicleDistanceFmt}&nbsp;-&nbsp;{stopsYetToPassText}</i></div></>
                     : <b className="lineView-warning">{translate(`lineStationDetail.noNextVehicleData`)}</b>}</div>
             </div>
-        </>);
-        this._tooltipDirty = this.tooltipContent == newContent;
+        </>;
     }
 
-    override componentDidUpdate() {
-        this.generateTooltip().then(() => this._tooltipDirty = !(this._tooltipDirty ? this.setState({}) as any : null) && false);
-    }
 
     render(): ReactNode {
         const station = this.props.station;
         const lineCommonData = this.props.lineData;
-        const nextStop = this.props.nextStop;
-
-        return <div className="lineStationContainer">
-            <div className="lineStation row col-12 align-items-center"
-                data-tooltip={this.tooltipContent}
-                data-tooltip-position="center middle"
-                data-tooltip-pivot="left middle"
-                data-tooltip-distanceX="30">
+        const id = `linestation-${station.entity.Index}-${this.props.keyId}`
+        return <div className="lineStationContainer" style={{ top: (100 * this.props.normalizedPosition) + "%", minHeight: (100 / this.props.totalStationCount) + "%" }}>
+            <div className="lineStation row col-12 align-items-center">
                 <div className="stationName">{nameToString(station.name)}</div>
-                <div className="stationBullet"></div>
+                <div className="stationBullet" id={id} >
+                </div>
                 <div className="stationIntersections lineStation row align-items-center">
                     {([] as any[]).map((lineId: Entity) => {
                         if (lineId.Index == lineCommonData.entity.Index) return;
@@ -101,13 +95,11 @@ export class StationContainerCmp extends Component<{
                         </div>;
                     })}
                 </div>
+
+                <Tooltip anchorSelect={`#${id}`} className="tlm-station-tooltip" >
+                    {this.generateTooltip()}
+                </Tooltip>
             </div>
-            {nextStop && nextStop.district.Index != station.district.Index &&
-                <div className="districtDiv lineStation row col-12 align-items-center">
-                    <div className="before"></div>
-                    {station.district.Index > 0 && <div className="oldDistrict">{nameToString(station.districtName)}</div>}
-                    {nextStop.district.Index > 0 && <div className="newDistrict">{nameToString(nextStop.districtName)}</div>}
-                </div>}
         </div>;
     }
 }

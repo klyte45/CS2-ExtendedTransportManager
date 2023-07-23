@@ -169,76 +169,157 @@
 
     .linePath {
         position: relative;
-        min-height: 70.000000%;
-        display: flex;
-        flex-direction: column;
-        justify-content: space-between;
+        min-height: 100.000000%;
+        overflow: hidden;
 
-        >.before {
-            content: "";
+        .lineBg {
             position: absolute;
             top: 0.000000px;
-            bottom: 0.000000px;
+            bottom: 30.000000px;
             left: 50.000000%;
             width: 20.000000px;
             margin-left: 5.000000px;
             background-color: var(--lineColor);
             border-radius: 50px;
+        }
 
-            .vehiclesRailing {
+        .railingContainer {
+            position: absolute;
+            top: 0.000000px;
+            bottom: 30.000000px;
+            left: 0.000000;
+            right: 0;
+            margin-left: 5.000000px;
+
+
+            %commonRailing {
                 position: absolute;
                 top: 20px;
                 bottom: 20px;
-                left: 50%;
-                margin-left: 40px;
                 pointer-events: all;
                 z-index: 999;
 
-                .vehicle {
-                    position: absolute;
-                    left: 0;
-                    display: flex;
-                    flex-wrap: wrap;
-                    flex-direction: column;
-                    transform: translateY(-50%);
-                    background-color: var(--vehicleColor);
-                    padding: 6px;
-                    border-radius: 4px;
+            }
 
-                    &:hover {
-                        z-index: 89999;
-                    }
+            .stationRailing {
+                @extend %commonRailing;
+                right: 50%;
+                left: 0%;
 
-                    .vehicleNeedle {
-                        position: absolute;
-                        top: 50%;
-                        background-color: var(--vehicleColor);
-                        clip-path: polygon(100% 0, 0 50%, 100% 100%);
-                        transform: translateY(-50%);
-                        height: 8px;
-                        width: 15px;
-                        left: -12px;
-                    }
+                // margin-left: 20px;
+                // background-color: blue;
+                &:hover {
+                    z-index: 20454;
+                }
+
+                .lineStationContainer {
+                    @extend %lineStationContainer;
+
+                }
+            }
+
+            .districtRailing {
+                @extend %commonRailing;
+                right: 0%;
+                left: 0%;
+                pointer-events: none;
+
+                .districtLimitsContainer {
+                    @extend %districtLimitContainer;
+                }
+            }
+
+            .vehiclesRailing {
+                @extend %commonRailing;
+                left: 50%;
+                margin-left: 20px;
+                //background-color: magenta;
+
+                .vehicleContainer {
+                    @extend %vehicleContainer;
                 }
             }
         }
 
-        .lineStationContainer {
-            width: 100%;
-            height: 40px;
+    }
+
+    %vehicleContainer {
+        position: absolute;
+        margin-left: 20px;
+
+        &:hover,
+        *:hover {
+            z-index: 89999 !important;
         }
 
-        .lineStation {
-            height: 40px;
+        .vehicle {
             position: relative;
+            left: 0.000000px;
+            display: flex;
+            flex-direction: column;
+            transform: translateY(-50.000000%);
+            background-color: var(--vehicleColor);
+            padding-top: 6.000000px;
+            padding-left: 6.000000px;
+            padding-right: 6.000000px;
+            padding-bottom: 6.000000px;
+            border-top-left-radius: 4.000000px 4.000000px;
+            border-top-right-radius: 4.000000px 4.000000px;
+            border-bottom-left-radius: 4.000000px 4.000000px;
+            border-bottom-right-radius: 4.000000px 4.000000px;
+            border: 1px solid black;
+            white-space: pre-wrap;
+
+            max-width: 200px;
+
+            &:hover {
+                box-shadow: 0px 0px 5px black;
+            }
 
             * {
-                pointer-events: none;
+                pointer-events: visibleFill;
+                display: block;
             }
+
+            .vehicleNeedle {
+                top: 50.000000%;
+                background-color: black;
+                clip-path: border-box polygon(nonzero, 100.000000% 0.000000px, 0.000000px 50.000000%, 100.000000% 100.000000%);
+                height: 15.000000px;
+                width: 15.000000px;
+                left: -15.000000px;
+                margin-top: -1.500000px;
+                position: absolute;
+
+                .painting {
+                    position: absolute;
+                    top: 1px;
+                    left: 2px;
+                    right: 0;
+                    bottom: 1px;
+                    background-color: var(--vehicleColor);
+                    clip-path: border-box polygon(nonzero, 100.000000% 0.000000px, 0.000000px 50.000000%, 100.000000% 100.000000%);
+                    position: absolute;
+                }
+            }
+        }
+
+    }
+
+    %lineStationContainer {
+        width: 100%;
+        height: 60px;
+        position: absolute;
+
+
+        .lineStation {
+            height: 60px;
+            position: relative;
+            transform: translateY(-50%);
 
             .stationName {
                 position: absolute;
-                width: 50.000000%;
+                width: 99.000000%;
                 top: 50.000000%;
                 text-align: right;
                 font-weight: bolder;
@@ -248,8 +329,7 @@
 
             .stationBullet {
                 position: absolute;
-                left: 50%;
-                margin-left: 7px;
+                right: -20px;
                 top: 50%;
                 margin-top: - 8px;
                 height: 16px;
@@ -258,6 +338,7 @@
                 border: 1px solid black;
                 display: block;
                 border-radius: 9999px;
+                pointer-events: all;
             }
 
             .stationIntersections {
@@ -277,38 +358,76 @@
 
         }
 
+        .tlm-station-tooltip {
+            background-color: var(--tooltipColor);
+            filter: var(--tooltipFilter);
+            border-radius: 4rem;
+            font-size: var(--fontSizeS);
+            color: var(--textColorDim);
+            pointer-events: none;
+            display: flex;
+            line-break: normal;
 
-
-    }
-
-    .districtDiv {
-        position: relative;
-        height: 40px;
-        margin-top: -15px;
-
-        .before {
-            content: "";
-            height: 2px;
-            background-image: linear-gradient(to left, transparent, transparent 50%, #eee 50%, #eee 75%, transparent 75%);
-            background-size: 20.000000px auto;
             position: absolute;
-            left: 0;
-            right: 0;
-            top: 19px
-        }
+            padding: 7rem 10rem;
+            z-index: 1000000000;
+            overflow: hidden;
+            left: 100%;
+            margin-left: 30px;
+            max-width: 95%;
 
-        .oldDistrict {
-            font-size: 82%;
-            position: absolute;
-            top: -5px;
-            font-style: italic;
-        }
-
-        .newDistrict {
-            position: absolute;
-            bottom: 5px;
-            font-size: 80%;
-            font-style: italic;
+            * {
+                display: flex;
+                flex-wrap: wrap;
+            }
         }
     }
+
+    %districtLimitContainer {
+        width: 100%;
+        position: absolute;
+        transform: translateY(-50%);
+
+        .districtDiv {
+            position: relative;
+
+            .before {
+                content: "";
+                height: 2px;
+                background-image: linear-gradient(to left, transparent, transparent 50%, #eee 50%, #eee 75%, transparent 75%);
+                background-size: 20.000000px auto;
+                position: absolute;
+                left: 0;
+                right: 0;
+                top: 0px
+            }
+
+            .oldDistrict,
+            .newDistrict {
+                font-size: 70%;
+                position: absolute;
+                font-style: italic;
+
+                &.outsideConn {
+                    color: yellow;
+                }
+
+                &.noDistrict {
+                    color: gray;
+                }
+            }
+
+            .newDistrict {
+                top: 5px;
+            }
+
+            .oldDistrict {
+                bottom: 100%;
+                padding-bottom: 5px;
+            }
+
+        }
+    }
+
+
 }

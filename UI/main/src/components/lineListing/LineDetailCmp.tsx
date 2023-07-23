@@ -8,6 +8,7 @@ import translate from "#utility/translate";
 import { CSSProperties, Component } from "react";
 import { LineData } from "./LineListCmp";
 import { StationContainerCmp } from "./StationContainerCmp";
+import { DistrictBorderCmp } from "./DistrictBorderCmp";
 
 export type StationData = {
     readonly entity: Entity,
@@ -65,6 +66,7 @@ export default class LineDetailCmp extends Component<Props, State> {
     componentDidMount() {
         engine.whenReady.then(async () => {
             engine.on("k45::xtm.lineViewer.getRouteDetail->", (details: State['lineDetails']) => {
+                if (details.LineData.entity.Index != this.props.currentLine.entity.Index) return;
                 console.log(details);
 
                 details.Vehicles = details.Vehicles.map(x => {
@@ -142,23 +144,85 @@ export default class LineDetailCmp extends Component<Props, State> {
                                 </div>
                             </div>
                             <div className="lineStationsContainer">
-                                {lineDetails.Stops[0].district.Index > 0 &&
-                                    <div className="districtDiv lineStation row col-12 align-items-center">
-                                        <div className="newDistrict">{nameToString(lineDetails.Stops[0].districtName)}</div>
-                                    </div>}
-                                <div className="linePath" style={{ "--lineColor": getClampedColor(lineCommonData.color) } as CSSProperties}>
-                                    <div className="before">
+                                <div className="linePath" style={{ "--lineColor": getClampedColor(lineCommonData.color), height: 40 * (lineDetails.Stops.length + 1) } as CSSProperties}>
+                                    <div className="lineBg"></div>
+                                    <div className="railingContainer">
+                                        <div className="stationRailing">
+                                            {lineDetails.Stops.map((station, i, arr) => {
+                                                return <StationContainerCmp
+                                                    getLineById={(x) => this.getLineById(x)}
+                                                    lineData={lineCommonData}
+                                                    setSelection={(x) => this.setSelection(x)}
+                                                    station={station}
+                                                    vehicles={lineDetails.Vehicles}
+                                                    keyId={i}
+                                                    key={i}
+                                                    normalizedPosition={i / arr.length}
+                                                    totalStationCount={arr.length}
+                                                />
+                                            })}
+                                            <StationContainerCmp
+                                                getLineById={(x) => this.getLineById(x)}
+                                                lineData={lineCommonData}
+                                                setSelection={(x) => this.setSelection(x)}
+                                                station={lineDetails.Stops[0]}
+                                                vehicles={lineDetails.Vehicles}
+                                                keyId={-1}
+                                                normalizedPosition={1}
+                                                totalStationCount={lineDetails.Stops.length}
+                                            />
+                                        </div>
+                                        <div className="districtRailing">
+                                            {lineDetails.Stops.every(x => x.district.Index == lineDetails.Stops[0].district.Index && x.isOutsideConnection == lineDetails.Stops[0].isOutsideConnection) ?
+                                                <>
+                                                    <DistrictBorderCmp
+                                                        lineData={lineCommonData}
+                                                        station={lineDetails.Stops[0]}
+                                                        vehicles={lineDetails.Vehicles}
+                                                        normalizedPosition={0}
+                                                        nextStop={lineDetails.Stops[0]}
+                                                        totalStationCount={lineDetails.Stops.length}
+                                                        newOnly={true}
+                                                    />
+                                                    <DistrictBorderCmp
+                                                        lineData={lineCommonData}
+                                                        station={lineDetails.Stops[0]}
+                                                        vehicles={lineDetails.Vehicles}
+                                                        normalizedPosition={2}
+                                                        nextStop={lineDetails.Stops[0]}
+                                                        totalStationCount={lineDetails.Stops.length}
+                                                        oldOnly={true}
+                                                    />
+                                                </>
+                                                : lineDetails.Stops.map((station, i, arr) => {
+                                                    const nextIdx = (i + 1) % arr.length;
+                                                    const nextStop = arr[nextIdx];
+                                                    if (nextStop.district.Index != station.district.Index || station.isOutsideConnection != nextStop.isOutsideConnection) {
+                                                        return <DistrictBorderCmp
+                                                            lineData={lineCommonData}
+                                                            station={station}
+                                                            vehicles={lineDetails.Vehicles}
+                                                            key={i}
+                                                            normalizedPosition={(i + 1) / arr.length}
+                                                            nextStop={nextStop}
+                                                            totalStationCount={lineDetails.Stops.length}
+                                                        />
+                                                    }
+                                                })}
+                                        </div>
                                         <div className="vehiclesRailing">
                                             {lineDetails.Vehicles.map((vehicle, i, arr) => {
-                                                return <div className="vehicle" style={{ top: (vehicle.normalizedPosition * 100) + "%", "--vehicleColor": "gray" } as CSSProperties} key={i}>
-                                                    <div className="vehicleNeedle" />
-                                                    <div className="vehicleName">{nameToString(vehicle.name)}</div>
-                                                    <div className="vehicleFill">{(vehicle.cargo / vehicle.capacity * 100).toFixed() + "%"}</div>
+                                                return <div className="vehicleContainer" key={i} style={{ top: (vehicle.normalizedPosition * 100) + "%", "--vehicleColor": "gray" } as CSSProperties}>
+                                                    <div className="vehicle" style={{ zIndex: (vehicle.normalizedPosition * 100) + 2000 } as CSSProperties} >
+                                                        <div className="vehicleNeedle" ><div className="painting" /></div>
+                                                        <div className="vehicleName">{nameToString(vehicle.name) + " " + vehicle.entity.Index}</div>
+                                                        <div className="vehicleFill">{(vehicle.cargo / vehicle.capacity * 100).toFixed() + "%"}</div>
+                                                    </div>
                                                 </div>
                                             })}
                                         </div>
                                     </div>
-                                    {lineDetails.Stops.map((station, i, arr) => {
+                                    {/* {lineDetails.Stops.map((station, i, arr) => {
                                         const nextIdx = (i + 1) % arr.length;
                                         const nextStop = arr[nextIdx];
                                         return <StationContainerCmp
@@ -168,6 +232,7 @@ export default class LineDetailCmp extends Component<Props, State> {
                                             setSelection={(x) => this.setSelection(x)}
                                             station={station}
                                             vehicles={lineDetails.Vehicles}
+                                            keyId={i}
                                             key={i}
                                         />
                                     })}
@@ -177,7 +242,8 @@ export default class LineDetailCmp extends Component<Props, State> {
                                         setSelection={(x) => this.setSelection(x)}
                                         station={lineDetails.Stops[0]}
                                         vehicles={lineDetails.Vehicles}
-                                    />
+                                        keyId={-1}
+                                    /> */}
                                 </div>
                             </div>
                         </>
