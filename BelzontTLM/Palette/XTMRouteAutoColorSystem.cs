@@ -2,7 +2,6 @@
 using Belzont.Serialization;
 using Belzont.Utils;
 using Colossal.Serialization.Entities;
-using Colossal.UI.Binding;
 using Game;
 using Game.Common;
 using Game.Notifications;
@@ -46,7 +45,7 @@ namespace BelzontTLM.Palettes
             eventCaller.Invoke("autoColor.cargoModalSettings", () => PaletteSettingsCargo.ToDictionary(x => x.Key.ToString(), x => x.Value.ToString()));
             eventCaller.Invoke("autoColor.setAutoColorFor", SetModalAutoColorSettings);
             //     File.WriteAllLines(Path.Combine(BasicIMod.Instance.ModRootFolder, "localeDump.txt"), GameManager.instance.localizationManager.activeDictionary.entries.Select(x => $"{x.Key}\t{x.Value.Replace("\n", "\\n").Replace("\r", "\\r")}").ToArray());
-        }   
+        }
         #endregion
 
         private void SetModalAutoColorSettings(string transportTypeStr, bool isCargo, string guid)
@@ -103,7 +102,7 @@ namespace BelzontTLM.Palettes
             {
                 RunUpdatePalettesWithQuery(m_linesToUpdateData);
             }
-            
+
         }
 
         private void RunUpdatePalettesWithQuery(EntityQuery query)

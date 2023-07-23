@@ -28,6 +28,7 @@ namespace BelzontTLM
             updateSystem.UpdateAfter<XTMLineListingSection>(SystemUpdatePhase.UIUpdate);
             updateSystem.UpdateAfter<XTMLineViewerSystem>(SystemUpdatePhase.UIUpdate);
             updateSystem.UpdateAfter<XTMRouteAutoColorSystem>(SystemUpdatePhase.UIUpdate);
+            updateSystem.UpdateAfter<XTMStopsLinkingSystem>(SystemUpdatePhase.UIUpdate);
         }
 
         public override void OnDispose()
