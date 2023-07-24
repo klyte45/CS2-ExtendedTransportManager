@@ -5,8 +5,9 @@ import { nameToString, replaceArgs } from "#utility/name.utils";
 import translate from "#utility/translate";
 import { CSSProperties, Component, ReactNode } from "react";
 import { Tooltip } from 'react-tooltip';
-import { StationData, VehicleData, getFontSizeForText } from "../LineDetailCmp";
+import { StationData, VehicleData } from "../LineDetailCmp";
 import { LineData } from "../LineListCmp";
+import { getFontSizeForText } from "./TlmLineFormatCmp";
 
 
 export class StationContainerCmp extends Component<{

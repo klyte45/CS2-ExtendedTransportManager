@@ -105,8 +105,7 @@ export default class LineDetailCmp extends Component<Props, State> {
                         ...this.enrichStopInfo(x, arr, details.Vehicles, details.LineData)
                     }
                 })
-                this.setState({ lineDetails: details });
-                this.reloadLines();
+                this.setState({ lineDetails: details }, () => this.reloadLines());
             });
         })
         this.reloadLines(true);
@@ -138,7 +137,9 @@ export default class LineDetailCmp extends Component<Props, State> {
     }
 
     async reloadLines(force: boolean = false) {
-        await engine.call("k45::xtm.lineViewer.getRouteDetail", this.props.currentLine.entity, force);
+        if (force || this.state.mapViewOptions.showVehicles) {
+            await engine.call("k45::xtm.lineViewer.getRouteDetail", this.props.currentLine.entity, force);
+        }
     }
     render() {
         if (!this.props.currentLine) {
@@ -165,30 +166,47 @@ export default class LineDetailCmp extends Component<Props, State> {
                         <div id="dataPanel">
                             <TabPanel style={{ whiteSpace: 'pre-wrap' }}>
 
+                                {JSON.stringify(this.state.lineDetails ?? "LOADING", null, 2)}
                             </TabPanel>
-                            <TabPanel style={{ whiteSpace: 'pre-wrap' }}>
+                            <TabPanel >
                                 daçlkjdajdklasjd
                             </TabPanel>
                             <TabPanel>
                                 <h2>{translate("lineViewer.showOnMap")}</h2>
-                                <Checkbox isChecked={() => this.state.mapViewOptions.showDistances} title={translate("lineViewer.showDistancesLbl")} onValueToggle={(x) => this.setState({ mapViewOptions: { ...this.state.mapViewOptions, showDistances: x } })} />
-                                <Checkbox isChecked={() => this.state.mapViewOptions.showDistricts} title={translate("lineViewer.showDistrictsLbl")} onValueToggle={(x) => this.setState({ mapViewOptions: { ...this.state.mapViewOptions, showDistricts: x } })} />
-                                <Checkbox isChecked={() => this.state.mapViewOptions.showVehicles} title={translate("lineViewer.showVehiclesLbl")} onValueToggle={(x) => this.setState({ mapViewOptions: { ...this.state.mapViewOptions, showVehicles: x, showIntegrations: this.state.mapViewOptions.showIntegrations && !x } })} />
-                                <Checkbox isChecked={() => this.state.mapViewOptions.showIntegrations} title={translate("lineViewer.showIntegrationsLbl")} onValueToggle={(x) => this.setState({ mapViewOptions: { ...this.state.mapViewOptions, showIntegrations: x, showVehicles: this.state.mapViewOptions.showVehicles && !x } })} />
-                                <Checkbox isChecked={() => this.state.mapViewOptions.useWhiteBackground} title={translate("lineViewer.useWhiteBackgroundLbl")} onValueToggle={(x) => this.setState({ mapViewOptions: { ...this.state.mapViewOptions, useWhiteBackground: x } })} />
+                                <Checkbox isChecked={() => this.state.mapViewOptions.showDistances} title={translate("lineViewer.showDistancesLbl")} onValueToggle={(x) => this.toggleDistances(x)} />
+                                <Checkbox isChecked={() => this.state.mapViewOptions.showDistricts} title={translate("lineViewer.showDistrictsLbl")} onValueToggle={(x) => this.toggleDistricts(x)} />
+                                <Checkbox isChecked={() => this.state.mapViewOptions.showVehicles} title={translate("lineViewer.showVehiclesLbl")} onValueToggle={(x) => this.toggleVehiclesShow(x)} />
+                                <Checkbox isChecked={() => this.state.mapViewOptions.showIntegrations} title={translate("lineViewer.showIntegrationsLbl")} onValueToggle={(x) => this.toggleIntegrations(x)} />
+                                <Checkbox isChecked={() => this.state.mapViewOptions.useWhiteBackground} title={translate("lineViewer.useWhiteBackgroundLbl")} onValueToggle={(x) => this.toggleWhiteBG(x)} />
                             </TabPanel>
-                            <TabPanel style={{ whiteSpace: 'pre-wrap' }}>
-                                {JSON.stringify(this.state.lineDetails ?? "LOADING", null, 2)}
-                            </TabPanel>
-                            <TabPanel style={{ whiteSpace: 'pre-wrap' }}>
-                                T4
-                            </TabPanel>
+                            <TabPanel></TabPanel>
+                            <TabPanel></TabPanel>
                         </div>
                     </Tabs>
                 </div>
             </DefaultPanelScreen>
         </>;
     }
+    private toggleWhiteBG(x: boolean): void {
+        this.setState({ mapViewOptions: { ...this.state.mapViewOptions, useWhiteBackground: x } });
+    }
+
+    private toggleIntegrations(x: boolean): void {
+        this.setState({ mapViewOptions: { ...this.state.mapViewOptions, showIntegrations: x, showVehicles: this.state.mapViewOptions.showVehicles && !x } }, () => this.reloadLines());
+    }
+
+    private toggleDistricts(x: boolean): void {
+        this.setState({ mapViewOptions: { ...this.state.mapViewOptions, showDistricts: x } });
+    }
+
+    private toggleDistances(x: boolean): void {
+        this.setState({ mapViewOptions: { ...this.state.mapViewOptions, showDistances: x } });
+    }
+
+    private toggleVehiclesShow(x: boolean) {
+        this.setState({ mapViewOptions: { ...this.state.mapViewOptions, showVehicles: x, showIntegrations: this.state.mapViewOptions.showIntegrations && !x } }, () => this.reloadLines());
+    }
+
     getLineById(lineId: Entity): LineData {
         return {} as any
     }
@@ -218,22 +236,4 @@ export default class LineDetailCmp extends Component<Props, State> {
     }
 }
 
-export function getFontSizeForText(text: string) {
-    switch (Math.max(...(text || "").split(" ").map(x => x.length))) {
-        case 1:
-            return "52px";
-        case 2:
-            return "44px";
-        case 3:
-            return "32px";
-        case 4:
-            return "22px";
-        case 5:
-            return "18px";
-        case 6:
-            return "15px";
-        default:
-            return "11px";
-    }
-}
 

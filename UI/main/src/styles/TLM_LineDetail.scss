@@ -1,11 +1,13 @@
 #TlmViewer {
 
     --districtBorderColor: #eee;
+    --cityBorderNameColor: #ee0;
 
     &.mapWhiteBg {
-        background-color: white;
+        background-color: #eee;
         color: black;
         --districtBorderColor: #111;
+        --cityBorderNameColor: rgb(158, 127, 0);
     }
 
     .lineBlock {
@@ -25,50 +27,7 @@
             margin-left: -15px;
         }
     }
-
-    .formatContainer {
-        --scaleFormat: 1;
-        --margin-base: calc((var(--scaleFormat) - 1) * 28px + 3px);
-        position: relative;
-        transform: scale(var(--scaleFormat));
-        margin-bottom: calc((var(--scaleFormat) - 1) * 25px);
-        margin-top: calc((var(--scaleFormat) - 1) * 25px);
-        // margin: var(--margin-base) calc(var(--margin-base) + 3px) var(--margin-base) var(--margin-base) ;    
-        margin-left: 8px;
-        margin-right: 8px;
-        overflow: visible;
-        width: 60px;
-        height: 60px;
-        display: block;
-
-        .format {
-            position: absolute;
-            border: 1px solid #000000;
-            background-color: var(--currentBgColor);
-            height: 60px;
-            width: 60px;
-            display: block;
-
-            .after,
-            .before {
-                background-color: var(--currentBgColor);
-            }
-
-            +.num {
-                position: absolute;
-                font-size: 28.000000px;
-                font-weight: bold;
-                color: rgba(255, 255, 255, 1.000000);
-                z-index: 9;
-                top: 50.000000%;
-                text-align: center;
-                width: 60.000000px;
-                height: auto;
-                line-height: 100.000000%;
-                transform: translateY(-50.000000%);
-            }
-        }
-    }
+   
 
     .lineBlock text {
         text-align: center;
@@ -76,88 +35,7 @@
         text-shadow: 0 0 6px black;
     }
 
-    .format.Bus {
-        clip-path: polygon(25% 0%, 75% 0%, 100% 50%, 75% 100%, 25% 100%, 0% 50%);
-
-        +.num {
-            transform: translateY(-50%) scale(0.8);
-        }
-    }
-
-    .format.Tram {
-        background-color: transparent !important;
-        border: 0;
-        clip-path: border-box polygon(nonzero, 20.000000% 0.000000%, 80.000000% 0.000000%, 100.000000% 100.000000%, 0.000000% 100.000000%);
-
-        .before {
-            content: "";
-            position: absolute;
-            width: 60px;
-            height: 60px;
-            background-color: var(--currentBgColor);
-            clip-path: border-box polygon(nonzero, 20.000000% 0.000000%, 80.000000% 0.000000%, 100.000000% 100.000000%, 0.000000% 100.000000%);
-            z-index: -1;
-            top: 0;
-        }
-
-    }
-
-
-    .format.Ship {
-        background-color: transparent !important;
-        border: none;
-
-        .before {
-            content: "";
-            position: absolute;
-            width: 50px;
-            height: 50px;
-            z-index: -1;
-            top: 5px;
-            left: 5px;
-            background-color: var(--currentBgColor);
-        }
-
-        .after {
-            content: "";
-            position: absolute;
-            width: 50px;
-            height: 50px;
-            z-index: -1;
-            top: 5px;
-            left: 5px;
-            background-color: var(--currentBgColor);
-            transform: rotate(45deg);
-        }
-    }
-
-    .format.Train {
-        border-radius: 9999px;
-    }
-
-    .format.Airplane {
-        border: none;
-        background: transparent;
-
-        .before {
-            content: "";
-            width: 60px;
-            position: absolute;
-            height: 60px;
-            clip-path: polygon(50% 0%, 100% 38%, 82% 100%, 18% 100%, 0% 38%);
-            border-top: none;
-            background-color: var(--currentBgColor);
-        }
-
-        +.num {
-            transform: translateY(-50%) scale(0.75);
-        }
-    }
-
-    .format.Monorail {
-        border-radius: 20px;
-    }
-
+   
     .flexContainer .mat-tab-body-content {
         height: 100%;
         overflow: visible;
@@ -429,7 +307,7 @@
                 font-style: italic;
 
                 &.outsideConn {
-                    color: yellow;
+                    color: var(--cityBorderNameColor);
                 }
 
                 &.noDistrict {

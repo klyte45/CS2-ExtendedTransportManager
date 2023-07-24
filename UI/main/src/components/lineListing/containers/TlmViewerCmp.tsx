@@ -2,7 +2,7 @@ import { MeasureUnit } from "#utility/MeasureUnitsUtils";
 import { nameToString } from "#utility/name.utils";
 import translate from "#utility/translate";
 import { CSSProperties, Component, ReactNode } from "react";
-import { LineDetails, MapViewerOptions, StationData, VehicleData, getFontSizeForText } from "../LineDetailCmp";
+import { LineDetails, MapViewerOptions, StationData, VehicleData } from "../LineDetailCmp";
 import { LineData } from "../LineListCmp";
 import { ColorUtils } from "#utility/ColorUtils";
 import { DistrictBorderContainerCmp } from "./DistrictBorderContainerCmp";
@@ -10,6 +10,7 @@ import { MapStationDistanceContainerCmp } from "./MapStationDistanceContainerCmp
 import { MapVehicleContainerCmp } from "./MapVehicleContainerCmp";
 import { StationContainerCmp } from "./StationContainerCmp";
 import { Entity } from "#utility/Entity";
+import { TlmLineFormatCmp, getFontSizeForText } from "./TlmLineFormatCmp";
 
 
 export class TlmViewerCmp extends Component<{
@@ -32,22 +33,11 @@ export class TlmViewerCmp extends Component<{
                 <>
                     <div>
                         <div className="titleRow">
-                            <div className="formatContainer">
-                                <div style={{ "--currentBgColor": getClampedColor(lineCommonData.color) } as CSSProperties} className={`format ${lineCommonData.type} v???`}>
-                                    <div className="before"></div>
-                                    <div className="after"></div>
-                                </div>
-                                <div style={{
-                                    fontSize: getFontSizeForText(lineCommonData.xtmData?.Acronym || lineCommonData.routeNumber.toFixed()),
-                                    color: ColorUtils.toRGBA(ColorUtils.getContrastColorFor(ColorUtils.toColor01(lineCommonData.color)))
-                                }} className="num">
-                                    {lineCommonData.xtmData?.Acronym || (lineCommonData.routeNumber.toFixed())}
-                                </div>
-                            </div>
+                            <TlmLineFormatCmp lineCommonData={lineCommonData} />
                         </div>
                     </div>
                     <div className="lineStationsContainer">
-                        <div className="linePath" style={{ "--lineColor": getClampedColor(lineCommonData.color), height: 40 * (lineDetails.Stops.length + 1) } as CSSProperties}>
+                        <div className="linePath" style={{ "--lineColor": ColorUtils.getClampedColor(lineCommonData.color), height: 40 * (lineDetails.Stops.length + 1) } as CSSProperties}>
                             <div className="lineBg"></div>
                             <div className="railingContainer">
                                 <div className="stationRailing">
@@ -133,16 +123,3 @@ export class TlmViewerCmp extends Component<{
     }
 }
 
-
-function colorHexToRGB(color: string) {
-
-    let r = parseInt(color.substring(1, 3), 16);
-    let g = parseInt(color.substring(3, 5), 16);
-    let b = parseInt(color.substring(5, 7), 16);
-    return [r, g, b];
-}
-
-function getClampedColor(color: string) {
-    var colorRgb = colorHexToRGB(color);
-    return 'rgb(' + Math.min(colorRgb[0], 232) + "," + Math.min(colorRgb[1], 232) + "," + Math.min(colorRgb[2], 232) + ")";
-}

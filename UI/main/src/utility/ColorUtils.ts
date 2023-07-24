@@ -229,4 +229,19 @@ export class ColorUtils {
         const { r, g, b, a } = color;
         return `rgba(${r * 255},${g * 255},${b * 255},${a})`
     }
+
+
+
+    static colorHexToRGB(color: string) {
+
+        let r = parseInt(color.substring(1, 3), 16);
+        let g = parseInt(color.substring(3, 5), 16);
+        let b = parseInt(color.substring(5, 7), 16);
+        return [r, g, b];
+    }
+
+    static getClampedColor(color: string) {
+        var colorRgb = this.colorHexToRGB(color);
+        return 'rgb(' + Math.min(colorRgb[0], 232) + "," + Math.min(colorRgb[1], 232) + "," + Math.min(colorRgb[2], 232) + ")";
+    }
 }

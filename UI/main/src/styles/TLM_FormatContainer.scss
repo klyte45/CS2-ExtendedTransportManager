@@ -1,0 +1,139 @@
+.formatContainer {
+    --scaleFormat: 1;
+    --margin-base: calc((var(--scaleFormat) - 1) * 28px + 3px);
+    position: relative;
+    transform: scale(var(--scaleFormat));
+    margin-bottom: calc((var(--scaleFormat) - 1) * 25px);
+    margin-top: calc((var(--scaleFormat) - 1) * 25px);
+    // margin: var(--margin-base) calc(var(--margin-base) + 3px) var(--margin-base) var(--margin-base) ;    
+    margin-left: 8px;
+    margin-right: 8px;
+    overflow: visible;
+    width: calc(60px * var(--scaleFormat));
+    height: calc(60px * var(--scaleFormat));
+    display: block;
+
+    .format {
+        position: absolute;
+        background-color: transparent;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        display: block;
+
+        .before {
+            position: absolute;
+            background-color: black;
+            top: -2px;
+            left: -2px;
+            right: -2px;
+            bottom: -2px;
+            z-index: -1;
+        }
+
+        .after {
+            position: absolute;
+            background-color: var(--currentBgColor);
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+        }
+
+        +.num {
+            position: absolute;
+            font-size: 28.000000px;
+            font-weight: bold;
+            color: rgba(255, 255, 255, 1.000000);
+            z-index: 9;
+            top: 50.000000%;
+            text-align: center;
+            width: 60.000000px;
+            height: auto;
+            line-height: 100.000000%;
+            transform: translateY(-50.000000%);
+        }
+
+        &.Bus.passengers {
+
+            .before,
+            .after {
+                clip-path: polygon(25% 0%, 75% 0%, 100% 50%, 75% 100%, 25% 100%, 0% 50%);
+            }
+
+        }
+
+        &.Tram.passengers {
+
+            .before,
+            .after {
+                clip-path: border-box polygon(nonzero, 20.000000% 0.000000%, 80.000000% 0.000000%, 100.000000% 100.000000%, 0.000000% 100.000000%);
+            }
+        }
+
+        &.Ship.passengers {
+
+            .before,
+            .after {
+                clip-path: polygon(50% 0%, 100% 50%, 50% 100%, 0% 50%);
+            }
+
+            +.num {
+                transform: translateY(-50%) scale(0.75);
+            }
+        }
+
+        &.Train.passengers {
+
+            .before,
+            .after {
+                clip-path: circle(50% at 50% 50%);
+            }
+        }
+
+        &.Airplane.passengers {
+
+            .before,
+            .after {
+                clip-path: polygon(50% 0%, 100% 38%, 82% 100%, 18% 100%, 0% 38%);
+            }
+
+            +.num {
+                transform: translateY(-50%) scale(0.75);
+            }
+        }
+
+
+        &.Ship.cargo {
+
+            .before,
+            .after {
+                clip-path: polygon(66.6666% 16.6666%, 83.3333% 16.6666%, 83.3333% 33.3333%, 100% 50%,
+                        83.3333% 66.6666%, 83.3333% 83.3333%, 66.6666% 83.3333%, 50% 100%,
+                        33.3333% 83.3333%, 16.6666% 83.3333%, 16.6666% 66.6666%, 0% 50%,
+                        16.6666% 33.3333%, 16.6666% 16.6666%, 33.3333% 16.6666%, 50% 0%);
+            }
+        }
+
+        &.Train.cargo {
+
+            .before,
+            .after {
+                clip-path: polygon(30% 0%, 70% 0%, 100% 30%, 100% 70%, 70% 100%, 30% 100%, 0% 70%, 0% 30%);
+            }
+        }
+
+        &.Airplane.cargo {
+
+            .before,
+            .after {
+                clip-path: polygon(0% 15%, 15% 15%, 15% 0%, 85% 0%, 85% 15%, 100% 15%, 100% 85%, 85% 85%, 85% 100%, 15% 100%, 15% 85%, 0% 85%);
+            }
+
+            +.num {
+                transform: translateY(-50%) scale(0.75);
+            }
+        }
+    }
+}

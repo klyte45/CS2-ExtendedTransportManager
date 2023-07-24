@@ -1,9 +1,7 @@
 import { MeasureUnit, metersTo } from "#utility/MeasureUnitsUtils";
-import { nameToString, replaceArgs } from "#utility/name.utils";
-import translate from "#utility/translate";
+import { replaceArgs } from "#utility/name.utils";
 import { CSSProperties, Component, ReactNode } from "react";
-import { SegmentData, StationData, VehicleData } from "../LineDetailCmp";
-import { LineData } from "../LineListCmp";
+import { SegmentData, StationData } from "../LineDetailCmp";
 
 
 export class MapStationDistanceContainerCmp extends Component<{

@@ -62,7 +62,7 @@ div.tableTopRow {
 div.tableRegularRow {
     display: flex;
 
-    div {
+    >div {
         display: block;
         flex: 1 0;
         border: 1px solid white;
@@ -71,16 +71,15 @@ div.tableRegularRow {
         padding-bottom: 3px;
         font-weight: 200;
         border-top: 0;
+        position: relative;
     }
 
-    .lineIconParent {
-        position: relative;
-
-        .lineIcon {
-            @extend %lineIcon;
-            width: 32px;
-            height: 32px;
-        }
+    .tlmIconParent {
+        transform: scale3d(0.500000, 0.500000, 1.000000);
+        position: absolute;
+        left: 0.000000px;
+        top: 0.000000px;
+        margin-top: -10.000000px;
     }
 }
 

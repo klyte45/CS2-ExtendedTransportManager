@@ -5,6 +5,7 @@ import { TransportType } from "#enum/TransportType";
 import { Entity } from "#utility/Entity";
 import { SimpleInput } from "../common/input";
 import LineDetailCmp from "./LineDetailCmp";
+import { TlmLineFormatCmp } from "./containers/TlmLineFormatCmp";
 
 export type LineData = {
     __Type: string,
@@ -88,9 +89,9 @@ export default class LineListCmp extends Component<any, State> {
                     <div className="w05">{x.entity.Index}</div>
                     <div className="w05"><SimpleInput onValueChanged={(y) => this.sendAcronym(x.entity, y)} maxLength={32} getValue={() => x.xtmData?.Acronym ?? ""} /></div>
                     <div className="w05"><SimpleInput onValueChanged={(y) => this.sendRouteNumber(x, y)} maxLength={9} getValue={() => x.routeNumber.toFixed()} /></div>
-                    <div className="w20 lineIconParent">
-                        <div className={`lineIcon`} style={{ "--lineColor": x.color, "--contrastColor": ColorUtils.toRGBA(ColorUtils.getContrastColorFor(ColorUtils.toColor01(x.color))) } as CSSProperties}>
-                            <div className={`routeNum chars${(x.xtmData?.Acronym || x.routeNumber?.toString()).length}`}>{x.xtmData?.Acronym || x.routeNumber}</div>
+                    <div className="w20">
+                        <div className="tlmIconParent">
+                            <TlmLineFormatCmp lineCommonData={x} />
                         </div>
                         <SimpleInput onValueChanged={(y) => this.sendRouteName(x, y)} getValue={() => nameToString(x.name)} />
                     </div>
