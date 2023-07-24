@@ -196,7 +196,7 @@
                 position: absolute;
                 top: 20px;
                 bottom: 20px;
-                pointer-events: all;
+                pointer-events: auto;
                 z-index: 999;
 
             }
@@ -349,7 +349,7 @@
                 border: 1px solid black;
                 display: block;
                 border-radius: 9999px;
-                pointer-events: all;
+                pointer-events: auto;
             }
 
             .stationIntersections {

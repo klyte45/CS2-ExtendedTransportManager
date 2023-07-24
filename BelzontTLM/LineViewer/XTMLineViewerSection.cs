@@ -7,6 +7,7 @@ using Game.Common;
 using Game.Objects;
 using Game.Prefabs;
 using Game.UI;
+using System;
 using Unity.Collections;
 using Unity.Entities;
 using Unity.Jobs;
@@ -56,6 +57,10 @@ namespace BelzontTLM
             m_EntityResult.Dispose();
             m_StopCapacityResult.Dispose();
             m_SegmentsResult.Dispose();
+            for (int i = 0; i < m_StopsResult.Length; i++)
+            {
+                m_StopsResult[i].linesConnected.Dispose();
+            }
             m_StopsResult.Dispose();
             m_VehiclesResult.Dispose();
             base.OnDestroy();
@@ -108,6 +113,9 @@ namespace BelzontTLM
                 LogUtils.DoLog("Bool result is false!");
                 return;
             }
+            __TypeHandle.__Game_Buildings_RO_ComponentLookup.Update(ref CheckedStateRef);
+            __TypeHandle.__Game_ConnectBuildingBuffers_RO_BufferLookup.Update(ref CheckedStateRef);
+            __TypeHandle.__Game_Vehicles_XTMChildConnectedRoute_RO_BufferLookup.Update(ref CheckedStateRef);
             __TypeHandle.__Game_Vehicles_Passenger_RO_BufferLookup.Update(ref CheckedStateRef);
             __TypeHandle.__Game_Net_SubLane_RO_BufferLookup.Update(ref CheckedStateRef);
             __TypeHandle.__Game_Pathfind_PathElement_RO_BufferLookup.Update(ref CheckedStateRef);
@@ -192,6 +200,10 @@ namespace BelzontTLM
             jobData2.m_PathElementBuffers = __TypeHandle.__Game_Pathfind_PathElement_RO_BufferLookup;
             jobData2.m_SubLaneBuffers = __TypeHandle.__Game_Net_SubLane_RO_BufferLookup;
             jobData2.m_PassengerBuffers = __TypeHandle.__Game_Vehicles_Passenger_RO_BufferLookup;
+            jobData2.m_XTMConnectedRouteBuffers = __TypeHandle.__Game_Vehicles_XTMChildConnectedRoute_RO_BufferLookup;
+            jobData2.m_ConnectedRouteBuffers = __TypeHandle.__Game_Routes_ConnectedRoute_RO_BufferLookup;
+            jobData2.m_Buildings = __TypeHandle.__Game_Buildings_RO_ComponentLookup;
+            jobData2.m_ConnectBuildingBuffers = __TypeHandle.__Game_ConnectBuildingBuffers_RO_BufferLookup;
             jobData2.m_SegmentsResult = m_SegmentsResult;
             jobData2.m_StopsResult = m_StopsResult;
             jobData2.m_VehiclesResult = m_VehiclesResult;
@@ -259,6 +271,22 @@ namespace BelzontTLM
 
         private TypeHandle __TypeHandle;
 
+        public readonly struct LineStopConnnection : IEquatable<LineStopConnnection>
+        {
+            public Entity line { get; }
+            public Entity stop { get; }
+            public LineStopConnnection(Entity line, Entity stop)
+            {
+                this.line = line;
+                this.stop = stop;
+            }
+
+            public bool Equals(LineStopConnnection other)
+            {
+               return line == other.line && stop == other.stop;
+            }
+        }
+
         public readonly struct LineStop
         {
             public Entity entity { get; }
@@ -271,14 +299,17 @@ namespace BelzontTLM
 
             public bool isOutsideConnection { get; }
 
+            public NativeHashSet<LineStopConnnection> linesConnected { get; }
 
-            public LineStop(Entity entity, float position, int cargo, bool isCargo, bool isOutsideConnection)
+
+            public LineStop(Entity entity, float position, int cargo, bool isCargo, bool isOutsideConnection, NativeHashSet<LineStopConnnection> linesConnected)
             {
                 this.entity = entity;
                 this.position = position;
                 this.cargo = cargo;
                 this.isCargo = isCargo;
                 this.isOutsideConnection = isOutsideConnection;
+                this.linesConnected = linesConnected;
             }
         }
 
@@ -333,6 +364,7 @@ namespace BelzontTLM
             public ValuableName parentName { get; }
             public Entity district { get; }
             public ValuableName districtName { get; }
+            public LineStopConnnection[] connectedLines { get; }
 
             public LineStopNamed(LineStop src, NameSystem nameSystem, EntityManager em)
             {
@@ -356,6 +388,13 @@ namespace BelzontTLM
                                             ? TryGetByBorderDistrict(em, building.m_RoadEdge)
                                             : Entity.Null;
                 districtName = district != Entity.Null ? nameSystem.GetName(district).ToValueableName() : default;
+                connectedLines = new LineStopConnnection[src.linesConnected.Count];
+                var enumerator = src.linesConnected.GetEnumerator();
+                int i = 0;
+                while (enumerator.MoveNext())
+                {
+                    connectedLines[i++] = enumerator.Current;
+                }
 
                 static Entity TryGetByBorderDistrict(EntityManager em, Entity attachParent) => em.TryGetComponent<BorderDistrict>(attachParent, out var borders)
                                             ? borders.m_Left != Entity.Null

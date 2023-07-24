@@ -66,6 +66,9 @@ namespace BelzontTLM
                 __Game_Pathfind_PathElement_RO_BufferLookup = state.GetBufferLookup<PathElement>(true);
                 __Game_Net_SubLane_RO_BufferLookup = state.GetBufferLookup<Game.Net.SubLane>(true);
                 __Game_Vehicles_Passenger_RO_BufferLookup = state.GetBufferLookup<Passenger>(true);
+                __Game_Vehicles_XTMChildConnectedRoute_RO_BufferLookup = state.GetBufferLookup<XTMChildConnectedRoute>(true);
+                __Game_Buildings_RO_ComponentLookup = state.GetComponentLookup<Building>(true);
+                __Game_ConnectBuildingBuffers_RO_BufferLookup = state.GetBufferLookup<ConnectedBuilding>(true);
             }
 
             [ReadOnly]
@@ -214,6 +217,10 @@ namespace BelzontTLM
 
             [ReadOnly]
             public BufferLookup<Passenger> __Game_Vehicles_Passenger_RO_BufferLookup;
+            [ReadOnly]
+            public BufferLookup<XTMChildConnectedRoute> __Game_Vehicles_XTMChildConnectedRoute_RO_BufferLookup;
+            internal ComponentLookup<Building> __Game_Buildings_RO_ComponentLookup;
+            internal BufferLookup<ConnectedBuilding> __Game_ConnectBuildingBuffers_RO_BufferLookup;
         }
     }
 }

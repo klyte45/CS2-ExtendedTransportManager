@@ -1,4 +1,5 @@
 ﻿using Colossal.Mathematics;
+using Game.Buildings;
 using Game.Common;
 using Game.Net;
 using Game.Pathfind;
@@ -24,13 +25,13 @@ namespace BelzontTLM
                 float num = 0f;
                 m_BoolResult[2] = false;
                 m_StopCapacityResult[0] = 0;
-                DynamicBuffer<RouteWaypoint> waypoints = m_RouteWaypointBuffers[m_RouteEntity];
+                DynamicBuffer<RouteWaypoint> stations = m_RouteWaypointBuffers[m_RouteEntity];
                 DynamicBuffer<RouteSegment> routeSegments = m_RouteSegmentBuffers[m_RouteEntity];
-                DynamicBuffer<RouteVehicle> dynamicBuffer = m_RouteVehicleBuffers[m_RouteEntity];
+                DynamicBuffer<RouteVehicle> vehiclesBuffer = m_RouteVehicleBuffers[m_RouteEntity];
                 for (int i = 0; i < routeSegments.Length; i++)
                 {
                     stopsPointsDistanceFromStart.Add(num);
-                    num += GetSegmentLength(waypoints, routeSegments, i);
+                    num += GetSegmentLength(stations, routeSegments, i);
                 }
                 if (num == 0f)
                 {
@@ -48,14 +49,14 @@ namespace BelzontTLM
                         m_SegmentsResult.Add(lineSegment);
                     }
                 }
-                bool flag = m_PrefabRefs.TryGetComponent(m_RouteEntity, out PrefabRef prefabRef) && m_TransportLineData.TryGetComponent(prefabRef.m_Prefab, out TransportLineData transportLineData) && transportLineData.m_CargoTransport;
-                for (int k = 0; k < dynamicBuffer.Length; k++)
+                bool isCargo = m_PrefabRefs.TryGetComponent(m_RouteEntity, out PrefabRef prefabRef) && m_TransportLineData.TryGetComponent(prefabRef.m_Prefab, out TransportLineData transportLineData) && transportLineData.m_CargoTransport;
+                for (int k = 0; k < vehiclesBuffer.Length; k++)
                 {
-                    Entity vehicle = dynamicBuffer[k].m_Vehicle;
+                    Entity vehicle = vehiclesBuffer[k].m_Vehicle;
                     if (GetVehiclePosition(m_RouteEntity, vehicle, out int num2, out float num3, out float num4, out bool flag2))
                     {
                         int num5 = num2;
-                        float segmentLength = GetSegmentLength(waypoints, routeSegments, num5);
+                        float segmentLength = GetSegmentLength(stations, routeSegments, num5);
                         float num6 = stopsPointsDistanceFromStart[num5];
                         if (flag2 || num3 + num4 > segmentLength)
                         {
@@ -69,7 +70,7 @@ namespace BelzontTLM
                         int item = cargo.Item1;
                         int item2 = cargo.Item2;
                         float num7 = num6 / num;
-                        LineVehicle lineVehicle = new LineVehicle(vehicle, num7, item, item2, flag);
+                        LineVehicle lineVehicle = new LineVehicle(vehicle, num7, item, item2, isCargo);
                         m_VehiclesResult.Add(lineVehicle);
                         if (item2 > m_StopCapacityResult[0])
                         {
@@ -77,37 +78,97 @@ namespace BelzontTLM
                         }
                     }
                 }
-                for (int l = 0; l < waypoints.Length; l++)
+                for (int l = 0; l < stations.Length; l++)
                 {
-                    if (m_Connected.TryGetComponent(waypoints[l].m_Waypoint, out Connected connected) && m_TransportStops.HasComponent(connected.m_Connected))
+                    if (m_Connected.TryGetComponent(stations[l].m_Waypoint, out Connected connected) && m_TransportStops.HasComponent(connected.m_Connected))
                     {
-                        float num8 = stopsPointsDistanceFromStart[l] / num;
-                        int num9 = 0;
-                        Entity entity = connected.m_Connected;
-                        if (!flag && m_WaitingPassengers.TryGetComponent(waypoints[l].m_Waypoint, out WaitingPassengers waitingPassengers))
+                        float position = stopsPointsDistanceFromStart[l] / num;
+                        int waiting = 0;
+                        Entity stopPoint = connected.m_Connected;
+                        var hasOwner = m_Owners.TryGetComponent(connected.m_Connected, out Owner owner);
+                        if (!isCargo && m_WaitingPassengers.TryGetComponent(stations[l].m_Waypoint, out WaitingPassengers waitingPassengers))
                         {
-                            num9 = waitingPassengers.m_Count;
+                            waiting = waitingPassengers.m_Count;
                         }
                         else if (m_EconomyResourcesBuffers.TryGetBuffer(connected.m_Connected, out DynamicBuffer<Game.Economy.Resources> dynamicBuffer2))
                         {
                             for (int m = 0; m < dynamicBuffer2.Length; m++)
                             {
-                                num9 += dynamicBuffer2[m].m_Amount;
+                                waiting += dynamicBuffer2[m].m_Amount;
                             }
                         }
-                        else if (m_Owners.TryGetComponent(connected.m_Connected, out Owner owner) && m_EconomyResourcesBuffers.TryGetBuffer(owner.m_Owner, out DynamicBuffer<Game.Economy.Resources> dynamicBuffer3))
+                        else if (hasOwner && m_EconomyResourcesBuffers.TryGetBuffer(owner.m_Owner, out DynamicBuffer<Game.Economy.Resources> dynamicBuffer3))
                         {
                             for (int n = 0; n < dynamicBuffer3.Length; n++)
                             {
-                                num9 += dynamicBuffer3[n].m_Amount;
+                                waiting += dynamicBuffer3[n].m_Amount;
                             }
-                            entity = owner.m_Owner;
                         }
-                        LineStop lineStop = new LineStop(entity, num8, num9, flag, m_OutsideConnections.HasComponent(entity));
+                        NativeHashSet<LineStopConnnection> linesConnected = new NativeHashSet<LineStopConnnection>(0, Allocator.Persistent);
+                        if (hasOwner)
+                        {
+                            Owner xtmOwner = GetRealOwner(owner);
+                            AddLinesFromXTMConnections(ref linesConnected, xtmOwner.m_Owner, connected.m_Connected);
+                            if (m_Buildings.TryGetComponent(xtmOwner.m_Owner, out var building))
+                            {
+                                ScanLinesAtRoadEdge(ref linesConnected, building, xtmOwner.m_Owner, connected.m_Connected);
+                            }
+                        }
+
+
+                        LineStop lineStop = new LineStop(stopPoint, position, waiting, isCargo, m_OutsideConnections.HasComponent(stopPoint), linesConnected);
                         m_StopsResult.Add(lineStop);
                     }
                 }
-                m_BoolResult[2] = flag;
+                m_BoolResult[2] = isCargo;
+            }
+
+            private void ScanLinesAtRoadEdge(ref NativeHashSet<LineStopConnnection> linesConnected, Building building, Entity srcBuilding, Entity srcConnected)
+            {
+                if (m_ConnectBuildingBuffers.TryGetBuffer(building.m_RoadEdge, out var connectedBuildings))
+                {
+                    for (int i = 0; i < connectedBuildings.Length; i++)
+                    {
+                        if (connectedBuildings[i].m_Building != srcBuilding)
+                        {
+                            AddLinesFromXTMConnections(ref linesConnected, connectedBuildings[i].m_Building, srcConnected);
+                        }
+                    }
+                    AddLinesFromXTMConnections(ref linesConnected, building.m_RoadEdge, srcConnected);
+                }
+            }
+
+            private void AddLinesFromXTMConnections(ref NativeHashSet<LineStopConnnection> linesConnected, Entity xtmOwner, Entity srcConnected)
+            {
+                if (m_XTMConnectedRouteBuffers.TryGetBuffer(xtmOwner, out var ownerStopsBuffer))
+                {
+                    for (int j = 0; j < ownerStopsBuffer.Length; j++)
+                    {
+                        if (m_ConnectedRouteBuffers.TryGetBuffer(ownerStopsBuffer[j].m_StopEntity, out var connectedRoutes))
+                        {
+                            for (int k = 0; k < connectedRoutes.Length; k++)
+                            {
+                                if (m_Owners.TryGetComponent(connectedRoutes[k].m_Waypoint, out var stopEntity)
+                                    && m_Connected.TryGetComponent(connectedRoutes[k].m_Waypoint, out var connection)
+                                    && (stopEntity.m_Owner != m_RouteEntity || srcConnected != connection.m_Connected))
+                                {
+                                    linesConnected.Add(new(stopEntity.m_Owner, connection.m_Connected));
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+
+            private Owner GetRealOwner(Owner owner)
+            {
+                var xtmOwner = owner;
+                while (m_Owners.TryGetComponent(xtmOwner.m_Owner, out Owner parentOwner))
+                {
+                    xtmOwner = parentOwner;
+                }
+
+                return xtmOwner;
             }
 
             private float GetSegmentLength(DynamicBuffer<RouteWaypoint> waypoints, DynamicBuffer<RouteSegment> routeSegments, int segmentIndex)
@@ -517,6 +578,18 @@ namespace BelzontTLM
 
             [ReadOnly]
             public BufferLookup<Game.Net.SubLane> m_SubLaneBuffers;
+
+            [ReadOnly]
+            public BufferLookup<XTMChildConnectedRoute> m_XTMConnectedRouteBuffers;
+
+            [ReadOnly]
+            public ComponentLookup<Building> m_Buildings;
+
+            [ReadOnly]
+            public BufferLookup<ConnectedBuilding> m_ConnectBuildingBuffers;
+
+            [ReadOnly]
+            public BufferLookup<ConnectedRoute> m_ConnectedRouteBuffers;
 
             [ReadOnly]
             public BufferLookup<Passenger> m_PassengerBuffers;

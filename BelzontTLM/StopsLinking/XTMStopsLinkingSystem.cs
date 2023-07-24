@@ -82,6 +82,7 @@ namespace BelzontTLM
                 {
                     Any = new ComponentType[]
                     {
+                        ComponentType.ReadOnly<TransportStop>(),
                         ComponentType.ReadOnly<TrainStop>(),
                         ComponentType.ReadOnly<AirplaneStop>(),
                         ComponentType.ReadOnly<BusStop>(),
@@ -104,6 +105,7 @@ namespace BelzontTLM
                 {
                     Any = new ComponentType[]
                     {
+                        ComponentType.ReadOnly<TransportStop>(),
                         ComponentType.ReadOnly<TrainStop>(),
                         ComponentType.ReadOnly<AirplaneStop>(),
                         ComponentType.ReadOnly<BusStop>(),
