@@ -2,6 +2,7 @@
 using Game.Buildings;
 using Game.Common;
 using Game.Net;
+using Game.Objects;
 using Game.Pathfind;
 using Game.Prefabs;
 using Game.Rendering;
@@ -12,6 +13,7 @@ using Unity.Collections;
 using Unity.Entities;
 using Unity.Jobs;
 using Unity.Mathematics;
+using Edge = Game.Net.Edge;
 
 namespace BelzontTLM
 {
@@ -104,17 +106,78 @@ namespace BelzontTLM
                                 waiting += dynamicBuffer3[n].m_Amount;
                             }
                         }
+
+                        NativeHashSet<Entity> roadsMapped = new NativeHashSet<Entity>(0, Allocator.Temp);
+                        NativeQueue<Entity> roadsToMap = new NativeQueue<Entity>(Allocator.Temp);
+
                         NativeHashSet<LineStopConnnection> linesConnected = new NativeHashSet<LineStopConnnection>(0, Allocator.Persistent);
+                        Entity xtmOwner = Entity.Null;
                         if (hasOwner)
                         {
-                            Owner xtmOwner = GetRealOwner(owner);
-                            AddLinesFromXTMConnections(ref linesConnected, xtmOwner.m_Owner, connected.m_Connected);
-                            if (m_Buildings.TryGetComponent(xtmOwner.m_Owner, out var building))
+                            xtmOwner = GetRealOwner(owner).m_Owner;
+                            AddLinesFromXTMConnections(ref linesConnected, xtmOwner, connected.m_Connected);
+                            if (m_Buildings.TryGetComponent(xtmOwner, out var building))
                             {
-                                ScanLinesAtRoadEdge(ref linesConnected, building, xtmOwner.m_Owner, connected.m_Connected);
+                                roadsToMap.Enqueue(building.m_RoadEdge);
+                                while (roadsToMap.TryDequeue(out Entity nextItem))
+                                {
+                                    if (roadsMapped.Add(nextItem) && ScanLinesAtRoadEdge(ref linesConnected, nextItem, xtmOwner, connected.m_Connected) && m_Edges.TryGetComponent(nextItem, out var edge))
+                                    {
+                                        if (m_connectedEdgesBuffers.TryGetBuffer(edge.m_Start, out var connectedStart))
+                                        {
+                                            for (int k = 0; k < connectedStart.Length; k++)
+                                            {
+                                                if (!roadsMapped.Contains(connectedStart[k].m_Edge))
+                                                {
+                                                    roadsToMap.Enqueue(connectedStart[k].m_Edge);
+                                                }
+                                            }
+                                        }
+                                        if (m_connectedEdgesBuffers.TryGetBuffer(edge.m_End, out var connectedEnd))
+                                        {
+                                            for (int k = 0; k < connectedEnd.Length; k++)
+                                            {
+                                                if (!roadsMapped.Contains(connectedEnd[k].m_Edge))
+                                                {
+                                                    roadsToMap.Enqueue(connectedEnd[k].m_Edge);
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
                             }
                         }
 
+                        if (m_Attacheds.TryGetComponent(connected.m_Connected, out var attachment) && !roadsMapped.Contains(attachment.m_Parent))
+                        {
+                            roadsMapped.Add(attachment.m_Parent);
+                            if (ScanLinesAtRoadEdge(ref linesConnected, attachment.m_Parent, Entity.Null, connected.m_Connected) && m_Edges.TryGetComponent(attachment.m_Parent, out var edge))
+                            {
+                                if (m_connectedEdgesBuffers.TryGetBuffer(edge.m_Start, out var connectedStart))
+                                {
+                                    for (int k = 0; k < connectedStart.Length; k++)
+                                    {
+                                        if (roadsMapped.Add(connectedStart[k].m_Edge))
+                                        {
+                                            ScanLinesAtRoadEdge(ref linesConnected, connectedStart[k].m_Edge, Entity.Null, connected.m_Connected);
+                                        }
+                                    }
+                                }
+                                if (m_connectedEdgesBuffers.TryGetBuffer(edge.m_End, out var connectedEnd))
+                                {
+                                    for (int k = 0; k < connectedEnd.Length; k++)
+                                    {
+                                        if (roadsMapped.Add(connectedEnd[k].m_Edge))
+                                        {
+                                            ScanLinesAtRoadEdge(ref linesConnected, connectedEnd[k].m_Edge, Entity.Null, connected.m_Connected);
+                                        }
+                                    }
+                                }
+                            }
+                        }
+
+                        roadsMapped.Dispose();
+                        roadsToMap.Dispose();
 
                         LineStop lineStop = new LineStop(stopPoint, position, waiting, isCargo, m_OutsideConnections.HasComponent(stopPoint), linesConnected);
                         m_StopsResult.Add(lineStop);
@@ -123,9 +186,10 @@ namespace BelzontTLM
                 m_BoolResult[2] = isCargo;
             }
 
-            private void ScanLinesAtRoadEdge(ref NativeHashSet<LineStopConnnection> linesConnected, Building building, Entity srcBuilding, Entity srcConnected)
+            private bool ScanLinesAtRoadEdge(ref NativeHashSet<LineStopConnnection> linesConnected, Entity road, Entity srcBuilding, Entity srcConnected)
             {
-                if (m_ConnectBuildingBuffers.TryGetBuffer(building.m_RoadEdge, out var connectedBuildings))
+                var buildingIsConnected = false;
+                if (m_ConnectBuildingBuffers.TryGetBuffer(road, out var connectedBuildings))
                 {
                     for (int i = 0; i < connectedBuildings.Length; i++)
                     {
@@ -133,9 +197,14 @@ namespace BelzontTLM
                         {
                             AddLinesFromXTMConnections(ref linesConnected, connectedBuildings[i].m_Building, srcConnected);
                         }
+                        else
+                        {
+                            buildingIsConnected = true;
+                        }
                     }
-                    AddLinesFromXTMConnections(ref linesConnected, building.m_RoadEdge, srcConnected);
                 }
+                AddLinesFromXTMConnections(ref linesConnected, road, srcConnected);
+                return buildingIsConnected;
             }
 
             private void AddLinesFromXTMConnections(ref NativeHashSet<LineStopConnnection> linesConnected, Entity xtmOwner, Entity srcConnected)
@@ -584,6 +653,12 @@ namespace BelzontTLM
 
             [ReadOnly]
             public ComponentLookup<Building> m_Buildings;
+            [ReadOnly]
+            public ComponentLookup<Attached> m_Attacheds;
+            [ReadOnly]
+            public ComponentLookup<Edge> m_Edges;
+            [ReadOnly]
+            public BufferLookup<ConnectedEdge> m_connectedEdgesBuffers;
 
             [ReadOnly]
             public BufferLookup<ConnectedBuilding> m_ConnectBuildingBuffers;

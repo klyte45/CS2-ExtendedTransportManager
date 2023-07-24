@@ -1,6 +1,7 @@
 ﻿using Game.Buildings;
 using Game.Common;
 using Game.Net;
+using Game.Objects;
 using Game.Pathfind;
 using Game.Prefabs;
 using Game.Rendering;
@@ -8,6 +9,7 @@ using Game.Routes;
 using Game.Vehicles;
 using Unity.Collections;
 using Unity.Entities;
+using Edge = Game.Net.Edge;
 
 namespace BelzontTLM
 {
@@ -68,7 +70,10 @@ namespace BelzontTLM
                 __Game_Vehicles_Passenger_RO_BufferLookup = state.GetBufferLookup<Passenger>(true);
                 __Game_Vehicles_XTMChildConnectedRoute_RO_BufferLookup = state.GetBufferLookup<XTMChildConnectedRoute>(true);
                 __Game_Buildings_RO_ComponentLookup = state.GetComponentLookup<Building>(true);
+                __Game_Attacheds_RO_ComponentLookup = state.GetComponentLookup<Attached>(true);
+                __Game_Edges_RO_ComponentLookup = state.GetComponentLookup<Edge>(true);
                 __Game_ConnectBuildingBuffers_RO_BufferLookup = state.GetBufferLookup<ConnectedBuilding>(true);
+                __Game_ConnectEdge_RO_BufferLookup = state.GetBufferLookup<ConnectedEdge>(true);
             }
 
             [ReadOnly]
@@ -221,6 +226,9 @@ namespace BelzontTLM
             public BufferLookup<XTMChildConnectedRoute> __Game_Vehicles_XTMChildConnectedRoute_RO_BufferLookup;
             internal ComponentLookup<Building> __Game_Buildings_RO_ComponentLookup;
             internal BufferLookup<ConnectedBuilding> __Game_ConnectBuildingBuffers_RO_BufferLookup;
+            internal ComponentLookup<Attached> __Game_Attacheds_RO_ComponentLookup;
+            internal ComponentLookup<Game.Net.Edge> __Game_Edges_RO_ComponentLookup;
+            internal BufferLookup<ConnectedEdge> __Game_ConnectEdge_RO_BufferLookup;
         }
     }
 }

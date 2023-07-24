@@ -99,7 +99,7 @@ export default class LineDetailCmp extends Component<Props, State> {
         }
     }
     enrichVehicleInfo(vehicle: VehicleData, stations: StationData[], lineLength: number): Partial<VehicleData> {
-        const lastStationIdx = stations.filter(x => x.position < vehicle.position).length % stations.length;
+        const lastStationIdx = (stations.filter(x => x.position < vehicle.position).length + stations.length - 1) % stations.length;
         const currentStation = stations[lastStationIdx];
         const nextStation = stations[(lastStationIdx + 1) % stations.length]
         const nextStationPos = nextStation.position + (nextStation.position < currentStation.position ? 1 : 0)

@@ -114,7 +114,10 @@ namespace BelzontTLM
                 return;
             }
             __TypeHandle.__Game_Buildings_RO_ComponentLookup.Update(ref CheckedStateRef);
+            __TypeHandle.__Game_Edges_RO_ComponentLookup.Update(ref CheckedStateRef);
+            __TypeHandle.__Game_Attacheds_RO_ComponentLookup.Update(ref CheckedStateRef);
             __TypeHandle.__Game_ConnectBuildingBuffers_RO_BufferLookup.Update(ref CheckedStateRef);
+            __TypeHandle.__Game_ConnectEdge_RO_BufferLookup.Update(ref CheckedStateRef);
             __TypeHandle.__Game_Vehicles_XTMChildConnectedRoute_RO_BufferLookup.Update(ref CheckedStateRef);
             __TypeHandle.__Game_Vehicles_Passenger_RO_BufferLookup.Update(ref CheckedStateRef);
             __TypeHandle.__Game_Net_SubLane_RO_BufferLookup.Update(ref CheckedStateRef);
@@ -203,6 +206,9 @@ namespace BelzontTLM
             jobData2.m_XTMConnectedRouteBuffers = __TypeHandle.__Game_Vehicles_XTMChildConnectedRoute_RO_BufferLookup;
             jobData2.m_ConnectedRouteBuffers = __TypeHandle.__Game_Routes_ConnectedRoute_RO_BufferLookup;
             jobData2.m_Buildings = __TypeHandle.__Game_Buildings_RO_ComponentLookup;
+            jobData2.m_Attacheds = __TypeHandle.__Game_Attacheds_RO_ComponentLookup;
+            jobData2.m_Edges = __TypeHandle.__Game_Edges_RO_ComponentLookup;
+            jobData2.m_connectedEdgesBuffers = __TypeHandle.__Game_ConnectEdge_RO_BufferLookup;
             jobData2.m_ConnectBuildingBuffers = __TypeHandle.__Game_ConnectBuildingBuffers_RO_BufferLookup;
             jobData2.m_SegmentsResult = m_SegmentsResult;
             jobData2.m_StopsResult = m_StopsResult;
