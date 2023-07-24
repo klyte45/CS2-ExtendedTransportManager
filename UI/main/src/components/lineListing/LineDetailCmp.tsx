@@ -11,6 +11,9 @@ import { StationContainerCmp } from "./containers/StationContainerCmp";
 import { DistrictBorderContainerCmp } from "./containers/DistrictBorderContainerCmp";
 import { MapVehicleContainerCmp } from "./containers/MapVehicleContainerCmp";
 import { MapStationDistanceContainerCmp } from "./containers/MapStationDistanceContainerCmp";
+import { TlmViewerCmp } from "./containers/TlmViewerCmp";
+import { Tab, TabList, TabPanel, Tabs } from "react-tabs";
+import { Checkbox } from "#components/common/checkbox";
 
 export type StationData = {
     readonly entity: Entity,
@@ -44,14 +47,26 @@ export type SegmentData = {
     readonly sizeMeters: number,
     readonly broken: boolean
 }
+
+export type LineDetails = {
+    LineData: LineData,
+    StopCapacity: number,
+    Stops: StationData[]
+    Vehicles: VehicleData[],
+    Segments: SegmentData[]
+}
+
+export type MapViewerOptions = {
+    showDistricts: boolean,
+    showDistances: boolean,
+    showVehicles: boolean,
+    showIntegrations: boolean,
+    useWhiteBackground: boolean
+}
+
 type State = {
-    lineDetails?: {
-        LineData: LineData,
-        StopCapacity: number,
-        Stops: StationData[]
-        Vehicles: VehicleData[],
-        Segments: SegmentData[]
-    }
+    lineDetails?: LineDetails,
+    mapViewOptions: MapViewerOptions
 }
 
 type Props = {
@@ -63,6 +78,13 @@ export default class LineDetailCmp extends Component<Props, State> {
     constructor(props: any) {
         super(props);
         this.state = {
+            mapViewOptions: {
+                showDistricts: true,
+                showDistances: true,
+                showVehicles: false,
+                showIntegrations: true,
+                useWhiteBackground: false
+            }
         }
     }
     componentDidMount() {
@@ -123,116 +145,46 @@ export default class LineDetailCmp extends Component<Props, State> {
             return <>INVALID</>
         }
         const buttonsRow = <>
-            <button className="negativeBtn " onClick={this.props.onBack}>{translate("paletteEditor.cancel")}</button>
+            <button className="negativeBtn " onClick={this.props.onBack}>{translate("lineViewer.backToList")}</button>
         </>
         const lineDetails = this.state.lineDetails;
         const lineCommonData = lineDetails?.LineData;
         return <>
             <DefaultPanelScreen title={nameToString(this.props.currentLine.name)} subtitle="" buttonsRowContent={buttonsRow}>
-                <div id="TlmViewer">
-                    {!lineDetails ? <></> :
-                        <>
-                            <div className=" container-fluid  pt-3">
-                                <div className="titleRow">
-                                    <div className="formatContainer">
-                                        <div style={{ "--currentBgColor": lineCommonData.color } as CSSProperties} className={`format ${lineCommonData.type} v???`}>
-                                            <div className="before"></div>
-                                            <div className="after"></div>
-                                        </div>
-                                        <div style={{
-                                            fontSize: getFontSizeForText(lineCommonData.xtmData?.Acronym || lineCommonData.routeNumber.toFixed()),
-                                            color: ColorUtils.toRGBA(ColorUtils.getContrastColorFor(ColorUtils.toColor01(lineCommonData.color)))
-                                        }} className="num">
-                                            {lineCommonData.xtmData?.Acronym || (lineCommonData.routeNumber.toFixed())}
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                            <div className="lineStationsContainer">
-                                <div className="linePath" style={{ "--lineColor": getClampedColor(lineCommonData.color), height: 40 * (lineDetails.Stops.length + 1) } as CSSProperties}>
-                                    <div className="lineBg"></div>
-                                    <div className="railingContainer">
-                                        <div className="stationRailing">
-                                            {lineDetails.Stops.map((station, i, arr) => {
-                                                return <StationContainerCmp
-                                                    getLineById={(x) => this.getLineById(x)}
-                                                    lineData={lineCommonData}
-                                                    setSelection={(x) => this.setSelection(x)}
-                                                    station={station}
-                                                    vehicles={lineDetails.Vehicles}
-                                                    keyId={i}
-                                                    key={i}
-                                                    normalizedPosition={i / arr.length}
-                                                    totalStationCount={arr.length}
-                                                />
-                                            })}
-                                            <StationContainerCmp
-                                                getLineById={(x) => this.getLineById(x)}
-                                                lineData={lineCommonData}
-                                                setSelection={(x) => this.setSelection(x)}
-                                                station={lineDetails.Stops[0]}
-                                                vehicles={lineDetails.Vehicles}
-                                                keyId={-1}
-                                                normalizedPosition={1}
-                                                totalStationCount={lineDetails.Stops.length}
-                                            />
-                                        </div>
-                                        <div className="districtRailing">
-                                            {lineDetails.Stops.every(x => !x.isOutsideConnection && x.district.Index == lineDetails.Stops[0].district.Index) ?
-                                                <>
-                                                    <DistrictBorderContainerCmp
-                                                        stop={lineDetails.Stops[0]}
-                                                        nextStop={lineDetails.Stops[0]}
-                                                        normalizedPosition={0}
-                                                        totalStationCount={lineDetails.Stops.length}
-                                                        newOnly={true}
-                                                    />
-                                                    <DistrictBorderContainerCmp
-                                                        stop={lineDetails.Stops[0]}
-                                                        normalizedPosition={2}
-                                                        nextStop={lineDetails.Stops[0]}
-                                                        totalStationCount={lineDetails.Stops.length}
-                                                        oldOnly={true}
-                                                    />
-                                                </>
-                                                : lineDetails.Stops.map((station, i, arr) => {
-                                                    const nextIdx = (i + 1) % arr.length;
-                                                    const nextStop = arr[nextIdx];
-                                                    if (station.isOutsideConnection || nextStop.isOutsideConnection || nextStop.district.Index != station.district.Index) {
-                                                        return <DistrictBorderContainerCmp
-                                                            stop={station}
-                                                            nextStop={nextStop}
-                                                            key={i}
-                                                            normalizedPosition={(i + 1) / arr.length}
-                                                            totalStationCount={lineDetails.Stops.length}
-                                                        />
-                                                    }
-                                                })}
-                                        </div>
-                                        <div className="distanceRailing">
-                                            {lineDetails.Stops.map((station, i, arr) => {
-                                                const nextIdx = (i + 1) % arr.length;
-                                                const nextStop = arr[nextIdx];
-                                                return <MapStationDistanceContainerCmp key={i}
-                                                    stop={station}
-                                                    nextStop={nextStop}
-                                                    segments={this.state.lineDetails.Segments}
-                                                    normalizedPosition={(i + .5) / (arr.length)} />
-                                            })}
-                                        </div>
-                                        <div className="vehiclesRailing">
-                                            {lineDetails.Vehicles.map((vehicle, i) => {
-                                                return <MapVehicleContainerCmp key={i} vehicle={vehicle} />
-                                            })}
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </>
-                    }
-                </div>
-                <div id="dataPanel" style={{ whiteSpace: 'pre-wrap' }}>
-                    {JSON.stringify(this.state.lineDetails ?? "LOADING", null, 2)}
+                <TlmViewerCmp {...this.state.mapViewOptions} lineCommonData={lineCommonData} lineDetails={lineDetails} getLineById={(x) => this.getLineById(x)} setSelection={(x) => this.setSelection(x)} />
+                <div className="lineViewContent">
+                    <Tabs defaultIndex={3}>
+                        <TabList id="sideNav">
+                            <Tab>{translate("lineViewer.tabLineData")}</Tab>
+                            <Tab disabled={true}>{translate("lineViewer.tabSettings")}</Tab>
+                            <div className="space"></div>
+                            <Tab>{translate("lineViewer.mapSettings")}</Tab>
+                            <Tab disabled={true}>{translate("lineViewer.stopData")}</Tab>
+                            <Tab disabled={true}>{translate("lineViewer.vehicleData")}</Tab>
+                        </TabList>
+                        <div id="dataPanel">
+                            <TabPanel style={{ whiteSpace: 'pre-wrap' }}>
+
+                            </TabPanel>
+                            <TabPanel style={{ whiteSpace: 'pre-wrap' }}>
+                                daçlkjdajdklasjd
+                            </TabPanel>
+                            <TabPanel>
+                                <h2>{translate("lineViewer.showOnMap")}</h2>
+                                <Checkbox isChecked={() => this.state.mapViewOptions.showDistances} title={translate("lineViewer.showDistancesLbl")} onValueToggle={(x) => this.setState({ mapViewOptions: { ...this.state.mapViewOptions, showDistances: x } })} />
+                                <Checkbox isChecked={() => this.state.mapViewOptions.showDistricts} title={translate("lineViewer.showDistrictsLbl")} onValueToggle={(x) => this.setState({ mapViewOptions: { ...this.state.mapViewOptions, showDistricts: x } })} />
+                                <Checkbox isChecked={() => this.state.mapViewOptions.showVehicles} title={translate("lineViewer.showVehiclesLbl")} onValueToggle={(x) => this.setState({ mapViewOptions: { ...this.state.mapViewOptions, showVehicles: x, showIntegrations: this.state.mapViewOptions.showIntegrations && !x } })} />
+                                <Checkbox isChecked={() => this.state.mapViewOptions.showIntegrations} title={translate("lineViewer.showIntegrationsLbl")} onValueToggle={(x) => this.setState({ mapViewOptions: { ...this.state.mapViewOptions, showIntegrations: x, showVehicles: this.state.mapViewOptions.showVehicles && !x } })} />
+                                <Checkbox isChecked={() => this.state.mapViewOptions.useWhiteBackground} title={translate("lineViewer.useWhiteBackgroundLbl")} onValueToggle={(x) => this.setState({ mapViewOptions: { ...this.state.mapViewOptions, useWhiteBackground: x } })} />
+                            </TabPanel>
+                            <TabPanel style={{ whiteSpace: 'pre-wrap' }}>
+                                {JSON.stringify(this.state.lineDetails ?? "LOADING", null, 2)}
+                            </TabPanel>
+                            <TabPanel style={{ whiteSpace: 'pre-wrap' }}>
+                                T4
+                            </TabPanel>
+                        </div>
+                    </Tabs>
                 </div>
             </DefaultPanelScreen>
         </>;
@@ -283,17 +235,5 @@ export function getFontSizeForText(text: string) {
         default:
             return "11px";
     }
-}
-function colorHexToRGB(color: string) {
-
-    let r = parseInt(color.substring(1, 3), 16);
-    let g = parseInt(color.substring(3, 5), 16);
-    let b = parseInt(color.substring(5, 7), 16);
-    return [r, g, b];
-}
-
-function getClampedColor(color: string) {
-    var colorRgb = colorHexToRGB(color);
-    return 'rgb(' + Math.min(colorRgb[0], 232) + "," + Math.min(colorRgb[1], 232) + "," + Math.min(colorRgb[2], 232) + ")";
 }
 

@@ -1,4 +1,13 @@
 #TlmViewer {
+
+    --districtBorderColor: #eee;
+
+    &.mapWhiteBg {
+        background-color: white;
+        color: black;
+        --districtBorderColor: #111;
+    }
+
     .lineBlock {
         text-align: center;
 
@@ -405,7 +414,7 @@
             .before {
                 content: "";
                 height: 2px;
-                background-image: linear-gradient(to left, transparent, transparent 50%, #eee 50%, #eee 75%, transparent 75%);
+                background-image: linear-gradient(to left, transparent, transparent 50%, var(--districtBorderColor) 50%, var(--districtBorderColor) 75%, transparent 75%);
                 background-size: 20.000000px auto;
                 position: absolute;
                 left: 0;

@@ -7,12 +7,88 @@
     width: 600px;
 }
 
-#dataPanel {
-
+.lineViewContent {
     position: absolute;
     left: 600px;
-    top: 0;
     bottom: 0;
-    overflow: auto;
+    top: 0;
     right: 0;
+
+    #dataPanel {
+        position: absolute;
+        left: 130px;
+        top: 0;
+        bottom: 0;
+        overflow: auto;
+        right: 0;
+        padding: 5px;
+
+        .react-tabs__tab-panel {
+            top: 0;
+            bottom: 0;
+            left: 0;
+            right: 0;
+        }
+    }
+
+    #sideNav {
+        position: absolute;
+        left: 0;
+        width: 130px;
+        bottom: 0;
+        top: 0;
+        display: flex;
+        flex-direction: column;
+        padding-top: 5px;
+        background-color: rgba(12, 26, 37, 0.2);
+        backdrop-filter: var(--menuBlur);
+        height: auto;
+        border: none;
+        margin: 0;
+        padding: 3px;
+        border-left: 2px solid;
+        border-left-color: var(--menuBorderColor1);
+
+        .space {
+            flex: 1 1;
+        }
+
+        .react-tabs__tab {
+            padding: 8rem 12rem;
+            border-radius: 4rem;
+            color: var(--menuText1Normal);
+            text-align: left;
+            font-size: var(--fontSizeS);
+            text-transform: uppercase;
+            overflow: hidden;
+            height: auto;
+
+            &:hover {
+                background-color: var(--menuHoverColor)
+            }
+
+            &:active {
+                background-color: var(--menuActiveColor)
+            }
+
+            &.react-tabs__tab--selected {
+                background-color: var(--menuFocusedColor);
+                color: var(--menuText1Inverted)
+            }
+
+            &.react-tabs__tab--disabled {
+                background-color: transparent;
+                color: var(--menuText1Disabled);
+
+                &:hover {
+                    background-color: transparent;
+                }
+
+                &.react-tabs__tab--selected {
+                    background-color: var(--menuFocusedColor);
+                    color: var(--menuText1Inverted)
+                }
+            }
+        }
+    }
 }
