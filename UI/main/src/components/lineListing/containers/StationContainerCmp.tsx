@@ -1,21 +1,14 @@
-import { ColorUtils } from "#utility/ColorUtils";
-import { Entity } from "#utility/Entity";
 import { MeasureUnit, kilogramsTo, metersTo } from "#utility/MeasureUnitsUtils";
 import { nameToString, replaceArgs } from "#utility/name.utils";
 import translate from "#utility/translate";
-import { CSSProperties, Component, ReactNode } from "react";
+import { Component, ReactNode } from "react";
 import { Tooltip } from 'react-tooltip';
 import { StationData, VehicleData } from "../LineDetailCmp";
-import { LineData } from "../LineListCmp";
-import { getFontSizeForText } from "./TlmLineFormatCmp";
 
 
 export class StationContainerCmp extends Component<{
     station: StationData;
-    lineData: LineData;
-    getLineById: (e: Entity) => LineData;
     vehicles: VehicleData[];
-    setSelection: (e: Entity) => void;
     keyId: number;
     normalizedPosition: number;
     totalStationCount: number
@@ -39,6 +32,7 @@ export class StationContainerCmp extends Component<{
     private generateTooltip() {
         if (!isFinite(this.state.measureUnit)) return;
         const station = this.props.station;
+        const id = `linestation-${station.entity.Index}-${this.props.keyId}`
         let passengerValueFmt: string;
         if (station.isCargo) {
             let val = kilogramsTo(station.cargo, this.state.measureUnit);
@@ -58,7 +52,7 @@ export class StationContainerCmp extends Component<{
                 : translate("lineStationDetail.nextVehicleIncoming")
             : "";
 
-        return <>
+        return <Tooltip anchorSelect={`#${id}`} className="tlm-station-tooltip" >
             <div style={{ display: "block" }}>{station.parent.Index ? <div>{replaceArgs(translate("lineStationDetail.buildingLbl"), { building: nameToString(station.parentName) })}</div> : ""}
                 <div style={{ display: "block" }}>{replaceArgs(translate(`lineStationDetail.waiting.${station.isCargo ? "cargo" : "passengers"}`), { quantity: passengerValueFmt })}</div>
                 <div>{station.arrivingVehicle
@@ -66,40 +60,18 @@ export class StationContainerCmp extends Component<{
                         <div style={{ display: "inline", fontSize: "var(--fontSizeXS)" }}>↳<i> {nextVehicleDistanceFmt}&nbsp;-&nbsp;{stopsYetToPassText}</i></div></>
                     : <b className="lineView-warning">{translate(`lineStationDetail.noNextVehicleData`)}</b>}</div>
             </div>
-        </>;
+        </Tooltip>;
     }
 
 
     render(): ReactNode {
         const station = this.props.station;
-        const lineCommonData = this.props.lineData;
         const id = `linestation-${station.entity.Index}-${this.props.keyId}`
         return <div className="lineStationContainer" style={{ top: (100 * this.props.normalizedPosition) + "%", minHeight: (100 / this.props.totalStationCount) + "%" }}>
             <div className="lineStation row col-12 align-items-center">
                 <div className="stationName">{nameToString(station.name)}</div>
-                <div className="stationBullet" id={id} >
-                </div>
-                <div className="stationIntersections lineStation row align-items-center">
-                    {([] as any[]).map((lineId: Entity) => {
-                        if (lineId.Index == lineCommonData.entity.Index) return;
-                        const otherLine = this.props.getLineById(lineId);
-                        return <div className="lineIntersection">
-                            <div className="formatContainer" title={nameToString(otherLine.name)} style={{ "--scaleFormat": 0.4 } as CSSProperties} onClick={() => this.props.setSelection(lineId)}>
-                                <div className={`format ${otherLine.type} v????`} style={{ "--currentBgColor": otherLine.color } as CSSProperties}>
-                                    <div className="before"></div>
-                                    <div className="after"></div>
-                                </div>
-                                <div style={{ fontSize: getFontSizeForText(otherLine.xtmData?.Acronym || otherLine.routeNumber.toFixed()), color: ColorUtils.toRGBA(ColorUtils.getContrastColorFor(ColorUtils.toColor01(otherLine.color))) }} className="num">
-                                    {otherLine.xtmData?.Acronym || otherLine.routeNumber.toFixed()}
-                                </div>
-                            </div>
-                        </div>;
-                    })}
-                </div>
-
-                <Tooltip anchorSelect={`#${id}`} className="tlm-station-tooltip" >
-                    {this.generateTooltip()}
-                </Tooltip>
+                <div className="stationBullet" id={id} />
+                {this.generateTooltip()}
             </div>
         </div>;
     }

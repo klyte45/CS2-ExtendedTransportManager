@@ -27,7 +27,7 @@
             margin-left: -15px;
         }
     }
-   
+
 
     .lineBlock text {
         text-align: center;
@@ -35,7 +35,7 @@
         text-shadow: 0 0 6px black;
     }
 
-   
+
     .flexContainer .mat-tab-body-content {
         height: 100%;
         overflow: visible;
@@ -61,7 +61,7 @@
 
         .lineBg {
             position: absolute;
-            top: 0.000000px;
+            top: 10.000000px;
             bottom: 30.000000px;
             left: 50.000000%;
             width: 20.000000px;
@@ -72,7 +72,7 @@
 
         .railingContainer {
             position: absolute;
-            top: 0.000000px;
+            top: 10.000000px;
             bottom: 30.000000px;
             left: 0.000000;
             right: 0;
@@ -135,6 +135,16 @@
 
                 .vehicleContainer {
                     @extend %vehicleContainer;
+                }
+            }
+
+            .integrationsRailing {
+                @extend %commonRailing;
+                left: 50%;
+                //background-color: magenta;
+
+                .stationIntegrationContainer {
+                    @extend %stationIntegrationContainer;
                 }
             }
         }
@@ -277,6 +287,82 @@
             * {
                 display: flex;
                 flex-wrap: wrap;
+            }
+        }
+    }
+
+    %stationIntegrationContainer {
+        width: 100%;
+        height: 50px;
+        position: absolute;
+
+        .lineStation {
+            height: 50px;
+            position: relative;
+            transform: translateY(-50%);
+            --integrationLineColor: transparent;
+            --integrationBackgroundImage: none;
+
+            .integrationLineCutted {
+                position: absolute;
+                left: 40px;
+                top: 2px;
+                bottom: 2px;
+                width: 20px;
+                background-color: var(--integrationLineColor);
+                background-image: var(--integrationBackgroundImage);
+                display: block;
+            }
+
+            .integrationStationBulletBG {
+                position: absolute;
+                left: 0;
+                width: 60px;
+                height: 24px;
+                border-radius: 9999px;
+                background-color: darkgray;
+                border: 1px solid black;
+                top: 50%;
+                margin-top: -12px;
+            }
+
+            .integrationStationBullet {
+                position: absolute;
+                left: 40px;
+                top: 50%;
+                margin-top: - 8px;
+                height: 16px;
+                width: 16px;
+                background-color: white;
+                border: 1px solid black;
+                display: block;
+                border-radius: 9999px;
+                pointer-events: auto;
+            }
+
+            .stationIntersectionsContainer {
+                position: absolute;
+                left: 60px;
+                top: 50%;
+                width: 230px;
+                display: flex;
+                flex-wrap: wrap;
+                flex-direction: row;
+                transform: translateY(-50%);
+                --scale-format: scale(.70);
+
+                &.sz1 {
+                    --scale-format: scale(.45);
+                    --form-border-width: 3;
+                    .formatContainer {
+                        margin: -15px;
+                    }
+                }
+
+                .formatContainer {
+                    margin: -5px;
+                    transform: var(--scale-format);
+                }
             }
         }
     }

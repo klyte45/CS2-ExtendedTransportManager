@@ -26,6 +26,10 @@ export type StationData = {
     readonly parentName: NameCustom | NameFormatted | NameLocalized,
     readonly district: Entity,
     readonly districtName: NameCustom | NameFormatted,
+    readonly connectedLines: {
+        readonly line: Entity,
+        readonly stop: Entity
+    }[],
     arrivingVehicle?: VehicleData,
     arrivingVehicleDistance?: number,
     arrivingVehicleStops?: number,
@@ -71,6 +75,8 @@ type State = {
 
 type Props = {
     currentLine: LineData,
+    getLineById: (x: number) => LineData,
+    setSelection: (x: Entity) => Promise<void>,
     onBack: () => void
 }
 
@@ -84,7 +90,7 @@ export default class LineDetailCmp extends Component<Props, State> {
                 showVehicles: false,
                 showIntegrations: true,
                 useWhiteBackground: false
-            }
+            },
         }
     }
     componentDidMount() {
@@ -105,10 +111,10 @@ export default class LineDetailCmp extends Component<Props, State> {
                         ...this.enrichStopInfo(x, arr, details.Vehicles, details.LineData)
                     }
                 })
-                this.setState({ lineDetails: details }, () => this.reloadLines());
+                this.setState({ lineDetails: details }, () => this.reloadData());
             });
         })
-        this.reloadLines(true);
+        this.reloadData(true);
     }
     enrichStopInfo(station: StationData, allStations: StationData[], vehicles: VehicleData[], lineData: LineData): Partial<StationData> {
         const arrivingVehicle = vehicles.length == 0 ? undefined : vehicles.map(x => [x.position > station.position ? x.position - 1 : x.position, x] as [number, VehicleData]).sort((a, b) => b[0] - a[0])[0]
@@ -136,7 +142,7 @@ export default class LineDetailCmp extends Component<Props, State> {
         engine.off("k45::xtm.lineViewer.getRouteDetail->");
     }
 
-    async reloadLines(force: boolean = false) {
+    async reloadData(force: boolean = false) {
         if (force || this.state.mapViewOptions.showVehicles) {
             await engine.call("k45::xtm.lineViewer.getRouteDetail", this.props.currentLine.entity, force);
         }
@@ -152,7 +158,7 @@ export default class LineDetailCmp extends Component<Props, State> {
         const lineCommonData = lineDetails?.LineData;
         return <>
             <DefaultPanelScreen title={nameToString(this.props.currentLine.name)} subtitle="" buttonsRowContent={buttonsRow}>
-                <TlmViewerCmp {...this.state.mapViewOptions} lineCommonData={lineCommonData} lineDetails={lineDetails} getLineById={(x) => this.getLineById(x)} setSelection={(x) => this.setSelection(x)} />
+                <TlmViewerCmp {...this.state.mapViewOptions} lineCommonData={lineCommonData} lineDetails={lineDetails} getLineById={(x) => this.props.getLineById(x)} setSelection={(x) => this.setSelection(x)} />
                 <div className="lineViewContent">
                     <Tabs defaultIndex={3}>
                         <TabList id="sideNav">
@@ -187,12 +193,16 @@ export default class LineDetailCmp extends Component<Props, State> {
             </DefaultPanelScreen>
         </>;
     }
+    async setSelection(x: Entity) {
+        await this.props.setSelection(x);
+        this.reloadData(true);
+    }
     private toggleWhiteBG(x: boolean): void {
         this.setState({ mapViewOptions: { ...this.state.mapViewOptions, useWhiteBackground: x } });
     }
 
     private toggleIntegrations(x: boolean): void {
-        this.setState({ mapViewOptions: { ...this.state.mapViewOptions, showIntegrations: x, showVehicles: this.state.mapViewOptions.showVehicles && !x } }, () => this.reloadLines());
+        this.setState({ mapViewOptions: { ...this.state.mapViewOptions, showIntegrations: x, showVehicles: this.state.mapViewOptions.showVehicles && !x } }, () => this.reloadData());
     }
 
     private toggleDistricts(x: boolean): void {
@@ -204,15 +214,9 @@ export default class LineDetailCmp extends Component<Props, State> {
     }
 
     private toggleVehiclesShow(x: boolean) {
-        this.setState({ mapViewOptions: { ...this.state.mapViewOptions, showVehicles: x, showIntegrations: this.state.mapViewOptions.showIntegrations && !x } }, () => this.reloadLines());
+        this.setState({ mapViewOptions: { ...this.state.mapViewOptions, showVehicles: x, showIntegrations: this.state.mapViewOptions.showIntegrations && !x } }, () => this.reloadData());
     }
 
-    getLineById(lineId: Entity): LineData {
-        return {} as any
-    }
-    setSelection(lineId: Entity): void {
-        return {} as any
-    }
     async sendRouteName(lineData: LineData, newName: string) {
         const response: NameFormatted | NameCustom = await engine.call("k45::xtm.lineViewer.setRouteName", lineData.entity, newName)
         return nameToString(response);

@@ -30,7 +30,8 @@ export type LineData = {
 }
 
 type State = {
-    linesList: LineData[]
+    linesList: LineData[],
+    indexedLineList: Record<string, LineData>
     currentLineViewer?: LineData
 }
 
@@ -39,7 +40,8 @@ export default class LineListCmp extends Component<any, State> {
     constructor(props: any) {
         super(props);
         this.state = {
-            linesList: []
+            linesList: [],
+            indexedLineList: {}
         }
     }
     componentDidMount() {
@@ -56,12 +58,17 @@ export default class LineListCmp extends Component<any, State> {
     }
 
     async reloadLines(res: LineData[]) {
+        const lineList = res.sort((a, b) => {
+            if (a.type != b.type) return a.type.localeCompare(b.type);
+            if (a.isCargo != b.isCargo) return a.isCargo ? 1 : -1;
+            return a.routeNumber - b.routeNumber
+        });
         this.setState({
-            linesList: res.sort((a, b) => {
-                if (a.type != b.type) return a.type.localeCompare(b.type);
-                if (a.isCargo != b.isCargo) return a.isCargo ? 1 : -1;
-                return a.routeNumber - b.routeNumber
-            })
+            linesList: lineList,
+            indexedLineList: lineList.reduce((p, n) => {
+                p[n.entity.Index.toFixed(0)] = n;
+                return p;
+            }, {})
         });
         if (!this.state.currentLineViewer) {
             engine.call("k45::xtm.lineViewer.getCityLines", false)
@@ -69,7 +76,12 @@ export default class LineListCmp extends Component<any, State> {
     }
     render() {
         if (this.state.currentLineViewer) {
-            return <><LineDetailCmp currentLine={this.state.currentLineViewer} onBack={() => this.setState({ currentLineViewer: undefined, }, () => engine.call("k45::xtm.lineViewer.getCityLines", true))} /></>
+            return <><LineDetailCmp
+                currentLine={this.state.currentLineViewer}
+                onBack={() => this.setState({ currentLineViewer: undefined, }, () => engine.call("k45::xtm.lineViewer.getCityLines", true))}
+                getLineById={(x) => this.getLineById(x)}
+                setSelection={x => this.setSelection(x)}
+            /></>
         }
         return <>
             <h1>List of lines</h1>
@@ -102,6 +114,12 @@ export default class LineListCmp extends Component<any, State> {
                 </div>;
             })}
         </>;
+    }
+    async setSelection(x: Entity) {
+        return new Promise<void>((res) => this.setState({ currentLineViewer: this.state.indexedLineList[x.Index.toFixed(0)] }, () => res(null)))
+    }
+    getLineById(x: number): LineData {
+        return this.state.indexedLineList[x.toFixed(0)];
     }
     async sendRouteName(lineData: LineData, newName: string) {
         const response: NameFormatted | NameCustom = await engine.call("k45::xtm.lineViewer.setRouteName", lineData.entity, newName)

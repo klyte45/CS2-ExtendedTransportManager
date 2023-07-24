@@ -1,6 +1,7 @@
 .formatContainer {
     --scaleFormat: 1;
     --margin-base: calc((var(--scaleFormat) - 1) * 28px + 3px);
+    --form-border-width: 2px;
     position: relative;
     transform: scale(var(--scaleFormat));
     margin-bottom: calc((var(--scaleFormat) - 1) * 25px);
@@ -25,10 +26,10 @@
         .before {
             position: absolute;
             background-color: black;
-            top: -2px;
-            left: -2px;
-            right: -2px;
-            bottom: -2px;
+            top: calc(-1* var(--form-border-width));
+            left: calc(-1* var(--form-border-width));
+            right: calc(-1* var(--form-border-width));
+            bottom: calc(-1* var(--form-border-width));
             z-index: -1;
         }
 
