@@ -11,6 +11,7 @@ using System;
 using Unity.Collections;
 using Unity.Entities;
 using Unity.Jobs;
+using UnityEngine;
 using static Belzont.Utils.NameSystemExtensions;
 using static BelzontTLM.XTMLineListingSection;
 using static BelzontTLM.XTMLineViewerSection;
@@ -289,7 +290,7 @@ namespace BelzontTLM
 
             public bool Equals(LineStopConnnection other)
             {
-               return line == other.line && stop == other.stop;
+                return line == other.line && stop == other.stop;
             }
         }
 
@@ -307,8 +308,12 @@ namespace BelzontTLM
 
             public NativeHashSet<LineStopConnnection> linesConnected { get; }
 
+            public Vector3 worldPosition { get; }
 
-            public LineStop(Entity entity, float position, int cargo, bool isCargo, bool isOutsideConnection, NativeHashSet<LineStopConnnection> linesConnected)
+            public Quaternion rotation { get; }
+
+
+            public LineStop(Entity entity, float position, int cargo, bool isCargo, bool isOutsideConnection, NativeHashSet<LineStopConnnection> linesConnected, Vector3 worldPosition, Quaternion rotation)
             {
                 this.entity = entity;
                 this.position = position;
@@ -316,6 +321,8 @@ namespace BelzontTLM
                 this.isCargo = isCargo;
                 this.isOutsideConnection = isOutsideConnection;
                 this.linesConnected = linesConnected;
+                this.worldPosition = worldPosition;
+                this.rotation = rotation;
             }
         }
 
@@ -331,13 +338,19 @@ namespace BelzontTLM
 
             public bool isCargo { get; }
 
-            public LineVehicle(Entity entity, float position, int cargo, int capacity, bool isCargo = false)
+            public Vector3 worldPosition { get; }
+
+            public Quaternion rotation { get; }
+
+            public LineVehicle(Entity entity, float position, int cargo, int capacity, Vector3 worldPosition, Quaternion rotation, bool isCargo = false)
             {
                 this.entity = entity;
                 this.position = position;
                 this.cargo = cargo;
                 this.capacity = capacity;
                 this.isCargo = isCargo;
+                this.worldPosition = worldPosition;
+                this.rotation = rotation;
             }
         }
 
@@ -358,6 +371,19 @@ namespace BelzontTLM
                 this.sizeMeters = sizeMeters;
             }
         }
+
+        public class Vector3Json
+        {
+            public float x, y, z;
+
+            public Vector3Json(Vector3 src)
+            {
+                x = src.x;
+                y = src.y;
+                z = src.z;
+            }
+        }
+
         public class LineStopNamed
         {
             public Entity entity { get; }
@@ -371,6 +397,8 @@ namespace BelzontTLM
             public Entity district { get; }
             public ValuableName districtName { get; }
             public LineStopConnnection[] connectedLines { get; }
+            public Vector3Json worldPosition { get; }
+            public float azimuth { get; }
 
             public LineStopNamed(LineStop src, NameSystem nameSystem, EntityManager em)
             {
@@ -401,6 +429,8 @@ namespace BelzontTLM
                 {
                     connectedLines[i++] = enumerator.Current;
                 }
+                worldPosition = new(src.worldPosition);
+                azimuth = src.rotation.eulerAngles.y;
 
                 static Entity TryGetByBorderDistrict(EntityManager em, Entity attachParent) => em.TryGetComponent<BorderDistrict>(attachParent, out var borders)
                                             ? borders.m_Left != Entity.Null
@@ -416,6 +446,8 @@ namespace BelzontTLM
             public int capacity { get; }
             public bool isCargo { get; }
             public ValuableName name { get; }
+            public Vector3Json worldPosition { get; }
+            public float azimuth { get; }
 
             public LineVehicleNamed(LineVehicle src, NameSystem nameSystem)
             {
@@ -425,6 +457,8 @@ namespace BelzontTLM
                 capacity = src.capacity;
                 isCargo = src.isCargo;
                 name = nameSystem.GetName(src.entity).ToValueableName();
+                worldPosition = new(src.worldPosition);
+                azimuth = src.rotation.eulerAngles.y;
             }
         }
     }

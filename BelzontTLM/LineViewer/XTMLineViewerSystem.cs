@@ -18,7 +18,10 @@ namespace BelzontTLM
 {
     public class XTMLineViewerSystem : SystemBase, IBelzontBindable
     {
+        //private const string CCTV_GO = "XTM - cctv.xtm.k45";
         public Action<string, object[]> EventCaller { get; set; }
+
+        //public Camera cctvCamera;
         protected void SendEvent(string eventName, params object[] eventArgs)
         {
             EventCaller?.Invoke(eventName, eventArgs);
@@ -33,6 +36,13 @@ namespace BelzontTLM
             }, force);
         }
 
+        private void SetCctvPosition(float x, float y, float z, float angleX, float angleY, float distanceZ)
+        {
+            //var targetPoint = new Vector3(x, y, z);
+            //var targetPositionCamera = targetPoint + (Quaternion.AngleAxis(angleX, Vector3.right) * Vector3.forward + Quaternion.AngleAxis(angleY, Vector3.up) * Vector3.forward).normalized * distanceZ;
+            //cctvCamera.transform.position = targetPositionCamera;
+            //cctvCamera.transform.LookAt(targetPoint);
+        }
 
         protected override void OnUpdate()
         {
@@ -62,6 +72,7 @@ namespace BelzontTLM
             eventCaller("lineViewer.setRouteNumber", SetRouteInternalNumber);
             eventCaller("lineViewer.getCityLines", GetCityLines);
             eventCaller("lineViewer.getRouteDetail", GetRouteDetail);
+            eventCaller("lineViewer.setCctvPosition", SetCctvPosition);
         }
 
         private EntityQuery m_UnititalizedXTMLineQuery;
@@ -139,6 +150,26 @@ namespace BelzontTLM
             m_EndFrameBarrier = World.GetOrCreateSystemManaged<EndFrameBarrier>();
             m_LineVisualizerSection = World.GetOrCreateSystemManaged<XTMLineViewerSection>();
             m_LineListingSection = World.GetOrCreateSystemManaged<XTMLineListingSection>();
+
+            //if (GameObject.Find(CCTV_GO) is null)
+            //{
+            //    var goCctv = new GameObject();
+            //    goCctv.name = CCTV_GO;
+            //    GameObject.DontDestroyOnLoad(goCctv);
+            //    cctvCamera = goCctv.AddComponent<Camera>();
+            //    cctvCamera.depthTextureMode = DepthTextureMode.None;
+            //    cctvCamera.targetTexture = null;
+            //    var liveView = goCctv.AddComponent<CohtmlLiveView>();
+            //    liveView.LiveViewName = "cctv.xtm.k45";
+            //    liveView.TargetTexture = new RenderTexture(512, 512, 16)
+            //    {
+            //        graphicsFormat = UnityEngine.Experimental.Rendering.GraphicsFormat.R8G8B8A8_UNorm
+            //    };
+
+            //    LogUtils.DoLog("ON CREATE ");
+            //    LogUtils.DoLog("liveView => {0} {1} {2} {3} {4}", liveView.name, liveView.LiveViewName, liveView.TargetCamera, liveView.TargetTexture, liveView.System);
+            //}
+
         }
 
 

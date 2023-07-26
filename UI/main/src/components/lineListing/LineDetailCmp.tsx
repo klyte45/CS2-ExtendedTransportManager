@@ -30,6 +30,8 @@ export type StationData = {
         readonly line: Entity,
         readonly stop: Entity
     }[],
+    readonly worldPosition: { x: number, y: number, z: number },
+    readonly azimuth: number,
     arrivingVehicle?: VehicleData,
     arrivingVehicleDistance?: number,
     arrivingVehicleStops?: number,
@@ -41,6 +43,8 @@ export type VehicleData = {
     readonly capacity: number,
     readonly isCargo: boolean,
     readonly name: NameCustom | NameFormatted,
+    readonly worldPosition: { x: number, y: number, z: number },
+    readonly azimuth: number,
     normalizedPosition: number,
     distanceNextStop: number
     distancePrevStop: number
@@ -166,7 +170,7 @@ export default class LineDetailCmp extends Component<Props, State> {
                             <Tab disabled={true}>{translate("lineViewer.tabSettings")}</Tab>
                             <div className="space"></div>
                             <Tab>{translate("lineViewer.mapSettings")}</Tab>
-                            <Tab disabled={true}>{translate("lineViewer.stopData")}</Tab>
+                            <Tab disabled={false}>{translate("lineViewer.stopData")}</Tab>
                             <Tab disabled={true}>{translate("lineViewer.vehicleData")}</Tab>
                         </TabList>
                         <div id="dataPanel">
@@ -185,7 +189,9 @@ export default class LineDetailCmp extends Component<Props, State> {
                                 <Checkbox isChecked={() => this.state.mapViewOptions.showIntegrations} title={translate("lineViewer.showIntegrationsLbl")} onValueToggle={(x) => this.toggleIntegrations(x)} />
                                 <Checkbox isChecked={() => this.state.mapViewOptions.useWhiteBackground} title={translate("lineViewer.useWhiteBackgroundLbl")} onValueToggle={(x) => this.toggleWhiteBG(x)} />
                             </TabPanel>
-                            <TabPanel></TabPanel>
+                            <TabPanel>
+                                {/*<img src="coui://cctv.xtm.k45/" />*/}
+                            </TabPanel>
                             <TabPanel></TabPanel>
                         </div>
                     </Tabs>

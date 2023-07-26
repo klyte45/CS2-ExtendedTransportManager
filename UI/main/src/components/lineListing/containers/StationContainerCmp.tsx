@@ -70,7 +70,7 @@ export class StationContainerCmp extends Component<{
         return <div className="lineStationContainer" style={{ top: (100 * this.props.normalizedPosition) + "%", minHeight: (100 / this.props.totalStationCount) + "%" }}>
             <div className="lineStation row col-12 align-items-center">
                 <div className="stationName">{nameToString(station.name)}</div>
-                <div className="stationBullet" id={id} />
+                <div className="stationBullet" id={id} onClick={() => engine.call("k45::xtm.lineViewer.setCctvPosition", station.worldPosition.x, station.worldPosition.y, station.worldPosition.z, station.azimuth, 0, 20)} />
                 {this.generateTooltip()}
             </div>
         </div>;

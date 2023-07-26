@@ -72,7 +72,8 @@ namespace BelzontTLM
                         int item = cargo.Item1;
                         int item2 = cargo.Item2;
                         float num7 = num6 / num;
-                        LineVehicle lineVehicle = new LineVehicle(vehicle, num7, item, item2, isCargo);
+                        var transform = m_Transforms[vehicle];
+                        LineVehicle lineVehicle = new LineVehicle(vehicle, num7, item, item2, transform.m_Position, transform.m_Rotation, isCargo);
                         m_VehiclesResult.Add(lineVehicle);
                         if (item2 > m_StopCapacityResult[0])
                         {
@@ -179,7 +180,9 @@ namespace BelzontTLM
                         roadsMapped.Dispose();
                         roadsToMap.Dispose();
 
-                        LineStop lineStop = new LineStop(stopPoint, position, waiting, isCargo, m_OutsideConnections.HasComponent(stopPoint), linesConnected);
+                        var transformData = m_Transforms[stopPoint];
+
+                        LineStop lineStop = new LineStop(stopPoint, position, waiting, isCargo, m_OutsideConnections.HasComponent(stopPoint), linesConnected, transformData.m_Position, transformData.m_Rotation);
                         m_StopsResult.Add(lineStop);
                     }
                 }
