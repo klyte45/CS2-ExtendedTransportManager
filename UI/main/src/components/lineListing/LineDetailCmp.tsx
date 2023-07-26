@@ -1,7 +1,7 @@
 import { DefaultPanelScreen } from "#components/common/DefaultPanelScreen";
 import { Checkbox } from "#components/common/checkbox";
 import { DistrictService } from "#service/DistrictService";
-import { LineDetails, MapViewerOptions, StationData, VehicleData } from "#service/LineManagementService";
+import { LineData, LineDetails, LineManagementService, MapViewerOptions, StationData, VehicleData } from "#service/LineManagementService";
 import "#styles/LineDetailCmp.scss";
 import "#styles/TLM_LineDetail.scss";
 import { Entity } from "#utility/Entity";
@@ -9,13 +9,14 @@ import { NameCustom, NameFormatted, nameToString } from "#utility/name.utils";
 import translate from "#utility/translate";
 import { Component } from "react";
 import { Tab, TabList, TabPanel, Tabs } from "react-tabs";
-import { LineData } from "./LineListCmp";
 import { TlmViewerCmp } from "./containers/TlmViewerCmp";
+import { ColorRgbInput, Input } from "#components/common/input";
 
 enum MapViewerTabsNames {
     General = "tabGeneralSettings",
     LineData = "tabLineData",
     LineSettings = "tabSettings",
+    Debug = "tabDebug",
     MapSettings = "mapSettings",
     StopInfo = "stopData",
     VehicleInfo = "vehicleData"
@@ -25,6 +26,7 @@ const tabsOrder: (MapViewerTabsNames | undefined)[] = [
     MapViewerTabsNames.General,
     MapViewerTabsNames.LineData,
     MapViewerTabsNames.LineSettings,
+    MapViewerTabsNames.Debug,
     undefined,
     MapViewerTabsNames.MapSettings,
     MapViewerTabsNames.StopInfo,
@@ -35,6 +37,7 @@ const clickableTabs = [
     MapViewerTabsNames.General,
     MapViewerTabsNames.LineData,
     MapViewerTabsNames.LineSettings,
+    MapViewerTabsNames.Debug,
     MapViewerTabsNames.MapSettings
 ]
 
@@ -136,7 +139,13 @@ export default class LineDetailCmp extends Component<Props, State> {
             .map(x => DistrictService.getEffectiveDistrictName(x)).join(" - ");
 
         const componentsMapViewer: Record<MapViewerTabsNames, JSX.Element> = {
-            [MapViewerTabsNames.General]: <>{JSON.stringify(this.state.lineDetails ?? "LOADING", null, 2)}</>,
+            [MapViewerTabsNames.General]: <DefaultPanelScreen title={translate("lineViewer.generalData")} isSubScreen={true}>
+                <Input title={translate("lineViewerEditor.lineName")} getValue={() => nameToString(this.props.currentLine.name)} onValueChanged={(x) => LineManagementService.setLineName(lineCommonData.entity, x)} />
+                <Input title={translate("lineViewerEditor.internalNumber")} getValue={() => this.props.currentLine.routeNumber.toString()} maxLength={11} onValueChanged={(x) => this.SendNewRouteNumber(x)} />
+                <Input title={translate("lineViewerEditor.displayIdentifier")} getValue={() => this.props.currentLine.xtmData?.Acronym} maxLength={30} onValueChanged={(x) => LineManagementService.setLineAcronym(lineCommonData.entity, x)} />
+                <Checkbox isChecked={() => lineCommonData?.isFixedColor} title={translate("lineViewerEditor.ignorePalette")} onValueToggle={(x) => LineManagementService.setIgnorePalette(lineCommonData.entity, x)} />
+                <ColorRgbInput title={translate("lineViewerEditor.lineFixedColor")} getValue={() => this.props.currentLine.color as `#${string}`} onValueChanged={(x) => LineManagementService.setLineFixedColor(lineCommonData.entity, x)} />
+            </DefaultPanelScreen>,
             [MapViewerTabsNames.LineData]: <></>,
             [MapViewerTabsNames.LineSettings]: <></>,
             [MapViewerTabsNames.MapSettings]: <DefaultPanelScreen title={translate("lineViewer.showOnMap")} isSubScreen={true}>
@@ -147,7 +156,8 @@ export default class LineDetailCmp extends Component<Props, State> {
                 <Checkbox isChecked={() => this.state.mapViewOptions.useWhiteBackground} title={translate("lineViewer.useWhiteBackgroundLbl")} onValueToggle={(x) => this.toggleWhiteBG(x)} />
             </DefaultPanelScreen>,
             [MapViewerTabsNames.StopInfo]: <></>,
-            [MapViewerTabsNames.VehicleInfo]: <></>
+            [MapViewerTabsNames.VehicleInfo]: <></>,
+            [MapViewerTabsNames.Debug]: <>{JSON.stringify(this.state.lineDetails ?? "LOADING", null, 2)}</>
         }
 
         return <>
@@ -166,6 +176,11 @@ export default class LineDetailCmp extends Component<Props, State> {
             </DefaultPanelScreen>
         </>;
     }
+    private async SendNewRouteNumber(x: string) {
+        const lineNum = parseInt(x);
+        return isFinite(lineNum) ? LineManagementService.setLineNumber(this.props.currentLine.entity, lineNum) : this.props.currentLine.routeNumber.toString();
+    }
+
     async setSelection(x: Entity) {
         await this.props.setSelection(x);
         this.reloadData(true);

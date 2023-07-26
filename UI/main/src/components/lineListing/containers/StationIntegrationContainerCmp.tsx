@@ -1,10 +1,9 @@
-import { StationData, VehicleData } from "#service/LineManagementService";
+import { LineData, StationData, VehicleData } from "#service/LineManagementService";
 import { ColorUtils } from "#utility/ColorUtils";
 import { Entity } from "#utility/Entity";
 import { MeasureUnit } from "#utility/MeasureUnitsUtils";
 import { nameToString } from "#utility/name.utils";
 import { CSSProperties, Component, ReactNode } from "react";
-import { LineData } from "../LineListCmp";
 import { TlmLineFormatCmp } from "./TlmLineFormatCmp";
 
 

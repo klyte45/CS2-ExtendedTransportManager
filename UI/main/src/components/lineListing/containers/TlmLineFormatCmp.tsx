@@ -1,8 +1,7 @@
+import { LineData } from "#service/LineManagementService";
 import "#styles/TLM_FormatContainer.scss";
 import { ColorUtils } from "#utility/ColorUtils";
 import { CSSProperties, Component, ReactNode } from "react";
-import { LineData } from "../LineListCmp";
-
 
 export class TlmLineFormatCmp extends Component<{
     lineCommonData: LineData;

@@ -1,33 +1,11 @@
-import { CSSProperties, Component } from "react";
-import { NameCustom, NameFormatted, NameLocalized, nameToString } from "#utility/name.utils";
-import { Color01, ColorUtils } from "#utility/ColorUtils";
-import { TransportType } from "#enum/TransportType";
+import { LineData } from "#service/LineManagementService";
 import { Entity } from "#utility/Entity";
+import { NameCustom, NameFormatted, nameToString } from "#utility/name.utils";
+import { Component } from "react";
 import { SimpleInput } from "../common/input";
 import LineDetailCmp from "./LineDetailCmp";
 import { TlmLineFormatCmp } from "./containers/TlmLineFormatCmp";
 
-export type LineData = {
-    __Type: string,
-    name: NameCustom | NameFormatted,
-    vkName: NameLocalized,
-    entity: Entity,
-    color: string
-    cargo: number,
-    active: boolean,
-    visible: boolean,
-    isCargo: boolean,
-    length: number,
-    schedule: number,
-    stops: number,
-    type: TransportType,
-    usage: number,
-    vehicles: number,
-    xtmData?: {
-        Acronym: string
-    }
-    routeNumber: number
-}
 
 type State = {
     linesList: LineData[],

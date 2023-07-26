@@ -1,4 +1,4 @@
-import { Input } from "#components/common/input";
+import { ColorRgbInput, Input } from "#components/common/input";
 import { PaletteData } from "#service/PaletteService";
 import '#styles/PaletteLineViewer.scss';
 import { ColorUtils } from "#utility/ColorUtils";
@@ -72,18 +72,10 @@ export default class PaletteImportingCmp extends Component<Props, State> {
                 </div>
                 <div>
                     {this.state.editingIndex >= 0 && this.state.editingIndex < this.state.paletteData.ColorsRGB.length && <>
-                        <Input
+                        <ColorRgbInput
                             title={replaceArgs(translate("paletteEditor.editing"), { "index": (this.state.editingIndex + 1).toString() })}
                             getValue={() => this.state.paletteData.ColorsRGB[this.state.editingIndex]}
-                            onValueChanged={(x) => this.setupColor(x)}
-                            isValid={x => !!this.getHexRegexParts(x)}
-                            cssCustomOverrides={{
-                                backgroundColor: (val) => this.toRGB6(val),
-                                color: (val) => {
-                                    let rgb = this.toRGB6(val)
-                                    return rgb ? ColorUtils.toRGBA(ColorUtils.getContrastColorFor(ColorUtils.toColor01(rgb))) : ""
-                                }
-                            }}
+                            onValueChanged={(x) => this.setupColor(x)}                            
                             onTab={(x, shift) => {
                                 this.setupColor(x);
                                 const newIdx = (this.state.editingIndex + this.state.paletteData.ColorsRGB.length + (shift ? -1 : 1)) % this.state.paletteData.ColorsRGB.length;
@@ -92,7 +84,6 @@ export default class PaletteImportingCmp extends Component<Props, State> {
                                 });
                                 return this.state.paletteData.ColorsRGB[newIdx];
                             }}
-                            maxLength={7}
                         />
                     </>}
                 </div>
@@ -104,18 +95,7 @@ export default class PaletteImportingCmp extends Component<Props, State> {
             </div>
         </>;
     }
-    toRGB6(x: string): `#${string}` | null {
-        const regexColor = this.getHexRegexParts(x);
-        if (regexColor) {
-            const color = regexColor[1];
-            if (color.length == 3) {
-                return `#${color[0]}8${color[1]}8${color[2]}8`;
-            } else {
-                return `#${color}`;
-            }
-        }
-        return null;
-    }
+
     onExclude(j: number): void {
         this.state.paletteData.ColorsRGB.splice(j, 1);
         this.setState({ paletteData: this.state.paletteData });
@@ -126,7 +106,7 @@ export default class PaletteImportingCmp extends Component<Props, State> {
         this.setState({ paletteData: this.state.paletteData });
     }
     private setupColor(x: string) {
-        const newColor = this.toRGB6(x);
+        const newColor = ColorUtils.toRGB6(x);
         if (newColor) {
             this.state.paletteData.ColorsRGB[this.state.editingIndex] = newColor;
             this.setState({ paletteData: this.state.paletteData });
@@ -137,9 +117,6 @@ export default class PaletteImportingCmp extends Component<Props, State> {
     addNewColor() {
         this.state.paletteData.ColorsRGB.push("#FFFFFF");
         this.setState({});
-    }
-    getHexRegexParts(val: string) {
-        return /^#([0-9a-f]{3}([0-9a-f]{3})?)$/i.exec(val);
     }
 }
 

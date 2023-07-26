@@ -1,6 +1,29 @@
-import { LineData } from "#components/lineListing/LineListCmp";
+import { TransportType } from "#enum/TransportType";
 import { Entity } from "#utility/Entity";
 import { NameCustom, NameFormatted, NameLocalized } from "#utility/name.utils";
+
+export type LineData = {
+    __Type: string,
+    name: NameCustom | NameFormatted,
+    vkName: NameLocalized,
+    entity: Entity,
+    color: string
+    cargo: number,
+    active: boolean,
+    visible: boolean,
+    isCargo: boolean,
+    length: number,
+    schedule: number,
+    stops: number,
+    type: TransportType,
+    usage: number,
+    vehicles: number,
+    xtmData?: {
+        Acronym: string
+    }
+    routeNumber: number,
+    isFixedColor: boolean
+}
 
 export type StationData = {
     readonly entity: Entity,
@@ -57,4 +80,22 @@ export type MapViewerOptions = {
     showVehicles: boolean,
     showIntegrations: boolean,
     useWhiteBackground: boolean
+}
+
+export class LineManagementService {
+    static async setLineFixedColor(entity: Entity, x: string): Promise<`#${string}`> {
+        return await engine.call("k45::xtm.lineManagement.setLineFixedColor", entity, x);
+    }
+    static async setIgnorePalette(entity: Entity, x: boolean): Promise<boolean> {
+        return await engine.call("k45::xtm.lineManagement.setIgnorePalette", entity, x);
+    }
+    static async setLineAcronym(entity: Entity, x: string): Promise<string> {
+        return await engine.call("k45::xtm.lineManagement.setLineAcronym", entity, x);
+    }
+    static async setLineNumber(entity: Entity, x: number): Promise<string> {
+        return await engine.call("k45::xtm.lineManagement.setLineNumber", entity, x);
+    }
+    static async setLineName(entity: Entity, x: string): Promise<string> {
+        return await engine.call("k45::xtm.lineManagement.setLineName", entity, x);
+    }
 }

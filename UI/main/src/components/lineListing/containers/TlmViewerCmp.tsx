@@ -1,8 +1,7 @@
-import { LineDetails, MapViewerOptions } from "#service/LineManagementService";
+import { LineData, LineDetails, MapViewerOptions } from "#service/LineManagementService";
 import { ColorUtils } from "#utility/ColorUtils";
 import { Entity } from "#utility/Entity";
 import { CSSProperties, Component, ReactNode } from "react";
-import { LineData } from "../LineListCmp";
 import { DistrictBorderContainerCmp } from "./DistrictBorderContainerCmp";
 import { MapStationDistanceContainerCmp } from "./MapStationDistanceContainerCmp";
 import { MapVehicleContainerCmp } from "./MapVehicleContainerCmp";

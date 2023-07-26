@@ -244,4 +244,21 @@ export class ColorUtils {
         var colorRgb = this.colorHexToRGB(color);
         return 'rgb(' + Math.min(colorRgb[0], 232) + "," + Math.min(colorRgb[1], 232) + "," + Math.min(colorRgb[2], 232) + ")";
     }
+
+    static toRGB6(x: string): `#${string}` | null {
+        const regexColor = this.getHexRegexParts(x);
+        if (regexColor) {
+            const color = regexColor[1];
+            if (color.length == 3) {
+                return `#${color[0]}8${color[1]}8${color[2]}8`;
+            } else {
+                return `#${color}`;
+            }
+        }
+        return null;
+    }
+
+    static getHexRegexParts(val: string) {
+        return /^#([0-9a-f]{3}([0-9a-f]{3})?)$/i.exec(val);
+    }
 }
