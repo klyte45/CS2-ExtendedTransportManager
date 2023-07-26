@@ -1,9 +1,9 @@
+import { StationData, VehicleData } from "#service/LineManagementService";
 import { MeasureUnit, kilogramsTo, metersTo } from "#utility/MeasureUnitsUtils";
 import { nameToString, replaceArgs } from "#utility/name.utils";
 import translate from "#utility/translate";
 import { Component, ReactNode } from "react";
 import { Tooltip } from 'react-tooltip';
-import { StationData, VehicleData } from "../LineDetailCmp";
 
 
 export class StationContainerCmp extends Component<{

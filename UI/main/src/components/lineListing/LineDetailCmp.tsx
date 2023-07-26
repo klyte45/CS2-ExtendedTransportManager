@@ -14,63 +14,9 @@ import { MapStationDistanceContainerCmp } from "./containers/MapStationDistanceC
 import { TlmViewerCmp } from "./containers/TlmViewerCmp";
 import { Tab, TabList, TabPanel, Tabs } from "react-tabs";
 import { Checkbox } from "#components/common/checkbox";
+import { LineDetails, MapViewerOptions, StationData, VehicleData } from "#service/LineManagementService";
+import { DistrictService } from "#service/DistrictService";
 
-export type StationData = {
-    readonly entity: Entity,
-    readonly position: number,
-    readonly cargo: number,
-    readonly isCargo: boolean,
-    readonly isOutsideConnection: boolean,
-    readonly name: NameCustom | NameFormatted,
-    readonly parent: Entity,
-    readonly parentName: NameCustom | NameFormatted | NameLocalized,
-    readonly district: Entity,
-    readonly districtName: NameCustom | NameFormatted,
-    readonly connectedLines: {
-        readonly line: Entity,
-        readonly stop: Entity
-    }[],
-    readonly worldPosition: { x: number, y: number, z: number },
-    readonly azimuth: number,
-    arrivingVehicle?: VehicleData,
-    arrivingVehicleDistance?: number,
-    arrivingVehicleStops?: number,
-};
-export type VehicleData = {
-    readonly entity: Entity,
-    readonly position: number,
-    readonly cargo: number,
-    readonly capacity: number,
-    readonly isCargo: boolean,
-    readonly name: NameCustom | NameFormatted,
-    readonly worldPosition: { x: number, y: number, z: number },
-    readonly azimuth: number,
-    normalizedPosition: number,
-    distanceNextStop: number
-    distancePrevStop: number
-};
-export type SegmentData = {
-    readonly start: number,
-    readonly end: number,
-    readonly sizeMeters: number,
-    readonly broken: boolean
-}
-
-export type LineDetails = {
-    LineData: LineData,
-    StopCapacity: number,
-    Stops: StationData[]
-    Vehicles: VehicleData[],
-    Segments: SegmentData[]
-}
-
-export type MapViewerOptions = {
-    showDistricts: boolean,
-    showDistances: boolean,
-    showVehicles: boolean,
-    showIntegrations: boolean,
-    useWhiteBackground: boolean
-}
 
 type State = {
     lineDetails?: LineDetails,
@@ -161,7 +107,10 @@ export default class LineDetailCmp extends Component<Props, State> {
         const lineDetails = this.state.lineDetails;
         const lineCommonData = lineDetails?.LineData;
         return <>
-            <DefaultPanelScreen title={nameToString(this.props.currentLine.name)} subtitle="" buttonsRowContent={buttonsRow}>
+            <DefaultPanelScreen title={nameToString(this.props.currentLine.name)} subtitle={Object.values(lineDetails.Stops.reduce((p, n) => {
+                p[n.district.Index] = n
+                return p;
+            }, {} as Record<number, StationData>)).map(x => DistrictService.getEffectiveDistrictName(x)).join(" - ")} buttonsRowContent={buttonsRow}>
                 <TlmViewerCmp {...this.state.mapViewOptions} lineCommonData={lineCommonData} lineDetails={lineDetails} getLineById={(x) => this.props.getLineById(x)} setSelection={(x) => this.setSelection(x)} />
                 <div className="lineViewContent">
                     <Tabs defaultIndex={3}>

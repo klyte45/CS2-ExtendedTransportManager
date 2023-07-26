@@ -1,13 +1,11 @@
+import { StationData, VehicleData } from "#service/LineManagementService";
 import { ColorUtils } from "#utility/ColorUtils";
 import { Entity } from "#utility/Entity";
-import { MeasureUnit, kilogramsTo, metersTo } from "#utility/MeasureUnitsUtils";
-import { nameToString, replaceArgs } from "#utility/name.utils";
-import translate from "#utility/translate";
+import { MeasureUnit } from "#utility/MeasureUnitsUtils";
+import { nameToString } from "#utility/name.utils";
 import { CSSProperties, Component, ReactNode } from "react";
-import { Tooltip } from 'react-tooltip';
-import { StationData, VehicleData } from "../LineDetailCmp";
 import { LineData } from "../LineListCmp";
-import { TlmLineFormatCmp, getFontSizeForText } from "./TlmLineFormatCmp";
+import { TlmLineFormatCmp } from "./TlmLineFormatCmp";
 
 
 export class StationIntegrationContainerCmp extends Component<{

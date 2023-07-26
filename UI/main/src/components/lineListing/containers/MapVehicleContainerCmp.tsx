@@ -1,9 +1,7 @@
+import { VehicleData } from "#service/LineManagementService";
 import { MeasureUnit } from "#utility/MeasureUnitsUtils";
 import { nameToString } from "#utility/name.utils";
-import translate from "#utility/translate";
 import { CSSProperties, Component, ReactNode } from "react";
-import { StationData, VehicleData } from "../LineDetailCmp";
-import { LineData } from "../LineListCmp";
 
 
 export class MapVehicleContainerCmp extends Component<{

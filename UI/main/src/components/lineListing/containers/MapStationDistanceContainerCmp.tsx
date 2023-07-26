@@ -1,7 +1,7 @@
+import { SegmentData, StationData } from "#service/LineManagementService";
 import { MeasureUnit, metersTo } from "#utility/MeasureUnitsUtils";
 import { replaceArgs } from "#utility/name.utils";
 import { CSSProperties, Component, ReactNode } from "react";
-import { SegmentData, StationData } from "../LineDetailCmp";
 
 
 export class MapStationDistanceContainerCmp extends Component<{

@@ -1,17 +1,14 @@
-import { MeasureUnit } from "#utility/MeasureUnitsUtils";
-import { nameToString } from "#utility/name.utils";
-import translate from "#utility/translate";
-import { CSSProperties, Component, ReactNode } from "react";
-import { LineDetails, MapViewerOptions, StationData, VehicleData } from "../LineDetailCmp";
-import { LineData } from "../LineListCmp";
+import { LineDetails, MapViewerOptions } from "#service/LineManagementService";
 import { ColorUtils } from "#utility/ColorUtils";
+import { Entity } from "#utility/Entity";
+import { CSSProperties, Component, ReactNode } from "react";
+import { LineData } from "../LineListCmp";
 import { DistrictBorderContainerCmp } from "./DistrictBorderContainerCmp";
 import { MapStationDistanceContainerCmp } from "./MapStationDistanceContainerCmp";
 import { MapVehicleContainerCmp } from "./MapVehicleContainerCmp";
 import { StationContainerCmp } from "./StationContainerCmp";
-import { Entity } from "#utility/Entity";
-import { TlmLineFormatCmp, getFontSizeForText } from "./TlmLineFormatCmp";
 import { StationIntegrationContainerCmp } from "./StationIntegrationContainerCmp";
+import { TlmLineFormatCmp } from "./TlmLineFormatCmp";
 
 
 export class TlmViewerCmp extends Component<{
@@ -92,7 +89,6 @@ export class TlmViewerCmp extends Component<{
                                             <>
                                                 <DistrictBorderContainerCmp
                                                     stop={lineDetails.Stops[0]}
-                                                    nextStop={lineDetails.Stops[0]}
                                                     normalizedPosition={0}
                                                     totalStationCount={lineDetails.Stops.length}
                                                     newOnly={true}
@@ -100,7 +96,6 @@ export class TlmViewerCmp extends Component<{
                                                 <DistrictBorderContainerCmp
                                                     stop={lineDetails.Stops[0]}
                                                     normalizedPosition={2}
-                                                    nextStop={lineDetails.Stops[0]}
                                                     totalStationCount={lineDetails.Stops.length}
                                                     oldOnly={true}
                                                 />
@@ -111,7 +106,6 @@ export class TlmViewerCmp extends Component<{
                                                 if (station.isOutsideConnection || nextStop.isOutsideConnection || nextStop.district.Index != station.district.Index) {
                                                     return <DistrictBorderContainerCmp
                                                         stop={station}
-                                                        nextStop={nextStop}
                                                         key={i}
                                                         normalizedPosition={(i + 1) / arr.length}
                                                         totalStationCount={lineDetails.Stops.length}
