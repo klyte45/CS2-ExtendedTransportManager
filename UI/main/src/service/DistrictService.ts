@@ -6,7 +6,7 @@ import { StationData } from "./LineManagementService";
 export class DistrictService {
     static getEffectiveDistrictName(station: StationData) {
         return station.district.Index > 0 ? nameToString(station.districtName)
-            : station.isOutsideConnection ? replaceArgs(translate("lineMap.colossalNationFmt"), { city: nameToString(station.name) })
+            : station.isOutsideConnection ? replaceArgs(translate("lineViewer.colossalNationFmt"), { city: nameToString(station.name) })
                 : translate("lineMap.noDistrict");
     }
 }

@@ -1,26 +1,47 @@
 import { DefaultPanelScreen } from "#components/common/DefaultPanelScreen";
+import { Checkbox } from "#components/common/checkbox";
+import { DistrictService } from "#service/DistrictService";
+import { LineDetails, MapViewerOptions, StationData, VehicleData } from "#service/LineManagementService";
 import "#styles/LineDetailCmp.scss";
 import "#styles/TLM_LineDetail.scss";
-import { ColorUtils } from "#utility/ColorUtils";
 import { Entity } from "#utility/Entity";
-import { NameCustom, NameFormatted, NameLocalized, nameToString } from "#utility/name.utils";
+import { NameCustom, NameFormatted, nameToString } from "#utility/name.utils";
 import translate from "#utility/translate";
-import { CSSProperties, Component } from "react";
-import { LineData } from "./LineListCmp";
-import { StationContainerCmp } from "./containers/StationContainerCmp";
-import { DistrictBorderContainerCmp } from "./containers/DistrictBorderContainerCmp";
-import { MapVehicleContainerCmp } from "./containers/MapVehicleContainerCmp";
-import { MapStationDistanceContainerCmp } from "./containers/MapStationDistanceContainerCmp";
-import { TlmViewerCmp } from "./containers/TlmViewerCmp";
+import { Component } from "react";
 import { Tab, TabList, TabPanel, Tabs } from "react-tabs";
-import { Checkbox } from "#components/common/checkbox";
-import { LineDetails, MapViewerOptions, StationData, VehicleData } from "#service/LineManagementService";
-import { DistrictService } from "#service/DistrictService";
+import { LineData } from "./LineListCmp";
+import { TlmViewerCmp } from "./containers/TlmViewerCmp";
 
+enum MapViewerTabsNames {
+    General = "tabGeneralSettings",
+    LineData = "tabLineData",
+    LineSettings = "tabSettings",
+    MapSettings = "mapSettings",
+    StopInfo = "stopData",
+    VehicleInfo = "vehicleData"
+}
+
+const tabsOrder: (MapViewerTabsNames | undefined)[] = [
+    MapViewerTabsNames.General,
+    MapViewerTabsNames.LineData,
+    MapViewerTabsNames.LineSettings,
+    undefined,
+    MapViewerTabsNames.MapSettings,
+    MapViewerTabsNames.StopInfo,
+    MapViewerTabsNames.VehicleInfo
+]
+
+const clickableTabs = [
+    MapViewerTabsNames.General,
+    MapViewerTabsNames.LineData,
+    MapViewerTabsNames.LineSettings,
+    MapViewerTabsNames.MapSettings
+]
 
 type State = {
     lineDetails?: LineDetails,
     mapViewOptions: MapViewerOptions
+    currentTab: number
 }
 
 type Props = {
@@ -41,8 +62,10 @@ export default class LineDetailCmp extends Component<Props, State> {
                 showIntegrations: true,
                 useWhiteBackground: false
             },
+            currentTab: 0
         }
     }
+
     componentDidMount() {
         engine.whenReady.then(async () => {
             engine.on("k45::xtm.lineViewer.getRouteDetail->", (details: State['lineDetails']) => {
@@ -106,42 +129,37 @@ export default class LineDetailCmp extends Component<Props, State> {
         </>
         const lineDetails = this.state.lineDetails;
         const lineCommonData = lineDetails?.LineData;
+        const subtitle = !lineDetails ? undefined : Object.values(lineDetails.Stops.reduce((p, n) => {
+            p[n.district.Index] = n
+            return p;
+        }, {} as Record<number, StationData>))
+            .map(x => DistrictService.getEffectiveDistrictName(x)).join(" - ");
+
+        const componentsMapViewer: Record<MapViewerTabsNames, JSX.Element> = {
+            [MapViewerTabsNames.General]: <>{JSON.stringify(this.state.lineDetails ?? "LOADING", null, 2)}</>,
+            [MapViewerTabsNames.LineData]: <></>,
+            [MapViewerTabsNames.LineSettings]: <></>,
+            [MapViewerTabsNames.MapSettings]: <DefaultPanelScreen title={translate("lineViewer.showOnMap")} isSubScreen={true}>
+                <Checkbox isChecked={() => this.state.mapViewOptions.showDistances} title={translate("lineViewer.showDistancesLbl")} onValueToggle={(x) => this.toggleDistances(x)} />
+                <Checkbox isChecked={() => this.state.mapViewOptions.showDistricts} title={translate("lineViewer.showDistrictsLbl")} onValueToggle={(x) => this.toggleDistricts(x)} />
+                <Checkbox isChecked={() => this.state.mapViewOptions.showVehicles} title={translate("lineViewer.showVehiclesLbl")} onValueToggle={(x) => this.toggleVehiclesShow(x)} />
+                <Checkbox isChecked={() => this.state.mapViewOptions.showIntegrations} title={translate("lineViewer.showIntegrationsLbl")} onValueToggle={(x) => this.toggleIntegrations(x)} />
+                <Checkbox isChecked={() => this.state.mapViewOptions.useWhiteBackground} title={translate("lineViewer.useWhiteBackgroundLbl")} onValueToggle={(x) => this.toggleWhiteBG(x)} />
+            </DefaultPanelScreen>,
+            [MapViewerTabsNames.StopInfo]: <></>,
+            [MapViewerTabsNames.VehicleInfo]: <></>
+        }
+
         return <>
-            <DefaultPanelScreen title={nameToString(this.props.currentLine.name)} subtitle={Object.values(lineDetails.Stops.reduce((p, n) => {
-                p[n.district.Index] = n
-                return p;
-            }, {} as Record<number, StationData>)).map(x => DistrictService.getEffectiveDistrictName(x)).join(" - ")} buttonsRowContent={buttonsRow}>
+            <DefaultPanelScreen title={nameToString(this.props.currentLine.name)} subtitle={subtitle} buttonsRowContent={buttonsRow}>
                 <TlmViewerCmp {...this.state.mapViewOptions} lineCommonData={lineCommonData} lineDetails={lineDetails} getLineById={(x) => this.props.getLineById(x)} setSelection={(x) => this.setSelection(x)} />
                 <div className="lineViewContent">
-                    <Tabs defaultIndex={3}>
-                        <TabList id="sideNav">
-                            <Tab>{translate("lineViewer.tabLineData")}</Tab>
-                            <Tab disabled={true}>{translate("lineViewer.tabSettings")}</Tab>
-                            <div className="space"></div>
-                            <Tab>{translate("lineViewer.mapSettings")}</Tab>
-                            <Tab disabled={false}>{translate("lineViewer.stopData")}</Tab>
-                            <Tab disabled={true}>{translate("lineViewer.vehicleData")}</Tab>
+                    <Tabs selectedIndex={this.state.currentTab} onSelect={x => this.state.currentTab != x && this.setState({ currentTab: x })}>
+                        <TabList id="sideNav" >
+                            {tabsOrder.map((x, i) => !x ? <div className="space" key={i}></div> : <Tab key={i} disabled={!clickableTabs.includes(x)}>{translate("lineViewer." + x)}</Tab>)}
                         </TabList>
                         <div id="dataPanel">
-                            <TabPanel style={{ whiteSpace: 'pre-wrap' }}>
-
-                                {JSON.stringify(this.state.lineDetails ?? "LOADING", null, 2)}
-                            </TabPanel>
-                            <TabPanel >
-                                daçlkjdajdklasjd
-                            </TabPanel>
-                            <TabPanel>
-                                <h2>{translate("lineViewer.showOnMap")}</h2>
-                                <Checkbox isChecked={() => this.state.mapViewOptions.showDistances} title={translate("lineViewer.showDistancesLbl")} onValueToggle={(x) => this.toggleDistances(x)} />
-                                <Checkbox isChecked={() => this.state.mapViewOptions.showDistricts} title={translate("lineViewer.showDistrictsLbl")} onValueToggle={(x) => this.toggleDistricts(x)} />
-                                <Checkbox isChecked={() => this.state.mapViewOptions.showVehicles} title={translate("lineViewer.showVehiclesLbl")} onValueToggle={(x) => this.toggleVehiclesShow(x)} />
-                                <Checkbox isChecked={() => this.state.mapViewOptions.showIntegrations} title={translate("lineViewer.showIntegrationsLbl")} onValueToggle={(x) => this.toggleIntegrations(x)} />
-                                <Checkbox isChecked={() => this.state.mapViewOptions.useWhiteBackground} title={translate("lineViewer.useWhiteBackgroundLbl")} onValueToggle={(x) => this.toggleWhiteBG(x)} />
-                            </TabPanel>
-                            <TabPanel>
-                                {/*<img src="coui://cctv.xtm.k45/" />*/}
-                            </TabPanel>
-                            <TabPanel></TabPanel>
+                            {tabsOrder.map((x, i) => x && <TabPanel key={i}>{componentsMapViewer[x]}</TabPanel>)}
                         </div>
                     </Tabs>
                 </div>
