@@ -84,18 +84,18 @@ export type MapViewerOptions = {
 
 export class LineManagementService {
     static async setLineFixedColor(entity: Entity, x: string): Promise<`#${string}`> {
-        return await engine.call("k45::xtm.lineManagement.setLineFixedColor", entity, x);
+        return await engine.call("k45::xtm.lineManagement.setRouteFixedColor", entity, x);
     }
     static async setIgnorePalette(entity: Entity, x: boolean): Promise<boolean> {
         return await engine.call("k45::xtm.lineManagement.setIgnorePalette", entity, x);
     }
     static async setLineAcronym(entity: Entity, x: string): Promise<string> {
-        return await engine.call("k45::xtm.lineManagement.setLineAcronym", entity, x);
+        return await engine.call("k45::xtm.lineManagement.setRouteAcronym", entity, x);
     }
     static async setLineNumber(entity: Entity, x: number): Promise<string> {
-        return await engine.call("k45::xtm.lineManagement.setLineNumber", entity, x);
+        return await engine.call("k45::xtm.lineManagement.setRouteNumber", entity, x);
     }
-    static async setLineName(entity: Entity, x: string): Promise<string> {
-        return await engine.call("k45::xtm.lineManagement.setLineName", entity, x);
+    static async setLineName(entity: Entity, x: string): Promise<NameFormatted | NameCustom> {
+        return await engine.call("k45::xtm.lineManagement.setRouteName", entity, x);
     }
 }

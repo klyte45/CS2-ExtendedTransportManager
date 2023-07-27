@@ -15,15 +15,15 @@ export class TlmLineFormatCmp extends Component<{
 
     render(): ReactNode {
         const lineCommonData = this.props.lineCommonData;
-        return <div className="formatContainer">
+        const fontColor = ColorUtils.toRGBA(ColorUtils.getContrastColorFor(ColorUtils.toColor01(lineCommonData.color)));
+        return <div className="formatContainer" style={{ "--fontColor": fontColor } as CSSProperties}>
             <div style={{ "--currentBgColor": ColorUtils.getClampedColor(lineCommonData.color) } as CSSProperties} className={`format ${lineCommonData.type} ${lineCommonData.isCargo ? "cargo" : "passengers"}`}>
-                <div className="before"></div>
+
                 <div className="after"></div>
             </div>
             <div style={{
-                fontSize: getFontSizeForText(lineCommonData.xtmData?.Acronym || lineCommonData.routeNumber.toFixed()),
-                color: ColorUtils.toRGBA(ColorUtils.getContrastColorFor(ColorUtils.toColor01(lineCommonData.color)))
-            }} className="num">
+                fontSize: getFontSizeForText(lineCommonData.xtmData?.Acronym || lineCommonData.routeNumber.toFixed())
+            } as CSSProperties} className="num">
                 {lineCommonData.xtmData?.Acronym || (lineCommonData.routeNumber.toFixed())}
             </div>
         </div>;
@@ -32,19 +32,18 @@ export class TlmLineFormatCmp extends Component<{
 
 
 export function getFontSizeForText(text: string) {
-    switch (Math.max(...(text || "").split(" ").map(x => x.length))) {
+    const splitText = (text || "").split(" ");
+    switch (Math.max(splitText.length, ...splitText.map(x => x.length))) {
         case 1:
             return "52px";
         case 2:
-            return "44px";
+            return "33px";
         case 3:
-            return "32px";
+            return "24px";
         case 4:
-            return "22px";
+            return "17px";
         case 5:
-            return "18px";
-        case 6:
-            return "15px";
+            return "14px";
         default:
             return "11px";
     }

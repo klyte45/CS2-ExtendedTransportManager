@@ -1,4 +1,5 @@
 ﻿using Belzont.Utils;
+using BelzontTLM.Palettes;
 using Colossal.Entities;
 using Game.Common;
 using Game.Prefabs;
@@ -25,7 +26,9 @@ namespace BelzontTLM
         {
             typeof(Created),
             typeof(Deleted),
-            typeof(Updated)
+            typeof(Updated),
+            typeof(BatchesUpdated),
+            typeof(XTMPaletteRequireUpdate)
         };
 
         protected override List<LineItemStruct> OnProcess(Entity e)
@@ -56,11 +59,6 @@ namespace BelzontTLM
 
         protected override void Reset() { }
         protected override void RunUpdate(Entity e) { }
-
-        protected override bool ForceUpdate()
-        {
-            return !m_ModifiedLineQuery.IsEmptyIgnoreFilter;
-        }
 
         protected override void OnCreate()
         {
@@ -99,6 +97,7 @@ namespace BelzontTLM
                         ComponentType.ReadOnly<Created>(),
                         ComponentType.ReadOnly<Deleted>(),
                         ComponentType.ReadOnly<Updated>(),
+                        ComponentType.ReadOnly<XTMPaletteRequireUpdate>(),
                     },
                     None = new ComponentType[]
                     {
@@ -128,6 +127,7 @@ namespace BelzontTLM
             public float usage;
             public XTMRouteExtraData xtmData;
             public int routeNumber;
+            public bool isFixedColor;
 
             internal static LineItemStruct ForEntity(Entity entity, EntityManager entityManager, PrefabSystem m_PrefabSystem, NameSystem nameSystem)
             {
@@ -165,8 +165,9 @@ namespace BelzontTLM
                     name = nameSystem.GetName(entity).ToValueableName(),
                     vkName = nameSystem.GetNameForVirtualKeyboard(entity).ToValueableName(),
                     routeNumber = routeNum.m_Number,
-                    xtmData = xtmData
-                };
+                    xtmData = xtmData,
+                    isFixedColor = entityManager.HasComponent<XTMPaletteLockedColor>(entity)
+            };
             }
 
             public void FillFromUITransportLine(UITransportLineData data)

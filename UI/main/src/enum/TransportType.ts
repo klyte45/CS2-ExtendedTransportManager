@@ -13,3 +13,15 @@ export enum TransportType {
     Rocket = "Rocket",
     Count = "Count"
 }
+
+export const TransportTypePriority = [
+    TransportType.Rocket,
+    TransportType.Airplane,
+    TransportType.Helicopter,
+    TransportType.Ship,
+    TransportType.Post,
+    TransportType.Train,
+    TransportType.Subway,
+    TransportType.Tram,
+    TransportType.Bus
+]

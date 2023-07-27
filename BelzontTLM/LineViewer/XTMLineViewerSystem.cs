@@ -1,18 +1,16 @@
 ﻿using Belzont.Interfaces;
 using Belzont.Utils;
-using BelzontTLM.Palettes;
-using Colossal.Entities;
 using Game;
 using Game.Common;
 using Game.Prefabs;
 using Game.Routes;
 using Game.Tools;
 using Game.UI;
+using Game.UI.InGame;
 using System;
 using Unity.Collections;
 using Unity.Entities;
 using static BelzontTLM.XTMLineViewerSection;
-using static Game.UI.NameSystem;
 
 namespace BelzontTLM
 {
@@ -67,9 +65,6 @@ namespace BelzontTLM
 
         public void SetupCallBinder(Action<string, Delegate> eventCaller)
         {
-            eventCaller("lineViewer.setAcronym", SetRouteAcronym);
-            eventCaller("lineViewer.setRouteName", SetRouteName);
-            eventCaller("lineViewer.setRouteNumber", SetRouteInternalNumber);
             eventCaller("lineViewer.getCityLines", GetCityLines);
             eventCaller("lineViewer.getRouteDetail", GetRouteDetail);
             eventCaller("lineViewer.setCctvPosition", SetCctvPosition);
@@ -81,32 +76,7 @@ namespace BelzontTLM
         private XTMLineViewerSection m_LineVisualizerSection;
         private XTMLineListingSection m_LineListingSection;
 
-        private string SetRouteAcronym(Entity targetEntity, string acronym)
-        {
-            EntityCommandBuffer entityCommandBuffer = m_EndFrameBarrier.CreateCommandBuffer();
-            var componentExists = EntityManager.TryGetComponent<XTMRouteExtraData>(targetEntity, out var component);
-            component.SetAcronym(acronym);
-            if (componentExists)
-            {
-                entityCommandBuffer.SetComponent(targetEntity, component);
-            }
-            else
-            {
-                entityCommandBuffer.AddComponent(targetEntity, component);
-            }
-            entityCommandBuffer.AddComponent<Updated>(targetEntity);
-            return acronym;
-        }
-        private int SetRouteInternalNumber(Entity entity, int routeNum)
-        {
-            EntityCommandBuffer entityCommandBuffer = m_EndFrameBarrier.CreateCommandBuffer();
-            EntityManager.TryGetComponent<RouteNumber>(entity, out var component);
-            component.m_Number = routeNum;
-            entityCommandBuffer.SetComponent(entity, component);
-            entityCommandBuffer.AddComponent<Updated>(entity);
-            entityCommandBuffer.AddComponent<XTMPaletteRequireUpdate>(entity);
-            return routeNum;
-        }
+     
 
         private void GetRouteDetail(Entity entity, bool force)
         {
@@ -118,13 +88,6 @@ namespace BelzontTLM
             SendEvent("lineViewer.getRouteDetail->", result);
         }
 
-        private Name SetRouteName(Entity entity, string newName)
-        {
-            EntityCommandBuffer entityCommandBuffer = m_EndFrameBarrier.CreateCommandBuffer();
-            m_NameSystem.SetCustomName(entity, newName ?? String.Empty);
-            entityCommandBuffer.AddComponent<Updated>(entity);
-            return m_NameSystem.GetName(entity);
-        }
 
         protected override void OnCreate()
         {

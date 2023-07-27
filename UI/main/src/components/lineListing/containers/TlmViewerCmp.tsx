@@ -88,12 +88,14 @@ export class TlmViewerCmp extends Component<{
                                             <>
                                                 <DistrictBorderContainerCmp
                                                     stop={lineDetails.Stops[0]}
+                                                    nextStop={lineDetails.Stops[0]}
                                                     normalizedPosition={0}
                                                     totalStationCount={lineDetails.Stops.length}
                                                     newOnly={true}
                                                 />
                                                 <DistrictBorderContainerCmp
                                                     stop={lineDetails.Stops[0]}
+                                                    nextStop={lineDetails.Stops[0]}
                                                     normalizedPosition={2}
                                                     totalStationCount={lineDetails.Stops.length}
                                                     oldOnly={true}
@@ -105,6 +107,7 @@ export class TlmViewerCmp extends Component<{
                                                 if (station.isOutsideConnection || nextStop.isOutsideConnection || nextStop.district.Index != station.district.Index) {
                                                     return <DistrictBorderContainerCmp
                                                         stop={station}
+                                                        nextStop={nextStop}
                                                         key={i}
                                                         normalizedPosition={(i + 1) / arr.length}
                                                         totalStationCount={lineDetails.Stops.length}

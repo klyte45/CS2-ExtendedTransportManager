@@ -1,4 +1,5 @@
-﻿using Belzont.Utils;
+﻿using Belzont.Interfaces;
+using Belzont.Utils;
 using Game.Common;
 using Game.Prefabs;
 using Game.UI;
@@ -63,7 +64,7 @@ namespace BelzontTLM
             {
                 foreach (var entry in awaitingQueue.Where(x => ComponentsToCheck.Any(t => EntityManager.HasComponent(x.Key, t))).ToArray())
                 {
-                    LogUtils.DoLog("{0}: COMPONENT FOUND! {1}", GetType(), entry.Key);
+                    if (BasicIMod.DebugMode) LogUtils.DoLog("{0}: COMPONENT FOUND! {1}", GetType(), entry.Key, ComponentsToCheck.First(x => EntityManager.HasComponent(entry.Key, x)));
                     itemsToProcess.Enqueue(new(entry.Key, (true, entry.Value)));
                     awaitingQueue.Remove(entry.Key);
                 }

@@ -25,7 +25,7 @@
 
         .before {
             position: absolute;
-            background-color: black;
+            background-color: var(--fontColor);
             top: calc(-1* var(--form-border-width));
             left: calc(-1* var(--form-border-width));
             right: calc(-1* var(--form-border-width));
@@ -44,16 +44,16 @@
 
         +.num {
             position: absolute;
-            font-size: 28.000000px;
+            font-size: 48.000000px;
             font-weight: bold;
-            color: rgba(255, 255, 255, 1.000000);
+            color: var(--fontColor);
             z-index: 9;
             top: 50.000000%;
             text-align: center;
             width: 60.000000px;
             height: auto;
             line-height: 100.000000%;
-            transform: translateY(-50.000000%);
+            transform: translateY(-50%);
         }
 
         &.Bus.passengers {
@@ -62,7 +62,6 @@
             .after {
                 clip-path: polygon(25% 0%, 75% 0%, 100% 50%, 75% 100%, 25% 100%, 0% 50%);
             }
-
         }
 
         &.Tram.passengers {
@@ -71,6 +70,7 @@
             .after {
                 clip-path: border-box polygon(nonzero, 20.000000% 0.000000%, 80.000000% 0.000000%, 100.000000% 100.000000%, 0.000000% 100.000000%);
             }
+
         }
 
         &.Ship.passengers {
@@ -80,9 +80,6 @@
                 clip-path: polygon(50% 0%, 100% 50%, 50% 100%, 0% 50%);
             }
 
-            +.num {
-                transform: translateY(-50%) scale(0.75);
-            }
         }
 
         &.Train.passengers {
@@ -91,6 +88,7 @@
             .after {
                 clip-path: circle(50% at 50% 50%);
             }
+
         }
 
         &.Airplane.passengers {
@@ -100,9 +98,6 @@
                 clip-path: polygon(50% 0%, 100% 38%, 82% 100%, 18% 100%, 0% 38%);
             }
 
-            +.num {
-                transform: translateY(-50%) scale(0.75);
-            }
         }
 
 
@@ -115,6 +110,7 @@
                         33.3333% 83.3333%, 16.6666% 83.3333%, 16.6666% 66.6666%, 0% 50%,
                         16.6666% 33.3333%, 16.6666% 16.6666%, 33.3333% 16.6666%, 50% 0%);
             }
+
         }
 
         &.Train.cargo {
@@ -123,6 +119,7 @@
             .after {
                 clip-path: polygon(30% 0%, 70% 0%, 100% 30%, 100% 70%, 70% 100%, 30% 100%, 0% 70%, 0% 30%);
             }
+
         }
 
         &.Airplane.cargo {
@@ -132,9 +129,6 @@
                 clip-path: polygon(0% 15%, 15% 15%, 15% 0%, 85% 0%, 85% 15%, 100% 15%, 100% 85%, 85% 85%, 85% 100%, 15% 100%, 15% 85%, 0% 85%);
             }
 
-            +.num {
-                transform: translateY(-50%) scale(0.75);
-            }
         }
     }
 }

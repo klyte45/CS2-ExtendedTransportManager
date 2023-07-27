@@ -1,4 +1,4 @@
-import { LineData } from "#service/LineManagementService";
+import { LineData, LineManagementService } from "#service/LineManagementService";
 import { Entity } from "#utility/Entity";
 import { NameCustom, NameFormatted, nameToString } from "#utility/name.utils";
 import { Component } from "react";
@@ -55,7 +55,7 @@ export default class LineListCmp extends Component<any, State> {
     render() {
         if (this.state.currentLineViewer) {
             return <><LineDetailCmp
-                currentLine={this.state.currentLineViewer}
+                currentLine={this.state.currentLineViewer?.entity}
                 onBack={() => this.setState({ currentLineViewer: undefined, }, () => engine.call("k45::xtm.lineViewer.getCityLines", true))}
                 getLineById={(x) => this.getLineById(x)}
                 setSelection={x => this.setSelection(x)}
@@ -100,13 +100,17 @@ export default class LineListCmp extends Component<any, State> {
         return this.state.indexedLineList[x.toFixed(0)];
     }
     async sendRouteName(lineData: LineData, newName: string) {
-        const response: NameFormatted | NameCustom = await engine.call("k45::xtm.lineViewer.setRouteName", lineData.entity, newName)
+        const response: NameFormatted | NameCustom = await LineManagementService.setLineName(lineData.entity, newName)
+
+        engine.call("k45::xtm.lineViewer.getCityLines", true)
         return nameToString(response);
     }
 
     async sendAcronym(entity: Entity, newAcronym: string) {
         try {
-            const response = await engine.call("k45::xtm.lineViewer.setAcronym", entity, newAcronym)
+            const response = await LineManagementService.setLineAcronym(entity, newAcronym);
+
+            engine.call("k45::xtm.lineViewer.getCityLines", true)
             return response;
         } catch (e) {
             console.warn(e);
@@ -116,6 +120,8 @@ export default class LineListCmp extends Component<any, State> {
         const numberParsed = parseInt(newNumber);
         if (isFinite(numberParsed)) {
             const response: number = await engine.call("k45::xtm.lineViewer.setRouteNumber", lineData.entity, numberParsed)
+
+            engine.call("k45::xtm.lineViewer.getCityLines", true)
             return response.toFixed();
         }
         return lineData.routeNumber?.toString();

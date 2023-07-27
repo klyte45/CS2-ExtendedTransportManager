@@ -1,4 +1,5 @@
 ﻿using Belzont.Utils;
+using BelzontTLM.Palettes;
 using Colossal.Entities;
 using Game.Areas;
 using Game.Buildings;
@@ -41,7 +42,6 @@ namespace BelzontTLM
         protected override void OnCreate()
         {
             base.OnCreate();
-            m_CityConfigurationSystem = base.World.GetOrCreateSystemManaged<CityConfigurationSystem>();
             m_BoolResult = new NativeArray<bool>(3, Allocator.Persistent, NativeArrayOptions.ClearMemory);
             m_EntityResult = new NativeArray<Entity>(1, Allocator.Persistent, NativeArrayOptions.ClearMemory);
             m_StopCapacityResult = new NativeArray<int>(1, Allocator.Persistent, NativeArrayOptions.ClearMemory);
@@ -219,6 +219,14 @@ namespace BelzontTLM
             jobData2.Schedule(Dependency).Complete();
         }
 
+        protected override ComponentType[] ComponentsToCheck => new ComponentType[]
+        {
+            typeof(Updated),
+            typeof(BatchesUpdated),
+            typeof(XTMPaletteRequireUpdate),
+            typeof(Deleted)
+        };
+
         protected override XTMLineViewerResult OnProcess(Entity e)
         {
             var result = new XTMLineViewerResult
@@ -262,7 +270,6 @@ namespace BelzontTLM
 
         private NameSystem m_NameSystem;
         private PrefabSystem m_PrefabSystem;
-        private CityConfigurationSystem m_CityConfigurationSystem;
 
         private NativeArray<bool> m_BoolResult;
 

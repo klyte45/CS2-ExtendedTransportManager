@@ -5,6 +5,7 @@ import { MeasureUnit } from "#utility/MeasureUnitsUtils";
 import { nameToString } from "#utility/name.utils";
 import { CSSProperties, Component, ReactNode } from "react";
 import { TlmLineFormatCmp } from "./TlmLineFormatCmp";
+import { TransportType, TransportTypePriority } from "#enum/TransportType";
 
 
 export class StationIntegrationContainerCmp extends Component<{
@@ -38,19 +39,21 @@ export class StationIntegrationContainerCmp extends Component<{
         const linesToIntegrate = [...station.connectedLines.reduce((p, n) => {
             if (this.props.thisLineId.Index != n.line.Index) p.add(n.line.Index)
             return p;
-        }, new Set<number>())]
+        }, new Set<number>())].map(x => this.props.getLineById(x))
+            .sort((a, b) => (TransportTypePriority.indexOf(a.type) - TransportTypePriority.indexOf(b.type)) || (a.routeNumber - b.routeNumber))
         if (linesToIntegrate.length == 0) return null;
-        const colors = [...linesToIntegrate.reduce((p, n) => {
-            p.add(this.props.getLineById(n).color)
-            return p;
-        }, new Set<string>())]
+        const colors = [...linesToIntegrate
+            .reduce((p, n) => {
+                p.add(n.color)
+                return p;
+            }, new Set<string>())]
         const stepEachColor = 100 / colors.length;
         return <div className="stationIntegrationContainer" style={{ top: (100 * this.props.normalizedPosition) + "%", minHeight: (100 / this.props.totalStationCount) + "%" }}       >
             <div className="lineStation">
                 <div className="integrationLineCutted" style={colors.length == 1 || colors.length > 6 ? {
                     "--integrationLineColor": ColorUtils.getClampedColor(colors.length > 6 ? "#444444" : colors[0])
                 } as CSSProperties : {
-                    "--integrationBackgroundImage": `linear-gradient(to left, ${colors.flatMap((x, i, arr) => {
+                    "--integrationBackgroundImage": `linear-gradient(to right, ${colors.flatMap((x, i, arr) => {
                         const targetColor = ColorUtils.getClampedColor(x);
                         const margin = 3;
                         return [
@@ -66,8 +69,7 @@ export class StationIntegrationContainerCmp extends Component<{
                 <div className="integrationStationBulletBG" />
                 <div className="integrationStationBullet" />
                 {<div className={`stationIntersectionsContainer ${linesToIntegrate.length > 4 ? "sz1" : ""}`}>
-                    {linesToIntegrate.map((lineId: number, i) => {
-                        const lineData = this.props.getLineById(lineId);
+                    {linesToIntegrate.map((lineData, i) => {
                         return <div className="lineIntersection" key={i} data-tooltip={nameToString(lineData.name)} data-tootip-position="top left" onClick={() => this.props.setSelection(lineData.entity)} >
                             <TlmLineFormatCmp lineCommonData={lineData} />
                         </div>;

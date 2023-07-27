@@ -1,7 +1,7 @@
 import { DefaultPanelScreen } from "#components/common/DefaultPanelScreen";
 import { Checkbox } from "#components/common/checkbox";
 import { DistrictService } from "#service/DistrictService";
-import { LineData, LineDetails, LineManagementService, MapViewerOptions, StationData, VehicleData } from "#service/LineManagementService";
+import { LineData, LineDetails, MapViewerOptions, StationData, VehicleData } from "#service/LineManagementService";
 import "#styles/LineDetailCmp.scss";
 import "#styles/TLM_LineDetail.scss";
 import { Entity } from "#utility/Entity";
@@ -10,7 +10,7 @@ import translate from "#utility/translate";
 import { Component } from "react";
 import { Tab, TabList, TabPanel, Tabs } from "react-tabs";
 import { TlmViewerCmp } from "./containers/TlmViewerCmp";
-import { ColorRgbInput, Input } from "#components/common/input";
+import { LineViewGeneralPageCmp } from "./subpages/LineViewGeneralPageCmp";
 
 enum MapViewerTabsNames {
     General = "tabGeneralSettings",
@@ -48,7 +48,7 @@ type State = {
 }
 
 type Props = {
-    currentLine: LineData,
+    currentLine: Entity,
     getLineById: (x: number) => LineData,
     setSelection: (x: Entity) => Promise<void>,
     onBack: () => void
@@ -72,7 +72,7 @@ export default class LineDetailCmp extends Component<Props, State> {
     componentDidMount() {
         engine.whenReady.then(async () => {
             engine.on("k45::xtm.lineViewer.getRouteDetail->", (details: State['lineDetails']) => {
-                if (details.LineData.entity.Index != this.props.currentLine.entity.Index) return;
+                if (details.LineData.entity.Index != this.props.currentLine.Index) return;
                 console.log(details);
 
                 details.Vehicles = details.Vehicles.map(x => {
@@ -120,7 +120,7 @@ export default class LineDetailCmp extends Component<Props, State> {
 
     async reloadData(force: boolean = false) {
         if (force || this.state.mapViewOptions.showVehicles) {
-            await engine.call("k45::xtm.lineViewer.getRouteDetail", this.props.currentLine.entity, force);
+            await engine.call("k45::xtm.lineViewer.getRouteDetail", this.props.currentLine, force);
         }
     }
     render() {
@@ -131,6 +131,7 @@ export default class LineDetailCmp extends Component<Props, State> {
             <button className="negativeBtn " onClick={this.props.onBack}>{translate("lineViewer.backToList")}</button>
         </>
         const lineDetails = this.state.lineDetails;
+        if(!lineDetails) return null;
         const lineCommonData = lineDetails?.LineData;
         const subtitle = !lineDetails ? undefined : Object.values(lineDetails.Stops.reduce((p, n) => {
             p[n.district.Index] = n
@@ -140,11 +141,7 @@ export default class LineDetailCmp extends Component<Props, State> {
 
         const componentsMapViewer: Record<MapViewerTabsNames, JSX.Element> = {
             [MapViewerTabsNames.General]: <DefaultPanelScreen title={translate("lineViewer.generalData")} isSubScreen={true}>
-                <Input title={translate("lineViewerEditor.lineName")} getValue={() => nameToString(this.props.currentLine.name)} onValueChanged={(x) => LineManagementService.setLineName(lineCommonData.entity, x)} />
-                <Input title={translate("lineViewerEditor.internalNumber")} getValue={() => this.props.currentLine.routeNumber.toString()} maxLength={11} onValueChanged={(x) => this.SendNewRouteNumber(x)} />
-                <Input title={translate("lineViewerEditor.displayIdentifier")} getValue={() => this.props.currentLine.xtmData?.Acronym} maxLength={30} onValueChanged={(x) => LineManagementService.setLineAcronym(lineCommonData.entity, x)} />
-                <Checkbox isChecked={() => lineCommonData?.isFixedColor} title={translate("lineViewerEditor.ignorePalette")} onValueToggle={(x) => LineManagementService.setIgnorePalette(lineCommonData.entity, x)} />
-                <ColorRgbInput title={translate("lineViewerEditor.lineFixedColor")} getValue={() => this.props.currentLine.color as `#${string}`} onValueChanged={(x) => LineManagementService.setLineFixedColor(lineCommonData.entity, x)} />
+                <LineViewGeneralPageCmp currentLine={lineCommonData} forceReload={() => { this.reloadData(true) }} />
             </DefaultPanelScreen>,
             [MapViewerTabsNames.LineData]: <></>,
             [MapViewerTabsNames.LineSettings]: <></>,
@@ -161,7 +158,7 @@ export default class LineDetailCmp extends Component<Props, State> {
         }
 
         return <>
-            <DefaultPanelScreen title={nameToString(this.props.currentLine.name)} subtitle={subtitle} buttonsRowContent={buttonsRow}>
+            <DefaultPanelScreen title={nameToString(lineDetails.LineData.name)} subtitle={subtitle} buttonsRowContent={buttonsRow}>
                 <TlmViewerCmp {...this.state.mapViewOptions} lineCommonData={lineCommonData} lineDetails={lineDetails} getLineById={(x) => this.props.getLineById(x)} setSelection={(x) => this.setSelection(x)} />
                 <div className="lineViewContent">
                     <Tabs selectedIndex={this.state.currentTab} onSelect={x => this.state.currentTab != x && this.setState({ currentTab: x })}>
@@ -176,11 +173,6 @@ export default class LineDetailCmp extends Component<Props, State> {
             </DefaultPanelScreen>
         </>;
     }
-    private async SendNewRouteNumber(x: string) {
-        const lineNum = parseInt(x);
-        return isFinite(lineNum) ? LineManagementService.setLineNumber(this.props.currentLine.entity, lineNum) : this.props.currentLine.routeNumber.toString();
-    }
-
     async setSelection(x: Entity) {
         await this.props.setSelection(x);
         this.reloadData(true);
@@ -205,27 +197,6 @@ export default class LineDetailCmp extends Component<Props, State> {
         this.setState({ mapViewOptions: { ...this.state.mapViewOptions, showVehicles: x, showIntegrations: this.state.mapViewOptions.showIntegrations && !x } }, () => this.reloadData());
     }
 
-    async sendRouteName(lineData: LineData, newName: string) {
-        const response: NameFormatted | NameCustom = await engine.call("k45::xtm.lineViewer.setRouteName", lineData.entity, newName)
-        return nameToString(response);
-    }
-
-    async sendAcronym(entity: Entity, newAcronym: string) {
-        try {
-            const response = await engine.call("k45::xtm.lineViewer.setAcronym", entity, newAcronym)
-            return response;
-        } catch (e) {
-            console.warn(e);
-        }
-    }
-    async sendRouteNumber(lineData: LineData, newNumber: string) {
-        const numberParsed = parseInt(newNumber);
-        if (isFinite(numberParsed)) {
-            const response: number = await engine.call("k45::xtm.lineViewer.setRouteNumber", lineData.entity, numberParsed)
-            return response.toFixed();
-        }
-        return lineData.routeNumber?.toString();
-    }
 }
 
 

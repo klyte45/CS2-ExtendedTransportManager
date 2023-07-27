@@ -5,6 +5,7 @@ import { CSSProperties, Component, ReactNode } from "react";
 
 export class DistrictBorderContainerCmp extends Component<{
     stop: StationData;
+    nextStop: StationData;
     normalizedPosition: number;
     totalStationCount: number
     newOnly?: boolean
@@ -18,6 +19,7 @@ export class DistrictBorderContainerCmp extends Component<{
 
     render(): ReactNode {
         const station = this.props.stop;
+        const nextStop = this.props.nextStop;
         let topOffset: CSSProperties;
         if (this.props.normalizedPosition <= 0) {
             topOffset = { top: "0", transform: "translateY(-20px)", height: (100 / this.props.totalStationCount) + "%" }
@@ -30,7 +32,7 @@ export class DistrictBorderContainerCmp extends Component<{
             <div className="districtDiv">
                 <div className="before"></div>
                 {!this.props.newOnly && (<div className={["oldDistrict", ...getExtraElementClassesForDistrict(station)].join(" ")}>{DistrictService.getEffectiveDistrictName(station)}</div>)}
-                {!this.props.oldOnly && (<div className={["newDistrict", ...getExtraElementClassesForDistrict(station)].join(" ")}>{DistrictService.getEffectiveDistrictName(station)}</div>)}
+                {!this.props.oldOnly && (<div className={["newDistrict", ...getExtraElementClassesForDistrict(nextStop)].join(" ")}>{DistrictService.getEffectiveDistrictName(nextStop)}</div>)}
             </div>
         </div>;
     }

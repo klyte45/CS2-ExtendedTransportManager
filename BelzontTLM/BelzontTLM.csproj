@@ -140,6 +140,7 @@
   <ItemGroup>
     <!--<Compile Include="**\*.cs" Exclude="obj/**" />-->
     <Compile Include="**\*.cs" Exclude="obj/**" />
+    <Compile Include="LineViewer\XTMLineManagementSystem.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="i18n\i18n.csv">

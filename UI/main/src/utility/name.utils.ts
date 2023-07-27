@@ -20,6 +20,7 @@ export type NameFormatted = {
 }
 
 export function nameToString(nameObj: NameCustom | NameFormatted | NameLocalized) {
+    if(!nameObj) return;
     if (nameObj.__Type == NameType.Custom) {
         return nameObj.name;
     }

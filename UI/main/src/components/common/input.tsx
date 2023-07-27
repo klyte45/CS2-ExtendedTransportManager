@@ -119,6 +119,7 @@ export class ColorRgbInput extends Component<ColorInputProps, {}> {
             }}
             maxLength={7}
             isValid={x => !!ColorUtils.getHexRegexParts(x)}
+            onValueChanged={(x) => this.props.onValueChanged(ColorUtils.toRGB6(x))}
         />
     }
 
