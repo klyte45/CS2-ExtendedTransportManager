@@ -1,10 +1,7 @@
-import { PaletteData, PaletteService } from "#service/PaletteService";
+import { PaletteData } from "#service/PaletteService";
+import '#styles/PaletteLineViewer.scss';
 import translate from "#utility/translate";
-import { Component, ReactNode } from "react";
-import { ExtendedPaletteData, PaletteCategoryCmp, categorizePalettes } from "#components/palettes/PaletteCategoryCmp";
-import '#styles/PaletteLineViewer.scss'
-import { Checkbox } from "#components/common/checkbox";
-import { Input } from "#components/common/input";
+import { Component } from "react";
 import { PaletteDetailHeaderCmp } from "./PaletteDetailHeaderCmp";
 
 type State = {

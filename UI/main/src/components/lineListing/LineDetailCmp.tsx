@@ -1,16 +1,18 @@
 import { DefaultPanelScreen } from "#components/common/DefaultPanelScreen";
-import { Checkbox } from "#components/common/checkbox";
+import { CheckboxWithLine } from "#components/common/checkbox";
 import { DistrictService } from "#service/DistrictService";
 import { LineData, LineDetails, MapViewerOptions, StationData, VehicleData } from "#service/LineManagementService";
 import "#styles/LineDetailCmp.scss";
 import "#styles/TLM_LineDetail.scss";
 import { Entity } from "#utility/Entity";
-import { NameCustom, NameFormatted, nameToString } from "#utility/name.utils";
+import { NameCustom, NameFormatted, nameToString, replaceArgs } from "#utility/name.utils";
 import translate from "#utility/translate";
 import { Component } from "react";
 import { Tab, TabList, TabPanel, Tabs } from "react-tabs";
 import { TlmViewerCmp } from "./containers/TlmViewerCmp";
 import { LineViewGeneralPageCmp } from "./subpages/LineViewGeneralPageCmp";
+import { Cs2FormLine } from "#components/common/Cs2FormLine";
+import { MeasureUnit, durationToGameMinutes, kilogramsTo, metersTo, setupSignificance } from "#utility/MeasureUnitsUtils";
 
 enum MapViewerTabsNames {
     General = "tabGeneralSettings",
@@ -44,7 +46,8 @@ const clickableTabs = [
 type State = {
     lineDetails?: LineDetails,
     mapViewOptions: MapViewerOptions
-    currentTab: number
+    currentTab: number,
+    measureUnit: MeasureUnit
 }
 
 type Props = {
@@ -66,7 +69,8 @@ export default class LineDetailCmp extends Component<Props, State> {
                 showIntegrations: true,
                 useWhiteBackground: false
             },
-            currentTab: 0
+            currentTab: 0,
+            measureUnit: MeasureUnit.METRIC
         }
     }
 
@@ -89,6 +93,11 @@ export default class LineDetailCmp extends Component<Props, State> {
                     }
                 })
                 this.setState({ lineDetails: details }, () => this.reloadData());
+            });
+
+            engine.on("k45::xtm.common.onMeasureUnitsChanged", this.measureCallback);
+            engine.call("k45::xtm.common.getMeasureUnits").then(async (x) => {
+                this.setState({ measureUnit: x });
             });
         })
         this.reloadData(true);
@@ -117,7 +126,10 @@ export default class LineDetailCmp extends Component<Props, State> {
     }
     componentWillUnmount(): void {
         engine.off("k45::xtm.lineViewer.getRouteDetail->");
+        engine.off("k45::xtm.common.onMeasureUnitsChanged", this.measureCallback);
     }
+
+    private measureCallback = async () => this.setState({ measureUnit: await engine.call("k45::xtm.common.getMeasureUnits") });
 
     async reloadData(force: boolean = false) {
         if (force || this.state.mapViewOptions.showVehicles) {
@@ -147,14 +159,32 @@ export default class LineDetailCmp extends Component<Props, State> {
             [MapViewerTabsNames.General]: <DefaultPanelScreen title={translate("lineViewer.generalData")} isSubScreen={true}>
                 <LineViewGeneralPageCmp currentLine={lineCommonData} forceReload={() => { this.reloadData(true) }} />
             </DefaultPanelScreen>,
-            [MapViewerTabsNames.LineData]: <></>,
+            [MapViewerTabsNames.LineData]: <DefaultPanelScreen title={translate("lineViewer.lineData")} isSubScreen={true}>
+                <Cs2FormLine title={translate("lineViewer.dataTotalLength")} >{ [metersTo(lineDetails.Segments.reduce((p, n) => p + n.sizeMeters, 0), this.state.measureUnit)].map(x => replaceArgs(engine.translate(x[0]), { ...x[1], "SIGN": "" }))[0]}</Cs2FormLine>
+                <Cs2FormLine title={translate("lineViewer.dataVehicleCount")} >{lineCommonData.vehicles}</Cs2FormLine>
+                <Cs2FormLine title={translate("lineViewer.dataStopsCount")} >{lineCommonData.stops}</Cs2FormLine>
+                <Cs2FormLine title={translate(lineCommonData.isCargo ? "lineViewer.dataTotalCargoWaiting" : "lineViewer.dataTotalPassengersWaiting")} >{
+                    lineCommonData.isCargo
+                        ? [kilogramsTo(lineDetails.Stops.reduce((p, n) => p + n.cargo, 0), this.state.measureUnit)].map(x => replaceArgs(engine.translate(x[0]), { ...x[1], "SIGN": "" }))[0]
+                        : lineDetails.Stops.reduce((p, n) => p + n.cargo, 0)
+                }</Cs2FormLine>
+                <Cs2FormLine title={translate("lineViewer.dataLineFullLapAverageTime")} >{replaceArgs(translate("lineViewer.formatMinutes"), { minutes: durationToGameMinutes(lineDetails.Segments.reduce((p, n) => p + n.duration, 0)).toFixed() })}</Cs2FormLine>
+                <Cs2FormLine title={translate("lineViewer.dataNextVehicleToBeMaintained")} >
+                    {lineDetails.Vehicles.filter(x => x.maintenanceRange > 0).sort((a, b) => (a.odometer - a.maintenanceRange) - (b.odometer - b.maintenanceRange)).filter((x, i) => i == 0).map(x =>
+                        <>
+                            {replaceArgs(translate("lineViewer.dataNextMaintenanceValueFmt"), { name: `${nameToString(x.name)} - ${x.entity.Index}`, distance: [metersTo(x.maintenanceRange - x.odometer, this.state.measureUnit)].map(x => replaceArgs(engine.translate(x[0]), { ...x[1], "SIGN": "" }))[0] })}
+                        </>)[0] || translate("lineViewer.dataNoNextMaintenance")}
+                </Cs2FormLine>
+                <Cs2FormLine title={translate("lineViewer.dataAverageVehicleOccupance")}>{setupSignificance(lineDetails.Vehicles.reduce((p, n) => p + n.cargo / n.capacity, 0) / lineCommonData.vehicles * 100, 2)}%</Cs2FormLine>
+                <Cs2FormLine title={translate("lineViewer.dataAverageStopWaiting")} >{setupSignificance(lineDetails.Stops.reduce((p, n) => p + n.cargo / lineDetails.StopCapacity, 0) / lineCommonData.stops * 100, 2)}%</Cs2FormLine>
+            </DefaultPanelScreen>,
             [MapViewerTabsNames.LineSettings]: <></>,
             [MapViewerTabsNames.MapSettings]: <DefaultPanelScreen title={translate("lineViewer.showOnMap")} isSubScreen={true}>
-                <Checkbox isChecked={() => this.state.mapViewOptions.showDistances} title={translate("lineViewer.showDistancesLbl")} onValueToggle={(x) => this.toggleDistances(x)} />
-                <Checkbox isChecked={() => this.state.mapViewOptions.showDistricts} title={translate("lineViewer.showDistrictsLbl")} onValueToggle={(x) => this.toggleDistricts(x)} />
-                <Checkbox isChecked={() => this.state.mapViewOptions.showVehicles} title={translate("lineViewer.showVehiclesLbl")} onValueToggle={(x) => this.toggleVehiclesShow(x)} />
-                <Checkbox isChecked={() => this.state.mapViewOptions.showIntegrations} title={translate("lineViewer.showIntegrationsLbl")} onValueToggle={(x) => this.toggleIntegrations(x)} />
-                <Checkbox isChecked={() => this.state.mapViewOptions.useWhiteBackground} title={translate("lineViewer.useWhiteBackgroundLbl")} onValueToggle={(x) => this.toggleWhiteBG(x)} />
+                <CheckboxWithLine isChecked={() => this.state.mapViewOptions.showDistances} title={translate("lineViewer.showDistancesLbl")} onValueToggle={(x) => this.toggleDistances(x)} />
+                <CheckboxWithLine isChecked={() => this.state.mapViewOptions.showDistricts} title={translate("lineViewer.showDistrictsLbl")} onValueToggle={(x) => this.toggleDistricts(x)} />
+                <CheckboxWithLine isChecked={() => this.state.mapViewOptions.showVehicles} title={translate("lineViewer.showVehiclesLbl")} onValueToggle={(x) => this.toggleVehiclesShow(x)} />
+                <CheckboxWithLine isChecked={() => this.state.mapViewOptions.showIntegrations} title={translate("lineViewer.showIntegrationsLbl")} onValueToggle={(x) => this.toggleIntegrations(x)} />
+                <CheckboxWithLine isChecked={() => this.state.mapViewOptions.useWhiteBackground} title={translate("lineViewer.useWhiteBackgroundLbl")} onValueToggle={(x) => this.toggleWhiteBG(x)} />
             </DefaultPanelScreen>,
             [MapViewerTabsNames.StopInfo]: <></>,
             [MapViewerTabsNames.VehicleInfo]: <></>,

@@ -55,6 +55,8 @@ export type VehicleData = {
     readonly name: NameCustom | NameFormatted,
     readonly worldPosition: { x: number, y: number, z: number },
     readonly azimuth: number,
+    readonly odometer: number,
+    readonly maintenanceRange: number,
     normalizedPosition: number,
     distanceNextStop: number
     distancePrevStop: number
@@ -64,6 +66,7 @@ export type SegmentData = {
     readonly end: number,
     readonly sizeMeters: number,
     readonly broken: boolean
+    readonly duration: number
 }
 
 export type LineDetails = {

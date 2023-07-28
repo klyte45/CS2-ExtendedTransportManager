@@ -26,8 +26,8 @@ export class Input extends Component<InputProps, {}> {
     render() {
         return (
             <>
-                <div className="field__MBOM9 field__UuCZq">
-                    <div className="label__DGc7_ label__ZLbNH">
+                <div className="cs2-fieldStyle cs2-fieldStyle2">
+                    <div className="cs2-form-item-label cs2-form-item-label2">
                         {this.props.title}
                     </div>
                     <SimpleInput {...this.props} />
@@ -68,7 +68,7 @@ export class SimpleInput extends Component<Omit<InputProps, 'title'>, { value: s
             <>
                 <input style={overrideStyle}
                     value={targetValue}
-                    className={"value-field__yJiUY value__PW_tv " + this.checkInvalidClasses()}
+                    className={"cs2-value-field cs2-form-value " + this.checkInvalidClasses()}
                     onChange={x => this.setState({ value: x.target.value })}
                     onKeyDown={(x) => this.onKeyDown(x)}
                     onBlur={async () => this.setState({ value: await onValueChanged(this.state.value) })}
@@ -102,7 +102,6 @@ export class SimpleInput extends Component<Omit<InputProps, 'title'>, { value: s
         }
     }
 }
-
 
 
 export class ColorRgbInput extends Component<ColorInputProps, {}> {

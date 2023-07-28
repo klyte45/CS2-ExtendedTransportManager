@@ -1,4 +1,4 @@
-import { Checkbox } from "#components/common/checkbox";
+import { CheckboxWithLine } from "#components/common/checkbox";
 import { LineData, LineManagementService } from "#service/LineManagementService";
 import { nameToString } from "#utility/name.utils";
 import translate from "#utility/translate";
@@ -14,7 +14,7 @@ export class LineViewGeneralPageCmp extends Component<{ currentLine: LineData; f
             <Input title={translate("lineViewerEditor.lineName")} getValue={() => nameToString(this.props.currentLine?.name)} onValueChanged={async (x) => await this.setLineName(x)} />
             <Input title={translate("lineViewerEditor.internalNumber")} getValue={() => this.props.currentLine?.routeNumber.toString()} maxLength={11} onValueChanged={(x) => this.SendNewRouteNumber(x)} />
             <Input title={translate("lineViewerEditor.displayIdentifier")} getValue={() => this.props.currentLine?.xtmData?.Acronym} maxLength={30} onValueChanged={(x) => this.setLineAcronym(x)} />
-            <Checkbox isChecked={() => this.props.currentLine?.isFixedColor} title={translate("lineViewerEditor.ignorePalette")} onValueToggle={(x) => this.setIgnorePalette(x)} />
+            <CheckboxWithLine isChecked={() => this.props.currentLine?.isFixedColor} title={translate("lineViewerEditor.ignorePalette")} onValueToggle={(x) => this.setIgnorePalette(x)} />
             {this.props.currentLine?.isFixedColor && <ColorRgbInput title={translate("lineViewerEditor.lineFixedColor")} getValue={() => this.props.currentLine.color as `#${string}`} onValueChanged={(x) => this.setFixedColor(x)} />}
         </>;
     }

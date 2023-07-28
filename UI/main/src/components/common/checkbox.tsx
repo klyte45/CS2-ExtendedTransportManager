@@ -1,32 +1,24 @@
 import { Component } from "react";
+import { Cs2FormLine } from "./Cs2FormLine";
 
-interface CheckboxProps {
+export interface CheckboxProps {
     title: string;
     isChecked: () => boolean;
     onValueToggle: (newVal: boolean) => void;
 }
 
-export class Checkbox extends Component<CheckboxProps, {}> {
+export class CheckboxWithLine extends Component<CheckboxProps, {}> {
     constructor(props: CheckboxProps) {
         super(props);
         this.state = {}
     }
     render() {
         const { title, onValueToggle } = this.props;
-        const isChecked = this.props.isChecked();
+        const isCehcked = this.props.isChecked();
         return (
-            <>
-                <div className="field__MBOM9 field__UuCZq" onClick={() => {
-                    onValueToggle(!isChecked);
-                }}>
-                    <div className="label__DGc7_ label__ZLbNH">
-                        {title}
-                    </div>
-                    <div className={`toggle__ccalN item-mouse-states__FmiyB toggle__th_34 ${isChecked ? "checked" : "unchecked"}`} >
-                        <div className={`checkmark__NXVuH ${isChecked ? "checked" : ""}`} ></div>
-                    </div>
-                </div>
-            </>
+            <Cs2FormLine title={title} onClick={() => onValueToggle(!isCehcked)}>
+                <Checkbox isChecked={this.props.isChecked} onValueToggle={(x) => onValueToggle(x)} />
+            </Cs2FormLine>
         );
     }
 }
@@ -36,7 +28,7 @@ interface CheckboxTitlelessProps {
     onValueToggle: (newVal: boolean) => void;
 }
 
-export class CheckboxTitleless extends Component<CheckboxTitlelessProps, { checked: () => boolean }> {
+export class Checkbox extends Component<CheckboxTitlelessProps, { checked: () => boolean }> {
     constructor(props: CheckboxProps) {
         super(props);
         this.state = {
@@ -46,9 +38,11 @@ export class CheckboxTitleless extends Component<CheckboxTitlelessProps, { check
     render() {
         const { onValueToggle } = this.props;
         const isChecked = this.state.checked();
-        return (<><div className={`toggle__ccalN item-mouse-states__FmiyB toggle__th_34 ${isChecked ? "checked" : "unchecked"}`} onClick={() => onValueToggle(!isChecked)}>
-            <div className={`checkmark__NXVuH ${isChecked ? "checked" : ""}`} ></div>
+        return (<><div className={`cs2-toggle cs2-item-mouse-states cs2-toggle2 ${isChecked ? "checked" : "unchecked"}`} onClick={() => onValueToggle(!isChecked)}>
+            <div className={`cs2-checkmark ${isChecked ? "checked" : ""}`} ></div>
         </div>
         </>);
     }
 }
+
+

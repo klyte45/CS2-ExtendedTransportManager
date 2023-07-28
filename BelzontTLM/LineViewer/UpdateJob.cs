@@ -47,7 +47,7 @@ namespace BelzontTLM
                         float end = (j < routeSegments.Length - 1) ? (stopsPointsDistanceFromStart[j + 1] / num) : 1f;
                         bool broken = pathInformation.m_Origin == Entity.Null && pathInformation.m_Destination == Entity.Null;
                         var distance = pathInformation.m_Distance;
-                        LineSegment lineSegment = new LineSegment(start, end, broken, distance);
+                        LineSegment lineSegment = new LineSegment(start, end, broken, distance, pathInformation.m_Duration);
                         m_SegmentsResult.Add(lineSegment);
                     }
                 }
@@ -73,7 +73,7 @@ namespace BelzontTLM
                         int item2 = cargo.Item2;
                         float num7 = num6 / num;
                         var transform = m_Transforms[vehicle];
-                        LineVehicle lineVehicle = new LineVehicle(vehicle, num7, item, item2, transform.m_Position, transform.m_Rotation, isCargo);
+                        LineVehicle lineVehicle = new LineVehicle(vehicle, num7, item, item2, transform.m_Position, transform.m_Rotation, m_Odometers[vehicle].m_Distance, isCargo);
                         m_VehiclesResult.Add(lineVehicle);
                         if (item2 > m_StopCapacityResult[0])
                         {
@@ -654,6 +654,8 @@ namespace BelzontTLM
             [ReadOnly]
             public BufferLookup<XTMChildConnectedRoute> m_XTMConnectedRouteBuffers;
 
+            [ReadOnly]
+            public ComponentLookup<Odometer> m_Odometers;
             [ReadOnly]
             public ComponentLookup<Building> m_Buildings;
             [ReadOnly]

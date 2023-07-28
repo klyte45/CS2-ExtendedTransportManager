@@ -9,6 +9,16 @@ export enum TemperatureUnit {
     KELVIN = 2
 }
 
+export const FRAMES_EACH_DAY = 262144;
+
+export function durationToGameMinutes(val: number) {
+    return val * 60 / FRAMES_EACH_DAY * 1440;
+}
+
+export function setupSignificance(val: number, digits: number): string {
+    return val.toFixed(Math.max(0, digits - val.toFixed(0).length))
+}
+
 export function kilogramsTo(value: number, unit: MeasureUnit, perMonth: boolean = false): [string, Record<string, string>] {
     const keyPath = perMonth ? "montly" : "linear";
     const unitArr = MetricUnitsEntries.mass[keyPath][unit];
@@ -16,14 +26,14 @@ export function kilogramsTo(value: number, unit: MeasureUnit, perMonth: boolean 
         case MeasureUnit.FREEDOM:
             if (value > 910) {
                 const val = kilogramToShortTon(value);
-                return [unitArr[1], { VALUE: val.toFixed(Math.max(0, 3 - val.toFixed(0).length)) }]
+                return [unitArr[1], { VALUE: setupSignificance(val, 3) }]
             } else {
                 return [unitArr[0], { VALUE: kilogramToPounds(value).toFixed(0) }]
             }
         default:
             if (value > 1000) {
                 const val = kilogramToTon(value);
-                return [unitArr[1], { VALUE: val.toFixed(Math.max(0, 3 - val.toFixed(0).length)) }]
+                return [unitArr[1], { VALUE: setupSignificance(val, 3) }]
             } else {
                 return [unitArr[0], { VALUE: value.toFixed(0) }]
             }
@@ -37,17 +47,17 @@ export function metersTo(value: number, unit: MeasureUnit): [string, Record<stri
         case MeasureUnit.FREEDOM:
             if (value > 1610) {
                 const val = meterToMile(value);
-                return [unitArr[2], { VALUE: val.toFixed(Math.max(0, 3 - val.toFixed(0).length)) }]
+                return [unitArr[2], { VALUE: setupSignificance(val, 3) }]
             } else if (value > 33) {
                 const val = meterToYard(value);
-                return [unitArr[1], { VALUE: val.toFixed(Math.max(0, 3 - val.toFixed(0).length)) }]
+                return [unitArr[1], { VALUE: setupSignificance(val, 3) }]
             } else {
                 return [unitArr[0], { VALUE: meterToFoot(value).toFixed(0) }]
             }
         default:
             if (value > 1000) {
                 const val = meterToKilometer(value);
-                return [unitArr[1], { VALUE: val.toFixed(Math.max(0, 3 - val.toFixed(0).length)) }]
+                return [unitArr[1], { VALUE: setupSignificance(val, 3) }]
             } else {
                 return [unitArr[0], { VALUE: value.toFixed(0) }]
             }
@@ -62,14 +72,14 @@ export function squareMetersTo(value: number, unit: MeasureUnit, perMonth: boole
         case MeasureUnit.FREEDOM:
             if (value > 4050) {
                 const val = squareMeterToAcres(value);
-                return [unitArr[1], { VALUE: val.toFixed(Math.max(0, 3 - val.toFixed(0).length)) }]
+                return [unitArr[1], { VALUE: setupSignificance(val, 3) }]
             } else {
                 return [unitArr[0], { VALUE: squareMeterToSquareFoot(value).toFixed(0) }]
             }
         default:
             if (value > 1000) {
                 const val = squareMeterToSquareKilometer(value);
-                return [unitArr[1], { VALUE: val.toFixed(Math.max(0, 3 - val.toFixed(0).length)) }]
+                return [unitArr[1], { VALUE: setupSignificance(val, 3) }]
             } else {
                 return [unitArr[0], { VALUE: value.toFixed(0) }]
             }

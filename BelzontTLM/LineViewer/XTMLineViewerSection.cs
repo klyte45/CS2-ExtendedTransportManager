@@ -1,9 +1,7 @@
 ﻿using Belzont.Utils;
-using BelzontTLM.Palettes;
 using Colossal.Entities;
 using Game.Areas;
 using Game.Buildings;
-using Game.City;
 using Game.Common;
 using Game.Objects;
 using Game.Prefabs;
@@ -115,6 +113,7 @@ namespace BelzontTLM
                 return;
             }
             __TypeHandle.__Game_Buildings_RO_ComponentLookup.Update(ref CheckedStateRef);
+            __TypeHandle.__Game_Odometers_RO_ComponentLookup.Update(ref CheckedStateRef);
             __TypeHandle.__Game_Edges_RO_ComponentLookup.Update(ref CheckedStateRef);
             __TypeHandle.__Game_Attacheds_RO_ComponentLookup.Update(ref CheckedStateRef);
             __TypeHandle.__Game_ConnectBuildingBuffers_RO_BufferLookup.Update(ref CheckedStateRef);
@@ -207,6 +206,7 @@ namespace BelzontTLM
             jobData2.m_XTMConnectedRouteBuffers = __TypeHandle.__Game_Vehicles_XTMChildConnectedRoute_RO_BufferLookup;
             jobData2.m_ConnectedRouteBuffers = __TypeHandle.__Game_Routes_ConnectedRoute_RO_BufferLookup;
             jobData2.m_Buildings = __TypeHandle.__Game_Buildings_RO_ComponentLookup;
+            jobData2.m_Odometers = __TypeHandle.__Game_Odometers_RO_ComponentLookup;
             jobData2.m_Attacheds = __TypeHandle.__Game_Attacheds_RO_ComponentLookup;
             jobData2.m_Edges = __TypeHandle.__Game_Edges_RO_ComponentLookup;
             jobData2.m_connectedEdgesBuffers = __TypeHandle.__Game_ConnectEdge_RO_BufferLookup;
@@ -242,7 +242,7 @@ namespace BelzontTLM
             }
             for (int j = 0; j < m_VehiclesResult.Length; j++)
             {
-                result.Vehicles[j] = new(m_VehiclesResult[j], m_NameSystem);
+                result.Vehicles[j] = new(m_VehiclesResult[j], m_NameSystem, EntityManager);
             }
             for (int k = 0; k < m_StopsResult.Length; k++)
             {
@@ -334,6 +334,8 @@ namespace BelzontTLM
 
         public readonly struct LineVehicle
         {
+            internal float odometer { get; }
+
             public Entity entity { get; }
 
             public float position { get; }
@@ -348,7 +350,7 @@ namespace BelzontTLM
 
             public Quaternion rotation { get; }
 
-            public LineVehicle(Entity entity, float position, int cargo, int capacity, Vector3 worldPosition, Quaternion rotation, bool isCargo = false)
+            public LineVehicle(Entity entity, float position, int cargo, int capacity, Vector3 worldPosition, Quaternion rotation, float odometer, bool isCargo = false)
             {
                 this.entity = entity;
                 this.position = position;
@@ -357,6 +359,7 @@ namespace BelzontTLM
                 this.isCargo = isCargo;
                 this.worldPosition = worldPosition;
                 this.rotation = rotation;
+                this.odometer = odometer;
             }
         }
 
@@ -369,12 +372,15 @@ namespace BelzontTLM
 
             public bool broken { get; }
 
-            public LineSegment(float start, float end, bool broken, float sizeMeters)
+            public float duration { get; }
+
+            public LineSegment(float start, float end, bool broken, float sizeMeters, float duration)
             {
                 this.start = start;
                 this.end = end;
                 this.broken = broken;
                 this.sizeMeters = sizeMeters;
+                this.duration = duration;
             }
         }
 
@@ -454,8 +460,10 @@ namespace BelzontTLM
             public ValuableName name { get; }
             public Vector3Json worldPosition { get; }
             public float azimuth { get; }
+            public float odometer { get; }
+            public float maintenanceRange { get; }
 
-            public LineVehicleNamed(LineVehicle src, NameSystem nameSystem)
+            public LineVehicleNamed(LineVehicle src, NameSystem nameSystem, EntityManager entityManager)
             {
                 entity = src.entity;
                 position = src.position;
@@ -465,6 +473,9 @@ namespace BelzontTLM
                 name = nameSystem.GetName(src.entity).ToValueableName();
                 worldPosition = new(src.worldPosition);
                 azimuth = src.rotation.eulerAngles.y;
+                odometer = src.odometer;
+                var data = entityManager.TryGetComponent(entityManager.GetComponentData<PrefabRef>(src.entity).m_Prefab, out PublicTransportVehicleData publicTransportVehicleData);
+                maintenanceRange = data ? publicTransportVehicleData.m_MaintenanceRange : -1;
             }
         }
     }
