@@ -223,7 +223,6 @@ namespace BelzontTLM
         {
             typeof(Updated),
             typeof(BatchesUpdated),
-            typeof(XTMPaletteRequireUpdate),
             typeof(Deleted)
         };
 

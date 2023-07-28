@@ -64,7 +64,7 @@ namespace BelzontTLM
             {
                 entityCommandBuffer.AddComponent<XTMPaletteLockedColor>(targetEntity);
             }
-            entityCommandBuffer.AddComponent<Updated>(targetEntity);
+            entityCommandBuffer.AddComponent<XTMPaletteRequireUpdate>(targetEntity);
             return ignore;
         }
         private int SetRouteInternalNumber(Entity entity, int routeNum)

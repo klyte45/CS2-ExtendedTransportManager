@@ -59,6 +59,7 @@ export default class LineListCmp extends Component<any, State> {
                 onBack={() => this.setState({ currentLineViewer: undefined, }, () => engine.call("k45::xtm.lineViewer.getCityLines", true))}
                 getLineById={(x) => this.getLineById(x)}
                 setSelection={x => this.setSelection(x)}
+                onForceReload={() => engine.call("k45::xtm.lineViewer.getCityLines", true)}
             /></>
         }
         return <>

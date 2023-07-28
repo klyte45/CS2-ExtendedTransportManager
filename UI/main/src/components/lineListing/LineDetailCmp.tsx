@@ -51,7 +51,8 @@ type Props = {
     currentLine: Entity,
     getLineById: (x: number) => LineData,
     setSelection: (x: Entity) => Promise<void>,
-    onBack: () => void
+    onBack: () => void,
+    onForceReload(): void
 }
 
 export default class LineDetailCmp extends Component<Props, State> {
@@ -121,6 +122,9 @@ export default class LineDetailCmp extends Component<Props, State> {
     async reloadData(force: boolean = false) {
         if (force || this.state.mapViewOptions.showVehicles) {
             await engine.call("k45::xtm.lineViewer.getRouteDetail", this.props.currentLine, force);
+            if (force) {
+
+            }
         }
     }
     render() {
@@ -131,7 +135,7 @@ export default class LineDetailCmp extends Component<Props, State> {
             <button className="negativeBtn " onClick={this.props.onBack}>{translate("lineViewer.backToList")}</button>
         </>
         const lineDetails = this.state.lineDetails;
-        if(!lineDetails) return null;
+        if (!lineDetails) return null;
         const lineCommonData = lineDetails?.LineData;
         const subtitle = !lineDetails ? undefined : Object.values(lineDetails.Stops.reduce((p, n) => {
             p[n.district.Index] = n
