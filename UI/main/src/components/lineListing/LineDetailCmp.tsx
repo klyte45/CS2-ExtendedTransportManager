@@ -1,3 +1,4 @@
+import { Cs2FormLine } from "#components/common/Cs2FormLine";
 import { DefaultPanelScreen } from "#components/common/DefaultPanelScreen";
 import { CheckboxWithLine } from "#components/common/checkbox";
 import { DistrictService } from "#service/DistrictService";
@@ -5,14 +6,13 @@ import { LineData, LineDetails, MapViewerOptions, StationData, VehicleData } fro
 import "#styles/LineDetailCmp.scss";
 import "#styles/TLM_LineDetail.scss";
 import { Entity } from "#utility/Entity";
-import { NameCustom, NameFormatted, nameToString, replaceArgs } from "#utility/name.utils";
+import { MeasureUnit, durationToGameMinutes, kilogramsTo, metersTo, setupSignificance } from "#utility/MeasureUnitsUtils";
+import { nameToString, replaceArgs } from "#utility/name.utils";
 import translate from "#utility/translate";
 import { Component } from "react";
 import { Tab, TabList, TabPanel, Tabs } from "react-tabs";
 import { TlmViewerCmp } from "./containers/TlmViewerCmp";
 import { LineViewGeneralPageCmp } from "./subpages/LineViewGeneralPageCmp";
-import { Cs2FormLine } from "#components/common/Cs2FormLine";
-import { MeasureUnit, durationToGameMinutes, kilogramsTo, metersTo, setupSignificance } from "#utility/MeasureUnitsUtils";
 
 enum MapViewerTabsNames {
     General = "tabGeneralSettings",
@@ -156,36 +156,43 @@ export default class LineDetailCmp extends Component<Props, State> {
             .map(x => DistrictService.getEffectiveDistrictName(x)).join(" - ");
 
         const componentsMapViewer: Record<MapViewerTabsNames, JSX.Element> = {
-            [MapViewerTabsNames.General]: <DefaultPanelScreen title={translate("lineViewer.generalData")} isSubScreen={true}>
-                <LineViewGeneralPageCmp currentLine={lineCommonData} forceReload={() => { this.reloadData(true) }} />
-            </DefaultPanelScreen>,
-            [MapViewerTabsNames.LineData]: <DefaultPanelScreen title={translate("lineViewer.lineData")} isSubScreen={true}>
-                <Cs2FormLine title={translate("lineViewer.dataTotalLength")} >{ [metersTo(lineDetails.Segments.reduce((p, n) => p + n.sizeMeters, 0), this.state.measureUnit)].map(x => replaceArgs(engine.translate(x[0]), { ...x[1], "SIGN": "" }))[0]}</Cs2FormLine>
-                <Cs2FormLine title={translate("lineViewer.dataVehicleCount")} >{lineCommonData.vehicles}</Cs2FormLine>
-                <Cs2FormLine title={translate("lineViewer.dataStopsCount")} >{lineCommonData.stops}</Cs2FormLine>
-                <Cs2FormLine title={translate(lineCommonData.isCargo ? "lineViewer.dataTotalCargoWaiting" : "lineViewer.dataTotalPassengersWaiting")} >{
-                    lineCommonData.isCargo
-                        ? [kilogramsTo(lineDetails.Stops.reduce((p, n) => p + n.cargo, 0), this.state.measureUnit)].map(x => replaceArgs(engine.translate(x[0]), { ...x[1], "SIGN": "" }))[0]
-                        : lineDetails.Stops.reduce((p, n) => p + n.cargo, 0)
-                }</Cs2FormLine>
-                <Cs2FormLine title={translate("lineViewer.dataLineFullLapAverageTime")} >{replaceArgs(translate("lineViewer.formatMinutes"), { minutes: durationToGameMinutes(lineDetails.Segments.reduce((p, n) => p + n.duration, 0)).toFixed() })}</Cs2FormLine>
-                <Cs2FormLine title={translate("lineViewer.dataNextVehicleToBeMaintained")} >
-                    {lineDetails.Vehicles.filter(x => x.maintenanceRange > 0).sort((a, b) => (a.odometer - a.maintenanceRange) - (b.odometer - b.maintenanceRange)).filter((x, i) => i == 0).map(x =>
-                        <>
-                            {replaceArgs(translate("lineViewer.dataNextMaintenanceValueFmt"), { name: `${nameToString(x.name)} - ${x.entity.Index}`, distance: [metersTo(x.maintenanceRange - x.odometer, this.state.measureUnit)].map(x => replaceArgs(engine.translate(x[0]), { ...x[1], "SIGN": "" }))[0] })}
-                        </>)[0] || translate("lineViewer.dataNoNextMaintenance")}
-                </Cs2FormLine>
-                <Cs2FormLine title={translate("lineViewer.dataAverageVehicleOccupance")}>{setupSignificance(lineDetails.Vehicles.reduce((p, n) => p + n.cargo / n.capacity, 0) / lineCommonData.vehicles * 100, 2)}%</Cs2FormLine>
-                <Cs2FormLine title={translate("lineViewer.dataAverageStopWaiting")} >{setupSignificance(lineDetails.Stops.reduce((p, n) => p + n.cargo / lineDetails.StopCapacity, 0) / lineCommonData.stops * 100, 2)}%</Cs2FormLine>
-            </DefaultPanelScreen>,
-            [MapViewerTabsNames.LineSettings]: <></>,
-            [MapViewerTabsNames.MapSettings]: <DefaultPanelScreen title={translate("lineViewer.showOnMap")} isSubScreen={true}>
-                <CheckboxWithLine isChecked={() => this.state.mapViewOptions.showDistances} title={translate("lineViewer.showDistancesLbl")} onValueToggle={(x) => this.toggleDistances(x)} />
-                <CheckboxWithLine isChecked={() => this.state.mapViewOptions.showDistricts} title={translate("lineViewer.showDistrictsLbl")} onValueToggle={(x) => this.toggleDistricts(x)} />
-                <CheckboxWithLine isChecked={() => this.state.mapViewOptions.showVehicles} title={translate("lineViewer.showVehiclesLbl")} onValueToggle={(x) => this.toggleVehiclesShow(x)} />
-                <CheckboxWithLine isChecked={() => this.state.mapViewOptions.showIntegrations} title={translate("lineViewer.showIntegrationsLbl")} onValueToggle={(x) => this.toggleIntegrations(x)} />
-                <CheckboxWithLine isChecked={() => this.state.mapViewOptions.useWhiteBackground} title={translate("lineViewer.useWhiteBackgroundLbl")} onValueToggle={(x) => this.toggleWhiteBG(x)} />
-            </DefaultPanelScreen>,
+            [MapViewerTabsNames.General]:
+                <DefaultPanelScreen title={translate("lineViewer.generalData")} isSubScreen={true}>
+                    <LineViewGeneralPageCmp currentLine={lineCommonData} forceReload={() => { this.reloadData(true) }} />
+                </DefaultPanelScreen>,
+            [MapViewerTabsNames.LineData]:
+                <DefaultPanelScreen title={translate("lineViewer.lineData")} isSubScreen={true}>
+                    <Cs2FormLine title={translate("lineViewer.dataTotalLength")} >{[metersTo(lineDetails.Segments.reduce((p, n) => p + n.sizeMeters, 0), this.state.measureUnit)].map(x => replaceArgs(engine.translate(x[0]), { ...x[1], "SIGN": "" }))[0]}</Cs2FormLine>
+                    <Cs2FormLine title={translate("lineViewer.dataVehicleCount")} >{lineCommonData.vehicles}</Cs2FormLine>
+                    <Cs2FormLine title={translate("lineViewer.dataStopsCount")} >{lineCommonData.stops}</Cs2FormLine>
+                    <Cs2FormLine title={translate(lineCommonData.isCargo ? "lineViewer.dataTotalCargoWaiting" : "lineViewer.dataTotalPassengersWaiting")}>{
+                        lineCommonData.isCargo
+                            ? [kilogramsTo(lineDetails.Stops.reduce((p, n) => p + n.cargo, 0), this.state.measureUnit)].map(x => replaceArgs(engine.translate(x[0]), { ...x[1], "SIGN": "" }))[0]
+                            : lineDetails.Stops.reduce((p, n) => p + n.cargo, 0)
+                    }</Cs2FormLine>
+                    <Cs2FormLine title={translate("lineViewer.dataLineFullLapAverageTime")} >{replaceArgs(translate("lineViewer.formatMinutes"), { minutes: durationToGameMinutes(lineDetails.Segments.reduce((p, n) => p + n.duration, 0)).toFixed() })}</Cs2FormLine>
+                    <Cs2FormLine title={translate("lineViewer.dataNextVehicleToBeMaintained")} >
+                        {lineDetails.Vehicles.filter(x => x.maintenanceRange > 0).sort((a, b) => (a.odometer - a.maintenanceRange) - (b.odometer - b.maintenanceRange)).filter((x, i) => i == 0).map(x =>
+                            <>
+                                {replaceArgs(translate("lineViewer.dataNextMaintenanceValueFmt"), { name: `${nameToString(x.name)} - ${x.entity.Index}`, distance: [metersTo(x.maintenanceRange - x.odometer, this.state.measureUnit)].map(x => replaceArgs(engine.translate(x[0]), { ...x[1], "SIGN": "" }))[0] })}
+                            </>)[0] || translate("lineViewer.dataNoNextMaintenance")}
+                    </Cs2FormLine>
+                    <Cs2FormLine title={translate("lineViewer.dataAverageVehicleOccupance")}>{setupSignificance(lineDetails.Vehicles.reduce((p, n) => p + n.cargo / n.capacity, 0) / lineCommonData.vehicles * 100, 2)}%</Cs2FormLine>
+                    <Cs2FormLine title={translate("lineViewer.dataAverageStopWaiting")} >{setupSignificance(lineDetails.Stops.reduce((p, n) => p + n.cargo / lineDetails.StopCapacity, 0) / lineCommonData.stops * 100, 2)}%</Cs2FormLine>
+                </DefaultPanelScreen>,
+            [MapViewerTabsNames.LineSettings]:
+                <DefaultPanelScreen title={translate("lineViewer.lineSettings")} isSubScreen={true}>
+                    <Cs2FormLine title={translate("lineViewer.dataTotalLength")} >
+                    </Cs2FormLine>
+                </DefaultPanelScreen>,
+            [MapViewerTabsNames.MapSettings]:
+                <DefaultPanelScreen title={translate("lineViewer.showOnMap")} isSubScreen={true}>
+                    <CheckboxWithLine isChecked={() => this.state.mapViewOptions.showDistances} title={translate("lineViewer.showDistancesLbl")} onValueToggle={(x) => this.toggleDistances(x)} />
+                    <CheckboxWithLine isChecked={() => this.state.mapViewOptions.showDistricts} title={translate("lineViewer.showDistrictsLbl")} onValueToggle={(x) => this.toggleDistricts(x)} />
+                    <CheckboxWithLine isChecked={() => this.state.mapViewOptions.showVehicles} title={translate("lineViewer.showVehiclesLbl")} onValueToggle={(x) => this.toggleVehiclesShow(x)} />
+                    <CheckboxWithLine isChecked={() => this.state.mapViewOptions.showIntegrations} title={translate("lineViewer.showIntegrationsLbl")} onValueToggle={(x) => this.toggleIntegrations(x)} />
+                    <CheckboxWithLine isChecked={() => this.state.mapViewOptions.useWhiteBackground} title={translate("lineViewer.useWhiteBackgroundLbl")} onValueToggle={(x) => this.toggleWhiteBG(x)} />
+                </DefaultPanelScreen>,
             [MapViewerTabsNames.StopInfo]: <></>,
             [MapViewerTabsNames.VehicleInfo]: <></>,
             [MapViewerTabsNames.Debug]: <>{JSON.stringify(this.state.lineDetails ?? "LOADING", null, 2)}</>

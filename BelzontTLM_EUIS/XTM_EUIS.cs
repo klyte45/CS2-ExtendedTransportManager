@@ -11,8 +11,8 @@ namespace XTM_EUIS
 
         public string DisplayName => "XTM - Main settings window";
 
-        public string UrlJs => "http://localhost:8500/k45-xtm-main.js";//$"coui://{BasicIMod.Instance.CouiHost}/UI/k45-xtm-main.js";//
-        public string UrlCss => "http://localhost:8500/k45-xtm-main.css";//$"coui://{BasicIMod.Instance.CouiHost}/UI/k45-xtm-main.css";//
+        public string UrlJs => $"coui://{BasicIMod.Instance.CouiHost}/UI/k45-xtm-main.js";//"http://localhost:8500/k45-xtm-main.js";//
+        public string UrlCss => $"coui://{BasicIMod.Instance.CouiHost}/UI/k45-xtm-main.css";//"http://localhost:8500/k45-xtm-main.css";//
         public string UrlIcon => $"coui://{BasicIMod.Instance.CouiHost}/UI/images/XTM.svg";
 
         public string ModderIdentifier => "k45";

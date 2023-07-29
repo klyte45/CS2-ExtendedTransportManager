@@ -4,12 +4,10 @@
     [id$=live-region] {
         display: none !important;
     }
-    
-    %value-control {
-        padding-top: 4.000000rem;
-        padding-left: 8.000000rem;
-        padding-right: 8.000000rem;
-        padding-bottom: 4.000000rem;
+
+
+    .value-control {
+
         border-top-style: solid;
         border-left-style: solid;
         border-right-style: solid;
@@ -18,10 +16,6 @@
         border-left-width: var(--stroke2);
         border-bottom-width: var(--stroke2);
         border-right-width: var(--stroke2);
-    }
-
-    .value-control {
-        @extend %value-control;
         background-color: var(--menuControl1);
 
         border-top-color: var(--menuControlBorder);
@@ -35,16 +29,20 @@
         display: flex;
         color: var(--menuText1Normal);
 
-        font-size: 1.000000em;
+        font-size: var(--fontSizeM);
         text-align: left;
         position: relative;
 
         .value-container {
             padding-right: 20px;
             width: 100%;
+            min-height: 2.000000em;
 
-            .input {
-                @extend %value-control;
+            div {
+                padding-top: 4.000000rem;
+                padding-left: 8.000000rem;
+                padding-right: 8.000000rem;
+                padding-bottom: 4.000000rem;
                 border-top-color: transparent;
                 border-left-color: transparent;
                 border-bottom-color: transparent;
@@ -65,6 +63,8 @@
         .indicators-container {
             margin-left: -20px;
             filter: brightness(0) invert(0.500000);
+            padding-left: 5.000000px;
+            padding-right: 5.000000px;
         }
     }
 
@@ -123,6 +123,7 @@
                     background-color: var(--hoverColor);
                 }
             }
+
             z-index: 99999;
         }
     }

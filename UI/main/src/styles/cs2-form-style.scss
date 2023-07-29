@@ -37,7 +37,11 @@
     flex-direction: row;
     align-items: center;
     padding: 8rem 16rem;
-    min-height: 64rem
+    min-height: 64rem;
+
+    .react-select-container {
+        width: 50%;
+    }
 }
 
 .cs2-fieldStyle2 {

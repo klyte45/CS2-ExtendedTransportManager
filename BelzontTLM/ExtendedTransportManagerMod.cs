@@ -7,7 +7,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Reflection;
 
-[assembly: AssemblyVersion("0.0.1.0")]
+[assembly: AssemblyVersion("0.0.2.0")]
 namespace BelzontTLM
 {
     public class ExtendedTransportManagerMod : BasicIMod<XTMModData>, IMod

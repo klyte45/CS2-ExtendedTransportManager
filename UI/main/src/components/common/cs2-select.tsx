@@ -27,6 +27,6 @@ export default <Option, Group extends GroupBase<Option>>(props: {
             getOptionValue={props.getOptionValue}
             onChange={props.onChange}
             value={props.value}
-            
+            unstyled={true}
         />
     </>

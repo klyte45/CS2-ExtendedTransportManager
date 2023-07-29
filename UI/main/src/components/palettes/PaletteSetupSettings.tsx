@@ -5,6 +5,7 @@ import { TransportType } from "#enum/TransportType";
 import { PaletteService, PaletteData } from "#service/PaletteService";
 import { ObjectTyped } from "object-typed";
 import { AutoColorService } from "#service/AutoColorService";
+import { Cs2FormLine } from "#components/common/Cs2FormLine";
 
 type State = {
     availablePalettes: Record<string, PaletteData>,
@@ -71,8 +72,7 @@ export default class PaletteSetupSettings extends Component<any, State> {
                     <section className="w50">
                         <h3>{translate("palettesSettings.passengerModalsTitle")}</h3>
                         {this.state.availablePassenger.map((tt, i) => {
-                            return <div className="valueConainerDD" key={i}>
-                                <label>{passengerNameFor(tt)}</label>
+                            return <Cs2FormLine title={passengerNameFor(tt)}>
                                 <Cs2Select
                                     options={Object.values(this.state.availablePalettes)}
                                     getOptionLabel={(x) => x?.Name}
@@ -80,14 +80,13 @@ export default class PaletteSetupSettings extends Component<any, State> {
                                     onChange={(x) => this.setPassengerPaletteGuid(tt, x.GuidString)}
                                     value={this.state.availablePalettes[this.state.passengerSettings[tt]]}
                                 />
-                            </div>
+                            </Cs2FormLine>
                         })}
                     </section>
                     <section className="w50">
                         <h3>{translate("palettesSettings.cargoModalsTitle")}</h3>
                         {this.state.availableCargo.map((tt, i) => {
-                            return <div className="valueConainerDD" key={i}>
-                                <label>{cargoNameFor(tt)}</label>
+                            return <Cs2FormLine title={cargoNameFor(tt)}>
                                 <Cs2Select
                                     options={Object.values(this.state.availablePalettes)}
                                     getOptionLabel={(x) => x?.Name}
@@ -95,7 +94,7 @@ export default class PaletteSetupSettings extends Component<any, State> {
                                     onChange={(x) => this.setCargoPaletteGuid(tt, x.GuidString)}
                                     value={this.state.availablePalettes[this.state.cargoSettings[tt]]}
                                 />
-                            </div>
+                            </Cs2FormLine>
                         })}
                     </section>
                 </div>
