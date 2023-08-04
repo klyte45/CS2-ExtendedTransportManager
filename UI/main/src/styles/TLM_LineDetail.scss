@@ -390,7 +390,6 @@
             .newDistrict {
                 font-size: 70%;
                 position: absolute;
-                font-style: italic;
 
                 &.outsideConn {
                     color: var(--cityBorderNameColor);
@@ -423,7 +422,6 @@
             position: absolute;
             color: white;
             font-size: calc(var(--fontSizeS) * 0.75);
-            font-style: italic;
             right: 50%;
             margin-right: 5px;
             transform: translateY(-50%);
