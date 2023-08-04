@@ -26,11 +26,6 @@
     color: var(--menuText1Normal);
 }
 
-.input_invalidValue {
-    color: var(--negativeColor);
-    text-shadow: 1px 1px black;
-}
-
 
 .cs2-fieldStyle {
     display: flex;
@@ -178,7 +173,12 @@
     border-left-color: var(--menuControlBorder);
     border-bottom-color: var(--menuControlBorder);
     border-right-color: var(--menuControlBorder);
-    border-radius: 3rem
+    border-radius: 3rem;
+
+    &.input_invalidValue {
+        color: var(--negativeColor);
+        text-shadow: 1px 1px black;
+    }
 }
 
 .cs2-value-field[disabled] {

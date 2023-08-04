@@ -1,7 +1,9 @@
 
 import Select, { ActionMeta, GetOptionLabel, GetOptionValue, GroupBase, OnChangeValue, OptionsOrGroups, PropsValue } from 'react-select';
 import '#styles/cs2-select.scss'
-
+const styleProxy = new Proxy({}, {
+    get: (target, propKey) => () => { }
+});
 export default <Option, Group extends GroupBase<Option>>(props: {
     value?: PropsValue<Option>,
     options?: OptionsOrGroups<Option, Group>,
@@ -10,6 +12,7 @@ export default <Option, Group extends GroupBase<Option>>(props: {
     getOptionValue?: GetOptionValue<Option>,
 }) => <>
         <Select
+            styles={styleProxy}
             options={props.options}
             className="react-select-container"
             aria-live="off"
