@@ -112,7 +112,7 @@ namespace BelzontTLM
                         NativeQueue<Entity> roadsToMap = new NativeQueue<Entity>(Allocator.Temp);
 
                         NativeHashSet<LineStopConnnection> linesConnected = new NativeHashSet<LineStopConnnection>(0, Allocator.Persistent);
-                        Entity xtmOwner = Entity.Null;
+                        Entity xtmOwner;
                         if (hasOwner)
                         {
                             xtmOwner = GetRealOwner(owner).m_Owner;

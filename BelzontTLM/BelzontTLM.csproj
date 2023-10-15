@@ -133,7 +133,19 @@
       <Private>False</Private>
     </Reference>
     <Reference Include="UnityEngine.UnityWebRequestModule">
-      <HintPath>S:\SteamLibrary\steamapps\common\Project Beverly Hills\Cities2_Data\Managed\UnityEngine.UnityWebRequestModule.dll</HintPath>
+      <HintPath>$(K45_CS2_ALLROOT)\_Managed DLLs\UnityEngine.UnityWebRequestModule.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="Colossal.Collections">
+      <HintPath>$(K45_CS2_ALLROOT)\_Managed DLLs\Colossal.Collections.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="Colossal.AssetPipelin">
+      <HintPath>$(K45_CS2_ALLROOT)\_Managed DLLs\Colossal.AssetPipeline.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="Colossal.Mono.Cecil">
+      <HintPath>$(K45_CS2_ALLROOT)\_Managed DLLs\Colossal.Mono.Cecil.dll</HintPath>
       <Private>False</Private>
     </Reference>
   </ItemGroup>
