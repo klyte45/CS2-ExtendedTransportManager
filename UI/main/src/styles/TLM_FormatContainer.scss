@@ -1,17 +1,17 @@
 .formatContainer {
     --scaleFormat: 1;
-    --margin-base: calc((var(--scaleFormat) - 1) * 28px + 3px);
-    --form-border-width: 2px;
+    --margin-base: calc((var(--scaleFormat) - 1) * 28rem + 3rem);
+    --form-border-width: 2rem;
     position: relative;
     transform: scale(var(--scaleFormat));
-    margin-bottom: calc((var(--scaleFormat) - 1) * 25px);
-    margin-top: calc((var(--scaleFormat) - 1) * 25px);
-    // margin: var(--margin-base) calc(var(--margin-base) + 3px) var(--margin-base) var(--margin-base) ;    
-    margin-left: 8px;
-    margin-right: 8px;
+    margin-bottom: calc((var(--scaleFormat) - 1) * 25rem);
+    margin-top: calc((var(--scaleFormat) - 1) * 25rem);
+    // margin: var(--margin-base) calc(var(--margin-base) + 3rem) var(--margin-base) var(--margin-base) ;    
+    margin-left: 8rem;
+    margin-right: 8rem;
     overflow: visible;
-    width: calc(60px * var(--scaleFormat));
-    height: calc(60px * var(--scaleFormat));
+    width: calc(60rem * var(--scaleFormat));
+    height: calc(60rem * var(--scaleFormat));
     display: block;
 
     .format {
@@ -44,13 +44,13 @@
 
         +.num {
             position: absolute;
-            font-size: 48.000000px;
+            font-size: 48.000000rem;
             font-weight: bold;
             color: var(--fontColor);
             z-index: 9;
             top: 50.000000%;
             text-align: center;
-            width: 60.000000px;
+            width: 60.000000rem;
             height: auto;
             line-height: 100.000000%;
             transform: translateY(-50%);

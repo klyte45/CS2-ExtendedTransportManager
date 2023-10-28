@@ -4,24 +4,24 @@
     top: 0;
     bottom: 0;
     overflow: hidden;
-    width: 600px;
+    width: 600rem;
 }
 
 .lineViewContent {
     position: absolute;
-    left: 600px;
+    left: 600rem;
     bottom: 0;
     top: 0;
     right: 0;
 
     #dataPanel {
         position: absolute;
-        left: 130px;
+        left: 130rem;
         top: 0;
         bottom: 0;
         overflow: auto;
         right: 0;
-        padding: 5px;
+        padding: 5rem;
 
         .react-tabs__tab-panel {
             top: 0;
@@ -34,19 +34,19 @@
     #sideNav {
         position: absolute;
         left: 0;
-        width: 130px;
+        width: 130rem;
         bottom: 0;
         top: 0;
         display: flex;
         flex-direction: column;
-        padding-top: 5px;
+        padding-top: 5rem;
         background-color: rgba(12, 26, 37, 0.2);
         backdrop-filter: var(--menuBlur);
         height: auto;
         border: none;
         margin: 0;
-        padding: 3px;
-        border-left: 2px solid;
+        padding: 3rem;
+        border-left: 2rem solid;
         border-left-color: var(--menuBorderColor1);
 
         .space {

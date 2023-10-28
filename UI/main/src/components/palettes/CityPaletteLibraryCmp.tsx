@@ -2,13 +2,12 @@ import { PaletteCategoryCmp, categorizePalettes } from "#components/palettes/Pal
 import PaletteLibrarySelectorCmp from "#components/palettes/PaletteLibrarySelectorCmp";
 import { PaletteData, PaletteService } from "#service/PaletteService";
 import { ArrayUtils } from "#utility/ArrayUtils";
-import { ColorUtils } from "#utility/ColorUtils";
 import translate from "#utility/translate";
-import { CSSProperties, Component } from "react";
-import PaletteImportingCmp from "./PaletteImportingCmp";
+import { Component } from "react";
 import PaletteDeletingCmp from "./PaletteDeletingCmp";
-import { PaletteLineViewer } from "./PaletteLineViewer";
 import PaletteEditorCmp from "./PaletteEditorCmp";
+import PaletteImportingCmp from "./PaletteImportingCmp";
+import { PaletteLineViewer } from "./PaletteLineViewer";
 
 enum Screen {
     DEFAULT,

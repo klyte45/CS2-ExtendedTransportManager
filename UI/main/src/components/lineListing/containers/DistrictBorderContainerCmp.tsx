@@ -22,9 +22,9 @@ export class DistrictBorderContainerCmp extends Component<{
         const nextStop = this.props.nextStop;
         let topOffset: CSSProperties;
         if (this.props.normalizedPosition <= 0) {
-            topOffset = { top: "0", transform: "translateY(-20px)", height: (100 / this.props.totalStationCount) + "%" }
+            topOffset = { top: "0", transform: "translateY(-20rem)", height: (100 / this.props.totalStationCount) + "%" }
         } else if (this.props.normalizedPosition > 1) {
-            topOffset = { bottom: "0", transform: "translateY(20px}", height: 0 }
+            topOffset = { bottom: "0", transform: "translateY(20rem}", height: 0 }
         } else {
             topOffset = { top: (100 * this.props.normalizedPosition) + "%", height: (100 / this.props.totalStationCount) + "%" }
         }

@@ -27,7 +27,8 @@
 }
 
 
-.cs2-fieldStyle {
+.cs2-fieldStyle,
+.cs2-fieldStyle-compact {
     display: flex;
     flex-direction: row;
     align-items: center;
@@ -39,10 +40,16 @@
     }
 }
 
+.cs2-fieldStyle {
+    padding: 8rem 16rem;
+    min-height: 64rem;
+}
+
 .cs2-fieldStyle2 {
     color: var(--menuText1Normal);
     border-radius: 4rem;
-    font-size: var(--fontSizeM)
+    font-size: var(--fontSizeM);
+    display: flex;
 }
 
 .cs2-fieldStyle2:hover {
@@ -142,7 +149,14 @@
     mask-size: 100%;
     background-color: var(--checkmarkColor);
     opacity: 0;
-    transition: opacity 150ms cubic-bezier(0.32, 0, 0.67, 0)
+    transition: opacity 150ms cubic-bezier(0.32, 0, 0.67, 0), mask-image 150ms cubic-bezier(0.32, 0, 0.67, 0), background-color 150ms cubic-bezier(0.32, 0, 0.67, 0),
+}
+
+.cs2-checkmark.forbid {
+    mask-image: url(coui://gameui/Media/Glyphs/plus.svg);
+    background-color: var(--negativeColor);
+    opacity: 1;
+    transform: rotateZ(45deg);
 }
 
 .cs2-checkmark.checked {
@@ -177,7 +191,7 @@
 
     &.input_invalidValue {
         color: var(--negativeColor);
-        text-shadow: 1px 1px black;
+        text-shadow: 1rem 1rem black;
     }
 }
 

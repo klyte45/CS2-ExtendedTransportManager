@@ -40,7 +40,7 @@
         position: relative;
 
         .value-container {
-            padding-right: 20px;
+            padding-right: 1em;
             width: 100%;
 
             .input {
@@ -63,8 +63,14 @@
         }
 
         .indicators-container {
-            margin-left: -20px;
+            margin-left: -1em;
             filter: brightness(0) invert(0.500000);
+            font-size: 1em !important;
+
+            svg {
+                width: 20.000000rem;
+                height: 20.000000rem;
+            }
         }
     }
 
@@ -73,8 +79,8 @@
     }
 
     .list-box {
-        height: 2px;
-        margin-top: -2px;
+        height: 2rem;
+        margin-top: -1.5rem;
         z-index: 99999;
         overflow: visible;
 
@@ -90,14 +96,14 @@
             overflow-x: hidden;
             overflow-y: auto;
             position: relative;
-            padding-top: 0.000000px;
-            padding-left: 0.000000px;
-            padding-right: 0.000000px;
-            padding-bottom: 0.000000px;
+            padding-top: 0.000000rem;
+            padding-left: 0.000000rem;
+            padding-right: 0.000000rem;
+            padding-bottom: 0.000000rem;
 
             font-size: var(--fontSizeM);
             background-color: var(--menuControl2);
-            border-top-style: solid;
+            border-top-style: none;
             border-left-style: solid;
             border-right-style: solid;
             border-bottom-style: solid;
@@ -123,6 +129,7 @@
                     background-color: var(--hoverColor);
                 }
             }
+
             z-index: 99999;
         }
     }

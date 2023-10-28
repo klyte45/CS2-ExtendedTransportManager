@@ -34,7 +34,7 @@ export class TlmViewerCmp extends Component<{
                         </div>
                     </div>
                     <div className="lineStationsContainer">
-                        <div className="linePath" style={{ "--lineColor": ColorUtils.getClampedColor(lineCommonData.color), height: 50 * (lineDetails.Stops.length + 1) } as CSSProperties}>
+                        <div className="linePath" style={{ "--lineColor": ColorUtils.getClampedColor(lineCommonData.color), height: (50 * (lineDetails.Stops.length + 1)) + "rem" } as CSSProperties}>
                             <div className="lineBg"></div>
                             <div className="railingContainer">
                                 {this.props.showIntegrations &&

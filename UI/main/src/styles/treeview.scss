@@ -1,13 +1,13 @@
 /* the tree node's style */
 .tree-view {
     overflow-y: hidden;
-    margin-top: 2px;
-    margin-bottom: 1px;
+    margin-top: 2rem;
+    margin-bottom: 1rem;
 }
 
 .tree-view_item {
     display: flex;
-    border: 1px solid;
+    border: 1rem solid;
     font-weight: 900;
     transition-property: background-color, color;
     transition-duration: 0.5s;
@@ -23,18 +23,18 @@
 
 /* style for the children nodes container */
 .tree-view_children {
-    padding-top: 2px;
-    margin-left: 16px;
+    padding-top: 1rem;
+    margin-left: 16rem;
     transition: margin-left 1s;
     opacity: 1;
 
     &.tree-view_children-collapsed {
-        margin-left: 0px;
+        margin-left: 0rem;
     }
 }
 
 .tree-view_arrow {
-    margin-right: 6px;
+    margin-right: 6rem;
     user-select: none;
     transition: transform 1s;
 }

@@ -5,13 +5,13 @@
 
 h1 {
     color: white;
-    font-size: 60px;
-    margin-top: 5px;
-    margin-bottom: 5px;
+    font-size: 60rem;
+    margin-top: 5rem;
+    margin-bottom: 5rem;
 
     +h3 {
-        margin-top: -5px;
-        padding-left: 10px;
+        margin-top: -5rem;
+        padding-left: 10rem;
         font-weight: 100;
     }
 }
@@ -26,11 +26,11 @@ h6 {
 }
 
 a {
-    padding: 5px;
+    padding: 5rem;
     background-color: var(--accentColorDark);
     color: var(--accentColorLighter);
-    border-radius: 3px;
-    margin-top: -5px;
+    border-radius: 3rem;
+    margin-top: -5rem;
 
     &:hover {
         background-color: var(--accentColorNormal);
@@ -48,12 +48,12 @@ div.tableTopRow {
     div {
         display: block;
         flex: 1 0;
-        border: 1px solid white;
+        border: 1rem solid white;
         text-align: center;
-        padding-top: 3px;
-        padding-bottom: 3px;
+        padding-top: 3rem;
+        padding-bottom: 3rem;
         font-weight: bold;
-        border-bottom-width: 3px;
+        border-bottom-width: 3rem;
     }
 }
 
@@ -65,10 +65,10 @@ div.tableRegularRow {
     >div {
         display: block;
         flex: 1 0;
-        border: 1px solid white;
+        border: 1rem solid white;
         text-align: center;
-        padding-top: 3px;
-        padding-bottom: 3px;
+        padding-top: 3rem;
+        padding-bottom: 3rem;
         font-weight: 200;
         border-top: 0;
         position: relative;
@@ -77,9 +77,9 @@ div.tableRegularRow {
     .tlmIconParent {
         transform: scale3d(0.500000, 0.500000, 1.000000);
         position: absolute;
-        left: 0.000000px;
-        top: 0.000000px;
-        margin-top: -10.000000px;
+        left: 0.000000rem;
+        top: 0.000000rem;
+        margin-top: -10.000000rem;
     }
 }
 
@@ -166,8 +166,8 @@ div.tableRegularRow {
 
 :root section {
     background-color: var(--menuPanel1);
-    padding: 3px;
-    border: 2px solid;
+    padding: 3rem;
+    border: 2rem solid;
     border-left-color: var(--menuBorderColor1);
     border-right-color: var(--menuBorderColor1);
     border-top-color: var(--menuBorderColor1);
@@ -179,8 +179,8 @@ div.tableRegularRow {
         section {
             border-left-style: solid;
             border-right-style: solid;
-            border-left-width: 1px;
-            border-right-width: 1px;
+            border-left-width: 1rem;
+            border-right-width: 1rem;
             border-left-color: var(--menuBorderColor1);
             border-right-color: var(--menuBorderColor1);
 
@@ -349,18 +349,18 @@ button,
 }
 
 .fullDivider {
-    margin-top: 5.000000px;
-    margin-bottom: 5.000000px;
+    margin-top: 5.000000rem;
+    margin-bottom: 5.000000rem;
     width: 100.000000%;
-    height: 0.000000px;
+    height: 0.000000rem;
     border-top-style: solid;
     border-left-style: solid;
     border-right-style: solid;
     border-bottom-style: solid;
-    border-top-width: 3.000000px;
-    border-left-width: 3.000000px;
-    border-right-width: 3.000000px;
-    border-bottom-width: 3.000000px;
+    border-top-width: 3.000000rem;
+    border-left-width: 3.000000rem;
+    border-right-width: 3.000000rem;
+    border-bottom-width: 3.000000rem;
     color: var(--dividerColor);
 }
 
