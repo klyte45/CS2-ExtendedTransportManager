@@ -74,6 +74,8 @@ export default class LineDetailCmp extends Component<Props, State> {
         }
     }
 
+    private currentStopSelected: StationData
+
     componentDidMount() {
         engine.whenReady.then(async () => {
             engine.on("k45::xtm.lineViewer.getRouteDetail->", (details: State['lineDetails']) => {
@@ -193,14 +195,25 @@ export default class LineDetailCmp extends Component<Props, State> {
                     <CheckboxWithLine isChecked={() => this.state.mapViewOptions.showIntegrations} title={translate("lineViewer.showIntegrationsLbl")} onValueToggle={(x) => this.toggleIntegrations(x)} />
                     <CheckboxWithLine isChecked={() => this.state.mapViewOptions.useWhiteBackground} title={translate("lineViewer.useWhiteBackgroundLbl")} onValueToggle={(x) => this.toggleWhiteBG(x)} />
                 </DefaultPanelScreen>,
-            [MapViewerTabsNames.StopInfo]: <></>,
+            [MapViewerTabsNames.StopInfo]: <>
+                <DefaultPanelScreen title={nameToString(this.currentStopSelected?.name)} isSubScreen={true}>
+                    {/* <img src="coui://cctv.xtm.k45/" />*/}
+                </DefaultPanelScreen>
+            </>,
             [MapViewerTabsNames.VehicleInfo]: <></>,
             [MapViewerTabsNames.Debug]: <>{JSON.stringify(this.state.lineDetails ?? "LOADING", null, 2)}</>
         }
 
         return <>
             <DefaultPanelScreen title={nameToString(lineDetails.LineData.name)} subtitle={subtitle} buttonsRowContent={buttonsRow}>
-                <TlmViewerCmp {...this.state.mapViewOptions} lineCommonData={lineCommonData} lineDetails={lineDetails} getLineById={(x) => this.props.getLineById(x)} setSelection={(x) => this.setSelection(x)} />
+                <TlmViewerCmp
+                    {...this.state.mapViewOptions}
+                    lineCommonData={lineCommonData}
+                    lineDetails={lineDetails}
+                    getLineById={(x) => this.props.getLineById(x)}
+                    setSelection={(x) => this.setSelection(x)}
+                    onSelectStop={(x) => this.onStopSelected(x)}
+                />
                 <div className="lineViewContent">
                     <Tabs selectedIndex={this.state.currentTab} onSelect={x => this.state.currentTab != x && this.setState({ currentTab: x })}>
                         <TabList id="sideNav" >
@@ -213,6 +226,12 @@ export default class LineDetailCmp extends Component<Props, State> {
                 </div>
             </DefaultPanelScreen>
         </>;
+    }
+    onStopSelected(x: StationData): void {
+        this.currentStopSelected = x;
+        let targetTabIdx = tabsOrder.filter(x => x).indexOf(MapViewerTabsNames.StopInfo);
+        console.log(targetTabIdx);
+        this.setState({ currentTab: targetTabIdx })
     }
     async setSelection(x: Entity) {
         await this.props.setSelection(x);

@@ -1,15 +1,16 @@
 ﻿using Belzont.Interfaces;
 using Belzont.Utils;
+using cohtml;
 using Game;
 using Game.Common;
 using Game.Prefabs;
 using Game.Routes;
 using Game.Tools;
 using Game.UI;
-using Game.UI.InGame;
 using System;
 using Unity.Collections;
 using Unity.Entities;
+using UnityEngine;
 using static BelzontTLM.XTMLineViewerSection;
 
 namespace BelzontTLM
@@ -36,6 +37,7 @@ namespace BelzontTLM
 
         private void SetCctvPosition(float x, float y, float z, float angleX, float angleY, float distanceZ)
         {
+            //LogUtils.DoLog("Setting CCTV pos");
             //var targetPoint = new Vector3(x, y, z);
             //var targetPositionCamera = targetPoint + (Quaternion.AngleAxis(angleX, Vector3.right) * Vector3.forward + Quaternion.AngleAxis(angleY, Vector3.up) * Vector3.forward).normalized * distanceZ;
             //cctvCamera.transform.position = targetPositionCamera;
@@ -76,7 +78,7 @@ namespace BelzontTLM
         private XTMLineViewerSection m_LineVisualizerSection;
         private XTMLineListingSection m_LineListingSection;
 
-     
+
 
         private void GetRouteDetail(Entity entity, bool force)
         {
@@ -122,6 +124,7 @@ namespace BelzontTLM
             //    cctvCamera = goCctv.AddComponent<Camera>();
             //    cctvCamera.depthTextureMode = DepthTextureMode.None;
             //    cctvCamera.targetTexture = null;
+            //    cctvCamera.cameraType = CameraType.Game;
             //    var liveView = goCctv.AddComponent<CohtmlLiveView>();
             //    liveView.LiveViewName = "cctv.xtm.k45";
             //    liveView.TargetTexture = new RenderTexture(512, 512, 16)

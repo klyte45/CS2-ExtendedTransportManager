@@ -1,4 +1,4 @@
-import { LineData, LineDetails, MapViewerOptions } from "#service/LineManagementService";
+import { LineData, LineDetails, MapViewerOptions, StationData } from "#service/LineManagementService";
 import { ColorUtils } from "#utility/ColorUtils";
 import { Entity } from "#utility/Entity";
 import { CSSProperties, Component, ReactNode } from "react";
@@ -15,6 +15,7 @@ export class TlmViewerCmp extends Component<{
     lineCommonData: LineData;
     setSelection: (line: Entity) => void;
     getLineById: (line: number) => LineData;
+    onSelectStop: (entity: StationData) => void
 } & MapViewerOptions> {
 
     constructor(props) {
@@ -72,6 +73,7 @@ export class TlmViewerCmp extends Component<{
                                             key={i}
                                             normalizedPosition={i / arr.length}
                                             totalStationCount={arr.length}
+                                            onSelectStop={(x) => this.props.onSelectStop(x)}
                                         />
                                     })}
                                     <StationContainerCmp
@@ -80,6 +82,7 @@ export class TlmViewerCmp extends Component<{
                                         keyId={-1}
                                         normalizedPosition={1}
                                         totalStationCount={lineDetails.Stops.length}
+                                        onSelectStop={(x) => this.props.onSelectStop(x)}
                                     />
                                 </div>
                                 {this.props.showDistricts &&

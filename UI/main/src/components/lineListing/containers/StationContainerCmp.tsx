@@ -1,4 +1,5 @@
 import { StationData, VehicleData } from "#service/LineManagementService";
+import { Entity } from "#utility/Entity";
 import { MeasureUnit, kilogramsTo, metersTo } from "#utility/MeasureUnitsUtils";
 import { nameToString, replaceArgs } from "#utility/name.utils";
 import translate from "#utility/translate";
@@ -11,7 +12,8 @@ export class StationContainerCmp extends Component<{
     vehicles: VehicleData[];
     keyId: number;
     normalizedPosition: number;
-    totalStationCount: number
+    totalStationCount: number    
+    onSelectStop: (entity: StationData) => void
 }, { measureUnit?: MeasureUnit; }> {
 
     constructor(props) {
@@ -63,6 +65,11 @@ export class StationContainerCmp extends Component<{
         </Tooltip>;
     }
 
+    stopClicked(station: StationData){
+        console.log(station);
+        engine.call("k45::xtm.lineViewer.setCctvPosition", station.worldPosition.x, station.worldPosition.y, station.worldPosition.z, station.azimuth, 0, 20)
+        this.props.onSelectStop(station);
+    }    
 
     render(): ReactNode {
         const station = this.props.station;
@@ -70,7 +77,7 @@ export class StationContainerCmp extends Component<{
         return <div className="lineStationContainer" style={{ top: (100 * this.props.normalizedPosition) + "%", minHeight: (100 / this.props.totalStationCount) + "%" }}>
             <div className="lineStation row col-12 align-items-center">
                 <div className="stationName">{nameToString(station.name)}</div>
-                <div className="stationBullet" id={id} onClick={() => engine.call("k45::xtm.lineViewer.setCctvPosition", station.worldPosition.x, station.worldPosition.y, station.worldPosition.z, station.azimuth, 0, 20)} />
+                <div className="stationBullet" id={id} onClick={() => this.stopClicked(station)} />
                 {this.generateTooltip()}
             </div>
         </div>;

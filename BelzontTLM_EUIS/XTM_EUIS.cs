@@ -1,6 +1,6 @@
-﻿using Belzont.Interfaces;
+﻿//#define LOCAL
+
 using BelzontTLM;
-using Colossal.UI.Binding;
 using K45EUIS_Ext;
 using System;
 
@@ -12,8 +12,14 @@ namespace XTM_EUIS
 
         public string DisplayName => "XTM - Main settings window";
 
-        public string UrlJs => $"coui://{ExtendedTransportManagerMod.Instance.CouiHost}/UI/k45-xtm-main.js";//"http://localhost:8500/k45-xtm-main.js";//
-        public string UrlCss => $"coui://{ExtendedTransportManagerMod.Instance.CouiHost}/UI/k45-xtm-main.css";//"http://localhost:8500/k45-xtm-main.css";//
+#if LOCAL
+        public string UrlJs => "http://localhost:8501/k45-xtm-main.js";
+        public string UrlCss => "http://localhost:8501/k45-xtm-main.css";
+#else
+
+        public string UrlJs => $"coui://{ExtendedTransportManagerMod.Instance.CouiHost}/UI/k45-xtm-main.js";
+        public string UrlCss => $"coui://{ExtendedTransportManagerMod.Instance.CouiHost}/UI/k45-xtm-main.css";
+#endif
         public string UrlIcon => $"coui://{ExtendedTransportManagerMod.Instance.CouiHost}/UI/images/XTM.svg";
 
         public string ModderIdentifier => "k45";
