@@ -2,15 +2,13 @@
 using BelzontTLM.Palettes;
 using Game;
 using Game.Modding;
-using Game.UI.Menu;
-using System.Collections.Generic;
 using System.IO;
 using System.Reflection;
 
-[assembly: AssemblyVersion("0.0.3.4")]
+[assembly: AssemblyVersion("0.0.4.0")]
 namespace BelzontTLM
 {
-    public class ExtendedTransportManagerMod : BasicIMod<XTMModData>, IMod
+    public class ExtendedTransportManagerMod : BasicIMod, IMod
     {
         public static new ExtendedTransportManagerMod Instance => (ExtendedTransportManagerMod)BasicIMod.Instance;
 
@@ -44,15 +42,7 @@ namespace BelzontTLM
 
         }
 
-        protected override IEnumerable<OptionsUISystem.Section> GenerateModOptionsSections()
-        {
-            return new OptionsUISystem.Section[] { };
-        }
-
-        public override XTMModData CreateNewModData()
-        {
-            return new XTMModData();
-        }
+        public override BasicModData CreateSettingsFile() => new XTMModData(this);
 
         public string PalettesFolder => Path.Combine(ModSettingsRootFolder, "Palettes");
     }

@@ -50,7 +50,7 @@ namespace BelzontTLM
             {
                 NativeArray<Entity> unitializedLines = m_UnititalizedXTMLineQuery.ToEntityArray(Allocator.TempJob);
                 int length = unitializedLines.Length;
-                EntityCommandBuffer entityCommandBuffer = this.m_EndFrameBarrier.CreateCommandBuffer();
+                EntityCommandBuffer entityCommandBuffer = m_EndFrameBarrier.CreateCommandBuffer();
                 for (int i = 0; i < length; i++)
                 {
                     entityCommandBuffer.AddComponent<XTMRouteExtraData>(unitializedLines[i]);

@@ -1,9 +1,13 @@
 ﻿using Belzont.Interfaces;
-using System.Xml.Serialization;
+using Game.Modding;
 
-public class XTMModData : IBasicModData
+public class XTMModData : BasicModData
 {
-    [XmlAttribute]
-    public bool DebugMode { get; set; }
+    public XTMModData(IMod mod) : base(mod)
+    {
+    }
 
+    public override void OnSetDefaults()
+    {
+    }
 }
