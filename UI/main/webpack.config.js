@@ -15,7 +15,6 @@ module.exports = (webpackConfigEnv, argv) => {
     webpackConfigEnv,
     argv
   });
-  defaultConfig.output.path = __dirname + '\\..\\dist'
 
   return merge(defaultConfig, {
     resolve: {

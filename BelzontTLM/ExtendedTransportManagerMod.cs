@@ -1,15 +1,40 @@
 ﻿using Belzont.Interfaces;
 using BelzontTLM.Palettes;
 using Game;
-using Game.Modding;
 using System.IO;
-using System.Reflection;
+#if THUNDERSTORE
+using System.Collections.Generic;
+using Belzont.Utils;
+using Game.UI.Menu;
+using BepInEx;
+#else
+using Game.Modding;
+#endif
 
-[assembly: AssemblyVersion("0.0.4.0")]
 namespace BelzontTLM
 {
+#if THUNDERSTORE
+
+    [BepInPlugin(MyPluginInfo.PLUGIN_GUID, MyPluginInfo.PLUGIN_NAME, MyPluginInfo.PLUGIN_VERSION)]
+    public class EUIBepinexPlugin : BaseUnityPlugin
+    {
+        public void Awake()
+        {
+            LogUtils.LogsEnabled = false;
+            LogUtils.Logger = Logger;
+            LogUtils.DoInfoLog($"STARTING MOD!");
+            Redirector.PatchAll();
+        }
+    }
+
+    public class ExtendedTransportManagerMod : BasicIMod<XTMModData>
+    {
+        protected override IEnumerable<OptionsUISystem.Section> GenerateModOptionsSections() { yield break; }
+        public override XTMModData CreateNewModData() => new();
+#else
     public class ExtendedTransportManagerMod : BasicIMod, IMod
     {
+#endif
         public static new ExtendedTransportManagerMod Instance => (ExtendedTransportManagerMod)BasicIMod.Instance;
 
         public override string SimpleName => "Extended Transport Manager";
@@ -41,9 +66,11 @@ namespace BelzontTLM
         {
 
         }
-
+#if THUNDERSTORE
+        public override BasicModData CreateSettingsFile() => new XTMModData();
+#else
         public override BasicModData CreateSettingsFile() => new XTMModData(this);
-
+#endif
         public string PalettesFolder => Path.Combine(ModSettingsRootFolder, "Palettes");
     }
 }

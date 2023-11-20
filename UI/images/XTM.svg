@@ -1,48 +1,18 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<svg
-   width="96"
-   height="96"
-   viewBox="-16 -16 96 96"
-   version="1.1"
-   id="svg38"
-   sodipodi:docname="XTM.svg"
-   inkscape:version="1.2.1 (9c6d41e410, 2022-07-14)"
-   inkscape:export-filename="XTM.png"
-   inkscape:export-xdpi="384"
-   inkscape:export-ydpi="384"
-   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
-   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
-   xmlns="http://www.w3.org/2000/svg"
-   xmlns:svg="http://www.w3.org/2000/svg">
-  <sodipodi:namedview
-     id="namedview40"
-     pagecolor="#505050"
-     bordercolor="#ffffff"
-     borderopacity="1"
-     inkscape:showpageshadow="0"
-     inkscape:pageopacity="0"
-     inkscape:pagecheckerboard="1"
-     inkscape:deskcolor="#505050"
-     showgrid="false"
-     inkscape:zoom="8.5957668"
-     inkscape:cx="45.836516"
-     inkscape:cy="43.80063"
-     inkscape:window-width="2560"
-     inkscape:window-height="1017"
-     inkscape:window-x="1912"
-     inkscape:window-y="-8"
-     inkscape:window-maximized="1"
-     inkscape:current-layer="svg38" />
-  <path
-     id="path357"
-     style="fill:#e0e0e0;stroke:#0b0061;stroke-width:8;stroke-linecap:round;stroke-linejoin:round;"
-     d="m 72.200001,32.200001 a 40,40 0 0 1 -40,40 40,40 0 0 1 -40.0000002,-40 40,40 0 0 1 40.0000002,-40.0000002 40,40 0 0 1 40,40.0000002 z" />
-  <g
-     aria-label="T"
-     id="text3364"
-     style="font-size:74.6667rem;font-family:Overpass;fill:#0b0061;stroke-width:10;stroke-linecap:round;stroke-linejoin:round;">
-    <path
-       d="M 35.448002,12.263992 V 58.333347 H 28.951999 V 12.263992 H 14.391992 V 6.0666557 h 35.616017 v 6.1973363 z"
-       id="path4397" />
-  </g>
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
+<svg width="100%" height="100%" viewBox="0 0 64 64" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" xml:space="preserve" xmlns:serif="http://www.serif.com/" style="fill-rule:evenodd;clip-rule:evenodd;stroke-linecap:round;stroke-linejoin:round;">
+    <g id="Klyte" transform="matrix(0.666667,0,0,0.666667,32,32)">
+        <g transform="matrix(1,0,0,1,-48,-48)">
+            <g id="XTM" transform="matrix(0.894635,0,0,0.894635,5.0575,5.0575)">
+                <g id="XTM-bg" serif:id="XTM bg" transform="matrix(1.11777,0,0,1.11777,-5.8767,-5.8767)">
+                    <path d="M88.2,48.2C88.2,70.143 70.143,88.2 48.2,88.2C26.257,88.2 8.2,70.143 8.2,48.2C8.2,26.257 26.257,8.2 48.2,8.2C70.143,8.2 88.2,26.257 88.2,48.2L88.2,48.2Z" style="fill:rgb(205,205,205);fill-rule:nonzero;stroke:rgb(11,0,97);stroke-width:8px;"/>
+                </g>
+                <g id="XTM-txt" serif:id="XTM txt" transform="matrix(1.01738,0,0,1.11451,11.3555,-6.22417)">
+                    <g transform="matrix(71.1,0,0,71.1,53.6198,71.0106)">
+                    </g>
+                    <text x="18.417px" y="71.011px" style="font-family:'Calibri-Bold', 'Calibri', sans-serif;font-weight:700;font-size:71.1px;fill:rgb(11,0,97);stroke:rgb(41,30,64);stroke-width:0.94px;stroke-linecap:butt;stroke-miterlimit:2;">T</text>
+                </g>
+            </g>
+        </g>
+    </g>
 </svg>

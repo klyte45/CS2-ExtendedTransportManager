@@ -1,0 +1,16 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project Sdk="Microsoft.NET.Sdk">
+   <PropertyGroup>
+   	<TargetFramework>net480</TargetFramework>
+   	<Configurations>Editor;Steam;Thunderstore</Configurations>
+   </PropertyGroup>
+  <Target Name="PostBuild" AfterTargets="AfterBuild">
+		<ItemGroup>
+      <DeployDir Include="$(K45_CS2_ALLROOT)\_appdataMods\$(SolutionName)" Condition="'$(Configuration)'!='Thunderstore'" />
+      <DeployDir Include="$(K45_CS2_ALLROOT)\_ThunderstoreOutput\Klyte45-$(SolutionName)" Condition="'$(Configuration)'=='Thunderstore'" />
+		</ItemGroup>
+		<Message Text="Cleaning deploy dir @(DeployDir) " Importance="high" />
+		<RemoveDir Directories="@(DeployDir)" ContinueOnError="false" />
+	</Target>
+  
+</Project> 
