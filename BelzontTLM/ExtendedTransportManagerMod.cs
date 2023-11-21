@@ -3,6 +3,7 @@ using BelzontTLM.Palettes;
 using Game;
 using System.IO;
 #if THUNDERSTORE
+using ExtendedTransportManager;
 using System.Collections.Generic;
 using Belzont.Utils;
 using Game.UI.Menu;
@@ -66,9 +67,7 @@ namespace BelzontTLM
         {
 
         }
-#if THUNDERSTORE
-        public override BasicModData CreateSettingsFile() => new XTMModData();
-#else
+#if !THUNDERSTORE
         public override BasicModData CreateSettingsFile() => new XTMModData(this);
 #endif
         public string PalettesFolder => Path.Combine(ModSettingsRootFolder, "Palettes");
