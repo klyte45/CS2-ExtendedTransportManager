@@ -10,14 +10,14 @@
   
   <ItemGroup>
     <DeployDir Include="$(K45_CS2_ALLROOT)\_appdataMods\$(SolutionName)" Condition="'$(Configuration)'!='Thunderstore'" />
-    <DeployDir Include="$(K45_CS2_ALLROOT)\_ThunderstoreOutput\Klyte45-$(SolutionName)" Condition="'$(Configuration)'=='Thunderstore'" />
+    <DeployDir Include="$(K45_CS2_ALLROOT)\_ThunderstoreOutput\Klyte45-$(SolutionName);$(K45_CS2_ALLROOT)\_ThunderstoreDist\Klyte45-$(SolutionName)" Condition="'$(Configuration)'=='Thunderstore'" />
   </ItemGroup>
   <Target Name="PostBuild" AfterTargets="AfterBuild">		
 		<ItemGroup>
 			<FilesToCopy Include="$(OutDir)\**\*.*" Exclude="$(OutDir)\**\*.pdb" />
 		</ItemGroup>
 		<Message Text="Copy output to deploy dir @(DeployDir)" Importance="high" />	
-	<Copy SourceFiles="@(FilesToCopy)" DestinationFolder="@(DeployDir)" />
+	<Copy SourceFiles="@(FilesToCopy)" DestinationFolder="%(DeployDir.Identity)" />
 	</Target>
   <ItemGroup>
     <ProjectReference Include="..\BelzontTLM\K45_XTM.csproj" />

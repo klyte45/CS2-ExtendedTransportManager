@@ -9,8 +9,9 @@
     <RootNamespace>ExtendedTransportManager</RootNamespace>
 		<InstallationPath>C:\Program Files (x86)\Steam\steamapps\common\Cities Skylines II</InstallationPath>
 		<DataPath>$(LOCALAPPDATA)\..\LocalLow\Colossal Order\Cities Skylines II</DataPath>
-    <ThunderstoreVersion>0.0.0</ThunderstoreVersion>
-    <PdxModsVersion>0.0.5.1</PdxModsVersion>
+    <ThunderstoreVersion>0.0.1</ThunderstoreVersion>
+    <EUISVersion>0.0.1</EUISVersion>
+    <PdxModsVersion>0.0.5.3</PdxModsVersion>
     <Version Condition="'$(Configuration)'=='Thunderstore'">$(ThunderstoreVersion).65534</Version>
     <Version Condition="'$(Configuration)'!='Thunderstore'">$(PdxModsVersion)</Version>
     <PublishTrimmed>True</PublishTrimmed>
@@ -228,7 +229,7 @@
 	</Target>
   <ItemGroup>
     <DeployDir Include="$(K45_CS2_ALLROOT)\_appdataMods\$(SolutionName)" Condition="'$(Configuration)'!='Thunderstore'" />
-    <DeployDir Include="$(K45_CS2_ALLROOT)\_ThunderstoreOutput\Klyte45-$(SolutionName)" Condition="'$(Configuration)'=='Thunderstore'" />
+    <DeployDir Include="$(K45_CS2_ALLROOT)\_ThunderstoreOutput\Klyte45-$(SolutionName);$(K45_CS2_ALLROOT)\_ThunderstoreDist\Klyte45-$(SolutionName)" Condition="'$(Configuration)'=='Thunderstore'" />
   </ItemGroup>
 	<Target Name="PostBuild" AfterTargets="AfterBuild">
 
@@ -241,8 +242,8 @@
 		    <Message Condition="!Exists('$(ModPostProcessorPath)')" Text="Post processor was not found, please check the path: $(ModPostProcessorPath)" Importance="high" />
 		    <Exec Condition="Exists('$(ModPostProcessorPath)')" Command="&quot;$(ModPostProcessorPath)&quot; PostProcess &quot;$(TargetPath)&quot; -p &quot;$(ProjectPath)&quot; -r &quot;$(UnityModProjectPath)&quot; -t Windows -t macOS -t Linux -b $(Configuration) -d -v"></Exec>-->
     
-		<Message Text="Copy output to deploy dir @(DeployDir)" Importance="high" />
-		<Copy SourceFiles="@(FilesToCopy)" DestinationFolder="@(DeployDir)" />
+		<Message Text="Copy output to deploy dir %(DeployDir.Identity)" Importance="high" />
+		<Copy SourceFiles="@(FilesToCopy)" DestinationFolder="%(DeployDir.Identity)" />
 	</Target>
   <Target Name="Tunderstore" AfterTargets="PostBuild" Condition="'$(Configuration)'=='Thunderstore'">
 
@@ -250,7 +251,7 @@
       <BasicFileTunderstoreLocation Include="$(SolutionDir)\_Thunderstore\*.*" />
     </ItemGroup>
     <Message Text="Copy Thunderstorm files to deploy dir @(DeployDir)" Importance="high" />
-    <Copy SourceFiles="@(BasicFileTunderstoreLocation)" DestinationFolder="@(DeployDir)" />
+    <Copy SourceFiles="@(BasicFileTunderstoreLocation)" DestinationFolder="%(DeployDir.Identity)" />
 
     <PropertyGroup>
       <ManifestContent>
@@ -261,7 +262,7 @@
         "description": "$(ThunderstoreDesc)",
         "dependencies": [
         "BepInEx-BepInExPack-5.4.2100",
-        "Klyte45-ExtraUIScreens-0.0.0"
+        "Klyte45-ExtraUIScreens-$(EUISVersion)"
         ]
         }</ManifestContent>
       <ManifestLocation>$([System.IO.Path]::GetDirectoryName('%(BasicFileTunderstoreLocation.Identity)'))\manifest.json</ManifestLocation>

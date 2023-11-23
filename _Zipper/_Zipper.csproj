@@ -1,0 +1,15 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFramework>net480</TargetFramework>
+    <Configurations>Editor;Steam;Thunderstore</Configurations>
+  </PropertyGroup>
+  <Target Name="PostBuild" AfterTargets="AfterBuild"  Condition="'$(Configuration)'=='Thunderstore'">
+    <ItemGroup>
+      <DeployDir Include="$(K45_CS2_ALLROOT)\_ThunderstoreDist\Klyte45-$(SolutionName)" />
+    </ItemGroup>
+    <Message Text="Zipping distribution dir @(DeployDir) " Importance="high" />
+    <ZipDirectory  SourceDirectory="@(DeployDir)" Overwrite="true" DestinationFile="%(DeployDir.Identity).zip" ContinueOnError="false"/>
+  </Target>
+
+</Project>

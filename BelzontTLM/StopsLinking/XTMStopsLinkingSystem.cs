@@ -1,11 +1,11 @@
 ﻿using Belzont.Utils;
 using Colossal.Collections;
 using Colossal.Entities;
-using Game;
 using Game.Common;
 using Game.Objects;
 using Game.Routes;
 using Game.Tools;
+using System;
 using Unity.Collections;
 using Unity.Entities;
 
@@ -19,53 +19,57 @@ namespace BelzontTLM
             var entitesToCheck = m_connectableRoutesNotMapped.ToEntityArray(Allocator.Temp);
             for (int i = 0; i < entitesToCheck.Length; i++)
             {
+                var gotError = false;
                 //LogUtils.DoLog($"XTMMapStopsJob Start: {entitesToCheck[i].Index}");
-
-                if (EntityManager.TryGetComponent<Owner>(entitesToCheck[i], out var owner))
+                try
                 {
-                    while (EntityManager.TryGetComponent<Owner>(owner.m_Owner, out var parentOwner))
+                    if (EntityManager.TryGetComponent<Owner>(entitesToCheck[i], out var owner))
                     {
-                        owner = parentOwner;
-                    }
-                    if (!EntityManager.HasBuffer<XTMChildConnectedRoute>(owner.m_Owner))
-                    {
-                        var buff = EntityManager.AddBuffer<XTMChildConnectedRoute>(owner.m_Owner);
-                        buff.ResizeUninitialized(1);
-                        buff[0] = new XTMChildConnectedRoute(entitesToCheck[i]);
-                        //LogUtils.DoLog($"XTMMapStopsJob INIT BUFFER: {entitesToCheck[i].Index}");
-                    }
-                    else
-                    {
-                        var buffer = EntityManager.GetBuffer<XTMChildConnectedRoute>(owner.m_Owner);
+                        while (EntityManager.TryGetComponent<Owner>(owner.m_Owner, out var parentOwner))
+                        {
+                            owner = parentOwner;
+                        }
+                        DynamicBuffer<XTMChildConnectedRoute> buffer = !EntityManager.HasBuffer<XTMChildConnectedRoute>(owner.m_Owner)
+                            ? EntityManager.AddBuffer<XTMChildConnectedRoute>(owner.m_Owner)
+                            : EntityManager.GetBuffer<XTMChildConnectedRoute>(owner.m_Owner);
+                        if (!buffer.IsCreated) continue;
                         if (CollectionUtils.TryAddUniqueValue(buffer, new XTMChildConnectedRoute(entitesToCheck[i])))
                         {
                             //LogUtils.DoLog($"XTMMapStopsJob ADD BUFFER: {entitesToCheck[i].Index}");
                         }
-                    }
 
+                    }
                 }
-
-                if (EntityManager.TryGetComponent<Attached>(entitesToCheck[i], out var parent))
+                catch (Exception e)
                 {
-                    if (!EntityManager.HasBuffer<XTMChildConnectedRoute>(parent.m_Parent))
+                    gotError = true;
+                    if (ExtendedTransportManagerMod.DebugMode)
                     {
-                        var buff = EntityManager.AddBuffer<XTMChildConnectedRoute>(parent.m_Parent);
-                        buff.ResizeUninitialized(1);
-                        buff[0] = new XTMChildConnectedRoute(entitesToCheck[i]);
-                        //LogUtils.DoLog($"XTMMapStopsJob INIT BUFFER2: {entitesToCheck[i].Index}");
+                        LogUtils.DoWarnLog($"Error trying to map connections... (Owner)\n{e}");
                     }
-                    else
+                }
+                try
+                {
+                    if (EntityManager.TryGetComponent<Attached>(entitesToCheck[i], out var parent))
                     {
-                        var buffer = EntityManager.GetBuffer<XTMChildConnectedRoute>(parent.m_Parent);
+                        DynamicBuffer<XTMChildConnectedRoute> buffer = !EntityManager.HasBuffer<XTMChildConnectedRoute>(parent.m_Parent)
+                            ? EntityManager.AddBuffer<XTMChildConnectedRoute>(parent.m_Parent)
+                            : EntityManager.GetBuffer<XTMChildConnectedRoute>(parent.m_Parent);
                         if (CollectionUtils.TryAddUniqueValue(buffer, new XTMChildConnectedRoute(entitesToCheck[i])))
                         {
                             //LogUtils.DoLog($"XTMMapStopsJob ADD BUFFER2: {entitesToCheck[i].Index}");
                         }
                     }
-
                 }
-
-                EntityManager.AddComponent<XTMStopLinkMapped>(entitesToCheck[i]);
+                catch (Exception e)
+                {
+                    gotError = true;
+                    if (ExtendedTransportManagerMod.DebugMode)
+                    {
+                        LogUtils.DoWarnLog($"Error trying to map connections... (Attached)\n{e}");
+                    }
+                }
+                if (!gotError) EntityManager.AddComponent<XTMStopLinkMapped>(entitesToCheck[i]);
                 //LogUtils.DoLog($"XTMMapStopsJob SET MARKED: {entitesToCheck[i].Index}");
             }
 

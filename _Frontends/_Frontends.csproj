@@ -2,36 +2,57 @@
 <Project Sdk="Microsoft.NET.Sdk">
    <PropertyGroup>
    	<TargetFramework>net480</TargetFramework>
-     <DeployBaseFolder Condition="'$(Configuration)'!='Thunderstore'">$(K45_CS2_ALLROOT)\_appdataMods\$(SolutionName)\UI</DeployBaseFolder>
-     <DeployBaseFolder Condition="'$(Configuration)'=='Thunderstore'">$(K45_CS2_ALLROOT)\_ThunderstoreOutput\Klyte45-$(SolutionName)\UI</DeployBaseFolder>
+     
      <SourceBaseFolder>$(SolutionDir)UI</SourceBaseFolder>
      <Configurations>Editor;Steam;Thunderstore</Configurations>
    </PropertyGroup>
 	<ItemGroup>
+    <DeployBaseFolders Condition="'$(Configuration)'!='Thunderstore'" Include="$(K45_CS2_ALLROOT)\_appdataMods\$(SolutionName)\UI" />
+    <DeployBaseFolders Condition="'$(Configuration)'=='Thunderstore'" Include="$(K45_CS2_ALLROOT)\_ThunderstoreOutput\Klyte45-$(SolutionName)\UI;$(K45_CS2_ALLROOT)\_ThunderstoreDist\Klyte45-$(SolutionName)\plugins\UI" />
     <Frontend Include="$(SourceBaseFolder)\*\package.json">
       <Project>$(MSBuildProjectFullPath)</Project>
     </Frontend>
     <Images Include="$(SourceBaseFolder)\images\**\*.*" />
 	</ItemGroup>
   <Target Name="CleanUI" BeforeTargets="BeforeBuild">
-    <RemoveDir Directories="$(DeployBaseFolder)" />
-    <Copy SourceFiles="@(Images)" DestinationFolder="$(DeployBaseFolder)\images" ContinueOnError="false" />
+    <RemoveDir Directories="@(DeployBaseFolders)" />
+    <Copy SourceFiles="@(Images)" DestinationFolder="%(DeployBaseFolders.Identity)\images" ContinueOnError="false" />
   </Target>
 
   <Target AfterTargets="AfterBuild" Name="IterateFrontends" Inputs="@(Frontend)" Outputs="%(Identity).bogus">
-    <MSBuild Projects="%(Frontend.Project)" Properties="FrontendDir=$([System.IO.Path]::GetDirectoryName('%(Frontend.Identity)'));Environment=$(Environment)" Targets="PostBuild" />
+    <MSBuild Projects="%(Frontend.Project)" Properties="FrontendDir=$([System.IO.Path]::GetDirectoryName('%(Frontend.Identity)'));Environment=$(Environment)" Targets="PostBuild1" />
   </Target>
-  
-  <Target Name="PostBuild">
-        <Message Text="Building project at dir $(FrontendDir)" Importance="high" />
-        <Exec WorkingDirectory="$(FrontendDir)" Command="npm run build:webpack" ContinueOnError="false" />
-        <ReadLinesFromFile File="$(FrontendDir)\outputFolder.txt"><Output TaskParameter="Lines" ItemName="OutputFolder" /></ReadLinesFromFile>
-        <ItemGroup>
-          <SourceFeMain Include="$(FrontendDir)\dist\**\*.*" Exclude="$(FrontendDir)\dist\**\*.map"/>
-        </ItemGroup>
-        <PropertyGroup>
-          <OutputFolder>%(OutputFolder.Identity)</OutputFolder>
-        </PropertyGroup>
-        <Copy SourceFiles="@(SourceFeMain)" DestinationFiles="$(DeployBaseFolder)\$(OutputFolder)\%(SourceFeMain.RecursiveDir)\%(SourceFeMain.Filename)%(SourceFeMain.Extension)" ContinueOnError="false" />
+  <Target Name="PostBuild1">
+
+    <Message Text="Building project at dir $(FrontendDir)" Importance="high" />
+    <Exec WorkingDirectory="$(FrontendDir)" Command="npm run build:webpack" ContinueOnError="false" />
+    
+    <ItemGroup>
+      <DeployBaseFolder Include="@(DeployBaseFolders)">
+        <Project>$(MSBuildProjectFullPath)</Project>
+      </DeployBaseFolder>
+    </ItemGroup>
+    <MSBuild Projects="%(DeployBaseFolder.Project)" Properties="DeployBaseFolder=%(DeployBaseFolder.Identity);FrontendDir=$(FrontendDir);Environment=$(Environment)" Targets="PostBuild2" />
+  </Target>
+
+  <Target Name="PostBuild2">
+    <ReadLinesFromFile File="$(FrontendDir)\outputFolder.txt">
+      <Output TaskParameter="Lines" ItemName="OutputFolder" />
+    </ReadLinesFromFile>
+    <ItemGroup>
+      <OutputFolder Include="@(OutputFolder)">
+        <Project>$(MSBuildProjectFullPath)</Project>
+      </OutputFolder>
+    </ItemGroup>
+    <MSBuild Projects="%(OutputFolder.Project)" Properties="OutputFolder=%(OutputFolder.Identity);DeployBaseFolder=$(DeployBaseFolder);FrontendDir=$(FrontendDir);Environment=$(Environment)" Targets="PostBuild3" />
+    <MSBuild Projects="$(MSBuildProjectFullPath)" Properties="OutputFolder=;DeployBaseFolder=$(DeployBaseFolder);FrontendDir=$(FrontendDir);Environment=$(Environment)" Targets="PostBuild3" Condition="@(OutputFolder) == ''"/>
+  </Target>
+
+  <Target Name="PostBuild3">
+    <ItemGroup>
+      <SourceFeMain Include="$(FrontendDir)\dist\**\*.*" Exclude="$(FrontendDir)\dist\**\*.map" />
+    </ItemGroup>
+    <Message Text="Building project at dir $(FrontendDir) =&gt; $(DeployBaseFolder)\$(OutputFolder)" Importance="high" />
+     <Copy SourceFiles="@(SourceFeMain)" DestinationFiles="$(DeployBaseFolder)\$(OutputFolder)\%(SourceFeMain.RecursiveDir)\%(SourceFeMain.Filename)%(SourceFeMain.Extension)" ContinueOnError="false" />
   </Target>
 </Project> 
