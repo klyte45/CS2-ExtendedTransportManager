@@ -1,3 +1,5 @@
+*Updated for version: 1.0.15f1*
+
 # Extended Transport Manager
 ## _A better view of public transport_
 
@@ -29,7 +31,6 @@ The overall idea is bring some tools to better manage and visualize the public t
 ## Experimental mod warning!
 Since it's a very complex mod, it may cause issues in the game due their early stage of development. This mod may take months until get the same number of features it had in CS1.
 
-## Known issues and bugs
-- Due COUI (game UI framework) limitations, there are no scrollbars in the screens for now - it may be reviewed sometime in the future.
-- There are some unfinished tabs accessible in current version, just ignore them
-- Portuguese locale is partially done.
+## Support
+
+The most up to date information about installation and known issues and bugs is at the [XTM Support Topic](https://discord.com/channels/1024242828114673724/1180515324957835354) inside of [Cities Skylines Modding Discord Server](https://discord.gg/GCH8A2DD9B).

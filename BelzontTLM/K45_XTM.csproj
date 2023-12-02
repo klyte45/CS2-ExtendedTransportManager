@@ -9,9 +9,9 @@
     <RootNamespace>ExtendedTransportManager</RootNamespace>
 		<InstallationPath>C:\Program Files (x86)\Steam\steamapps\common\Cities Skylines II</InstallationPath>
 		<DataPath>$(LOCALAPPDATA)\..\LocalLow\Colossal Order\Cities Skylines II</DataPath>
-    <ThunderstoreVersion>0.0.1</ThunderstoreVersion>
-    <EUISVersion>0.0.1</EUISVersion>
-    <PdxModsVersion>0.0.5.3</PdxModsVersion>
+    <ThunderstoreVersion>0.0.2</ThunderstoreVersion>
+    <EUISVersion>0.0.2</EUISVersion>
+    <PdxModsVersion>0.0.5.4</PdxModsVersion>
     <Version Condition="'$(Configuration)'=='Thunderstore'">$(ThunderstoreVersion).65534</Version>
     <Version Condition="'$(Configuration)'!='Thunderstore'">$(PdxModsVersion)</Version>
     <PublishTrimmed>True</PublishTrimmed>

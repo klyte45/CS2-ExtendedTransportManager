@@ -2,14 +2,13 @@
 using BelzontTLM.Palettes;
 using Game;
 using System.IO;
+using Game.Modding;
 #if THUNDERSTORE
 using ExtendedTransportManager;
 using System.Collections.Generic;
 using Belzont.Utils;
 using Game.UI.Menu;
 using BepInEx;
-#else
-using Game.Modding;
 #endif
 
 namespace BelzontTLM
@@ -28,14 +27,9 @@ namespace BelzontTLM
         }
     }
 
-    public class ExtendedTransportManagerMod : BasicIMod<XTMModData>
-    {
-        protected override IEnumerable<OptionsUISystem.Section> GenerateModOptionsSections() { yield break; }
-        public override XTMModData CreateNewModData() => new();
-#else
+#endif
     public class ExtendedTransportManagerMod : BasicIMod, IMod
     {
-#endif
         public static new ExtendedTransportManagerMod Instance => (ExtendedTransportManagerMod)BasicIMod.Instance;
 
         public override string SimpleName => "Extended Transport Manager";
@@ -67,9 +61,8 @@ namespace BelzontTLM
         {
 
         }
-#if !THUNDERSTORE
         public override BasicModData CreateSettingsFile() => new XTMModData(this);
-#endif
+
         public string PalettesFolder => Path.Combine(ModSettingsRootFolder, "Palettes");
     }
 }
