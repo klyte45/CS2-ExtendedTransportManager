@@ -9,9 +9,9 @@
     <RootNamespace>ExtendedTransportManager</RootNamespace>
 		<InstallationPath>C:\Program Files (x86)\Steam\steamapps\common\Cities Skylines II</InstallationPath>
 		<DataPath>$(LOCALAPPDATA)\..\LocalLow\Colossal Order\Cities Skylines II</DataPath>
-    <ThunderstoreVersion>0.0.2</ThunderstoreVersion>
+    <ThunderstoreVersion>0.0.X</ThunderstoreVersion>
     <EUISVersion>0.0.2</EUISVersion>
-    <PdxModsVersion>0.0.5.4</PdxModsVersion>
+    <PdxModsVersion>0.0.5.5000</PdxModsVersion>
     <Version Condition="'$(Configuration)'=='Thunderstore'">$(ThunderstoreVersion).65534</Version>
     <Version Condition="'$(Configuration)'!='Thunderstore'">$(PdxModsVersion)</Version>
     <PublishTrimmed>True</PublishTrimmed>
@@ -93,6 +93,7 @@
 	<ItemGroup>
     <Reference Include="0Harmony" Condition="'$(Configuration)'!='Thunderstore'">
       <HintPath>$(K45_CS2_ALLROOT)\_commonDeps\0Harmony.dll</HintPath>
+      <Private>True</Private>
     </Reference>
     <Reference Include="UnityEngine.ImageConversionModule.dll">
       <HintPath>$(K45_CS2_ALLROOT)\_Managed DLLs\UnityEngine.ImageConversionModule.dll.dll</HintPath>

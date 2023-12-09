@@ -23,7 +23,7 @@ namespace BelzontTLM.Palettes
 {
     public class XTMRouteAutoColorSystem : GameSystemBase, IBelzontBindable, IBelzontSerializableSingleton<XTMRouteAutoColorSystem>
     {
-        private const int CURRENT_VERSION = 1;
+        private const int CURRENT_VERSION = 2;
 
         #region Bindings
         private Action<string, object[]> eventCaller;
@@ -390,11 +390,11 @@ namespace BelzontTLM.Palettes
 
         #region Serialization
 
-        private XTMRouteAutoColorSystemXML ToXml()
+        private XTMRouteAutoColorSystemXML ToXml() 
         {
             var xml = new XTMRouteAutoColorSystemXML();
-            xml.PaletteSettingsCargo.AddRange(xml.PaletteSettingsCargo.ToDictionary(x => x.Key, x => x.Value.ToString()));
-            xml.PaletteSettingsPassenger.AddRange(xml.PaletteSettingsPassenger.ToDictionary(x => x.Key, x => x.Value.ToString()));
+            xml.PaletteSettingsCargo.AddRange(PaletteSettingsCargo.ToDictionary(x => x.Key, x => x.Value.ToString()));
+            xml.PaletteSettingsPassenger.AddRange(PaletteSettingsPassenger.ToDictionary(x => x.Key, x => x.Value.ToString()));
             return xml;
         }
 
@@ -412,14 +412,26 @@ namespace BelzontTLM.Palettes
             {
                 throw new Exception("Invalid version of XTMRouteAutoColorSystem!");
             }
-            reader.Read(out string autoColorData);
+            string autoColorData;
+            if (version >= 2)
+            {
+                reader.Read(out int size);
+                NativeArray<byte> byteNativeArray = new(new byte[size], Allocator.Temp);
+                reader.Read(byteNativeArray);
+                autoColorData = ZipUtils.Unzip(byteNativeArray.ToArray());
+                byteNativeArray.Dispose();
+            }
+            else
+            {
+                reader.Read(out autoColorData);
+            }
             try
             {
-                var settings = XmlUtils.DefaultXmlDeserialize<XTMRouteAutoColorSystemXML>(new string(autoColorData));
+                var loadedData = XmlUtils.DefaultXmlDeserialize<XTMRouteAutoColorSystemXML>(new string(autoColorData));
                 PaletteSettingsPassenger.Clear();
-                PaletteSettingsPassenger.AddRange(settings.PaletteSettingsPassenger.ToDictionary(x => x.Key, x => new Guid(x.Value)));
+                PaletteSettingsPassenger.AddRange(loadedData.PaletteSettingsPassenger.ToDictionary(x => x.Key, x => new Guid(x.Value)));
                 PaletteSettingsCargo.Clear();
-                PaletteSettingsCargo.AddRange(settings.PaletteSettingsCargo.ToDictionary(x => x.Key, x => new Guid(x.Value)));
+                PaletteSettingsCargo.AddRange(loadedData.PaletteSettingsCargo.ToDictionary(x => x.Key, x => new Guid(x.Value)));
             }
             catch (Exception e)
             {
@@ -429,8 +441,13 @@ namespace BelzontTLM.Palettes
 
         private void Serialize<TWriter>(TWriter writer) where TWriter : IWriter
         {
+            var xml = XmlUtils.DefaultXmlSerialize(ToXml());
             writer.Write(CURRENT_VERSION);
-            writer.Write(XmlUtils.DefaultXmlSerialize(ToXml()));
+            var arraySave = new NativeArray<byte>(ZipUtils.Zip(xml), Allocator.Temp);
+            writer.Write(arraySave.Length);
+            writer.Write(arraySave);
+            arraySave.Dispose();
+
         }
 
         void IBelzontSerializableSingleton<XTMRouteAutoColorSystem>.Serialize<TWriter>(TWriter writer) => Serialize(writer);

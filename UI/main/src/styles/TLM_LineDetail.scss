@@ -185,7 +185,7 @@
             }
 
             * {
-                pointer-events: visibleFill;
+                pointer-events: auto;
                 display: block;
             }
 
@@ -274,7 +274,6 @@
             color: var(--textColorDim);
             pointer-events: none;
             display: flex;
-            line-break: normal;
 
             position: absolute;
             padding: 7rem 10rem;

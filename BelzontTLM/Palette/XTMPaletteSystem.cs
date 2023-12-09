@@ -2,20 +2,20 @@
 using Belzont.Serialization;
 using Belzont.Utils;
 using Colossal.Serialization.Entities;
-using Colossal.UI.Binding;
 using Game;
 using MonoMod.Utils;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Xml.Serialization;
+using Unity.Collections;
 using Unity.Jobs;
 
 namespace BelzontTLM.Palettes
 {
     public class XTMPaletteSystem : GameSystemBase, IBelzontBindable, IBelzontSerializableSingleton<XTMPaletteSystem>
     {
-        const int CURRENT_VERSION = 0;
+        const int CURRENT_VERSION = 1;
         #region UI Bindings
         public void SetupCallBinder(Action<string, Delegate> eventCaller)
         {
@@ -99,7 +99,12 @@ namespace BelzontTLM.Palettes
         void IBelzontSerializableSingleton<XTMPaletteSystem>.Serialize<TWriter>(TWriter writer)
         {
             writer.Write(CURRENT_VERSION);
-            writer.Write(XmlUtils.DefaultXmlSerialize(ToXml()));
+            var xml = XmlUtils.DefaultXmlSerialize(ToXml());
+            writer.Write(CURRENT_VERSION);
+            var arraySave = new NativeArray<byte>(ZipUtils.Zip(xml), Allocator.Temp);
+            writer.Write(arraySave.Length);
+            writer.Write(arraySave);
+            arraySave.Dispose();
         }
 
         void IBelzontSerializableSingleton<XTMPaletteSystem>.Deserialize<TReader>(TReader reader)
@@ -109,7 +114,19 @@ namespace BelzontTLM.Palettes
             {
                 throw new Exception("Invalid version of XTMPaletteSystem!");
             }
-            reader.Read(out string paletteData);
+            string paletteData;
+            if (version >= 1)
+            {
+                reader.Read(out int size);
+                NativeArray<byte> byteNativeArray = new(new byte[size], Allocator.Temp);
+                reader.Read(byteNativeArray);
+                paletteData = ZipUtils.Unzip(byteNativeArray.ToArray());
+                byteNativeArray.Dispose();
+            }
+            else
+            {
+                reader.Read(out paletteData);
+            }
             var palettes = XmlUtils.DefaultXmlDeserialize<XTMPaletteSystemXML>(paletteData);
             CityPalettes.Clear();
             CityPalettes.AddRange(palettes.CityPalettes.ToDictionary(x => x.Guid, x => XTMPaletteFile.FromXML(x)));
