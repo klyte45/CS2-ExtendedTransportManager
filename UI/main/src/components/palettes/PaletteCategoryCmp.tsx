@@ -15,7 +15,7 @@ export class PaletteCategoryCmp extends Component<{ entry: PaletteStructureTreeN
 
     render() {
         return <>
-            {ObjectTyped.entries(this.props.entry.subtrees).sort((a, b) => a[0].localeCompare(b[0])).map((x, i) => {
+            {ObjectTyped.entries(this.props.entry.subtrees).sort((a, b) => a[0].localeCompare(b[0], undefined, { sensitivity: "base" })).map((x, i) => {
                 return <TreeView
                     nodeLabel={x[0]}
                     key={i}
@@ -23,7 +23,7 @@ export class PaletteCategoryCmp extends Component<{ entry: PaletteStructureTreeN
                     onClick={() => this.toggle(x[0])}
                 ><PaletteCategoryCmp entry={x[1]} doWithPaletteData={this.props.doWithPaletteData} /></TreeView>;
             })}
-            {this.props.entry.rootContent.sort((a, b) => a.Name.localeCompare(b.Name)).map(this.props.doWithPaletteData)}
+            {this.props.entry.rootContent.sort((a, b) => a.Name.localeCompare(b.Name, undefined, { sensitivity: "base" })).map(this.props.doWithPaletteData)}
         </>;
     }
     toggle(item: string): void {

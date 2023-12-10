@@ -35,7 +35,7 @@ export default class LineListCmp extends Component<any, State> {
 
     async reloadLines(res: LineData[]) {
         const lineList = res.sort((a, b) => {
-            if (a.type != b.type) return a.type.localeCompare(b.type);
+            if (a.type != b.type) return a.type.localeCompare(b.type, undefined, { sensitivity: "base" });
             if (a.isCargo != b.isCargo) return a.isCargo ? 1 : -1;
             return a.routeNumber - b.routeNumber
         });

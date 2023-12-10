@@ -58,7 +58,7 @@ export default class PaletteSetupSettings extends Component<any, State> {
             Name: translate("autoColorDisabled")
         } as PaletteData]] as [string, PaletteData][])
         this.setState({
-            availablePalettes: ObjectTyped.fromEntries(defaultOptions.concat(palettesSaved.sort((a, b) => a.Name.localeCompare(b.Name)).map(x => [x.GuidString, x])) as [string, PaletteData][])
+            availablePalettes: ObjectTyped.fromEntries(defaultOptions.concat(palettesSaved.sort((a, b) => a.Name.localeCompare(b.Name, undefined, { sensitivity: "base" })).map(x => [x.GuidString, x])) as [string, PaletteData][])
         });
     }
 
