@@ -1,6 +1,6 @@
 import { LineData, LineDetails, MapViewerOptions, StationData } from "#service/LineManagementService";
-import { ColorUtils } from "#utility/ColorUtils";
-import { Entity } from "#utility/Entity";
+import { ColorUtils } from "@klyte45/euis-components";
+import { Entity } from "@klyte45/euis-components";
 import { CSSProperties, Component, ReactNode } from "react";
 import { DistrictBorderContainerCmp } from "./DistrictBorderContainerCmp";
 import { MapStationDistanceContainerCmp } from "./MapStationDistanceContainerCmp";

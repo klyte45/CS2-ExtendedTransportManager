@@ -1,5 +1,5 @@
 import { PaletteData, PaletteService } from "#service/PaletteService";
-import translate from "#utility/translate";
+import translate from "#utility/translate"
 import { Component } from "react";
 import { PaletteCategoryCmp, categorizePalettes } from "#components/palettes/PaletteCategoryCmp";
 import '#styles/PaletteLineViewer.scss'

@@ -1,15 +1,10 @@
-import { Cs2FormLine } from "#components/common/Cs2FormLine";
-import { DefaultPanelScreen } from "#components/common/DefaultPanelScreen";
-import { CheckboxWithLine } from "#components/common/checkbox";
 import { DistrictService } from "#service/DistrictService";
 import { LineData, LineDetails, MapViewerOptions, StationData, VehicleData } from "#service/LineManagementService";
 import "#styles/LineDetailCmp.scss";
 import "#styles/TLM_LineDetail.scss";
-import { Entity } from "#utility/Entity";
-import { MeasureUnit, durationToGameMinutes, kilogramsTo, metersTo, setupSignificance } from "#utility/MeasureUnitsUtils";
-import { nameToString, replaceArgs } from "#utility/name.utils";
-import translate from "#utility/translate";
+import {  Cs2CheckboxWithLine, Cs2FormLine, DefaultPanelScreen, Entity, MeasureUnit, durationToGameMinutes, kilogramsTo, metersTo, nameToString, replaceArgs, setupSignificance } from "@klyte45/euis-components";
 import { Component } from "react";
+import translate from "#utility/translate"
 import { Tab, TabList, TabPanel, Tabs } from "react-tabs";
 import { TlmViewerCmp } from "./containers/TlmViewerCmp";
 import { LineViewGeneralPageCmp } from "./subpages/LineViewGeneralPageCmp";
@@ -189,11 +184,11 @@ export default class LineDetailCmp extends Component<Props, State> {
                 </DefaultPanelScreen>,
             [MapViewerTabsNames.MapSettings]:
                 <DefaultPanelScreen title={translate("lineViewer.showOnMap")} isSubScreen={true}>
-                    <CheckboxWithLine isChecked={() => this.state.mapViewOptions.showDistances} title={translate("lineViewer.showDistancesLbl")} onValueToggle={(x) => this.toggleDistances(x)} />
-                    <CheckboxWithLine isChecked={() => this.state.mapViewOptions.showDistricts} title={translate("lineViewer.showDistrictsLbl")} onValueToggle={(x) => this.toggleDistricts(x)} />
-                    <CheckboxWithLine isChecked={() => this.state.mapViewOptions.showVehicles} title={translate("lineViewer.showVehiclesLbl")} onValueToggle={(x) => this.toggleVehiclesShow(x)} />
-                    <CheckboxWithLine isChecked={() => this.state.mapViewOptions.showIntegrations} title={translate("lineViewer.showIntegrationsLbl")} onValueToggle={(x) => this.toggleIntegrations(x)} />
-                    <CheckboxWithLine isChecked={() => this.state.mapViewOptions.useWhiteBackground} title={translate("lineViewer.useWhiteBackgroundLbl")} onValueToggle={(x) => this.toggleWhiteBG(x)} />
+                    <Cs2CheckboxWithLine isChecked={() => this.state.mapViewOptions.showDistances} title={translate("lineViewer.showDistancesLbl")} onValueToggle={(x) => this.toggleDistances(x)} />
+                    <Cs2CheckboxWithLine isChecked={() => this.state.mapViewOptions.showDistricts} title={translate("lineViewer.showDistrictsLbl")} onValueToggle={(x) => this.toggleDistricts(x)} />
+                    <Cs2CheckboxWithLine isChecked={() => this.state.mapViewOptions.showVehicles} title={translate("lineViewer.showVehiclesLbl")} onValueToggle={(x) => this.toggleVehiclesShow(x)} />
+                    <Cs2CheckboxWithLine isChecked={() => this.state.mapViewOptions.showIntegrations} title={translate("lineViewer.showIntegrationsLbl")} onValueToggle={(x) => this.toggleIntegrations(x)} />
+                    <Cs2CheckboxWithLine isChecked={() => this.state.mapViewOptions.useWhiteBackground} title={translate("lineViewer.useWhiteBackgroundLbl")} onValueToggle={(x) => this.toggleWhiteBG(x)} />
                 </DefaultPanelScreen>,
             [MapViewerTabsNames.StopInfo]: <>
                 <DefaultPanelScreen title={nameToString(this.currentStopSelected?.name)} isSubScreen={true}>

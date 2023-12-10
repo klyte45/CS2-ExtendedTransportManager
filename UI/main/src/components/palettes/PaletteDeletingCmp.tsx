@@ -1,6 +1,6 @@
 import { PaletteData } from "#service/PaletteService";
 import '#styles/PaletteLineViewer.scss';
-import translate from "#utility/translate";
+import translate from "#utility/translate"
 import { Component } from "react";
 import { PaletteDetailHeaderCmp } from "./PaletteDetailHeaderCmp";
 

@@ -1,6 +1,5 @@
 import { TransportType } from "#enum/TransportType";
-import { Entity } from "#utility/Entity";
-import { NameCustom, NameFormatted, NameLocalized } from "#utility/name.utils";
+import { Entity, NameCustom, NameFormatted, NameLocalized } from "@klyte45/euis-components";
 
 export type LineData = {
     __Type: string,

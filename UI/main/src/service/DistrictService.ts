@@ -1,6 +1,6 @@
 
-import { nameToString, replaceArgs } from "#utility/name.utils";
-import translate from "#utility/translate";
+import { nameToString, replaceArgs } from "@klyte45/euis-components";
+import translate from "#utility/translate"
 import { StationData } from "./LineManagementService";
 
 export class DistrictService {

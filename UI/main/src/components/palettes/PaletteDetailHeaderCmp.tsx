@@ -1,5 +1,5 @@
 import { PaletteData } from "#service/PaletteService";
-import { ColorUtils } from "#utility/ColorUtils";
+import { ColorUtils } from "@klyte45/euis-components";
 import { CSSProperties, Component } from "react";
 
 export class PaletteDetailHeaderCmp extends Component<{ paletteData: PaletteData; }> {

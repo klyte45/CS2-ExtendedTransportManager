@@ -1,6 +1,6 @@
 import { SegmentData, StationData } from "#service/LineManagementService";
-import { MeasureUnit, metersTo } from "#utility/MeasureUnitsUtils";
-import { replaceArgs } from "#utility/name.utils";
+import { MeasureUnit, metersTo } from "@klyte45/euis-components";
+import { replaceArgs } from "@klyte45/euis-components";
 import { CSSProperties, Component, ReactNode } from "react";
 
 

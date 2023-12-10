@@ -364,7 +364,7 @@ button,
     color: var(--dividerColor);
 }
 
-@import './cs2-form-style.scss';
+@import '@klyte45/euis-components/src/styles/cs2-form-style.scss';
 
 input {
     @extend %cs2-form-style

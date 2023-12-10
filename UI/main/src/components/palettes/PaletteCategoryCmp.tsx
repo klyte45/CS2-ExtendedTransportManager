@@ -3,7 +3,6 @@ import { ObjectTyped } from "object-typed";
 import { Component } from "react";
 import TreeView from "react-treeview";
 import { PaletteStructureTreeNode } from "#components/palettes/CityPaletteLibraryCmp";
-import "#styles/treeview.scss"
 
 export class PaletteCategoryCmp extends Component<{ entry: PaletteStructureTreeNode; doWithPaletteData: (x: PaletteData, i: number) => JSX.Element }, { showing: Record<string, boolean>; }> {
 

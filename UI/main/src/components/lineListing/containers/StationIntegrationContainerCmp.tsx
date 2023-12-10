@@ -1,8 +1,8 @@
 import { LineData, StationData, VehicleData } from "#service/LineManagementService";
-import { ColorUtils } from "#utility/ColorUtils";
-import { Entity } from "#utility/Entity";
-import { MeasureUnit } from "#utility/MeasureUnitsUtils";
-import { nameToString } from "#utility/name.utils";
+import { ColorUtils } from "@klyte45/euis-components";
+import { Entity } from "@klyte45/euis-components";
+import { MeasureUnit } from "@klyte45/euis-components";
+import { nameToString } from "@klyte45/euis-components";
 import { CSSProperties, Component, ReactNode } from "react";
 import { TlmLineFormatCmp } from "./TlmLineFormatCmp";
 import { TransportType, TransportTypePriority } from "#enum/TransportType";

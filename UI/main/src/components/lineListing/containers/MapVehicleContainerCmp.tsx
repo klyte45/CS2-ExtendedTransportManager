@@ -1,6 +1,6 @@
 import { VehicleData } from "#service/LineManagementService";
-import { MeasureUnit } from "#utility/MeasureUnitsUtils";
-import { nameToString } from "#utility/name.utils";
+import { MeasureUnit } from "@klyte45/euis-components";
+import { nameToString } from "@klyte45/euis-components";
 import { CSSProperties, Component, ReactNode } from "react";
 
 

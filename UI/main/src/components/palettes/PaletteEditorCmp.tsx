@@ -1,9 +1,7 @@
-import { ColorRgbInput, Input } from "#components/common/input";
 import { PaletteData } from "#service/PaletteService";
 import '#styles/PaletteLineViewer.scss';
-import { ColorUtils } from "#utility/ColorUtils";
-import { replaceArgs } from "#utility/name.utils";
 import translate from "#utility/translate";
+import { ColorRgbInput, ColorUtils, Input, replaceArgs } from "@klyte45/euis-components";
 import { CSSProperties, Component } from "react";
 
 type State = {
@@ -75,7 +73,7 @@ export default class PaletteImportingCmp extends Component<Props, State> {
                         <ColorRgbInput
                             title={replaceArgs(translate("paletteEditor.editing"), { "index": (this.state.editingIndex + 1).toString() })}
                             getValue={() => this.state.paletteData.ColorsRGB[this.state.editingIndex]}
-                            onValueChanged={(x) => this.setupColor(x)}                            
+                            onValueChanged={(x) => this.setupColor(x)}
                             onTab={(x, shift) => {
                                 this.setupColor(x);
                                 const newIdx = (this.state.editingIndex + this.state.paletteData.ColorsRGB.length + (shift ? -1 : 1)) % this.state.paletteData.ColorsRGB.length;

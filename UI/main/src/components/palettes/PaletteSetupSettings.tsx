@@ -1,11 +1,10 @@
-import { Component } from "react";
-import translate from "#utility/translate";
-import Cs2Select from "#components/common/cs2-select";
 import { TransportType } from "#enum/TransportType";
-import { PaletteService, PaletteData } from "#service/PaletteService";
-import { ObjectTyped } from "object-typed";
 import { AutoColorService } from "#service/AutoColorService";
-import { Cs2FormLine } from "#components/common/Cs2FormLine";
+import { PaletteData, PaletteService } from "#service/PaletteService";
+import { Cs2FormLine, Cs2Select } from "@klyte45/euis-components";
+import translate from "#utility/translate"
+import { ObjectTyped } from "object-typed";
+import { Component } from "react";
 
 type State = {
     availablePalettes: Record<string, PaletteData>,
@@ -72,7 +71,7 @@ export default class PaletteSetupSettings extends Component<any, State> {
                     <section className="w50">
                         <h3>{translate("palettesSettings.passengerModalsTitle")}</h3>
                         {this.state.availablePassenger.map((tt, i) => {
-                            return <Cs2FormLine title={passengerNameFor(tt)}>
+                            return <Cs2FormLine title={passengerNameFor(tt)} key={i}>
                                 <Cs2Select
                                     options={Object.values(this.state.availablePalettes)}
                                     getOptionLabel={(x) => x?.Name}
@@ -86,7 +85,7 @@ export default class PaletteSetupSettings extends Component<any, State> {
                     <section className="w50">
                         <h3>{translate("palettesSettings.cargoModalsTitle")}</h3>
                         {this.state.availableCargo.map((tt, i) => {
-                            return <Cs2FormLine title={cargoNameFor(tt)}>
+                            return <Cs2FormLine title={cargoNameFor(tt)} key={i}>
                                 <Cs2Select
                                     options={Object.values(this.state.availablePalettes)}
                                     getOptionLabel={(x) => x?.Name}

@@ -1,7 +1,7 @@
 {
   "name": "@k45/xtm-main",
   "scripts": {
-    "start": "webpack serve",
+    "start": "webpack serve --port 8501 --env isLocal",
     "start:standalone": "webpack serve --env standalone",
     "build": "concurrently npm:build:*",
     "build:webpack": "webpack --mode=production",
@@ -70,6 +70,8 @@
     "react-treeview": "^0.4.7",
     "single-spa": "^5.9.3",
     "single-spa-react": "^4.3.1",
-    "systemjs-webpack-interop": "file:../_replacements/systemjs-webpack-interop-2.3.7-euis.tgz"
+    "systemjs-webpack-interop": "file:../_replacements/systemjs-webpack-interop-2.3.7-euis.tgz",
+    "@klyte45/euis-components": "file:../_replacements/euis-components/"
+
   }
 }

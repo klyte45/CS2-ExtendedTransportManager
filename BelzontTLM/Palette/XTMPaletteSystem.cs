@@ -98,10 +98,10 @@ namespace BelzontTLM.Palettes
 
         void IBelzontSerializableSingleton<XTMPaletteSystem>.Serialize<TWriter>(TWriter writer)
         {
-            writer.Write(CURRENT_VERSION);
             var xml = XmlUtils.DefaultXmlSerialize(ToXml());
             writer.Write(CURRENT_VERSION);
-            var arraySave = new NativeArray<byte>(ZipUtils.Zip(xml), Allocator.Temp);
+            var zip = ZipUtils.Zip(xml);
+            var arraySave = new NativeArray<byte>(zip, Allocator.Temp);
             writer.Write(arraySave.Length);
             writer.Write(arraySave);
             arraySave.Dispose();
@@ -121,7 +121,6 @@ namespace BelzontTLM.Palettes
                 NativeArray<byte> byteNativeArray = new(new byte[size], Allocator.Temp);
                 reader.Read(byteNativeArray);
                 paletteData = ZipUtils.Unzip(byteNativeArray.ToArray());
-                byteNativeArray.Dispose();
             }
             else
             {

@@ -1,8 +1,6 @@
 import { StationData, VehicleData } from "#service/LineManagementService";
-import { Entity } from "#utility/Entity";
-import { MeasureUnit, kilogramsTo, metersTo } from "#utility/MeasureUnitsUtils";
-import { nameToString, replaceArgs } from "#utility/name.utils";
-import translate from "#utility/translate";
+import { MeasureUnit, kilogramsTo, metersTo, nameToString, replaceArgs } from "@klyte45/euis-components";
+import translate from "#utility/translate"
 import { Component, ReactNode } from "react";
 import { Tooltip } from 'react-tooltip';
 
@@ -12,7 +10,7 @@ export class StationContainerCmp extends Component<{
     vehicles: VehicleData[];
     keyId: number;
     normalizedPosition: number;
-    totalStationCount: number    
+    totalStationCount: number
     onSelectStop: (entity: StationData) => void
 }, { measureUnit?: MeasureUnit; }> {
 
@@ -65,11 +63,11 @@ export class StationContainerCmp extends Component<{
         </Tooltip>;
     }
 
-    stopClicked(station: StationData){
+    stopClicked(station: StationData) {
         console.log(station);
         engine.call("k45::xtm.lineViewer.setCctvPosition", station.worldPosition.x, station.worldPosition.y, station.worldPosition.z, station.azimuth, 0, 20)
         this.props.onSelectStop(station);
-    }    
+    }
 
     render(): ReactNode {
         const station = this.props.station;

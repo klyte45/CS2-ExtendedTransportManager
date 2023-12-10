@@ -1,8 +1,7 @@
-import { CheckboxWithLine } from "#components/common/checkbox";
-import { Input } from "#components/common/input";
 import { PaletteData } from "#service/PaletteService";
 import '#styles/PaletteLineViewer.scss';
-import translate from "#utility/translate";
+import { Cs2CheckboxWithLine, Input } from "@klyte45/euis-components";
+import translate from "#utility/translate"
 import { Component } from "react";
 import { PaletteDetailHeaderCmp } from "./PaletteDetailHeaderCmp";
 
@@ -42,7 +41,7 @@ export default class PaletteImportingCmp extends Component<Props, State> {
                     <Input title={translate("palettesImport.cityImportName")} getValue={() => this.state.paletteNameImport} onValueChanged={(x) => { this.setState({ paletteNameImport: x }); return x; }} />
                 </div>
                 <div>
-                    <CheckboxWithLine isChecked={() => this.state.willRandomize} onValueToggle={(x) => this.setState({ willRandomize: x })} title={translate("palettesImport.randomizeColorOrder")} />
+                    <Cs2CheckboxWithLine isChecked={() => this.state.willRandomize} onValueToggle={(x) => this.setState({ willRandomize: x })} title={translate("palettesImport.randomizeColorOrder")} />
                 </div>
                 <div>
                 </div>

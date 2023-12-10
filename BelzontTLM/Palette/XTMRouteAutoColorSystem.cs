@@ -438,7 +438,7 @@ namespace BelzontTLM.Palettes
                 LogUtils.DoWarnLog($"XTMRouteAutoColorDataSerializer: Could not load palettes for the City!!!\n{e}");
             }
         }
-
+         
         private void Serialize<TWriter>(TWriter writer) where TWriter : IWriter
         {
             var xml = XmlUtils.DefaultXmlSerialize(ToXml());
@@ -447,7 +447,6 @@ namespace BelzontTLM.Palettes
             writer.Write(arraySave.Length);
             writer.Write(arraySave);
             arraySave.Dispose();
-
         }
 
         void IBelzontSerializableSingleton<XTMRouteAutoColorSystem>.Serialize<TWriter>(TWriter writer) => Serialize(writer);

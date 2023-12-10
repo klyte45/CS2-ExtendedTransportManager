@@ -1,8 +1,8 @@
 import { PaletteCategoryCmp, categorizePalettes } from "#components/palettes/PaletteCategoryCmp";
 import PaletteLibrarySelectorCmp from "#components/palettes/PaletteLibrarySelectorCmp";
 import { PaletteData, PaletteService } from "#service/PaletteService";
-import { ArrayUtils } from "#utility/ArrayUtils";
-import translate from "#utility/translate";
+import { ArrayUtils } from "@klyte45/euis-components";
+import translate from "#utility/translate"
 import { Component } from "react";
 import PaletteDeletingCmp from "./PaletteDeletingCmp";
 import PaletteEditorCmp from "./PaletteEditorCmp";

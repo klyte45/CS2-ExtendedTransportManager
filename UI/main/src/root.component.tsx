@@ -2,9 +2,8 @@
 import LineListCmp from "#components/lineListing/LineListCmp";
 import CityPaletteLibraryCmp from "#components/palettes/CityPaletteLibraryCmp";
 import PaletteSetupSettings from "#components/palettes/PaletteSetupSettings";
-import "#styles/react-tabs.scss";
 import "#styles/root.scss";
-import translate from "#utility/translate";
+import translate from "#utility/translate"
 import { Component } from "react";
 import { Tab, TabList, TabPanel, Tabs } from "react-tabs";
 

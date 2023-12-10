@@ -1,6 +1,6 @@
 import { LineData } from "#service/LineManagementService";
 import "#styles/TLM_FormatContainer.scss";
-import { ColorUtils } from "#utility/ColorUtils";
+import { ColorUtils } from "@klyte45/euis-components";
 import { CSSProperties, Component, ReactNode } from "react";
 
 export class TlmLineFormatCmp extends Component<{

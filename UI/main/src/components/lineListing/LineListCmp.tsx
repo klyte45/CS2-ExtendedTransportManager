@@ -1,8 +1,6 @@
 import { LineData, LineManagementService } from "#service/LineManagementService";
-import { Entity } from "#utility/Entity";
-import { NameCustom, NameFormatted, nameToString } from "#utility/name.utils";
+import { Entity, NameCustom, NameFormatted, SimpleInput, nameToString } from "@klyte45/euis-components";
 import { Component } from "react";
-import { SimpleInput } from "../common/input";
 import LineDetailCmp from "./LineDetailCmp";
 import { TlmLineFormatCmp } from "./containers/TlmLineFormatCmp";
 
