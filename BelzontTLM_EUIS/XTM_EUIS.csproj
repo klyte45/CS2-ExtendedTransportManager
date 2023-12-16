@@ -5,12 +5,12 @@
     <LangVersion>9.0</LangVersion>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
     <TargetExt>.euis</TargetExt>	
-		<Configurations>Steam;Editor;Thunderstore</Configurations>
+		<Configurations>Steam;Editor;BepInExCs2</Configurations>
   </PropertyGroup>  
   
   <ItemGroup>
-    <DeployDir Include="$(K45_CS2_ALLROOT)\_appdataMods\$(SolutionName)" Condition="'$(Configuration)'!='Thunderstore'" />
-    <DeployDir Include="$(K45_CS2_ALLROOT)\_ThunderstoreOutput\Klyte45-$(SolutionName);$(K45_CS2_ALLROOT)\_ThunderstoreDist\Klyte45-$(SolutionName)" Condition="'$(Configuration)'=='Thunderstore'" />
+    <DeployDir Include="$(K45_CS2_ALLROOT)\_appdataMods\$(SolutionName)" Condition="'$(Configuration)'!='BepInExCs2'" />
+    <DeployDir Include="$(K45_CS2_ALLROOT)\_ThunderstoreOutput\Klyte45-$(SolutionName);$(K45_CS2_ALLROOT)\_ThunderstoreDist\Klyte45-$(SolutionName)" Condition="'$(Configuration)'=='BepInExCs2'" />
   </ItemGroup>
   <Target Name="PostBuild" AfterTargets="AfterBuild">		
 		<ItemGroup>

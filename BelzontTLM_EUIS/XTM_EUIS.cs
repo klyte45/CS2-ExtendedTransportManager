@@ -1,4 +1,4 @@
-﻿#define LOCAL
+﻿//#define LOCAL
 
 using BelzontTLM;
 using K45EUIS_Ext;

@@ -4,11 +4,11 @@
    	<TargetFramework>net480</TargetFramework>
      
      <SourceBaseFolder>$(SolutionDir)UI</SourceBaseFolder>
-     <Configurations>Editor;Steam;Thunderstore</Configurations>
+     <Configurations>Editor;Steam;BepInExCs2</Configurations>
    </PropertyGroup>
 	<ItemGroup>
-    <DeployBaseFolders Condition="'$(Configuration)'!='Thunderstore'" Include="$(K45_CS2_ALLROOT)\_appdataMods\$(SolutionName)\UI" />
-    <DeployBaseFolders Condition="'$(Configuration)'=='Thunderstore'" Include="$(K45_CS2_ALLROOT)\_ThunderstoreOutput\Klyte45-$(SolutionName)\UI;$(K45_CS2_ALLROOT)\_ThunderstoreDist\Klyte45-$(SolutionName)\plugins\UI" />
+    <DeployBaseFolders Condition="'$(Configuration)'!='BepInExCs2'" Include="$(K45_CS2_ALLROOT)\_appdataMods\$(SolutionName)\UI" />
+    <DeployBaseFolders Condition="'$(Configuration)'=='BepInExCs2'" Include="$(K45_CS2_ALLROOT)\_ThunderstoreOutput\Klyte45-$(SolutionName)\UI;$(K45_CS2_ALLROOT)\_ThunderstoreDist\Klyte45-$(SolutionName)\plugins\UI" />
     <Frontend Include="$(SourceBaseFolder)\*\package.json">
       <Project>$(MSBuildProjectFullPath)</Project>
     </Frontend>
