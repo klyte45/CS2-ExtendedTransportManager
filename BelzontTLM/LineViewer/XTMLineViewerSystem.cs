@@ -15,7 +15,7 @@ using static BelzontTLM.XTMLineViewerSection;
 
 namespace BelzontTLM
 {
-    public class XTMLineViewerSystem : SystemBase, IBelzontBindable
+    public partial class XTMLineViewerSystem : SystemBase, IBelzontBindable
     {
         //private const string CCTV_GO = "XTM - cctv.xtm.k45";
         public Action<string, object[]> EventCaller { get; set; }

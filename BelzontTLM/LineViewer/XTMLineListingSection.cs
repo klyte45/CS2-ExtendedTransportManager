@@ -15,7 +15,7 @@ using static Belzont.Utils.NameSystemExtensions;
 
 namespace BelzontTLM
 {
-    public class XTMLineListingSection : BelzontQueueSystem<List<XTMLineListingSection.LineItemStruct>>
+    public partial class XTMLineListingSection : BelzontQueueSystem<List<XTMLineListingSection.LineItemStruct>>
     {
         private EntityQuery m_linesQueue;
         private PrefabSystem m_PrefabSystem;

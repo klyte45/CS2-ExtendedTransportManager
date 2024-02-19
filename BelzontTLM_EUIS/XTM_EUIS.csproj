@@ -1,85 +1,24 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project Sdk="Microsoft.NET.Sdk">
-  <PropertyGroup>
-		<TargetFramework>net48</TargetFramework>		
-    <LangVersion>9.0</LangVersion>
-    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
-    <TargetExt>.euis</TargetExt>	
-		<Configurations>Steam;Editor;BepInExCs2</Configurations>
-  </PropertyGroup>  
-  
-  <ItemGroup>
-    <DeployDir Include="$(K45_CS2_ALLROOT)\_appdataMods\$(SolutionName)" Condition="'$(Configuration)'!='BepInExCs2'" />
-    <DeployDir Include="$(K45_CS2_ALLROOT)\_ThunderstoreOutput\Klyte45-$(SolutionName);$(K45_CS2_ALLROOT)\_ThunderstoreDist\Klyte45-$(SolutionName)" Condition="'$(Configuration)'=='BepInExCs2'" />
-  </ItemGroup>
-  <Target Name="PostBuild" AfterTargets="AfterBuild">		
-		<ItemGroup>
-			<FilesToCopy Include="$(OutDir)\**\*.*" Exclude="$(OutDir)\**\*.pdb" />
-		</ItemGroup>
-		<Message Text="Copy output to deploy dir @(DeployDir)" Importance="high" />	
-	<Copy SourceFiles="@(FilesToCopy)" DestinationFolder="%(DeployDir.Identity)" />
-	</Target>
   <ItemGroup>
     <ProjectReference Include="..\BelzontTLM\K45_XTM.csproj" />
   </ItemGroup>  
+  <PropertyGroup>
+    <TargetFramework>net472</TargetFramework>
+    <LangVersion>10.0</LangVersion>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    <TargetExt>.euis</TargetExt>
+    <Configurations>Debug;Release</Configurations>
+    <DebugType Condition="'$(Configuration)'=='Release'">None</DebugType>
+    <DebugSymbols Condition="'$(Configuration)'=='Release'">False</DebugSymbols>
+  </PropertyGroup>
+
   <ItemGroup>
-     <Reference Include="K45EUIS_Ext">
-      <HintPath>$(K45_CS2_ALLROOT)\ExtraUIScreens\K45EUIS_Ext\bin\$(Configuration)\net480\K45EUIS_Ext.dll</HintPath>
+    <Reference Include="K45EUIS_Ext">
+      <HintPath>$(K45_CS2_ALLROOT)\ExtraUIScreens\K45EUIS_Ext\bin\$(Configuration)\$(TargetFramework)\K45EUIS_Ext.dll</HintPath>
       <Private>False</Private>
       <EmbedInteropTypes>False</EmbedInteropTypes>
       <SpecificVersion>False</SpecificVersion>
-    </Reference>
-    <Reference Include="cohtml.Net">
-      <HintPath>$(K45_CS2_ALLROOT)\_Managed DLLs\cohtml.Net.dll</HintPath>
-      <Private>False</Private>
-    </Reference>
-    <Reference Include="cohtml.Net">
-      <HintPath>$(K45_CS2_ALLROOT)\_Managed DLLs\cohtml.Net.dll</HintPath>
-      <Private>False</Private>
-    </Reference>
-    <Reference Include="Cohtml.Runtime">
-      <HintPath>$(K45_CS2_ALLROOT)\_Managed DLLs\Cohtml.Runtime.dll</HintPath>
-      <Private>False</Private>
-    </Reference>
-    <Reference Include="Colossal.Collections">
-      <HintPath>$(K45_CS2_ALLROOT)\_Managed DLLs\Colossal.Collections.dll</HintPath>
-      <Private>False</Private>
-    </Reference>
-    <Reference Include="Colossal.Core">
-      <HintPath>$(K45_CS2_ALLROOT)\_Managed DLLs\Colossal.Core.dll</HintPath>
-      <Private>False</Private>
-    </Reference>
-    <Reference Include="Colossal.IO.AssetDatabase">
-      <HintPath>$(K45_CS2_ALLROOT)\_Managed DLLs\Colossal.IO.AssetDatabase.dll</HintPath>
-      <Private>False</Private>
-    </Reference>
-    <Reference Include="Colossal.Localization">
-      <HintPath>$(K45_CS2_ALLROOT)\_Managed DLLs\Colossal.Localization.dll</HintPath>
-      <Private>False</Private>
-    </Reference>
-    <Reference Include="Colossal.Logging">
-      <HintPath>$(K45_CS2_ALLROOT)\_Managed DLLs\Colossal.Logging.dll</HintPath>
-      <Private>False</Private>
-    </Reference>
-    <Reference Include="Colossal.Mathematics">
-      <HintPath>$(K45_CS2_ALLROOT)\_Managed DLLs\Colossal.Mathematics.dll</HintPath>
-      <Private>False</Private>
-    </Reference>
-    <Reference Include="Colossal.OdinSerializer">
-      <HintPath>$(K45_CS2_ALLROOT)\_Managed DLLs\Colossal.OdinSerializer.dll</HintPath>
-      <Private>False</Private>
-    </Reference>
-    <Reference Include="Colossal.UI">
-      <HintPath>$(K45_CS2_ALLROOT)\_Managed DLLs\Colossal.UI.dll</HintPath>
-      <Private>False</Private>
-    </Reference>
-    <Reference Include="Colossal.UI.Binding">
-      <HintPath>$(K45_CS2_ALLROOT)\_Managed DLLs\Colossal.UI.Binding.dll</HintPath>
-      <Private>False</Private>
-    </Reference>
-    <Reference Include="Game">
-      <HintPath>$(K45_CS2_ALLROOT)\_Managed DLLs\Game.dll</HintPath>
-      <Private>False</Private>
     </Reference>
     <Reference Include="System">
       <HintPath>$(K45_CS2_ALLROOT)\_Managed DLLs\System.dll</HintPath>
@@ -142,5 +81,6 @@
       <Private>False</Private>
     </Reference>
   </ItemGroup>
+
 
 </Project>

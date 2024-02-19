@@ -11,7 +11,7 @@ using Unity.Entities;
 
 namespace BelzontTLM
 {
-    public class XTMStopsLinkingSystem : SystemBase
+    public partial class XTMStopsLinkingSystem : SystemBase
     {
         protected override void OnUpdate()
         {

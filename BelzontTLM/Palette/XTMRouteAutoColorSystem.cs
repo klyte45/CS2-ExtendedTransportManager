@@ -21,7 +21,7 @@ using TransportType = Game.Prefabs.TransportType;
 
 namespace BelzontTLM.Palettes
 {
-    public class XTMRouteAutoColorSystem : GameSystemBase, IBelzontBindable, IBelzontSerializableSingleton<XTMRouteAutoColorSystem>
+    public partial class XTMRouteAutoColorSystem : GameSystemBase, IBelzontBindable, IBelzontSerializableSingleton<XTMRouteAutoColorSystem>
     {
         private const int CURRENT_VERSION = 2;
 

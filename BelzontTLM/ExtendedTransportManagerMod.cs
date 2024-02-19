@@ -32,13 +32,8 @@ namespace BelzontTLM
     {
         public static new ExtendedTransportManagerMod Instance => (ExtendedTransportManagerMod)BasicIMod.Instance;
 
-        public override string SimpleName => "Extended Transport Manager";
-
-        public override string SafeName => "ExtendedTransportManager";
-
         public override string Acronym => "XTM";
 
-        public override string Description => "!!!";
 
         public override void DoOnCreateWorld(UpdateSystem updateSystem)
         {

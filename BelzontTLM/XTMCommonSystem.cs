@@ -5,7 +5,7 @@ using Unity.Entities;
 
 namespace BelzontTLM
 {
-    public class XTMCommonSystem : SystemBase, IBelzontBindable
+    public partial class XTMCommonSystem : SystemBase, IBelzontBindable
     {
         private bool dirty_measureSetting;
         private InterfaceSettings.UnitSystem value_measureSetting;

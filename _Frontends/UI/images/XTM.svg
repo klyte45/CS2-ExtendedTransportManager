@@ -1,0 +1,143 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<svg
+   width="512"
+   height="512"
+   version="1.1"
+   id="svg357"
+   sodipodi:docname="icon.svg"
+   inkscape:version="1.2.1 (9c6d41e410, 2022-07-14)"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:svg="http://www.w3.org/2000/svg">
+  <defs
+     id="defs361" />
+  <sodipodi:namedview
+     id="namedview359"
+     pagecolor="#505050"
+     bordercolor="#ffffff"
+     borderopacity="1"
+     inkscape:showpageshadow="0"
+     inkscape:pageopacity="0"
+     inkscape:pagecheckerboard="1"
+     inkscape:deskcolor="#505050"
+     showgrid="false"
+     inkscape:zoom="0.76199804"
+     inkscape:cx="-125.98458"
+     inkscape:cy="78.08419"
+     inkscape:window-width="2560"
+     inkscape:window-height="1017"
+     inkscape:window-x="-8"
+     inkscape:window-y="1"
+     inkscape:window-maximized="1"
+     inkscape:current-layer="svg357" />
+  <path
+     fill-rule="evenodd"
+     fill="#000000"
+     d="m 366.5305,504.57943 c -24.852,0 -45,-19.247 -45,-45 0,-23.953 20.148,-45 45,-45 24.853,0 45,21.047 45,45 0,25.753 -20.147,45 -45,45 z"
+     id="path261"
+     style="fill:#550000" />
+  <g
+     aria-label="M"
+     id="text265"
+     style="font-size:72px;font-family:'Myriad Hebrew'">
+    <path
+       d="m 341.63986,485.97943 v -51.53906 h 15.57422 l 9.35156,35.15625 9.2461,-35.15625 h 15.60937 v 51.53906 h -9.66797 v -40.57031 l -10.23047,40.57031 h -10.01953 l -10.19531,-40.57031 v 40.57031 z"
+       style="font-weight:bold;font-family:Arial;fill:#ffffff"
+       id="path1763" />
+  </g>
+  <path
+     fill-rule="evenodd"
+     fill="#000000"
+     d="m 322.4715,-477.89757 h 88 v 812.754 c 0,24.301 -19.699,44 -44,44 -24.301,0 -44,-19.699 -44,-44 z"
+     id="path267"
+     style="fill:#550000" />
+  <path
+     fill-rule="evenodd"
+     fill="#000000"
+     d="m 258.5305,505.07943 c -24.852,0 -45,-19.247 -45,-45 0,-23.953 20.148,-45 45,-45 24.853,0 45,21.047 45,45 0,25.753 -20.147,45 -45,45 z"
+     id="path269"
+     style="fill:#000080" />
+  <g
+     aria-label="T"
+     id="text273"
+     style="font-size:72px;font-family:'Myriad Hebrew'">
+    <path
+       d="m 253.34496,486.97943 v -42.82031 h -15.29297 v -8.71875 h 40.95703 v 8.71875 h -15.25781 v 42.82031 z"
+       style="font-weight:bold;font-family:Arial;fill:#ffffff"
+       id="path1766" />
+  </g>
+  <path
+     fill-rule="evenodd"
+     fill="#000000"
+     d="m 213.4715,-514.52057 h 88 v 851.1 c 0,25.2 -19.7,44 -44,44 -24.301,0 -44,-18.8 -44,-44 z"
+     id="path275"
+     style="fill:#000080" />
+  <path
+     fill-rule="evenodd"
+     fill="#3c115e"
+     d="m 103.4715,-171.52057 h 88 v 511.1 c 0,25.2 -19.699,44 -44,44 -24.301,0 -44,-18.8 -44,-44 z"
+     id="path277" />
+  <path
+     fill-rule="evenodd"
+     fill="#3c115e"
+     d="m 143.5305,504.07943 c -24.852,0 -45,-19.247 -45,-45 0,-23.953 20.148,-45 45,-45 24.853,0 45,21.047 45,45 0,25.753 -20.147,45 -45,45 z"
+     id="path279" />
+  <g
+     aria-label="X"
+     id="text283"
+     style="font-size:72px;font-family:'Myriad Hebrew'">
+    <path
+       d="m 119.57151,485.97943 17.61328,-26.89453 -15.96094,-24.64453 h 12.16407 l 10.33593,16.55859 10.125,-16.55859 h 12.0586 l -16.03125,25.03125 17.61328,26.50781 H 154.9387 l -11.42578,-17.82422 -11.46094,17.82422 z"
+       style="font-weight:bold;font-family:Arial;fill:#ffffff"
+       id="path1769" />
+  </g>
+  <path
+     fill-rule="evenodd"
+     fill="#ffffff"
+     d="m 147.5695,75.57943 c -16.568,0 -30,-12.532 -30,-30 0,-15.669 13.432,-30 30,-30 16.569,0 30,14.331 30,30 0,17.468 -13.431,30 -30,30 z"
+     id="path329" />
+  <path
+     fill-rule="evenodd"
+     stroke="#e0e0e0"
+     stroke-width="6px"
+     stroke-linecap="butt"
+     stroke-linejoin="miter"
+     fill="#808080"
+     d="m 410.4695,280.57943 c 0,25.2 -19.7,44 -44,44 h -219.002 c -24.301,0 -44,-18.8 -44,-44 0,-23.401 19.699,-44 44,-44 h 219.002 c 24.3,0 44,20.599 44,44 z"
+     id="path335" />
+  <path
+     fill-rule="evenodd"
+     fill="#ffffff"
+     d="m 177.5695,280.57943 c 0,17.469 -13.431,30 -30,30 -16.568,0 -30,-12.531 -30,-30 0,-15.669 13.432,-30 30,-30 16.569,0 30,14.331 30,30 z"
+     id="path337" />
+  <path
+     fill-rule="evenodd"
+     fill="#ffffff"
+     d="m 257.5695,310.57943 c -16.568,0 -30,-12.531 -30,-30 0,-15.669 13.432,-30 30,-30 16.569,0 30,14.331 30,30 0,17.469 -13.431,30 -30,30 z"
+     id="path339" />
+  <path
+     fill-rule="evenodd"
+     fill="#ffffff"
+     d="m 366.5695,310.57943 c -16.568,0 -30,-12.531 -30,-30 0,-15.669 13.432,-30 30,-30 16.569,0 30,14.331 30,30 0,17.469 -13.431,30 -30,30 z"
+     id="path341" />
+  <path
+     fill-rule="evenodd"
+     stroke="#e0e0e0"
+     stroke-width="6px"
+     stroke-linecap="butt"
+     stroke-linejoin="miter"
+     fill="#808080"
+     d="m 310.4475,156.57943 c 0,25.201 -19.699,44 -44,44 h -118.956 c -24.301,0 -44,-18.799 -44,-44 0,-23.401 19.699,-44 44,-44 h 118.956 c 24.301,0 44,20.599 44,44 z"
+     id="path347" />
+  <path
+     fill-rule="evenodd"
+     fill="#ffffff"
+     d="m 257.5695,186.57943 c -16.568,0 -30,-12.532 -30,-30 0,-15.669 13.432,-30 30,-30 16.569,0 30,14.331 30,30 0,17.468 -13.431,30 -30,30 z"
+     id="path349" />
+  <path
+     fill-rule="evenodd"
+     fill="#ffffff"
+     d="m 147.5695,186.57943 c -16.568,0 -30,-12.532 -30,-30 0,-15.669 13.432,-30 30,-30 16.569,0 30,14.331 30,30 0,17.468 -13.431,30 -30,30 z"
+     id="path351" />
+</svg>

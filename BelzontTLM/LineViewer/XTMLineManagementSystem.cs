@@ -14,7 +14,7 @@ using Color = Game.Routes.Color;
 
 namespace BelzontTLM
 {
-    public class XTMLineManagementSystem : SystemBase, IBelzontBindable
+    public partial class XTMLineManagementSystem : SystemBase, IBelzontBindable
     {
         private NameSystem m_NameSystem;
         private EndFrameBarrier m_EndFrameBarrier;

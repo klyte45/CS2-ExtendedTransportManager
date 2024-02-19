@@ -11,8 +11,7 @@ using Unity.Entities;
 
 namespace BelzontTLM
 {
-    [CompilerGenerated]
-    public abstract class BelzontQueueSystem<T> : SystemBase
+    public abstract partial class BelzontQueueSystem<T> : SystemBase
     {
 
         private UIUpdateState m_UpdateState;

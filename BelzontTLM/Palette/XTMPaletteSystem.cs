@@ -13,7 +13,7 @@ using Unity.Jobs;
 
 namespace BelzontTLM.Palettes
 {
-    public class XTMPaletteSystem : GameSystemBase, IBelzontBindable, IBelzontSerializableSingleton<XTMPaletteSystem>
+    public partial class XTMPaletteSystem : GameSystemBase, IBelzontBindable, IBelzontSerializableSingleton<XTMPaletteSystem>
     {
         const int CURRENT_VERSION = 1;
         #region UI Bindings

@@ -1,6 +1,6 @@
 [submodule "BelzontTLM/BelzontCommons"]
 	path = BelzontTLM/BelzontCommons
 	url = ../BelzontCommons
-[submodule "UI/_replacements"]
-	path = UI/_replacements
+[submodule "_Frontends/UI/_replacements"]
+	path = _Frontends/UI/_replacements
 	url = ../Cs2UIUtility
