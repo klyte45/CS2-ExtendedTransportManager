@@ -1,5 +1,5 @@
 <Publish>
-  <ModId Value="" />
+  <ModId Value="74238" />
   <DisplayName Value="Extended Transport Manager" />
   <ShortDescription Value="Expanded tools for public transport management." />
   <LongDescription># Extended Transport Manager
@@ -57,12 +57,14 @@ Since it's a very complex mod, it may cause issues in the game due their early s
 The most up to date information about installation and known issues and bugs are in the forums topic.</LongDescription>
   <Thumbnail Value="Properties/Thumbnail.png" />
   <ForumLink Value="" />
-  <ModVersion Value="0.1.0.0" />
+  <ModVersion Value="0.1.0.1" />
   <GameVersion Value="1.0.*" />
-  <ChangeLog># v0.1.0r0 (19-FEB-24)
+  <ChangeLog># v0.1.0r1 (20-FEB-24)
+- Fixing excessive logging
+# v0.1.0r0 (19-FEB-24)
 - Updating for latest modding standards</ChangeLog>
   <Tag Value="Code Mod" />
   <Screenshot Value="Screenshots\00_mapview.jpg" />
   <Screenshot Value="Screenshots\01_palletes.jpg" />
-  <Dependency Id="74151" Version="0.1.0.0" DisplayName="Extra UI Screens" />
+  <Dependency Id="74151" ModVersion="0.1.0.0" DisplayName="Extra UI Screens" />
 </Publish>

@@ -64,7 +64,7 @@ namespace BelzontTLM.Palettes
 
         private XTMPaletteManager()
         {
-            LogUtils.DoLog("XTMPaletteFiles init()");
+            if (ExtendedTransportManagerMod.TraceMode) LogUtils.DoTraceLog("XTMPaletteFiles init()");
             Reload();
         }
 
@@ -123,7 +123,7 @@ namespace BelzontTLM.Palettes
                 var value = XTMPaletteFile.FromFileContent(name, fileContents.Select(x => x?.Trim()).Where(x => Regex.IsMatch(x, "^#?[a-f0-9]{6}$", RegexOptions.IgnoreCase)).ToArray());
 
                 m_palettes[value.Guid] = value;
-                LogUtils.DoLog("LOADED PALETTE ({0}) QTT: {1}", filename, m_palettes[value.Guid].Count);
+                if (ExtendedTransportManagerMod.DebugMode) LogUtils.DoLog("LOADED PALETTE ({0}) QTT: {1}", filename, m_palettes[value.Guid].Count);
             }
         }
 

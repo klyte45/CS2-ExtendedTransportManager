@@ -38,7 +38,7 @@ namespace BelzontTLM.Palettes
                 g = colorBytes[1],
                 b = colorBytes[2]
             };
-            LogUtils.DoLog(color.ToString());
+            if (ExtendedTransportManagerMod.DebugMode) LogUtils.DoLog(color.ToString());
 
             return color;
         }

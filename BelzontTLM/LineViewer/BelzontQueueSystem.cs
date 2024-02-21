@@ -6,7 +6,6 @@ using Game.UI;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Runtime.CompilerServices;
 using Unity.Entities;
 
 namespace BelzontTLM
@@ -27,7 +26,7 @@ namespace BelzontTLM
 
         public void Enqueue(Entity e, Action<T> onEnd, bool force = false)
         {
-            LogUtils.DoLog("{0}: E = {1}, Force = {2}", GetType(), e, force);
+            if (ExtendedTransportManagerMod.DebugMode) LogUtils.DoLog("{0}: E = {1}, Force = {2}", GetType(), e, force);
             itemsToProcess.Enqueue(new(e, (force, onEnd)));
         }
 
@@ -52,7 +51,7 @@ namespace BelzontTLM
             OnPreUpdate();
             if (m_UpdateState.Advance() || ForceUpdate())
             {
-                LogUtils.DoLog("{0}: ADVANCE/FORCE UNQUEUE!", GetType());
+                if (ExtendedTransportManagerMod.TraceMode) LogUtils.DoTraceLog("{0}: ADVANCE/FORCE UNQUEUE!", GetType());
                 foreach (var entry in awaitingQueue)
                 {
                     itemsToProcess.Enqueue(new(entry.Key, (true, entry.Value)));

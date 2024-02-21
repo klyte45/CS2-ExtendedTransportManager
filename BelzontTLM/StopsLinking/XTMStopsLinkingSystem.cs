@@ -15,7 +15,7 @@ namespace BelzontTLM
     {
         protected override void OnUpdate()
         {
-            LogUtils.DoLog($"XTMStopsLinkingSystem On Update!");
+            if (ExtendedTransportManagerMod.VerboseMode) LogUtils.DoVerboseLog($"XTMStopsLinkingSystem On Update!");
             var entitesToCheck = m_connectableRoutesNotMapped.ToEntityArray(Allocator.Temp);
             for (int i = 0; i < entitesToCheck.Length; i++)
             {
@@ -80,7 +80,7 @@ namespace BelzontTLM
 
         protected override void OnCreate()
         {
-            LogUtils.DoLog("XTMStopsLinkingSystem OnCreate");
+            if (ExtendedTransportManagerMod.TraceMode) LogUtils.DoTraceLog("XTMStopsLinkingSystem OnCreate");
             m_connectableRoutesNotMapped = GetEntityQuery(new EntityQueryDesc[] {
                 new EntityQueryDesc
                 {

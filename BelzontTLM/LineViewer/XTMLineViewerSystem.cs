@@ -30,7 +30,7 @@ namespace BelzontTLM
         {
             m_LineListingSection.Enqueue(Entity.Null, (x) =>
             {
-                LogUtils.DoLog("SENDING OBJ: {0}", x);
+                if (ExtendedTransportManagerMod.TraceMode) LogUtils.DoTraceLog("SENDING OBJ: {0}", x);
                 SendEvent("lineViewer.getCityLines->", x);
             }, force);
         }

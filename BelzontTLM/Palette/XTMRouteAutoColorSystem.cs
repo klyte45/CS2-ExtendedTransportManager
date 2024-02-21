@@ -52,7 +52,7 @@ namespace BelzontTLM.Palettes
         {
             if (Enum.TryParse(transportTypeStr, true, out TransportType transportType))
             {
-                LogUtils.DoLog($"Called to setup: {transportType} {isCargo} {guid}");
+                if (ExtendedTransportManagerMod.TraceMode) LogUtils.DoTraceLog($"Called to setup: {transportType} {isCargo} {guid}");
                 var targetArr = isCargo ? PaletteSettingsCargo : PaletteSettingsPassenger;
                 if (Guid.TryParse(guid, out var targetGuid))
                 {
@@ -72,7 +72,7 @@ namespace BelzontTLM.Palettes
         }
         private void OnAutoColorSettingsChanged()
         {
-            LogUtils.DoLog("Forcing OnAutoColorSettingsChanged!!!!!!!");
+            if (ExtendedTransportManagerMod.DebugMode) LogUtils.DoLog("Forcing OnAutoColorSettingsChanged!!!!!!!");
             eventCaller.Invoke("autoColor.onAutoColorSettingsChanged", null);
             m_setupIsDirty = true;
         }
@@ -93,7 +93,7 @@ namespace BelzontTLM.Palettes
             }
             if ((m_setupIsDirty || paletteSystem.RequireLinesColorsReprocess()) && !m_linesWithDataToForceUpdate.IsEmptyIgnoreFilter)
             {
-                LogUtils.DoLog("Forcing update!");
+                if (ExtendedTransportManagerMod.DebugMode) LogUtils.DoLog("Forcing update!");
                 RunUpdatePalettesWithQuery(m_linesWithDataToForceUpdate);
                 paletteSystem.OnLinesColorsReprocessed();
                 m_setupIsDirty = false;
@@ -260,7 +260,7 @@ namespace BelzontTLM.Palettes
                 NativeArray<Entity> unitializedLines = chunk.GetNativeArray(m_TypeHandle.m_EntityTypeHandle);
                 for (int i = 0; i < chunk.Count; i++)
                 {
-                    LogUtils.DoLog($"XTMApplyPalleteJob Processing entity {unitializedLines[i].Index}");
+                    if (ExtendedTransportManagerMod.DebugMode) LogUtils.DoLog($"XTMApplyPalleteJob Processing entity {unitializedLines[i].Index}");
                     if (!GetTransportLineData(unitializedLines[i], out var routeNumber, out TransportLineData transportLineData))
                     {
                         LogUtils.DoWarnLog($"INVALID ENTITY: {unitializedLines[i].Index}");
@@ -282,21 +282,21 @@ namespace BelzontTLM.Palettes
                         if (targetColorList is null || targetColorList.Count == 0)
                         {
                             info.paletteEnabled = false;
-                            LogUtils.DoLog($"Entity #{unitializedLines[i].Index} tried to be setup to palette {paletteValue}, but it doesn't exists...");
+                            if (ExtendedTransportManagerMod.TraceMode) LogUtils.DoTraceLog($"Entity #{unitializedLines[i].Index} tried to be setup to palette {paletteValue}, but it doesn't exists...");
                         }
                         else
                         {
                             var targetIdx = ((routeNumber.m_Number % targetColorList.Count) + targetColorList.Count - 1) % targetColorList.Count;
                             m_CommandBuffer.SetComponent(unfilteredChunkIndex, unitializedLines[i], new Game.Routes.Color(targetColorList[targetIdx]));
-                            LogUtils.DoLog($"Entity #{unitializedLines[i].Index} setup to palette {paletteValue}");
+                            if (ExtendedTransportManagerMod.TraceMode) LogUtils.DoTraceLog($"Entity #{unitializedLines[i].Index} setup to palette {paletteValue}");
                         }
                     }
 
                     m_CommandBuffer.AddComponent(unfilteredChunkIndex, unitializedLines[i], info);
                     m_CommandBuffer.AddComponent<Updated>(unfilteredChunkIndex, unitializedLines[i]);
-                    LogUtils.DoLog($"Initialized palette data @ entity id #{unitializedLines[i].Index}");
+                    if (ExtendedTransportManagerMod.DebugMode) LogUtils.DoLog($"Initialized palette data @ entity id #{unitializedLines[i].Index}");
                 }
-                LogUtils.DoLog("XTMApplyPalleteJob JobComplete");
+                if (ExtendedTransportManagerMod.TraceMode) LogUtils.DoTraceLog("XTMApplyPalleteJob JobComplete");
             }
             private bool GetTransportLineData(Entity owner, out RouteNumber routeNum, out TransportLineData lineData)
             {
@@ -323,7 +323,7 @@ namespace BelzontTLM.Palettes
                 NativeArray<Entity> unitializedLines = chunk.GetNativeArray(m_TypeHandle.m_EntityTypeHandle);
                 for (int i = 0; i < chunk.Count; i++)
                 {
-                    LogUtils.DoLog($"XTMUpdatePalleteJob Updating entity {unitializedLines[i].Index}");
+                    if (ExtendedTransportManagerMod.TraceMode) LogUtils.DoTraceLog($"XTMUpdatePalleteJob Updating entity {unitializedLines[i].Index}");
                     if (!GetTransportLineData(unitializedLines[i], out var routeNumber, out TransportLineData transportLineData, out var xtmInfo))
                     {
                         LogUtils.DoWarnLog($"INVALID ENTITY: {unitializedLines[i].Index}");
@@ -334,7 +334,7 @@ namespace BelzontTLM.Palettes
 
                     if (((targetPaletteGuid is null && !xtmInfo.paletteEnabled) || (targetPaletteGuid == xtmInfo.paletteGuid && checksum == xtmInfo.paletteChecksum)) && xtmInfo.lineNumberRef == routeNumber.m_Number)
                     {
-                        LogUtils.DoLog($"Palette already updated @ entity id #{unitializedLines[i].Index}. Skipping...");
+                        if (ExtendedTransportManagerMod.DebugMode) LogUtils.DoLog($"Palette already updated @ entity id #{unitializedLines[i].Index}. Skipping...");
                         continue;
                     }
 
@@ -345,22 +345,22 @@ namespace BelzontTLM.Palettes
                     if (targetColorList is null || targetColorList.Count == 0)
                     {
                         xtmInfo.paletteEnabled = false;
-                        LogUtils.DoLog($"Entity #{unitializedLines[i].Index} tried to be setup to palette {paletteValue}, but it doesn't exists...");
+                        if (ExtendedTransportManagerMod.DebugMode) LogUtils.DoLog($"Entity #{unitializedLines[i].Index} tried to be setup to palette {paletteValue}, but it doesn't exists...");
                     }
                     else
                     {
                         xtmInfo.paletteEnabled = true;
                         var targetIdx = ((routeNumber.m_Number % targetColorList.Count) + targetColorList.Count - 1) % targetColorList.Count;
                         m_CommandBuffer.SetComponent(unfilteredChunkIndex, unitializedLines[i], new Game.Routes.Color(targetColorList[targetIdx]));
-                        LogUtils.DoLog($"Entity #{unitializedLines[i].Index} setup to palette {paletteValue}");
+                        if (ExtendedTransportManagerMod.DebugMode) LogUtils.DoLog($"Entity #{unitializedLines[i].Index} setup to palette {paletteValue}");
                     }
 
                     m_CommandBuffer.SetComponent(unfilteredChunkIndex, unitializedLines[i], xtmInfo);
                     m_CommandBuffer.AddComponent<Updated>(unfilteredChunkIndex, unitializedLines[i]);
                     m_CommandBuffer.RemoveComponent<XTMPaletteRequireUpdate>(unfilteredChunkIndex, unitializedLines[i]);
-                    LogUtils.DoLog($"Updated palette data @ entity id #{unitializedLines[i].Index}");
+                    if (ExtendedTransportManagerMod.DebugMode) LogUtils.DoLog($"Updated palette data @ entity id #{unitializedLines[i].Index}");
                 }
-                LogUtils.DoLog("XTMUpdatePalleteJob JobComplete");
+                if (ExtendedTransportManagerMod.DebugMode) LogUtils.DoLog("XTMUpdatePalleteJob JobComplete");
             }
 
             private static void GetCurrentChecksum(TransportLineData transportLineData, out Guid? targetPaletteGuid, out Guid paletteValue, out Guid? checksum)

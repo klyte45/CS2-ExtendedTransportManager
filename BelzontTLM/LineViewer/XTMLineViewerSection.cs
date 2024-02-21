@@ -83,7 +83,7 @@ namespace BelzontTLM
             __TypeHandle.__Game_Routes_Route_RO_ComponentLookup.Update(ref CheckedStateRef);
             if (e == Entity.Null)
             {
-                LogUtils.DoLog("Entity is null!");
+                if (ExtendedTransportManagerMod.DebugMode) LogUtils.DoLog("Entity is null!");
                 return;
             }
 
@@ -109,7 +109,7 @@ namespace BelzontTLM
             jobData.Schedule(Dependency).Complete();
             if (!m_BoolResult[0])
             {
-                LogUtils.DoLog("Bool result is false!");
+                if (ExtendedTransportManagerMod.DebugMode) LogUtils.DoLog("Bool result is false!");
                 return;
             }
             __TypeHandle.__Game_Buildings_RO_ComponentLookup.Update(ref CheckedStateRef);
