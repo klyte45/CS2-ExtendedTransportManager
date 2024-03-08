@@ -28,8 +28,8 @@
   <!--Mod data-->
   <PropertyGroup>
     <ModId>74238</ModId>
-    <Version>0.1.0.1</Version>
-    <GameVersion>1.0.*</GameVersion>
+    <Version>0.1.0.2</Version>
+    <GameVersion>1.0.21*</GameVersion>
     <ThumbnailPath>Properties/Thumbnail.png</ThumbnailPath>
     <DisplayName>Extended Transport Manager</DisplayName>
     <ShortDescription>Expanded tools for public transport management.</ShortDescription>
@@ -42,7 +42,7 @@
     <Screenshots Include="Screenshots/*.jpg" />
     <Dependency Include="EUIS">
       <ModId>74151</ModId>
-      <Version>0.1.0.0</Version>
+      <Version>0.1.0.2</Version>
       <DisplayName>Extra UI Screens</DisplayName>
     </Dependency>
   </ItemGroup>
