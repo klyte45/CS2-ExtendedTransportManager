@@ -102,6 +102,12 @@ section.filterRow {
         width: 50px;
     }
 
+    div.righter {
+        display: flex;
+        text-align: center;
+        padding: 10rem;
+    }
+
     button {
         height: 100%;
         width: 50rem;
@@ -112,7 +118,7 @@ section.filterRow {
             background-color: rgb(63, 63, 63);
         }
 
-        &.txt{
+        &.txt {
             width: auto;
             padding: 10rem;
         }

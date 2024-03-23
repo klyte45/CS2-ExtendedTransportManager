@@ -30,7 +30,7 @@ export default class Root extends Component<any, State> {
 
   render() {
     return <>
-      <button style={{ position: "fixed", right: 0, top: 0, zIndex: 999 }} onClick={() => location.reload()}>RELOAD!!!</button>
+      {/* <button style={{ position: "fixed", right: 0, top: 0, zIndex: 999 }} onClick={() => location.reload()}>RELOAD!!!</button> */}
       <Tabs>
         <TabList>
           <Tab>{translate("lineList.title")}</Tab>
@@ -44,7 +44,3 @@ export default class Root extends Component<any, State> {
     </>;
   }
 }
-
-/*<button style={{ position: "fixed", right: 0, top: 0, zIndex: 999 }} onClick={() => location.reload()}>RELOAD!!!</button>
- <PaletteEditorCmp></PaletteEditorCmp>
-      <LineListCmp></LineListCmp>*/

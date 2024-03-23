@@ -16,15 +16,15 @@ type State = {
 }
 
 const TypeToIcons = {
-    [`${TransportType.Airplane}.false`]: "coui://GameUI/Media/Game/Icons/PassengerplaneLine.svg",
-    [`${TransportType.Airplane}.true`]: "coui://GameUI/Media/Game/Icons/CargoplaneLine.svg",
     [`${TransportType.Bus}.false`]: "coui://GameUI/Media/Game/Icons/BusLine.svg",
-    [`${TransportType.Ship}.false`]: "coui://GameUI/Media/Game/Icons/PassengershipLine.svg",
-    [`${TransportType.Ship}.true`]: "coui://GameUI/Media/Game/Icons/CargoshiipLine.svg",
+    [`${TransportType.Tram}.false`]: "coui://GameUI/Media/Game/Icons/TramLine.svg",
     [`${TransportType.Subway}.false`]: "coui://GameUI/Media/Game/Icons/SubwayLine.svg",
     [`${TransportType.Train}.false`]: "coui://GameUI/Media/Game/Icons/TrainLine.svg",
+    [`${TransportType.Ship}.false`]: "coui://GameUI/Media/Game/Icons/PassengershipLine.svg",
+    [`${TransportType.Airplane}.false`]: "coui://GameUI/Media/Game/Icons/PassengerplaneLine.svg",
     [`${TransportType.Train}.true`]: "coui://GameUI/Media/Game/Icons/CargoTrainLine.svg",
-    [`${TransportType.Tram}.false`]: "coui://GameUI/Media/Game/Icons/TramLine.svg",
+    [`${TransportType.Ship}.true`]: "coui://GameUI/Media/Game/Icons/CargoshiipLine.svg",
+    [`${TransportType.Airplane}.true`]: "coui://GameUI/Media/Game/Icons/CargoplaneLine.svg",
 }
 
 
@@ -52,9 +52,12 @@ export default class LineListCmp extends Component<any, State> {
     }
 
     async reloadLines(res: LineData[]) {
+        const refOrder = Object.keys(TypeToIcons);
         const lineList = res.sort((a, b) => {
-            if (a.type != b.type) return a.type.localeCompare(b.type, undefined, { sensitivity: "base" });
-            if (a.isCargo != b.isCargo) return a.isCargo ? 1 : -1;
+            const typeA = `${a.type}.${a.isCargo}`
+            const typeB = `${b.type}.${b.isCargo}`
+
+            if (typeA != typeB) return refOrder.indexOf(typeA) - refOrder.indexOf(typeB);
             return a.routeNumber - b.routeNumber
         });
         this.setState({
@@ -130,6 +133,10 @@ export default class LineListCmp extends Component<any, State> {
                 <button className="txt" onClick={() => this.setState({ filterExclude: Object.keys(TypeToIcons) })}>{translate("lineList.hideAll")}</button>
                 <button className="txt" onClick={() => this.setState({ filterExclude: Object.keys(TypeToIcons).filter(x => x.endsWith(".true")) })}>{translate("lineList.passengerLines")}</button>
                 <button className="txt" onClick={() => this.setState({ filterExclude: Object.keys(TypeToIcons).filter(x => x.endsWith(".false")) })}>{translate("lineList.cargoRoutes")}</button>
+                <div className="space" />
+                <div className="righter">
+                    {replaceArgs(translate("lineList.linesCurrentFilterFormat"), { LINECOUNT: `${this.state.linesList.filter(x => !this.state.filterExclude.includes(`${x.type}.${x.isCargo}`)).length}` })}
+                </div>
             </section>
         </>;
     }

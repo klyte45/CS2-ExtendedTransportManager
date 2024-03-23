@@ -64,7 +64,6 @@ export class StationContainerCmp extends Component<{
     }
 
     stopClicked(station: StationData) {
-        console.log(station);
         engine.call("k45::xtm.lineViewer.setCctvPosition", station.worldPosition.x, station.worldPosition.y, station.worldPosition.z, station.azimuth, 0, 20)
         this.props.onSelectStop(station);
     }

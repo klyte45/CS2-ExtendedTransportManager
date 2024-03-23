@@ -1,4 +1,6 @@
-﻿#define LOCAL
+﻿#if !RELEASE
+#define LOCAL
+#endif
 
 using BelzontTLM;
 using K45EUIS_Ext;

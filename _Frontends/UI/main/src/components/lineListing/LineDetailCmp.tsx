@@ -23,7 +23,7 @@ const tabsOrder: (MapViewerTabsNames | undefined)[] = [
     MapViewerTabsNames.General,
     MapViewerTabsNames.LineData,
     MapViewerTabsNames.LineSettings,
-    MapViewerTabsNames.Debug,
+    //MapViewerTabsNames.Debug,
     undefined,
     MapViewerTabsNames.MapSettings,
     MapViewerTabsNames.StopInfo,
@@ -75,7 +75,6 @@ export default class LineDetailCmp extends Component<Props, State> {
         engine.whenReady.then(async () => {
             engine.on("k45::xtm.lineViewer.getRouteDetail->", (details: State['lineDetails']) => {
                 if (details.LineData.entity.Index != this.props.currentLine.Index) return;
-                console.log(details);
 
                 details.Vehicles = details.Vehicles.map(x => {
                     return {
@@ -179,8 +178,7 @@ export default class LineDetailCmp extends Component<Props, State> {
                 </DefaultPanelScreen>,
             [MapViewerTabsNames.LineSettings]:
                 <DefaultPanelScreen title={translate("lineViewer.lineSettings")} isSubScreen={true}>
-                    <Cs2FormLine title={translate("lineViewer.dataTotalLength")} >
-                    </Cs2FormLine>
+                    <Cs2FormLine title={"Coming soon!"} />
                 </DefaultPanelScreen>,
             [MapViewerTabsNames.MapSettings]:
                 <DefaultPanelScreen title={translate("lineViewer.showOnMap")} isSubScreen={true}>
@@ -192,6 +190,7 @@ export default class LineDetailCmp extends Component<Props, State> {
                 </DefaultPanelScreen>,
             [MapViewerTabsNames.StopInfo]: <>
                 <DefaultPanelScreen title={nameToString(this.currentStopSelected?.name)} isSubScreen={true}>
+                    <Cs2FormLine title={"Coming soon!"} />
                     {/* <img src="coui://cctv.xtm.k45/" />*/}
                 </DefaultPanelScreen>
             </>,
@@ -225,7 +224,6 @@ export default class LineDetailCmp extends Component<Props, State> {
     onStopSelected(x: StationData): void {
         this.currentStopSelected = x;
         let targetTabIdx = tabsOrder.filter(x => x).indexOf(MapViewerTabsNames.StopInfo);
-        console.log(targetTabIdx);
         this.setState({ currentTab: targetTabIdx })
     }
     async setSelection(x: Entity) {
