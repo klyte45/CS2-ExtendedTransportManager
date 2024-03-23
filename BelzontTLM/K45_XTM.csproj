@@ -28,8 +28,8 @@
   <!--Mod data-->
   <PropertyGroup>
     <ModId>74238</ModId>
-    <Version>0.1.0.2</Version>
-    <GameVersion>1.0.21*</GameVersion>
+    <Version>0.1.1.0</Version>
+    <GameVersion>1.1.*</GameVersion>
     <ThumbnailPath>Properties/Thumbnail.png</ThumbnailPath>
     <DisplayName>Extended Transport Manager</DisplayName>
     <ShortDescription>Expanded tools for public transport management.</ShortDescription>
@@ -42,7 +42,7 @@
     <Screenshots Include="Screenshots/*.jpg" />
     <Dependency Include="EUIS">
       <ModId>74151</ModId>
-      <Version>0.1.0.2</Version>
+      <Version>0.1.1.0</Version>
       <DisplayName>Extra UI Screens</DisplayName>
     </Dependency>
   </ItemGroup>
@@ -73,16 +73,9 @@
       <PublishContent>$(PublishContent)@(Dependency->'&lt;Dependency Id="%(ModId)" ModVersion="%(Version)" DisplayName="%(DisplayName)"/&gt;','%0a%0d')</PublishContent>
     </PropertyGroup>
     <XmlPoke  XmlInputPath="$(PublishConfigurationPath)" Value="$(PublishContent)" Query="//Publish" />
-    
-    <ReadLinesFromFile File="$(ProjectDir)longDescription.md">
-      <Output TaskParameter="Lines" ItemName="LongDescription" />
-    </ReadLinesFromFile>
-    <XmlPoke  XmlInputPath="$(PublishConfigurationPath)" Value="@(LongDescription->'%(Identity)','%0a%0d')" Query="//LongDescription" />
 
-    <ReadLinesFromFile File="$(ProjectDir)changelog.md">
-      <Output TaskParameter="Lines" ItemName="ChangeLog" />
-    </ReadLinesFromFile>
-    <XmlPoke XmlInputPath="$(PublishConfigurationPath)" Value="@(ChangeLog->'%(Identity)','%0a%0d')" Query="//ChangeLog" />
+    <XmlPoke XmlInputPath="$(PublishConfigurationPath)" Value="$([System.IO.File]::ReadAllText($(ProjectDir)/longDescription.md)))" Query="//LongDescription" />
+    <XmlPoke XmlInputPath="$(PublishConfigurationPath)" Value="$([System.IO.File]::ReadAllText($(ProjectDir)changelog.md)))"  Query="//ChangeLog" />
    
   </Target>    
 

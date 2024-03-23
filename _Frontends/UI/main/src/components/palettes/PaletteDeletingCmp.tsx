@@ -30,7 +30,7 @@ export default class PaletteDeletingCmp extends Component<Props, State> {
         return <>
             <h1>{translate("paletteDelete.title")}</h1>
             <h3>{translate("paletteDelete.subtitle")}</h3>
-            <section style={{ overflow: "scroll", position: "absolute", bottom: this.props.onBack ? 52 : 0, left: 5, right: 5, top: 107 }}>
+            <section style={{ position: "absolute", bottom: this.props.onBack ? 52 : 0, left: 5, right: 5, top: 107 }}>
                 <PaletteDetailHeaderCmp paletteData={this.props.paletteData} />
             </section>
             <div style={{ display: "flex", position: "absolute", left: 5, right: 5, bottom: 5, flexDirection: "row-reverse" }}>

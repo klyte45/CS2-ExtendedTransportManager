@@ -52,7 +52,7 @@ export default class PaletteLibrarySelectorCmp extends Component<Props, State> {
         return <>
             <h1>{translate("palettesLibrary.title")}</h1>
             <h3>{translate("palettesLibrary.subtitle")}</h3>
-            <section style={{ overflow: "scroll", position: "absolute", bottom: this.props.onBack ? 52 : 0, left: 5, right: 5, top: 107 }}>
+            <section style={{ position: "absolute", bottom: this.props.onBack ? 52 : 0, left: 5, right: 5, top: 107 }}>
                 <PaletteCategoryCmp entry={this.state?.availablePalettes} doWithPaletteData={(x, i) => <PaletteLineViewer entry={x} key={i} actionButtons={this.props.actionButtons} />} />
             </section>
             {this.props.onBack && <div style={{ display: "flex", position: "absolute", left: 5, right: 5, bottom: 5, flexDirection: "row-reverse" }}>

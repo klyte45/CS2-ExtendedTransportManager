@@ -2,9 +2,17 @@ import { LineData } from "#service/LineManagementService";
 import "#styles/TLM_FormatContainer.scss";
 import { ColorUtils } from "@klyte45/euis-components";
 import { CSSProperties, Component, ReactNode } from "react";
+import { TransportType } from "#enum/TransportType";
 
 export class TlmLineFormatCmp extends Component<{
-    lineCommonData: LineData;
+    color: string;
+    strokeColor?: string;
+    text?: string;
+    type: TransportType;
+    isCargo: boolean
+    contentOverride?: JSX.Element | null;
+    className?: string;
+    borderWidth?: string
 }, {}> {
 
     constructor(props) {
@@ -14,17 +22,16 @@ export class TlmLineFormatCmp extends Component<{
     }
 
     render(): ReactNode {
-        const lineCommonData = this.props.lineCommonData;
-        const fontColor = ColorUtils.toRGBA(ColorUtils.getContrastColorFor(ColorUtils.toColor01(lineCommonData.color)));
-        return <div className="formatContainer" style={{ "--fontColor": fontColor } as CSSProperties}>
-            <div style={{ "--currentBgColor": ColorUtils.getClampedColor(lineCommonData.color) } as CSSProperties} className={`format ${lineCommonData.type} ${lineCommonData.isCargo ? "cargo" : "passengers"}`}>
-
+        const fontColor = ColorUtils.toRGBA(ColorUtils.getContrastColorFor(ColorUtils.toColor01(this.props.color)));
+        return <div className={this.props.className + " formatContainer"} style={{ "--fontColor": fontColor } as CSSProperties}>
+            <div style={{ "--currentBgColor": ColorUtils.getClampedColor(this.props.color), "--form-border-width": this.props.borderWidth ?? "0" } as CSSProperties} className={`format ${this.props.type} ${this.props.isCargo ? "cargo" : "passengers"}`}>
+                {this.props.borderWidth && <div className="before"></div>}
                 <div className="after"></div>
             </div>
             <div style={{
-                fontSize: getFontSizeForText(lineCommonData.xtmData?.Acronym || lineCommonData.routeNumber.toFixed())
+                fontSize: getFontSizeForText(this.props.text)
             } as CSSProperties} className="num">
-                {lineCommonData.xtmData?.Acronym || (lineCommonData.routeNumber.toFixed())}
+                {this.props.contentOverride ?? (this.props.text)}
             </div>
         </div>;
     }

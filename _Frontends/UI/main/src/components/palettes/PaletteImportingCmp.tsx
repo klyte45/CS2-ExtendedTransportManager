@@ -35,7 +35,7 @@ export default class PaletteImportingCmp extends Component<Props, State> {
         return <>
             <h1>{translate("palettesImport.title")}</h1>
             <h3>{translate("palettesImport.subtitle")}</h3>
-            <section style={{ overflow: "scroll", position: "absolute", bottom: this.props.onBack ? 52 : 0, left: 5, right: 5, top: 107 }}>
+            <section style={{ position: "absolute", bottom: this.props.onBack ? 52 : 0, left: 5, right: 5, top: 107 }}>
                 <PaletteDetailHeaderCmp paletteData={this.props.paletteData} />
                 <div>
                     <Input title={translate("palettesImport.cityImportName")} getValue={() => this.state.paletteNameImport} onValueChanged={(x) => { this.setState({ paletteNameImport: x }); return x; }} />

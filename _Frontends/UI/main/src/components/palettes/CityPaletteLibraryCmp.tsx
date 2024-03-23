@@ -1,7 +1,7 @@
 import { PaletteCategoryCmp, categorizePalettes } from "#components/palettes/PaletteCategoryCmp";
 import PaletteLibrarySelectorCmp from "#components/palettes/PaletteLibrarySelectorCmp";
 import { PaletteData, PaletteService } from "#service/PaletteService";
-import { ArrayUtils } from "@klyte45/euis-components";
+import { ArrayUtils, GameScrollComponent } from "@klyte45/euis-components";
 import translate from "#utility/translate"
 import { Component } from "react";
 import PaletteDeletingCmp from "./PaletteDeletingCmp";
@@ -67,10 +67,12 @@ export default class CityPaletteLibraryCmp extends Component<any, State> {
                 return <>
                     <h1>{translate("cityPalettesLibrary.title")}</h1>
                     <h3>{translate("cityPalettesLibrary.subtitle")}</h3>
-                    <section style={{ overflow: "scroll", position: "absolute", bottom: 52, left: 5, right: 5, top: 107 }}>
-                        {Object.keys(this.state?.availablePalettes.subtrees ?? {}).length == 0 && !this.state?.availablePalettes.rootContent.length
-                            ? <h2>No palettes registered! <a onClick={() => this.setState({ currentScreen: Screen.PALETTE_IMPORT_LIB })}>Click here to import!</a></h2>
-                            : <PaletteCategoryCmp entry={this.state?.availablePalettes} doWithPaletteData={(x, i) => <PaletteLineViewer entry={x} key={i} actionButtons={(y) => this.getActionButtons(y)} />} />}
+                    <section style={{ position: "absolute", bottom: 52, left: 5, right: 5, top: 107 }}>
+                        <GameScrollComponent>
+                            {Object.keys(this.state?.availablePalettes.subtrees ?? {}).length == 0 && !this.state?.availablePalettes.rootContent.length
+                                ? <h2>No palettes registered! <a onClick={() => this.setState({ currentScreen: Screen.PALETTE_IMPORT_LIB })}>Click here to import!</a></h2>
+                                : <PaletteCategoryCmp entry={this.state?.availablePalettes} doWithPaletteData={(x, i) => <PaletteLineViewer entry={x} key={i} actionButtons={(y) => this.getActionButtons(y)} />} />}
+                        </GameScrollComponent>
                     </section>
                     <div style={{ display: "flex", position: "absolute", left: 5, right: 5, bottom: 5, flexDirection: "row-reverse" }}>
                         <button className="positiveBtn " onClick={() => this.setState({ currentScreen: Screen.PALETTE_IMPORT_LIB })}>{translate("cityPalettesLibrary.importFromLibrary")}</button>

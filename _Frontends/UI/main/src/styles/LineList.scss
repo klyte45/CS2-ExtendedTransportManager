@@ -1,0 +1,92 @@
+section.LineList {
+    background-color: transparent;
+    display: flex;
+
+    component-slot {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        justify-content: center;
+
+        .BgItem {
+            border-radius: 30rem;
+            background-color: var(--menuPanel1);
+            max-width: 450rem;
+            min-width: 250rem;
+            height: 100rem;
+            z-index: 1;
+            margin: 3rem;
+            overflow-x: hidden;
+            overflow-y: hidden;
+            position: relative;
+
+            .lineAcronym {
+                width: 90.000000rem;
+                height: 180.000000%;
+                text-align: center;
+                line-height: 90.000000rem;
+                font-size: calc(50.000000rem * var(--xtm-font-multiplier));
+                overflow-x: hidden;
+                overflow-y: hidden;
+                background-color: var(--xtm-line-color);
+                color: var(--xtm-font-color);
+                transform: rotateZ(-30.000000deg);
+                margin-top: -8.000000rem;
+                margin-left: 7.000000px;
+                padding-left: 7.000000px;
+                padding-top: 8.000000px;
+                position: absolute;
+
+                .text {
+                    transform: rotateZ(30.000000deg);
+                }
+
+                .icon {
+                    transform: rotateZ(30.000000deg);
+                    width: 35.000000rem;
+                    height: 35.000000rem;
+                    position: absolute;
+                    background-size: cover;
+                    top: 80.000000rem;
+                    left: 41.000000rem;
+
+                    .gameIcon {
+                        width: 30.000000rem;
+                        height: 30.000000rem;
+                        background-image: var(--xtm-game-icon);
+                        background-size: cover;
+                    }
+                }
+            }
+
+            .lineName {
+                padding-left: 82rem;
+                padding-right: 15rem;
+                padding-top: 5rem;
+                font-weight: bold;
+                font-size: 120%;
+            }
+
+            .lineType {
+                padding-left: 100rem;
+                padding-right: 15rem;
+                padding-top: 3rem;
+                font-size: 80%;
+            }
+
+            .lineLength {
+                padding-left: 118rem;
+                padding-right: 15rem;
+                padding-top: 3rem;
+                font-size: 80%;
+            }
+
+            .lineVehicles {
+                padding-left: 136rem;
+                padding-right: 15rem;
+                padding-top: 3rem;
+                font-size: 80%;
+            }
+        }
+    }
+}

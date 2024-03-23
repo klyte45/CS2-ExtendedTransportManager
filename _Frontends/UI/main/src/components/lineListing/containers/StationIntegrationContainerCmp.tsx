@@ -71,7 +71,7 @@ export class StationIntegrationContainerCmp extends Component<{
                 {<div className={`stationIntersectionsContainer ${linesToIntegrate.length > 4 ? "sz1" : ""}`}>
                     {linesToIntegrate.map((lineData, i) => {
                         return <div className="lineIntersection" key={i} data-tooltip={nameToString(lineData.name)} data-tootip-position="top left" onClick={() => this.props.setSelection(lineData.entity)} >
-                            <TlmLineFormatCmp lineCommonData={lineData} />
+                            <TlmLineFormatCmp {...lineData} text={lineData.xtmData?.Acronym || lineData.routeNumber.toFixed()} />
                         </div>;
                     })}
                 </div>}

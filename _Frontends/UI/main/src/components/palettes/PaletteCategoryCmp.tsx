@@ -3,6 +3,7 @@ import { ObjectTyped } from "object-typed";
 import { Component } from "react";
 import TreeView from "react-treeview";
 import { PaletteStructureTreeNode } from "#components/palettes/CityPaletteLibraryCmp";
+import { GameScrollComponent } from "@klyte45/euis-components";
 
 export class PaletteCategoryCmp extends Component<{ entry: PaletteStructureTreeNode; doWithPaletteData: (x: PaletteData, i: number) => JSX.Element }, { showing: Record<string, boolean>; }> {
 
@@ -15,15 +16,17 @@ export class PaletteCategoryCmp extends Component<{ entry: PaletteStructureTreeN
 
     render() {
         return <>
-            {ObjectTyped.entries(this.props.entry.subtrees).sort((a, b) => a[0].localeCompare(b[0], undefined, { sensitivity: "base" })).map((x, i) => {
-                return <TreeView
-                    nodeLabel={x[0]}
-                    key={i}
-                    collapsed={!this.state.showing[x[0]]}
-                    onClick={() => this.toggle(x[0])}
-                ><PaletteCategoryCmp entry={x[1]} doWithPaletteData={this.props.doWithPaletteData} /></TreeView>;
-            })}
-            {this.props.entry.rootContent.sort((a, b) => a.Name.localeCompare(b.Name, undefined, { sensitivity: "base" })).map(this.props.doWithPaletteData)}
+            <GameScrollComponent>
+                {ObjectTyped.entries(this.props.entry.subtrees).sort((a, b) => a[0].localeCompare(b[0], undefined, { sensitivity: "base" })).map((x, i) => {
+                    return <TreeView
+                        nodeLabel={x[0]}
+                        key={i}
+                        collapsed={!this.state.showing[x[0]]}
+                        onClick={() => this.toggle(x[0])}
+                    ><PaletteCategoryCmp entry={x[1]} doWithPaletteData={this.props.doWithPaletteData} /></TreeView>;
+                })}
+                {this.props.entry.rootContent.sort((a, b) => a.Name.localeCompare(b.Name, undefined, { sensitivity: "base" })).map(this.props.doWithPaletteData)}
+            </GameScrollComponent>
         </>;
     }
     toggle(item: string): void {

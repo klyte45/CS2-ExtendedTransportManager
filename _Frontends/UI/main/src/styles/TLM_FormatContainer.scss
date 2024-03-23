@@ -1,7 +1,7 @@
 .formatContainer {
     --scaleFormat: 1;
     --margin-base: calc((var(--scaleFormat) - 1) * 28rem + 3rem);
-    --form-border-width: 2rem;
+    --form-border-width: 0;
     position: relative;
     transform: scale(var(--scaleFormat));
     margin-bottom: calc((var(--scaleFormat) - 1) * 25rem);

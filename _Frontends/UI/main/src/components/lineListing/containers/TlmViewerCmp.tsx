@@ -31,7 +31,7 @@ export class TlmViewerCmp extends Component<{
                 <>
                     <div>
                         <div className="titleRow">
-                            <TlmLineFormatCmp lineCommonData={lineCommonData} />
+                            <TlmLineFormatCmp  {...lineCommonData} text={lineCommonData.xtmData?.Acronym || lineCommonData.routeNumber.toFixed()}  />
                         </div>
                     </div>
                     <div className="lineStationsContainer">
