@@ -90,3 +90,36 @@ section.LineList {
         }
     }
 }
+
+section.filterRow {
+    overflow: hidden;
+    flex-direction: row;
+    display: flex;
+
+
+    div.space {
+        display: flex;
+        width: 50px;
+    }
+
+    button {
+        height: 100%;
+        width: 50rem;
+        padding: 0;
+        background-color: var(--textColorHighlight);
+
+        &.unselected {
+            background-color: rgb(63, 63, 63);
+        }
+
+        &.txt{
+            width: auto;
+            padding: 10rem;
+        }
+
+        img {
+            height: 100%;
+            width: 100%;
+        }
+    }
+}

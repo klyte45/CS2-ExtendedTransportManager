@@ -1,5 +1,5 @@
 import { StationData, VehicleData } from "#service/LineManagementService";
-import { MeasureUnit, kilogramsTo, metersTo, nameToString, replaceArgs } from "@klyte45/euis-components";
+import { UnitSystem, getGameUnits, kilogramsTo, metersTo, nameToString, replaceArgs } from "@klyte45/euis-components";
 import translate from "#utility/translate"
 import { Component, ReactNode } from "react";
 import { Tooltip } from 'react-tooltip';
@@ -12,17 +12,17 @@ export class StationContainerCmp extends Component<{
     normalizedPosition: number;
     totalStationCount: number
     onSelectStop: (entity: StationData) => void
-}, { measureUnit?: MeasureUnit; }> {
+}, { measureUnit?: UnitSystem; }> {
 
     constructor(props) {
         super(props);
         this.state = {};
     }
-    private measureCallback = async () => this.setState({ measureUnit: await engine.call("k45::xtm.common.getMeasureUnits") });
+    private measureCallback = async () => this.setState({ measureUnit: (await getGameUnits()).unitSystem.value__ });
     componentDidMount() {
         engine.on("k45::xtm.common.onMeasureUnitsChanged", this.measureCallback);
-        engine.call("k45::xtm.common.getMeasureUnits").then(async (x) => {
-            this.setState({ measureUnit: x });
+        getGameUnits().then(async (x) => {
+            this.setState({ measureUnit: x.unitSystem.value__ });
         });
     }
     override componentWillUnmount() {

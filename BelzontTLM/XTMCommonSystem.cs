@@ -14,7 +14,6 @@ namespace BelzontTLM
 
         public void SetupCallBinder(Action<string, Delegate> eventCaller)
         {
-            eventCaller("common.getMeasureUnits", () => (int)SharedSettings.instance.userInterface.unitSystem);
         }
 
         public void SetupEventBinder(Action<string, Delegate> eventCaller)

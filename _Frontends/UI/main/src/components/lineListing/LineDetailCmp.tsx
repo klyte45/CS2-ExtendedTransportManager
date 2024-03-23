@@ -2,7 +2,7 @@ import { DistrictService } from "#service/DistrictService";
 import { LineData, LineDetails, MapViewerOptions, StationData, VehicleData } from "#service/LineManagementService";
 import "#styles/LineDetailCmp.scss";
 import "#styles/TLM_LineDetail.scss";
-import {  Cs2CheckboxWithLine, Cs2FormLine, DefaultPanelScreen, Entity, MeasureUnit, durationToGameMinutes, kilogramsTo, metersTo, nameToString, replaceArgs, setupSignificance } from "@klyte45/euis-components";
+import { Cs2CheckboxWithLine, Cs2FormLine, DefaultPanelScreen, Entity, UnitSystem, durationToGameMinutes, getGameUnits, kilogramsTo, metersTo, nameToString, replaceArgs, setupSignificance } from "@klyte45/euis-components";
 import { Component } from "react";
 import translate from "#utility/translate"
 import { Tab, TabList, TabPanel, Tabs } from "react-tabs";
@@ -42,7 +42,7 @@ type State = {
     lineDetails?: LineDetails,
     mapViewOptions: MapViewerOptions
     currentTab: number,
-    measureUnit: MeasureUnit
+    measureUnit: UnitSystem
 }
 
 type Props = {
@@ -65,7 +65,7 @@ export default class LineDetailCmp extends Component<Props, State> {
                 useWhiteBackground: false
             },
             currentTab: 0,
-            measureUnit: MeasureUnit.METRIC
+            measureUnit: UnitSystem.Metric
         }
     }
 
@@ -93,8 +93,8 @@ export default class LineDetailCmp extends Component<Props, State> {
             });
 
             engine.on("k45::xtm.common.onMeasureUnitsChanged", this.measureCallback);
-            engine.call("k45::xtm.common.getMeasureUnits").then(async (x) => {
-                this.setState({ measureUnit: x });
+            getGameUnits().then(async (x) => {
+                this.setState({ measureUnit: x.unitSystem.value__ });
             });
         })
         this.reloadData(true);
@@ -126,7 +126,7 @@ export default class LineDetailCmp extends Component<Props, State> {
         engine.off("k45::xtm.common.onMeasureUnitsChanged", this.measureCallback);
     }
 
-    private measureCallback = async () => this.setState({ measureUnit: await engine.call("k45::xtm.common.getMeasureUnits") });
+    private measureCallback = async () => this.setState({ measureUnit: (await getGameUnits()).unitSystem.value__ });
 
     async reloadData(force: boolean = false) {
         if (force || this.state.mapViewOptions.showVehicles) {

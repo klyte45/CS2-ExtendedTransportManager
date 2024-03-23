@@ -1,11 +1,8 @@
+import { TransportTypePriority } from "#enum/TransportType";
 import { LineData, StationData, VehicleData } from "#service/LineManagementService";
-import { ColorUtils } from "@klyte45/euis-components";
-import { Entity } from "@klyte45/euis-components";
-import { MeasureUnit } from "@klyte45/euis-components";
-import { nameToString } from "@klyte45/euis-components";
+import { ColorUtils, Entity, UnitSystem, getGameUnits, nameToString } from "@klyte45/euis-components";
 import { CSSProperties, Component, ReactNode } from "react";
 import { TlmLineFormatCmp } from "./TlmLineFormatCmp";
-import { TransportType, TransportTypePriority } from "#enum/TransportType";
 
 
 export class StationIntegrationContainerCmp extends Component<{
@@ -17,17 +14,17 @@ export class StationIntegrationContainerCmp extends Component<{
     keyId: number;
     normalizedPosition: number;
     totalStationCount: number
-}, { measureUnit?: MeasureUnit; }> {
+}, { measureUnit?: UnitSystem; }> {
 
     constructor(props) {
         super(props);
         this.state = {};
     }
-    private measureCallback = async () => this.setState({ measureUnit: await engine.call("k45::xtm.common.getMeasureUnits") });
+    private measureCallback = async () => this.setState({ measureUnit: (await getGameUnits()).unitSystem.value__ });
     componentDidMount() {
         engine.on("k45::xtm.common.onMeasureUnitsChanged", this.measureCallback);
-        engine.call("k45::xtm.common.getMeasureUnits").then(async (x) => {
-            this.setState({ measureUnit: x });
+        getGameUnits().then(async (x) => {
+            this.setState({ measureUnit: x.unitSystem.value__ });
         });
     }
     override componentWillUnmount() {

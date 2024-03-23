@@ -1,5 +1,5 @@
 import { LineData, LineManagementService } from "#service/LineManagementService";
-import { ColorUtils, Entity, GameScrollComponent, NameCustom, NameFormatted, SimpleInput, nameToString } from "@klyte45/euis-components";
+import { ColorUtils, Entity, GameScrollComponent, NameCustom, NameFormatted, NameType, SimpleInput, UnitSettings, getGameUnits, metersTo, nameToString, replaceArgs, translateUnitResult } from "@klyte45/euis-components";
 import { Component } from "react";
 import LineDetailCmp from "./LineDetailCmp";
 import { TlmLineFormatCmp } from "./containers/TlmLineFormatCmp";
@@ -10,19 +10,21 @@ import { TransportType } from "#enum/TransportType";
 type State = {
     linesList: LineData[],
     indexedLineList: Record<string, LineData>
-    currentLineViewer?: LineData
+    currentLineViewer?: LineData,
+    unitsData?: UnitSettings,
+    filterExclude: string[]
 }
 
 const TypeToIcons = {
-    [`${TransportType.Bus}.false`]: "coui://GameUI/Media/Game/Icons/BusLine.svg",
     [`${TransportType.Airplane}.false`]: "coui://GameUI/Media/Game/Icons/PassengerplaneLine.svg",
     [`${TransportType.Airplane}.true`]: "coui://GameUI/Media/Game/Icons/CargoplaneLine.svg",
+    [`${TransportType.Bus}.false`]: "coui://GameUI/Media/Game/Icons/BusLine.svg",
     [`${TransportType.Ship}.false`]: "coui://GameUI/Media/Game/Icons/PassengershipLine.svg",
     [`${TransportType.Ship}.true`]: "coui://GameUI/Media/Game/Icons/CargoshiipLine.svg",
+    [`${TransportType.Subway}.false`]: "coui://GameUI/Media/Game/Icons/SubwayLine.svg",
     [`${TransportType.Train}.false`]: "coui://GameUI/Media/Game/Icons/TrainLine.svg",
     [`${TransportType.Train}.true`]: "coui://GameUI/Media/Game/Icons/CargoTrainLine.svg",
     [`${TransportType.Tram}.false`]: "coui://GameUI/Media/Game/Icons/TramLine.svg",
-    [`${TransportType.Subway}.false`]: "coui://GameUI/Media/Game/Icons/SubwayLine.svg",
 }
 
 
@@ -31,13 +33,15 @@ export default class LineListCmp extends Component<any, State> {
         super(props);
         this.state = {
             linesList: [],
-            indexedLineList: {}
+            indexedLineList: {},
+            filterExclude: []
         }
     }
     componentDidMount() {
         engine.whenReady.then(async () => {
-            engine.on("k45::xtm.lineViewer.getCityLines->", (x) => {
-                this.reloadLines(x);
+            engine.on("k45::xtm.lineViewer.getCityLines->", async (x) => {
+                getGameUnits().then(x => this.setState({ unitsData: x }))
+                this.reloadLines(x)
             });
         })
         engine.call("k45::xtm.lineViewer.getCityLines", true)
@@ -58,8 +62,9 @@ export default class LineListCmp extends Component<any, State> {
             indexedLineList: lineList.reduce((p, n) => {
                 p[n.entity.Index.toFixed(0)] = n;
                 return p;
-            }, {})
+            }, {}),
         });
+
         if (!this.state.currentLineViewer) {
             engine.call("k45::xtm.lineViewer.getCityLines", false)
         }
@@ -74,12 +79,16 @@ export default class LineListCmp extends Component<any, State> {
                 onForceReload={() => engine.call("k45::xtm.lineViewer.getCityLines", true)}
             /></>
         }
+
         return <>
             <h1>{translate("lineList.title")}</h1>
             <h3>{translate("lineList.subtitle")}</h3>
-            <section style={{ position: "absolute", bottom: 52, left: 5, right: 5, top: 107 }} className="LineList">
+            <section style={{ position: "absolute", top: 159, left: 5, right: 5, bottom: 5 }} className="LineList">
                 <GameScrollComponent>
                     {this.state.linesList.map((x, i) => {
+                        const typeIndex = `${x.type}.${x.isCargo}`;
+                        if (this.state.filterExclude.includes(typeIndex)) return null;
+
                         const fontColor = ColorUtils.toRGBA(ColorUtils.getContrastColorFor(ColorUtils.toColor01(x.color)));
                         const effectiveIdentifier = x.xtmData?.Acronym || x.routeNumber.toFixed();
 
@@ -88,39 +97,60 @@ export default class LineListCmp extends Component<any, State> {
                                 "--xtm-line-color": ColorUtils.getClampedColor(x.color),
                                 "--xtm-font-color": fontColor,
                                 "--xtm-font-multiplier": effectiveIdentifier.length < 2 ? 1 : 1 / Math.min(4, effectiveIdentifier.length - 1),
-                                "--xtm-game-icon": `url(${TypeToIcons[`${x.type}.${x.isCargo}`]})`
+                                "--xtm-game-icon": `url(${TypeToIcons[typeIndex]})`
                             } as any}>
                                 <div className="text">{effectiveIdentifier}</div>
                                 <TlmLineFormatCmp className="icon" {...x} borderWidth="2px" contentOverride={<div className="gameIcon"></div>} />
                             </div>
                             <div className="lineName">{nameToString(x.name)}</div>
-                            <div className="lineType">{`${x.type} - ${x.isCargo ? "Cargo" : "Passenger"}`}</div>
-                            <div className="lineLength">{(x.length / 1000).toFixed(2) + " km"}</div>
-                            <div className="lineVehicles">{x.vehicles + " Vehicles"}</div>
+                            <div className="lineType">{this.getNameFor(x.type, x.isCargo)}</div>
+                            <div className="lineLength">{translateUnitResult(metersTo(x.length, this.state.unitsData?.unitSystem?.value__ ?? 0))}</div>
+                            <div className="lineVehicles">{`${x.vehicles} ${nameToString({
+                                nameId: `Transport.LEGEND_VEHICLES[${x.type}]`,
+                                __Type: NameType.Localized
+                            })}`}</div>
 
-                        </div>;
-                        <div key={i} className="tableRegularRow">
-                            <div className="w05">{x.entity.Index}</div>
-                            <div className="w05"><SimpleInput onValueChanged={(y) => this.sendAcronym(x.entity, y)} maxLength={32} getValue={() => x.xtmData?.Acronym ?? ""} /></div>
-                            <div className="w05"><SimpleInput onValueChanged={(y) => this.sendRouteNumber(x, y)} maxLength={9} getValue={() => x.routeNumber.toFixed()} /></div>
-                            <div className="w20">
-                                <div className="tlmIconParent">
-                                    <TlmLineFormatCmp {...x} text={x.xtmData?.Acronym ?? x.routeNumber.toFixed()} />
-                                </div>
-                                <SimpleInput onValueChanged={(y) => this.sendRouteName(x, y)} getValue={() => nameToString(x.name)} />
-                            </div>
-                            <div className="w05">{x.vehicles}</div>
-                            <div className="w10">{(x.length / 1000).toFixed(2) + " km"}</div>
-                            <div className="w05">{x.type}</div>
-                            <div className="w05" onClick={() => this.setState({ currentLineViewer: x })} >GO</div>
                         </div>;
                     })}
                 </GameScrollComponent>
             </section>
-            <section style={{ position: "absolute", bottom: 1, left: 5, right: 5, height: 50 }}>
+            <section style={{ position: "absolute", top: 107, left: 5, right: 5, height: 50 }} className="filterRow">
+                {
+                    Object.entries(TypeToIcons).map(x => {
+                        let splittedType = x[0].split(".")
+                        let type = splittedType[0];
+                        let isCargo = splittedType[1] == "true";
+                        return <button key={x[0]} className={this.state.filterExclude.includes(x[0]) ? "unselected" : ""} onClick={() => this.toggleFilterType(x[0])}>
+                            <img src={x[1]} data-tooltip={this.getNameFor(type, isCargo)} />
+                        </button>
+                    })
+                }
+                <div className="space" />
+                <button className="txt" onClick={() => this.setState({ filterExclude: [] })}>{translate("lineList.showAll")}</button>
+                <button className="txt" onClick={() => this.setState({ filterExclude: Object.keys(TypeToIcons) })}>{translate("lineList.hideAll")}</button>
+                <button className="txt" onClick={() => this.setState({ filterExclude: Object.keys(TypeToIcons).filter(x => x.endsWith(".true")) })}>{translate("lineList.passengerLines")}</button>
+                <button className="txt" onClick={() => this.setState({ filterExclude: Object.keys(TypeToIcons).filter(x => x.endsWith(".false")) })}>{translate("lineList.cargoRoutes")}</button>
             </section>
         </>;
     }
+
+    toggleFilterType(type: string) {
+        let newVal = this.state.filterExclude.filter(x => x != type);
+        if (newVal.length == this.state.filterExclude.length) {
+            newVal.push(type);
+        }
+        this.setState({
+            filterExclude: newVal
+        })
+    }
+
+    getNameFor(type: string, isCargo: boolean) {
+        return nameToString({
+            nameId: isCargo ? `Transport.ROUTES[${type}]` : `Transport.LINES[${type}]`,
+            __Type: NameType.Localized
+        })
+    }
+
     async setSelection(x: Entity) {
         return new Promise<void>((res) => this.setState({ currentLineViewer: this.state.indexedLineList[x.Index.toFixed(0)] }, () => res(null)))
     }

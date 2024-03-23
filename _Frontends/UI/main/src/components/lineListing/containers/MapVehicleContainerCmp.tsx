@@ -1,22 +1,22 @@
 import { VehicleData } from "#service/LineManagementService";
-import { MeasureUnit } from "@klyte45/euis-components";
+import { UnitSystem, getGameUnits } from "@klyte45/euis-components";
 import { nameToString } from "@klyte45/euis-components";
 import { CSSProperties, Component, ReactNode } from "react";
 
 
 export class MapVehicleContainerCmp extends Component<{
     vehicle: VehicleData;
-}, { measureUnit?: MeasureUnit; }> {
+}, { measureUnit?: UnitSystem; }> {
 
     constructor(props) {
         super(props);
         this.state = {};
     }
-    private measureCallback = async () => this.setState({ measureUnit: await engine.call("k45::xtm.common.getMeasureUnits") });
+    private measureCallback = async () => this.setState({ measureUnit: (await getGameUnits()).unitSystem.value__ });
     componentDidMount() {
         engine.on("k45::xtm.common.onMeasureUnitsChanged", this.measureCallback);
-        engine.call("k45::xtm.common.getMeasureUnits").then(async (x) => {
-            this.setState({ measureUnit: x });
+        getGameUnits().then(async (x) => {
+            this.setState({ measureUnit: x.unitSystem.value__ });
         });
     }
     override componentWillUnmount() {
