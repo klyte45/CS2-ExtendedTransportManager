@@ -1,7 +1,4 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project Sdk="Microsoft.NET.Sdk">
-  <PropertyGroup>
-    <DisableFastUpToDateCheck Condition="'$(Configuration)'=='Release'">true</DisableFastUpToDateCheck>
-  </PropertyGroup>
   <Import Project="..\BelzontTLM\BelzontCommons\AssemblyUtility\Frontend.targets" />
 </Project>
