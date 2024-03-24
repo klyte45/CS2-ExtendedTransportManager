@@ -38,9 +38,9 @@ Since it's a very complex mod, it may cause issues in the game due their early s
 The most up to date information about installation and known issues and bugs are in the forums topic.)</LongDescription>
   <Thumbnail Value="Properties/Thumbnail.png" />
   <ForumLink Value="" />
-  <ModVersion Value="0.1.1.1" />
+  <ModVersion Value="0.1.2.0" />
   <GameVersion Value="1.1.*" />
-  <ChangeLog># v0.1.1r1 (23-MAR-24)
+  <ChangeLog># v0.1.2r0 (24-MAR-24)
 - New screen for line listing
 - Removing temporary screens)</ChangeLog>
   <Tag Value="Code Mod" />
