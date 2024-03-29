@@ -8,7 +8,6 @@ using Game.Notifications;
 using Game.Prefabs;
 using Game.Routes;
 using Game.Tools;
-using MonoMod.Utils;
 using System;
 using System.Linq;
 using System.Runtime.CompilerServices;
@@ -390,11 +389,17 @@ namespace BelzontTLM.Palettes
 
         #region Serialization
 
-        private XTMRouteAutoColorSystemXML ToXml() 
+        private XTMRouteAutoColorSystemXML ToXml()
         {
             var xml = new XTMRouteAutoColorSystemXML();
-            xml.PaletteSettingsCargo.AddRange(PaletteSettingsCargo.ToDictionary(x => x.Key, x => x.Value.ToString()));
-            xml.PaletteSettingsPassenger.AddRange(PaletteSettingsPassenger.ToDictionary(x => x.Key, x => x.Value.ToString()));
+            foreach (var x in PaletteSettingsCargo)
+            {
+                xml.PaletteSettingsCargo.Add(x.Key, x.Value.ToString());
+            }
+            foreach (var x in PaletteSettingsPassenger)
+            {
+                xml.PaletteSettingsPassenger.Add(x.Key, x.Value.ToString());
+            }
             return xml;
         }
 
@@ -429,16 +434,22 @@ namespace BelzontTLM.Palettes
             {
                 var loadedData = XmlUtils.DefaultXmlDeserialize<XTMRouteAutoColorSystemXML>(new string(autoColorData));
                 PaletteSettingsPassenger.Clear();
-                PaletteSettingsPassenger.AddRange(loadedData.PaletteSettingsPassenger.ToDictionary(x => x.Key, x => new Guid(x.Value)));
+                foreach (var x in loadedData.PaletteSettingsPassenger)
+                {
+                    PaletteSettingsPassenger.Add(x.Key, new Guid(x.Value));
+                }
                 PaletteSettingsCargo.Clear();
-                PaletteSettingsCargo.AddRange(loadedData.PaletteSettingsCargo.ToDictionary(x => x.Key, x => new Guid(x.Value)));
+                foreach (var x in loadedData.PaletteSettingsCargo)
+                {
+                    PaletteSettingsCargo.Add(x.Key, new Guid(x.Value));
+                }
             }
             catch (Exception e)
             {
                 LogUtils.DoWarnLog($"XTMRouteAutoColorDataSerializer: Could not load palettes for the City!!!\n{e}");
             }
         }
-         
+
         private void Serialize<TWriter>(TWriter writer) where TWriter : IWriter
         {
             var xml = XmlUtils.DefaultXmlSerialize(ToXml());

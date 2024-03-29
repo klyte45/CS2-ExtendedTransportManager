@@ -3,7 +3,6 @@ using Belzont.Serialization;
 using Belzont.Utils;
 using Colossal.Serialization.Entities;
 using Game;
-using MonoMod.Utils;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -128,7 +127,10 @@ namespace BelzontTLM.Palettes
             }
             var palettes = XmlUtils.DefaultXmlDeserialize<XTMPaletteSystemXML>(paletteData);
             CityPalettes.Clear();
-            CityPalettes.AddRange(palettes.CityPalettes.ToDictionary(x => x.Guid, x => XTMPaletteFile.FromXML(x)));
+            foreach (var x in palettes.CityPalettes)
+            {
+                CityPalettes.Add(x.Guid, XTMPaletteFile.FromXML(x));
+            }
             OnCityPalettesChanged();
         }
 
