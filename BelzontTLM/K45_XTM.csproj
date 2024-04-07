@@ -27,7 +27,7 @@
     <ThumbnailPath>Properties/Thumbnail.png</ThumbnailPath>
     <DisplayName>Extended Transport Manager</DisplayName>
     <ShortDescription>Expanded tools for public transport management.</ShortDescription>
-    <ForumLink></ForumLink>
+    <ForumLink>https://forum.paradoxplaza.com/forum/threads/xtm-extended-transport-manager.1651555/</ForumLink>
   </PropertyGroup>
 
   <!--Mod multíple value data-->
@@ -57,7 +57,7 @@
         <ShortDescription Value="$(ShortDescription)" />
         <LongDescription />
         <Thumbnail Value="$(ThumbnailPath)" />
-        <ForumLink Value="" />
+        <ForumLink Value="$(ForumLink)" />
         <ModVersion Value="$(Version)" />
         <GameVersion Value="$(GameVersion)" />
         <ChangeLog />
