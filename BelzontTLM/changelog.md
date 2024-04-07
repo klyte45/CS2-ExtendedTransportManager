@@ -1,4 +1,8 @@
-# v0.1.2r1 (29-MAR-24)
+# v0.1.2r2 (06-APR-24)
+- Fixed UI errors behavior
+- Fixing bug possibly causing slowdown due failing to map stops
+
+**Previous: v0.1.2r1 (29-MAR-24)**
 
 - Solved issue related to _MethodAccessException_ when saving a city. This was happening due Harmony version conflicts.
 	- Ensure all mods subscribed by you are using the same version of **0Harmony.dll** file. You can check it on Windows Explorer's Properties window, tab Details.

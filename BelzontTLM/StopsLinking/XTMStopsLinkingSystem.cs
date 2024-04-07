@@ -55,6 +55,7 @@ namespace BelzontTLM
                         DynamicBuffer<XTMChildConnectedRoute> buffer = !EntityManager.HasBuffer<XTMChildConnectedRoute>(parent.m_Parent)
                             ? EntityManager.AddBuffer<XTMChildConnectedRoute>(parent.m_Parent)
                             : EntityManager.GetBuffer<XTMChildConnectedRoute>(parent.m_Parent);
+                        if (!buffer.IsCreated) continue;
                         if (CollectionUtils.TryAddUniqueValue(buffer, new XTMChildConnectedRoute(entitesToCheck[i])))
                         {
                             //LogUtils.DoLog($"XTMMapStopsJob ADD BUFFER2: {entitesToCheck[i].Index}");
