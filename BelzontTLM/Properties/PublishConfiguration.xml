@@ -35,19 +35,26 @@ Since it's a very complex mod, it may cause issues in the game due their early s
 
 ## Support
 
-The most up to date information about installation and known issues and bugs are in the forums topic.)</LongDescription>
+The most up to date information about installation and known issues and bugs are in the forums topic.</LongDescription>
   <Thumbnail Value="Properties/Thumbnail.png" />
   <ForumLink Value="https://forum.paradoxplaza.com/forum/threads/xtm-extended-transport-manager.1651555/" />
-  <ModVersion Value="0.1.2.2" />
+  <ModVersion Value="0.1.3.0" />
   <GameVersion Value="1.1.*" />
   <ChangeLog># v0.1.3r0 (??-JUN-24)
 - Economy 2.0 update
-- Fixed error when clicking on a line with no vehicles - _TypeError: Cannot read properties of undefined (reading '1')_)</ChangeLog>
+- New side tabs to navigate between mod screens
+- Added requirement to subscribe the Unified Icon Library
+- Added support to exporting palettes from city to a .hex file under `&lt;Palettes Folder&gt;/Exported` folder. You can share the file with other players.
+- Added support to subfolders under the palettes folder. Each subfolder will have a folded group in the palette library screen.
+- Added buttons to go to palette folder in some palette related screens.
+- Added button to reload palettes from folder at palette library screen.
+- Fixed error when clicking on a line with no vehicles - _TypeError: Cannot read properties of undefined (reading '1')_</ChangeLog>
   <Tag Value="Code Mod" />
   <Screenshot Value="Screenshots\00_lineListing.jpg" />
   <Screenshot Value="Screenshots\01_LineData.jpg" />
   <Screenshot Value="Screenshots\02_mapview.jpg" />
   <Screenshot Value="Screenshots\03_MapOptions.jpg" />
   <Screenshot Value="Screenshots\04_palletes.jpg" />
-  <Dependency Id="74151" ModVersion="0.1.1.2" DisplayName="Extra UI Screens" />
+  <Dependency Id="74151" ModVersion="" DisplayName="Extra UI Screens" />
+  <Dependency Id="74417" ModVersion="" DisplayName="Unified Icon Library" />
 </Publish>

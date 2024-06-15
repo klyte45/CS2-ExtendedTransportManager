@@ -7,8 +7,6 @@
     <LangVersion>10.0</LangVersion>
     <DebugType Condition="'$(Configuration)'=='Release'">None</DebugType>
     <DebugSymbols Condition="'$(Configuration)'=='Release'">False</DebugSymbols>
-    <!--The folder where Cities2.exe is located. Set it only if the game is not installed in the default location, otherwise keep it empty-->
-    <CustomInstallationPath></CustomInstallationPath>
     
     <!--The file where mod information which is required for publishing mod on PDX mods are stored-->
     <PublishConfigurationPath>Properties\PublishConfiguration.xml</PublishConfigurationPath>
@@ -17,17 +15,21 @@
   <!--Imports must be after PropertyGroup block-->
   <Import Project="$([System.Environment]::GetEnvironmentVariable('CSII_TOOLPATH', 'EnvironmentVariableTarget.User'))\Mod.props" />
   <Import Project="$([System.Environment]::GetEnvironmentVariable('CSII_TOOLPATH', 'EnvironmentVariableTarget.User'))\Mod.targets" />
+  <Import Project="$(SolutionDir)\_Build\belzont_public.targets" />
+
+  <!--File with machine specific data - can be disabled-->
   <Import Project="$(K45_CS2_ALLROOT)\_Shared\belzont.targets" />
   
   <!--Mod data-->
   <PropertyGroup>
     <ModId>74238</ModId>
-    <Version>0.1.2.2</Version>
+    <Version>0.1.3.0</Version>
     <GameVersion>1.1.*</GameVersion>
     <ThumbnailPath>Properties/Thumbnail.png</ThumbnailPath>
     <DisplayName>Extended Transport Manager</DisplayName>
     <ShortDescription>Expanded tools for public transport management.</ShortDescription>
     <ForumLink>https://forum.paradoxplaza.com/forum/threads/xtm-extended-transport-manager.1651555/</ForumLink>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
   </PropertyGroup>
 
   <!--Mod multíple value data-->
@@ -50,31 +52,7 @@
       <_Parameter2>$(DisplayName)</_Parameter2>
       <_Parameter3>$(ShortDescription)</_Parameter3>
     </AssemblyAttribute>
-  </ItemGroup>
-  <!--Publishing generation files-->
-  <Target Name="SetupAttributes" BeforeTargets="BeforeBuild">
-    <PropertyGroup>
-      <PublishContent>
-        <ModId Value="$(ModId)" />
-        <DisplayName Value="$(DisplayName)" />
-        <ShortDescription Value="$(ShortDescription)" />
-        <LongDescription />
-        <Thumbnail Value="$(ThumbnailPath)" />
-        <ForumLink Value="$(ForumLink)" />
-        <ModVersion Value="$(Version)" />
-        <GameVersion Value="$(GameVersion)" />
-        <ChangeLog />
-      </PublishContent>
-      <PublishContent>$(PublishContent)@(ModTag->'&lt;Tag Value="%(Identity)" /&gt;','%0a%0d')</PublishContent>
-      <PublishContent>$(PublishContent)@(Screenshots->'&lt;Screenshot Value="%(Identity)" /&gt;','%0a%0d')</PublishContent>
-      <PublishContent>$(PublishContent)@(Dependency->'&lt;Dependency Id="%(ModId)" ModVersion="%(Version)" DisplayName="%(DisplayName)"/&gt;','%0a%0d')</PublishContent>
-    </PropertyGroup>
-    <XmlPoke XmlInputPath="$(PublishConfigurationPath)" Value="$(PublishContent)" Query="//Publish" />
-
-    <XmlPoke XmlInputPath="$(PublishConfigurationPath)" Value="$([System.IO.File]::ReadAllText($(ProjectDir)/longDescription.md)))" Query="//LongDescription" />
-    <XmlPoke XmlInputPath="$(PublishConfigurationPath)" Value="$([System.IO.File]::ReadAllText($(ProjectDir)changelog.md)))" Query="//ChangeLog" />
-   
-  </Target>    
+  </ItemGroup>  
 
   <Target Name="EUIS Build" BeforeTargets="DeployWIP" AfterTargets="RunModPostProcessor">
     <Message Importance="high" Text="EUIS Build!" />
@@ -216,8 +194,6 @@
     <None Update="i18n\i18n.csv">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <Resource Include="*.md" />
-      
+    <Resource Include="*.md" />      
   </ItemGroup>
-
 </Project>
