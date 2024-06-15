@@ -4,6 +4,7 @@ import CityPaletteLibraryCmp from "#components/palettes/CityPaletteLibraryCmp";
 import PaletteSetupSettings from "#components/palettes/PaletteSetupSettings";
 import "#styles/root.scss";
 import translate from "#utility/translate"
+import { MainSideTabMenuComponent, MenuItem } from "@klyte45/euis-components";
 import { Component } from "react";
 import { Tab, TabList, TabPanel, Tabs } from "react-tabs";
 
@@ -11,6 +12,7 @@ type State = {
   lastIdx: number
   otherX: number
 }
+
 
 export default class Root extends Component<any, State> {
   constructor(props) {
@@ -29,18 +31,59 @@ export default class Root extends Component<any, State> {
 
 
   render() {
+    const menus: MenuItem[] = [
+      {
+        iconUrl: "coui://uil/Standard/BusShelter.svg",
+        name: translate("lineList.title"),
+        panelContent: <LineListCmp />,
+        tintedIcon: true
+      },
+      {
+        iconUrl: "coui://uil/Standard/ColorPalette.svg",
+        name: translate("cityPalettesLibrary.title"),
+        panelContent: <CityPaletteLibraryCmp />
+      },
+      {     
+        iconUrl: "coui://uil/Standard/Tools.svg",
+        name: translate("palettesSettings.title"),
+        panelContent: <PaletteSetupSettings />
+      }
+    ]
     return <>
       {/* <button style={{ position: "fixed", right: 0, top: 0, zIndex: 999 }} onClick={() => location.reload()}>RELOAD!!!</button> */}
-      <Tabs>
-        <TabList>
-          <Tab>{translate("lineList.title")}</Tab>
-          <Tab>{translate("cityPalettesLibrary.title")}</Tab>
-          <Tab>{translate("palettesSettings.title")}</Tab>
-        </TabList>
-        <TabPanel><LineListCmp /></TabPanel>
-        <TabPanel><CityPaletteLibraryCmp /></TabPanel>
-        <TabPanel><PaletteSetupSettings /></TabPanel>
-      </Tabs>
+      <ErrorBoundary>
+        <MainSideTabMenuComponent
+          items={menus}
+          mainIconUrl="coui://xtm.k45/UI/images/XTM.svg"
+          modTitle="Extended Transport"
+          subtitle="Manager"
+          tooltip="Extended Transport Manager"
+        />
+      </ErrorBoundary>
     </>;
+
+
+  }
+}
+
+class ErrorBoundary extends Component {
+  constructor(props) {
+    super(props);
+    this.state = { hasError: false };
+  }
+
+  componentDidCatch(error, info) {
+    // Display fallback UI
+    this.setState({ hasError: true });
+    // You can also log the error to an error reporting service
+    console.log(error, info);
+  }
+
+  render() {
+    if ((this.state as any)?.hasError) {
+      // You can render any custom fallback UI
+      return <h1>Something went wrong.</h1>;
+    }
+    return this.props.children;
   }
 }

@@ -1,5 +1,5 @@
 import { LineData, LineManagementService } from "#service/LineManagementService";
-import { ColorUtils, Entity, GameScrollComponent, NameCustom, NameFormatted, NameType, SimpleInput, UnitSettings, getGameUnits, metersTo, nameToString, replaceArgs, translateUnitResult } from "@klyte45/euis-components";
+import { ColorUtils, DefaultPanelScreen, Entity, GameScrollComponent, NameCustom, NameFormatted, NameType, SimpleInput, UnitSettings, getGameUnits, metersTo, nameToString, replaceArgs, translateUnitResult } from "@klyte45/euis-components";
 import { Component } from "react";
 import LineDetailCmp from "./LineDetailCmp";
 import { TlmLineFormatCmp } from "./containers/TlmLineFormatCmp";
@@ -83,10 +83,29 @@ export default class LineListCmp extends Component<any, State> {
             /></>
         }
 
-        return <>
-            <h1>{translate("lineList.title")}</h1>
-            <h3>{translate("lineList.subtitle")}</h3>
-            <section style={{ position: "absolute", top: 159, left: 5, right: 5, bottom: 5 }} className="LineList">
+        return <DefaultPanelScreen title={translate("lineList.title")} subtitle={translate("lineList.subtitle")}>
+            <section style={{ position: "absolute", top: 0, left: 0, right: 0, height: 50 }} className="filterRow">
+                {
+                    Object.entries(TypeToIcons).map(x => {
+                        let splittedType = x[0].split(".")
+                        let type = splittedType[0];
+                        let isCargo = splittedType[1] == "true";
+                        return <button key={x[0]} className={this.state.filterExclude.includes(x[0]) ? "unselected" : ""} onClick={() => this.toggleFilterType(x[0])}>
+                            <img src={x[1]} data-tooltip={this.getNameFor(type, isCargo)} />
+                        </button>
+                    })
+                }
+                <div className="space" />
+                <button className="txt" onClick={() => this.setState({ filterExclude: [] })}>{translate("lineList.showAll")}</button>
+                <button className="txt" onClick={() => this.setState({ filterExclude: Object.keys(TypeToIcons) })}>{translate("lineList.hideAll")}</button>
+                <button className="txt" onClick={() => this.setState({ filterExclude: Object.keys(TypeToIcons).filter(x => x.endsWith(".true")) })}>{translate("lineList.passengerLines")}</button>
+                <button className="txt" onClick={() => this.setState({ filterExclude: Object.keys(TypeToIcons).filter(x => x.endsWith(".false")) })}>{translate("lineList.cargoRoutes")}</button>
+                <div className="space" />
+                <div className="righter">
+                    {replaceArgs(translate("lineList.linesCurrentFilterFormat"), { LINECOUNT: `${this.state.linesList.filter(x => !this.state.filterExclude.includes(`${x.type}.${x.isCargo}`)).length}` })}
+                </div>
+            </section>
+            <section style={{ position: "absolute", top: 50, left: 0, right: 0, bottom: 0 }} className="LineList">
                 <GameScrollComponent>
                     {this.state.linesList.map((x, i) => {
                         const typeIndex = `${x.type}.${x.isCargo}`;
@@ -117,28 +136,7 @@ export default class LineListCmp extends Component<any, State> {
                     })}
                 </GameScrollComponent>
             </section>
-            <section style={{ position: "absolute", top: 107, left: 5, right: 5, height: 50 }} className="filterRow">
-                {
-                    Object.entries(TypeToIcons).map(x => {
-                        let splittedType = x[0].split(".")
-                        let type = splittedType[0];
-                        let isCargo = splittedType[1] == "true";
-                        return <button key={x[0]} className={this.state.filterExclude.includes(x[0]) ? "unselected" : ""} onClick={() => this.toggleFilterType(x[0])}>
-                            <img src={x[1]} data-tooltip={this.getNameFor(type, isCargo)} />
-                        </button>
-                    })
-                }
-                <div className="space" />
-                <button className="txt" onClick={() => this.setState({ filterExclude: [] })}>{translate("lineList.showAll")}</button>
-                <button className="txt" onClick={() => this.setState({ filterExclude: Object.keys(TypeToIcons) })}>{translate("lineList.hideAll")}</button>
-                <button className="txt" onClick={() => this.setState({ filterExclude: Object.keys(TypeToIcons).filter(x => x.endsWith(".true")) })}>{translate("lineList.passengerLines")}</button>
-                <button className="txt" onClick={() => this.setState({ filterExclude: Object.keys(TypeToIcons).filter(x => x.endsWith(".false")) })}>{translate("lineList.cargoRoutes")}</button>
-                <div className="space" />
-                <div className="righter">
-                    {replaceArgs(translate("lineList.linesCurrentFilterFormat"), { LINECOUNT: `${this.state.linesList.filter(x => !this.state.filterExclude.includes(`${x.type}.${x.isCargo}`)).length}` })}
-                </div>
-            </section>
-        </>;
+        </DefaultPanelScreen>;
     }
 
     toggleFilterType(type: string) {

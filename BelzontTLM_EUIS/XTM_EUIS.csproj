@@ -1,7 +1,7 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project Sdk="Microsoft.NET.Sdk">
   <ItemGroup>
-    <ProjectReference Include="..\BelzontTLM\K45_XTM.csproj" />
+    <ProjectReference Include="..\BelzontTLM\ExtendedTransportManager.csproj" />
   </ItemGroup>  
   <PropertyGroup>
     <TargetFramework>net472</TargetFramework>

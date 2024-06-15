@@ -71,7 +71,13 @@ namespace BelzontTLM.Palettes
             return new XTMPaletteFile(name, colors);
         }
 
-        public void Save() => File.WriteAllText(Path.Combine(ExtendedTransportManagerMod.Instance.PalettesFolder, $"{Name}{EXT_PALETTE}"), ToFileContent());
+        public void Save()
+        {
+            var targetFile = Path.Combine(ExtendedTransportManagerMod.Instance.PalettesFolder, $"{Name}{EXT_PALETTE}");
+            var parentFolder = Path.GetDirectoryName(targetFile);
+            KFileUtils.EnsureFolderCreation(parentFolder);
+            File.WriteAllText(targetFile, ToFileContent());
+        }
 
         public XTMPaletteFileXML ToXML()
         {

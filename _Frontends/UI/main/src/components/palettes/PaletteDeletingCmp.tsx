@@ -3,6 +3,7 @@ import '#styles/PaletteLineViewer.scss';
 import translate from "#utility/translate"
 import { Component } from "react";
 import { PaletteDetailHeaderCmp } from "./PaletteDetailHeaderCmp";
+import { DefaultPanelScreen } from "@klyte45/euis-components";
 
 type State = {
     paletteData: PaletteData,
@@ -27,17 +28,12 @@ export default class PaletteDeletingCmp extends Component<Props, State> {
     }
 
     render() {
-        return <>
-            <h1>{translate("paletteDelete.title")}</h1>
-            <h3>{translate("paletteDelete.subtitle")}</h3>
-            <section style={{ position: "absolute", bottom: this.props.onBack ? 52 : 0, left: 5, right: 5, top: 107 }}>
-                <PaletteDetailHeaderCmp paletteData={this.props.paletteData} />
-            </section>
-            <div style={{ display: "flex", position: "absolute", left: 5, right: 5, bottom: 5, flexDirection: "row-reverse" }}>
-                <button className="negativeBtn" onClick={() => this.props.onOk(this.state.paletteData)}>{translate("paletteDelete.yes")}</button>
-                <button className="darkestBtn" onClick={this.props.onBack}>{translate("paletteDelete.no")}</button>
-            </div>
-        </>;
+        return <DefaultPanelScreen title={translate("paletteDelete.title")} subtitle={translate("paletteDelete.subtitle")} buttonsRowContent={<>
+            <button className="negativeBtn" onClick={() => this.props.onOk(this.state.paletteData)}>{translate("paletteDelete.yes")}</button>
+            <button className="darkestBtn" onClick={this.props.onBack}>{translate("paletteDelete.no")}</button>
+        </>}>
+            <PaletteDetailHeaderCmp paletteData={this.props.paletteData} />
+        </DefaultPanelScreen>;
     }
 }
 

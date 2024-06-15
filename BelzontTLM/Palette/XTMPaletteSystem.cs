@@ -1,6 +1,7 @@
 ﻿using Belzont.Interfaces;
 using Belzont.Serialization;
 using Belzont.Utils;
+using Colossal;
 using Colossal.Serialization.Entities;
 using Game;
 using System;
@@ -23,6 +24,9 @@ namespace BelzontTLM.Palettes
             eventCaller.Invoke("palettes.addPaletteToCity", AddCityPalette);
             eventCaller.Invoke("palettes.deleteFromCity", DeleteCityPalette);
             eventCaller.Invoke("palettes.updateForCity", UpdateCityPalette);
+            eventCaller.Invoke("palettes.openPalettesFolder", OpenPalettesFolder);
+            eventCaller.Invoke("palettes.exportToLibrary", ExportToLibrary);
+            eventCaller.Invoke("palettes.reloadPalettes", ReloadPalettes);
         }
 
         private Action<string, object[]> eventCaller;
@@ -83,6 +87,20 @@ namespace BelzontTLM.Palettes
             }
         }
 
+        private void OpenPalettesFolder()
+        {
+            RemoteProcess.OpenFolder(ExtendedTransportManagerMod.Instance.PalettesFolder);
+        }
+
+        private void ExportToLibrary(string name, string[] colors)
+        {
+            new XTMPaletteFile($"Exported/{name}", colors.Select(x => ColorExtensions.FromRGB(x, x.StartsWith("#")))).Save();
+            XTMPaletteManager.Instance.Reload();
+        }
+        private void ReloadPalettes()
+        {
+            XTMPaletteManager.Instance.Reload();
+        }
         #region Serialization
 
         private XTMPaletteSystemXML ToXml()

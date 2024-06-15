@@ -25,36 +25,36 @@ namespace BelzontTLM.Palettes
         private RandomPastelColorGenerator gen = new();
         private readonly Dictionary<Guid, XTMPaletteFile> m_palettes = new();
         public readonly XTMPaletteFile[] defaultPaletteArray = new XTMPaletteFile[] {
-                    new XTMPaletteFile("BRA/São Paulo 2035",XTMPresetPalettes. SaoPaulo2035,true),
-                    new XTMPaletteFile("BRA/São Paulo 1960",XTMPresetPalettes. SaoPaulo1960,true),
-                    new XTMPaletteFile("UK/London 2016", XTMPresetPalettes.London2016,true),
-                    new XTMPaletteFile("Generic/Rainbow/Full",XTMPresetPalettes. Rainbow,true),
-                    new XTMPaletteFile("Generic/Rainbow/Short", XTMPresetPalettes.RainbowShort,true),
-                    new XTMPaletteFile("Generic/World Metro Mix", XTMPresetPalettes.WorldMix,true),
-                    new XTMPaletteFile("Generic/Microsoft/Metro UI", XTMPresetPalettes.MSMetroUI,true),
-                    new XTMPaletteFile("Generic/Microsoft/Windows 95 (16 colors)", XTMPresetPalettes.MSWin95,true),
-                    new XTMPaletteFile("Generic/Microsoft/Windows 95 (20 colors)", XTMPresetPalettes.MSWin95_20,true),
-                    new XTMPaletteFile("Generic/Apple Macintosh 1987", XTMPresetPalettes.AppleMacintosh,true),
-                    new XTMPaletteFile("Generic/Material Color/100", XTMPresetPalettes.MatColor100,true),
-                    new XTMPaletteFile("Generic/Material Color/500", XTMPresetPalettes.MatColor500,true),
-                    new XTMPaletteFile("Generic/Material Color/900", XTMPresetPalettes.MatColor900,true),
-                    new XTMPaletteFile("Generic/Material Color/A200", XTMPresetPalettes.MatColorA200,true),
-                    new XTMPaletteFile("Generic/Material Color/A400", XTMPresetPalettes.MatColorA400,true),
-                    new XTMPaletteFile("Generic/Material Color/A700", XTMPresetPalettes.MatColorA700,true),
-                    new XTMPaletteFile("BRA/São Paulo CPTM 2000", XTMPresetPalettes.CPTM_SP_2000,true),
-                    new XTMPaletteFile("BRA/São Paulo City Bus Area 2000", XTMPresetPalettes.SP_BUS_2000,true),
-                    new XTMPaletteFile("USA/New York City Subway/1972", XTMPresetPalettes.NYC_SUBWAY_1972,true),
-                    new XTMPaletteFile("USA/New York City Subway/1979", XTMPresetPalettes.NYC_SUBWAY_1979,true),
-                    new XTMPaletteFile("USA/New York City Subway/Official Modern", XTMPresetPalettes.NYC_SUBWAY_MODERN_OFFICIAL,true),
-                    new XTMPaletteFile("USA/New York City Subway/2012 Vignelli", XTMPresetPalettes.NYC_SUBWAY_MODERN_VIGNELLI_2012,true),
-                    new XTMPaletteFile("USA/BART Modern", XTMPresetPalettes.SF_BART_MODERN,true),
-                    new XTMPaletteFile("USA/Chicago CTA", XTMPresetPalettes.CHICAGO_CTA ,true),
-                    new XTMPaletteFile("USA/Washington DC Metro", XTMPresetPalettes.WDC_METRO ,true),
-                    new XTMPaletteFile("USA/LA Metro", XTMPresetPalettes.LA_METRO ,true),
-                    new XTMPaletteFile("USA/MBTA (Boston)", XTMPresetPalettes.BOSTON_MBTA ,true),
-                    new XTMPaletteFile("Generic/IBM Design Library Accessible Palette", XTMPresetPalettes.IBM_ACCESSIBLE ,true),
-                    new XTMPaletteFile("Generic/Wong Accessible Palette", XTMPresetPalettes.WONG_ACCESSIBLE ,true),
-                    new XTMPaletteFile("Generic/Tol Vibrant Accessible Palette", XTMPresetPalettes.TOL_VIBRANT_ACCESSIBLE ,true),
+                    new("BRA/São Paulo 2035",XTMPresetPalettes. SaoPaulo2035,true),
+                    new("BRA/São Paulo 1960",XTMPresetPalettes. SaoPaulo1960,true),
+                    new("UK/London 2016", XTMPresetPalettes.London2016,true),
+                    new("Generic/Rainbow/Full",XTMPresetPalettes. Rainbow,true),
+                    new("Generic/Rainbow/Short", XTMPresetPalettes.RainbowShort,true),
+                    new("Generic/World Metro Mix", XTMPresetPalettes.WorldMix,true),
+                    new("Generic/Microsoft/Metro UI", XTMPresetPalettes.MSMetroUI,true),
+                    new("Generic/Microsoft/Windows 95 (16 colors)", XTMPresetPalettes.MSWin95,true),
+                    new("Generic/Microsoft/Windows 95 (20 colors)", XTMPresetPalettes.MSWin95_20,true),
+                    new("Generic/Apple Macintosh 1987", XTMPresetPalettes.AppleMacintosh,true),
+                    new("Generic/Material Color/100", XTMPresetPalettes.MatColor100,true),
+                    new("Generic/Material Color/500", XTMPresetPalettes.MatColor500,true),
+                    new("Generic/Material Color/900", XTMPresetPalettes.MatColor900,true),
+                    new("Generic/Material Color/A200", XTMPresetPalettes.MatColorA200,true),
+                    new("Generic/Material Color/A400", XTMPresetPalettes.MatColorA400,true),
+                    new("Generic/Material Color/A700", XTMPresetPalettes.MatColorA700,true),
+                    new("BRA/São Paulo CPTM 2000", XTMPresetPalettes.CPTM_SP_2000,true),
+                    new("BRA/São Paulo City Bus Area 2000", XTMPresetPalettes.SP_BUS_2000,true),
+                    new("USA/New York City Subway/1972", XTMPresetPalettes.NYC_SUBWAY_1972,true),
+                    new("USA/New York City Subway/1979", XTMPresetPalettes.NYC_SUBWAY_1979,true),
+                    new("USA/New York City Subway/Official Modern", XTMPresetPalettes.NYC_SUBWAY_MODERN_OFFICIAL,true),
+                    new("USA/New York City Subway/2012 Vignelli", XTMPresetPalettes.NYC_SUBWAY_MODERN_VIGNELLI_2012,true),
+                    new("USA/BART Modern", XTMPresetPalettes.SF_BART_MODERN,true),
+                    new("USA/Chicago CTA", XTMPresetPalettes.CHICAGO_CTA ,true),
+                    new("USA/Washington DC Metro", XTMPresetPalettes.WDC_METRO ,true),
+                    new("USA/LA Metro", XTMPresetPalettes.LA_METRO ,true),
+                    new("USA/MBTA (Boston)", XTMPresetPalettes.BOSTON_MBTA ,true),
+                    new("Generic/IBM Design Library Accessible Palette", XTMPresetPalettes.IBM_ACCESSIBLE ,true),
+                    new("Generic/Wong Accessible Palette", XTMPresetPalettes.WONG_ACCESSIBLE ,true),
+                    new("Generic/Tol Vibrant Accessible Palette", XTMPresetPalettes.TOL_VIBRANT_ACCESSIBLE ,true),
                 };
 
         public string[] PaletteList => new string[] { null }.Union(m_palettes.Values.Select(x => x.Name)).OrderBy(x => x).ToArray();
@@ -116,10 +116,10 @@ namespace BelzontTLM.Palettes
         {
             m_palettes.Clear();
             KFileUtils.EnsureFolderCreation(ExtendedTransportManagerMod.Instance.PalettesFolder);
-            foreach (var filename in Directory.GetFiles(ExtendedTransportManagerMod.Instance.PalettesFolder, "*" + XTMPaletteFile.EXT_PALETTE).Select(x => x.Split(Path.DirectorySeparatorChar).Last()))
+            foreach (var filename in Directory.EnumerateFiles(ExtendedTransportManagerMod.Instance.PalettesFolder, "*" + XTMPaletteFile.EXT_PALETTE, SearchOption.AllDirectories))
             {
-                var fileContents = File.ReadAllLines(ExtendedTransportManagerMod.Instance.PalettesFolder + Path.DirectorySeparatorChar + filename, Encoding.UTF8);
-                var name = filename[..^XTMPaletteFile.EXT_PALETTE.Length];
+                var fileContents = File.ReadAllLines(filename, Encoding.UTF8);
+                var name = filename.Replace(ExtendedTransportManagerMod.Instance.PalettesFolder + Path.DirectorySeparatorChar, "")[..^XTMPaletteFile.EXT_PALETTE.Length].Replace(Path.DirectorySeparatorChar, '/');
                 var value = XTMPaletteFile.FromFileContent(name, fileContents.Select(x => x?.Trim()).Where(x => Regex.IsMatch(x, "^#?[a-f0-9]{6}$", RegexOptions.IgnoreCase)).ToArray());
 
                 m_palettes[value.Guid] = value;

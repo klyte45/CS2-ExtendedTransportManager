@@ -1,13 +1,9 @@
-# v0.1.2r2 (06-APR-24)
-- Fixed UI errors behavior
-- Fixing bug possibly causing slowdown due failing to map stops
-
-**Previous: v0.1.2r1 (29-MAR-24)**
-
-- Solved issue related to _MethodAccessException_ when saving a city. This was happening due Harmony version conflicts.
-	- Ensure all mods subscribed by you are using the same version of **0Harmony.dll** file. You can check it on Windows Explorer's Properties window, tab Details.
-	- The version of Harmony used by this mod is **2.2.2.0**
-
-**Previous: v0.1.2r0 (24-MAR-24)**
-- New screen for line listing
-- Removing temporary screens
+# v0.1.3r0 (??-JUN-24)
+- Economy 2.0 update
+- New side tabs to navigate between mod screens
+- Added requirement to subscribe the Unified Icon Library
+- Added support to exporting palettes from city to a .hex file under `<Palettes Folder>/Exported` folder. You can share the file with other players.
+- Added support to subfolders under the palettes folder. Each subfolder will have a folded group in the palette library screen.
+- Added buttons to go to palette folder in some palette related screens.
+- Added button to reload palettes from folder at palette library screen.
+- Fixed error when clicking on a line with no vehicles - _TypeError: Cannot read properties of undefined (reading '1')_

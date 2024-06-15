@@ -4,6 +4,7 @@ import { Component } from "react";
 import { PaletteCategoryCmp, categorizePalettes } from "#components/palettes/PaletteCategoryCmp";
 import '#styles/PaletteLineViewer.scss'
 import { PaletteLineViewer } from "./PaletteLineViewer";
+import { DefaultPanelScreen } from "@klyte45/euis-components";
 
 type State = {
     availablePalettes: PaletteStructureTreeNode,
@@ -49,16 +50,15 @@ export default class PaletteLibrarySelectorCmp extends Component<Props, State> {
     }
 
     render() {
-        return <>
-            <h1>{translate("palettesLibrary.title")}</h1>
-            <h3>{translate("palettesLibrary.subtitle")}</h3>
-            <section style={{ position: "absolute", bottom: this.props.onBack ? 52 : 0, left: 5, right: 5, top: 107 }}>
-                <PaletteCategoryCmp entry={this.state?.availablePalettes} doWithPaletteData={(x, i) => <PaletteLineViewer entry={x} key={i} actionButtons={this.props.actionButtons} />} />
-            </section>
-            {this.props.onBack && <div style={{ display: "flex", position: "absolute", left: 5, right: 5, bottom: 5, flexDirection: "row-reverse" }}>
-                <button className="negativeBtn" onClick={this.props.onBack}>{translate("palettesLibrary.back")}</button>
-            </div>}
-        </>;
+        return <DefaultPanelScreen title={translate("palettesLibrary.title")} subtitle={translate("palettesLibrary.subtitle")} buttonsRowContent={
+            <>
+                {this.props.onBack && <button className="negativeBtn" onClick={this.props.onBack}>{translate("palettesLibrary.back")}</button>}
+                <button className="neutralBtn" onClick={() => PaletteService.openPalettesFolder()}>{translate("cityPalettesLibrary.goToLib")}</button>
+                <button className="neutralBtn" onClick={() => PaletteService.reloadPalettes().then(x => this.updatePalettes())}>{translate("palettesLibrary.reloadPalettes")}</button>
+            </>
+        }>
+            <PaletteCategoryCmp entry={this.state?.availablePalettes} doWithPaletteData={(x, i) => <PaletteLineViewer entry={x} key={i} actionButtons={this.props.actionButtons} />} />
+        </DefaultPanelScreen>;
     }
 }
 

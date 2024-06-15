@@ -1,7 +1,7 @@
 import { PaletteCategoryCmp, categorizePalettes } from "#components/palettes/PaletteCategoryCmp";
 import PaletteLibrarySelectorCmp from "#components/palettes/PaletteLibrarySelectorCmp";
 import { PaletteData, PaletteService } from "#service/PaletteService";
-import { ArrayUtils, GameScrollComponent } from "@klyte45/euis-components";
+import { ArrayUtils, DefaultPanelScreen, GameScrollComponent } from "@klyte45/euis-components";
 import translate from "#utility/translate"
 import { Component } from "react";
 import PaletteDeletingCmp from "./PaletteDeletingCmp";
@@ -50,8 +50,12 @@ export default class CityPaletteLibraryCmp extends Component<any, State> {
     }
     private async updatePalettes() {
         const palettesSaved = await PaletteService.listCityPalettes();
-        const paletteTree = categorizePalettes(palettesSaved)
-        const root = paletteTree[""]?.rootContent ?? []
+        this.doCategorize(palettesSaved);
+    }
+
+    private doCategorize(palettesSaved: PaletteData[]) {
+        const paletteTree = categorizePalettes(palettesSaved);
+        const root = paletteTree[""]?.rootContent ?? [];
         delete paletteTree[""];
         this.setState({
             availablePalettes: {
@@ -64,21 +68,15 @@ export default class CityPaletteLibraryCmp extends Component<any, State> {
     render() {
         switch (this.state.currentScreen) {
             case Screen.DEFAULT:
-                return <>
-                    <h1>{translate("cityPalettesLibrary.title")}</h1>
-                    <h3>{translate("cityPalettesLibrary.subtitle")}</h3>
-                    <section style={{ position: "absolute", bottom: 52, left: 5, right: 5, top: 107 }}>
-                        <GameScrollComponent>
-                            {Object.keys(this.state?.availablePalettes.subtrees ?? {}).length == 0 && !this.state?.availablePalettes.rootContent.length
-                                ? <h2>No palettes registered! <a onClick={() => this.setState({ currentScreen: Screen.PALETTE_IMPORT_LIB })}>Click here to import!</a></h2>
-                                : <PaletteCategoryCmp entry={this.state?.availablePalettes} doWithPaletteData={(x, i) => <PaletteLineViewer entry={x} key={i} actionButtons={(y) => this.getActionButtons(y)} />} />}
-                        </GameScrollComponent>
-                    </section>
-                    <div style={{ display: "flex", position: "absolute", left: 5, right: 5, bottom: 5, flexDirection: "row-reverse" }}>
-                        <button className="positiveBtn " onClick={() => this.setState({ currentScreen: Screen.PALETTE_IMPORT_LIB })}>{translate("cityPalettesLibrary.importFromLibrary")}</button>
-                        <button className="positiveBtn " onClick={() => this.goToEdit()}>{translate("cityPalettesLibrary.createNewPalette")}</button>
-                    </div>
-                </>;
+                return <DefaultPanelScreen scrollable title={translate("cityPalettesLibrary.title")} subtitle={translate("cityPalettesLibrary.subtitle")} buttonsRowContent={<>
+                    <button className="positiveBtn " onClick={() => this.setState({ currentScreen: Screen.PALETTE_IMPORT_LIB })}>{translate("cityPalettesLibrary.importFromLibrary")}</button>
+                    <button className="positiveBtn " onClick={() => this.goToEdit()}>{translate("cityPalettesLibrary.createNewPalette")}</button>
+                    <button className="positiveBtn " onClick={() => PaletteService.openPalettesFolder()}>{translate("cityPalettesLibrary.goToLib")}</button>
+                </>}>
+                    {Object.keys(this.state?.availablePalettes.subtrees ?? {}).length == 0 && !this.state?.availablePalettes.rootContent.length
+                        ? <h2>No palettes registered! <a onClick={() => this.setState({ currentScreen: Screen.PALETTE_IMPORT_LIB })}>Click here to import!</a></h2>
+                        : <PaletteCategoryCmp entry={this.state?.availablePalettes} doWithPaletteData={(x, i) => <PaletteLineViewer entry={x} key={i} actionButtons={(y) => this.getActionButtons(y)} />} />}
+                </DefaultPanelScreen>;
             case Screen.PALETTE_IMPORT_LIB:
                 return <PaletteLibrarySelectorCmp onBack={() => this.setState({ currentScreen: Screen.DEFAULT })} actionButtons={(p) => <><button className="positiveBtn" onClick={() => this.goToImportDetails(p)}>{translate('cityPalettesLibrary.copyToCity')}</button></>} />
             case Screen.IMPORTING_PALETTE:
@@ -95,7 +93,15 @@ export default class CityPaletteLibraryCmp extends Component<any, State> {
         return <>
             <button className="negativeBtn" onClick={() => this.goToDelete(x)}>{translate("cityPalettesLibrary.deletePalette")}</button>
             <button className="neutralBtn" onClick={() => this.goToEdit(x)}>{translate("cityPalettesLibrary.editPalette")}</button>
+            {!x.__exported && <button className="neutralBtn" onClick={() => PaletteService.exportToLibrary(x).then(y => this.setExported(x))}>{translate("cityPalettesLibrary.exportToLibrary")}</button>}
+            {x.__exported && <button className="darkestBtn">{translate("cityPalettesLibrary.exportedSuccess")}</button>}
         </>
+    }
+    async setExported(x: PaletteData) {
+        this.doCategorize((await PaletteService.listCityPalettes()).map(y => {
+            y.__exported ||= y.GuidString == x.GuidString;
+            return y;
+        }))
     }
     goToEdit(x?: PaletteData): void {
         this.setState({
