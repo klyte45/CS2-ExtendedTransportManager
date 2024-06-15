@@ -1,6 +1,5 @@
 ﻿using Belzont.Interfaces;
 using Belzont.Utils;
-using cohtml;
 using Game;
 using Game.Common;
 using Game.Prefabs;
@@ -10,7 +9,6 @@ using Game.UI;
 using System;
 using Unity.Collections;
 using Unity.Entities;
-using UnityEngine;
 using static BelzontTLM.XTMLineViewerSection;
 
 namespace BelzontTLM
@@ -28,11 +26,13 @@ namespace BelzontTLM
 
         private void GetCityLines(bool force = false)
         {
+            m_LineListingSection.AddDependency(m_EndFrameBarrier.producerHandle);
             m_LineListingSection.Enqueue(Entity.Null, (x) =>
             {
-                if (ExtendedTransportManagerMod.TraceMode) LogUtils.DoTraceLog("SENDING OBJ: {0}", x);
+                if (BasicIMod.TraceMode) LogUtils.DoTraceLog("SENDING OBJ: {0}", x);
                 SendEvent("lineViewer.getCityLines->", x);
-            }, force);
+            },
+            force);
         }
 
         private void SetCctvPosition(float x, float y, float z, float angleX, float angleY, float distanceZ)
@@ -58,6 +58,10 @@ namespace BelzontTLM
                     LogUtils.DoInfoLog($"Initialized Line data @ entity id #{unitializedLines[i].Index}");
                 }
             }
+            if (!m_modifiedLineQuery.IsEmptyIgnoreFilter)
+            {
+                GetCityLines();
+            }
 
         }
 
@@ -73,6 +77,7 @@ namespace BelzontTLM
         }
 
         private EntityQuery m_UnititalizedXTMLineQuery;
+        private EntityQuery m_modifiedLineQuery;
         private NameSystem m_NameSystem;
         private EndFrameBarrier m_EndFrameBarrier;
         private XTMLineViewerSection m_LineVisualizerSection;
@@ -82,6 +87,7 @@ namespace BelzontTLM
 
         private void GetRouteDetail(Entity entity, bool force)
         {
+            m_LineVisualizerSection.AddDependency(m_EndFrameBarrier.producerHandle);
             m_LineVisualizerSection.Enqueue(entity, SendRouteDetail, force);
         }
 
@@ -107,7 +113,30 @@ namespace BelzontTLM
                     None = new ComponentType[]
                     {
                         ComponentType.ReadOnly<Temp>(),
-                        ComponentType.ReadOnly<XTMRouteExtraData>()
+                        ComponentType.ReadOnly<XTMRouteExtraData>(),
+                        ComponentType.ReadOnly<Deleted>()
+                    }
+                }
+            });
+            m_modifiedLineQuery = GetEntityQuery(new EntityQueryDesc[]
+            {
+                new EntityQueryDesc
+                {
+                    All = new ComponentType[]
+                    {
+                        ComponentType.ReadOnly<Route>(),
+                        ComponentType.ReadOnly<TransportLine>(),
+                        ComponentType.ReadOnly<RouteWaypoint>(),
+                        ComponentType.ReadOnly<PrefabRef>()
+                    },
+                    Any = new ComponentType[]
+                    {
+                        ComponentType.ReadOnly<Updated>()                        
+                    },
+                    None = new ComponentType[]
+                    {
+                        ComponentType.ReadOnly<Temp>(),
+                        ComponentType.ReadOnly<Deleted>()
                     }
                 }
             });

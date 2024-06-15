@@ -97,10 +97,10 @@ namespace BelzontTLM
 
             private bool TryGetStopRoutes(Entity entity, NativeList<ConnectedRoute> connectedRoutes)
             {
-                DynamicBuffer<ConnectedRoute> dynamicBuffer;
-                if (m_ConnectedRouteBuffers.TryGetBuffer(entity, out dynamicBuffer) && m_TransportStops.HasComponent(entity) && !m_TaxiStands.HasComponent(entity) && dynamicBuffer.Length > 0)
+                DynamicBuffer<ConnectedRoute> connectedRouteBuffer;
+                if (m_ConnectedRouteBuffers.TryGetBuffer(entity, out connectedRouteBuffer) && m_TransportStops.HasComponent(entity) && !m_TaxiStands.HasComponent(entity) && connectedRouteBuffer.Length > 0)
                 {
-                    connectedRoutes.AddRange(dynamicBuffer.AsNativeArray());
+                    connectedRoutes.AddRange(connectedRouteBuffer.AsNativeArray());
                     return true;
                 }
                 return false;

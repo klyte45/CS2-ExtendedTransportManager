@@ -1,17 +1,17 @@
 ﻿using Belzont.Utils;
-using Colossal.Entities;
-using Game.Areas;
 using Game.Buildings;
 using Game.Common;
+using Game.Net;
 using Game.Objects;
+using Game.Pathfind;
 using Game.Prefabs;
+using Game.Rendering;
+using Game.Routes;
 using Game.UI;
-using System;
+using Game.Vehicles;
 using Unity.Collections;
 using Unity.Entities;
 using Unity.Jobs;
-using UnityEngine;
-using static Belzont.Utils.NameSystemExtensions;
 using static BelzontTLM.XTMLineListingSection;
 using static BelzontTLM.XTMLineViewerSection;
 
@@ -67,156 +67,97 @@ namespace BelzontTLM
 
         protected override void RunUpdate(Entity e)
         {
-            __TypeHandle.__Game_Buildings_InstalledUpgrade_RO_BufferLookup.Update(ref CheckedStateRef);
-            __TypeHandle.__Game_Objects_SubObject_RO_BufferLookup.Update(ref CheckedStateRef);
-            __TypeHandle.__Game_Routes_ConnectedRoute_RO_BufferLookup.Update(ref CheckedStateRef);
-            __TypeHandle.__Game_Routes_RouteVehicle_RO_BufferLookup.Update(ref CheckedStateRef);
-            __TypeHandle.__Game_Routes_RouteSegment_RO_BufferLookup.Update(ref CheckedStateRef);
-            __TypeHandle.__Game_Routes_RouteWaypoint_RO_BufferLookup.Update(ref CheckedStateRef);
-            __TypeHandle.__Game_Routes_CurrentRoute_RO_ComponentLookup.Update(ref CheckedStateRef);
-            __TypeHandle.__Game_Vehicles_PublicTransport_RO_ComponentLookup.Update(ref CheckedStateRef);
-            __TypeHandle.__Game_Common_Owner_RO_ComponentLookup.Update(ref CheckedStateRef);
-            __TypeHandle.__Game_Vehicles_Vehicle_RO_ComponentLookup.Update(ref CheckedStateRef);
-            __TypeHandle.__Game_Routes_TaxiStand_RO_ComponentLookup.Update(ref CheckedStateRef);
-            __TypeHandle.__Game_Routes_TransportStop_RO_ComponentLookup.Update(ref CheckedStateRef);
-            __TypeHandle.__Game_Routes_TransportLine_RO_ComponentLookup.Update(ref CheckedStateRef);
-            __TypeHandle.__Game_Routes_Route_RO_ComponentLookup.Update(ref CheckedStateRef);
             if (e == Entity.Null)
             {
                 if (ExtendedTransportManagerMod.DebugMode) LogUtils.DoLog("Entity is null!");
                 return;
             }
-
-            LineRequirementsCheckJob jobData = default;
-            jobData.m_SelectedEntity = e;
-            jobData.m_SelectedRouteEntity = e;
-            jobData.m_Routes = __TypeHandle.__Game_Routes_Route_RO_ComponentLookup;
-            jobData.m_TransportLines = __TypeHandle.__Game_Routes_TransportLine_RO_ComponentLookup;
-            jobData.m_TransportStops = __TypeHandle.__Game_Routes_TransportStop_RO_ComponentLookup;
-            jobData.m_TaxiStands = __TypeHandle.__Game_Routes_TaxiStand_RO_ComponentLookup;
-            jobData.m_Vehicles = __TypeHandle.__Game_Vehicles_Vehicle_RO_ComponentLookup;
-            jobData.m_Owners = __TypeHandle.__Game_Common_Owner_RO_ComponentLookup;
-            jobData.m_PublicTransports = __TypeHandle.__Game_Vehicles_PublicTransport_RO_ComponentLookup;
-            jobData.m_CurrentRoutes = __TypeHandle.__Game_Routes_CurrentRoute_RO_ComponentLookup;
-            jobData.m_RouteWaypointBuffers = __TypeHandle.__Game_Routes_RouteWaypoint_RO_BufferLookup;
-            jobData.m_RouteSegmentBuffers = __TypeHandle.__Game_Routes_RouteSegment_RO_BufferLookup;
-            jobData.m_RouteVehicleBuffers = __TypeHandle.__Game_Routes_RouteVehicle_RO_BufferLookup;
-            jobData.m_ConnectedRouteBuffers = __TypeHandle.__Game_Routes_ConnectedRoute_RO_BufferLookup;
-            jobData.m_SubObjectBuffers = __TypeHandle.__Game_Objects_SubObject_RO_BufferLookup;
-            jobData.m_InstalledUpgradeBuffers = __TypeHandle.__Game_Buildings_InstalledUpgrade_RO_BufferLookup;
-            jobData.m_BoolResult = m_BoolResult;
-            jobData.m_EntityResult = m_EntityResult;
-            jobData.Schedule(Dependency).Complete();
+            var requirementsCheckJob = new LineRequirementsCheckJob
+            {
+                m_SelectedEntity = e,
+                m_SelectedRouteEntity = e,
+                m_Routes = GetComponentLookup<Route>(),
+                m_TransportLines = GetComponentLookup<TransportLine>(),
+                m_TransportStops = GetComponentLookup<Game.Routes.TransportStop>(),
+                m_TaxiStands = GetComponentLookup<TaxiStand>(),
+                m_Vehicles = GetComponentLookup<Vehicle>(),
+                m_Owners = GetComponentLookup<Owner>(),
+                m_PublicTransports = GetComponentLookup<Game.Vehicles.PublicTransport>(),
+                m_CurrentRoutes = GetComponentLookup<CurrentRoute>(),
+                m_RouteWaypointBuffers = GetBufferLookup<RouteWaypoint>(),
+                m_RouteSegmentBuffers = GetBufferLookup<RouteSegment>(),
+                m_RouteVehicleBuffers = GetBufferLookup<RouteVehicle>(),
+                m_ConnectedRouteBuffers = GetBufferLookup<ConnectedRoute>(),
+                m_SubObjectBuffers = GetBufferLookup<Game.Objects.SubObject>(),
+                m_InstalledUpgradeBuffers = GetBufferLookup<InstalledUpgrade>(),
+                m_BoolResult = m_BoolResult,
+                m_EntityResult = m_EntityResult
+            };
+            requirementsCheckJob.Schedule(Dependency).Complete();
             if (!m_BoolResult[0])
             {
                 if (ExtendedTransportManagerMod.DebugMode) LogUtils.DoLog("Bool result is false!");
                 return;
             }
-            __TypeHandle.__Game_Buildings_RO_ComponentLookup.Update(ref CheckedStateRef);
-            __TypeHandle.__Game_Odometers_RO_ComponentLookup.Update(ref CheckedStateRef);
-            __TypeHandle.__Game_Edges_RO_ComponentLookup.Update(ref CheckedStateRef);
-            __TypeHandle.__Game_Attacheds_RO_ComponentLookup.Update(ref CheckedStateRef);
-            __TypeHandle.__Game_ConnectBuildingBuffers_RO_BufferLookup.Update(ref CheckedStateRef);
-            __TypeHandle.__Game_ConnectEdge_RO_BufferLookup.Update(ref CheckedStateRef);
-            __TypeHandle.__Game_Vehicles_XTMChildConnectedRoute_RO_BufferLookup.Update(ref CheckedStateRef);
-            __TypeHandle.__Game_Vehicles_Passenger_RO_BufferLookup.Update(ref CheckedStateRef);
-            __TypeHandle.__Game_Net_SubLane_RO_BufferLookup.Update(ref CheckedStateRef);
-            __TypeHandle.__Game_Pathfind_PathElement_RO_BufferLookup.Update(ref CheckedStateRef);
-            __TypeHandle.__Game_Vehicles_AircraftNavigationLane_RO_BufferLookup.Update(ref CheckedStateRef);
-            __TypeHandle.__Game_Vehicles_WatercraftNavigationLane_RO_BufferLookup.Update(ref CheckedStateRef);
-            __TypeHandle.__Game_Vehicles_TrainNavigationLane_RO_BufferLookup.Update(ref CheckedStateRef);
-            __TypeHandle.__Game_Vehicles_CarNavigationLane_RO_BufferLookup.Update(ref CheckedStateRef);
-            __TypeHandle.__Game_Vehicles_LayoutElement_RO_BufferLookup.Update(ref CheckedStateRef);
-            __TypeHandle.__Game_Routes_RouteVehicle_RO_BufferLookup.Update(ref CheckedStateRef);
-            __TypeHandle.__Game_Routes_RouteSegment_RO_BufferLookup.Update(ref CheckedStateRef);
-            __TypeHandle.__Game_Routes_RouteWaypoint_RO_BufferLookup.Update(ref CheckedStateRef);
-            __TypeHandle.__Game_Economy_Resources_RO_BufferLookup.Update(ref CheckedStateRef);
-            __TypeHandle.__Game_Objects_OutsideConnection_RO_ComponentLookup.Update(ref CheckedStateRef);
-            __TypeHandle.__Game_Routes_TransportStop_RO_ComponentLookup.Update(ref CheckedStateRef);
-            __TypeHandle.__Game_Objects_Transform_RO_ComponentLookup.Update(ref CheckedStateRef);
-            __TypeHandle.__Game_Rendering_CullingInfo_RO_ComponentLookup.Update(ref CheckedStateRef);
-            __TypeHandle.__Game_Prefabs_CargoTransportVehicleData_RO_ComponentLookup.Update(ref CheckedStateRef);
-            __TypeHandle.__Game_Prefabs_PublicTransportVehicleData_RO_ComponentLookup.Update(ref CheckedStateRef);
-            __TypeHandle.__Game_Prefabs_TrainData_RO_ComponentLookup.Update(ref CheckedStateRef);
-            __TypeHandle.__Game_Prefabs_TransportLineData_RO_ComponentLookup.Update(ref CheckedStateRef);
-            __TypeHandle.__Game_Prefabs_PrefabRef_RO_ComponentLookup.Update(ref CheckedStateRef);
-            __TypeHandle.__Game_Creatures_Pet_RO_ComponentLookup.Update(ref CheckedStateRef);
-            __TypeHandle.__Game_Vehicles_AircraftCurrentLane_RO_ComponentLookup.Update(ref CheckedStateRef);
-            __TypeHandle.__Game_Vehicles_WatercraftCurrentLane_RO_ComponentLookup.Update(ref CheckedStateRef);
-            __TypeHandle.__Game_Vehicles_TrainCurrentLane_RO_ComponentLookup.Update(ref CheckedStateRef);
-            __TypeHandle.__Game_Vehicles_CarCurrentLane_RO_ComponentLookup.Update(ref CheckedStateRef);
-            __TypeHandle.__Game_Net_SlaveLane_RO_ComponentLookup.Update(ref CheckedStateRef);
-            __TypeHandle.__Game_Net_MasterLane_RO_ComponentLookup.Update(ref CheckedStateRef);
-            __TypeHandle.__Game_Net_Curve_RO_ComponentLookup.Update(ref CheckedStateRef);
-            __TypeHandle.__Game_Vehicles_Train_RO_ComponentLookup.Update(ref CheckedStateRef);
-            __TypeHandle.__Game_Routes_Waypoint_RO_ComponentLookup.Update(ref CheckedStateRef);
-            __TypeHandle.__Game_Common_Owner_RO_ComponentLookup.Update(ref CheckedStateRef);
-            __TypeHandle.__Game_Pathfind_PathOwner_RO_ComponentLookup.Update(ref CheckedStateRef);
-            __TypeHandle.__Game_Common_Target_RO_ComponentLookup.Update(ref CheckedStateRef);
-            __TypeHandle.__Game_Routes_CurrentRoute_RO_ComponentLookup.Update(ref CheckedStateRef);
-            __TypeHandle.__Game_Routes_RouteLane_RO_ComponentLookup.Update(ref CheckedStateRef);
-            __TypeHandle.__Game_Routes_Position_RO_ComponentLookup.Update(ref CheckedStateRef);
-            __TypeHandle.__Game_Routes_WaitingPassengers_RO_ComponentLookup.Update(ref CheckedStateRef);
-            __TypeHandle.__Game_Routes_Connected_RO_ComponentLookup.Update(ref CheckedStateRef);
-            __TypeHandle.__Game_Pathfind_PathInformation_RO_ComponentLookup.Update(ref CheckedStateRef);
-            __TypeHandle.__Game_Routes_Color_RO_ComponentLookup.Update(ref CheckedStateRef);
-            UpdateJob jobData2 = default;
-            jobData2.m_RouteEntity = e;
-            jobData2.m_Colors = __TypeHandle.__Game_Routes_Color_RO_ComponentLookup;
-            jobData2.m_PathInformation = __TypeHandle.__Game_Pathfind_PathInformation_RO_ComponentLookup;
-            jobData2.m_Connected = __TypeHandle.__Game_Routes_Connected_RO_ComponentLookup;
-            jobData2.m_WaitingPassengers = __TypeHandle.__Game_Routes_WaitingPassengers_RO_ComponentLookup;
-            jobData2.m_Positions = __TypeHandle.__Game_Routes_Position_RO_ComponentLookup;
-            jobData2.m_RouteLanes = __TypeHandle.__Game_Routes_RouteLane_RO_ComponentLookup;
-            jobData2.m_CurrentRoutes = __TypeHandle.__Game_Routes_CurrentRoute_RO_ComponentLookup;
-            jobData2.m_Targets = __TypeHandle.__Game_Common_Target_RO_ComponentLookup;
-            jobData2.m_PathOwners = __TypeHandle.__Game_Pathfind_PathOwner_RO_ComponentLookup;
-            jobData2.m_Owners = __TypeHandle.__Game_Common_Owner_RO_ComponentLookup;
-            jobData2.m_Waypoints = __TypeHandle.__Game_Routes_Waypoint_RO_ComponentLookup;
-            jobData2.m_Trains = __TypeHandle.__Game_Vehicles_Train_RO_ComponentLookup;
-            jobData2.m_Curves = __TypeHandle.__Game_Net_Curve_RO_ComponentLookup;
-            jobData2.m_MasterLanes = __TypeHandle.__Game_Net_MasterLane_RO_ComponentLookup;
-            jobData2.m_SlaveLanes = __TypeHandle.__Game_Net_SlaveLane_RO_ComponentLookup;
-            jobData2.m_CarCurrentLanes = __TypeHandle.__Game_Vehicles_CarCurrentLane_RO_ComponentLookup;
-            jobData2.m_TrainCurrentLanes = __TypeHandle.__Game_Vehicles_TrainCurrentLane_RO_ComponentLookup;
-            jobData2.m_WatercraftCurrentLanes = __TypeHandle.__Game_Vehicles_WatercraftCurrentLane_RO_ComponentLookup;
-            jobData2.m_AircraftCurrentLanes = __TypeHandle.__Game_Vehicles_AircraftCurrentLane_RO_ComponentLookup;
-            jobData2.m_Pets = __TypeHandle.__Game_Creatures_Pet_RO_ComponentLookup;
-            jobData2.m_PrefabRefs = __TypeHandle.__Game_Prefabs_PrefabRef_RO_ComponentLookup;
-            jobData2.m_TransportLineData = __TypeHandle.__Game_Prefabs_TransportLineData_RO_ComponentLookup;
-            jobData2.m_TrainDatas = __TypeHandle.__Game_Prefabs_TrainData_RO_ComponentLookup;
-            jobData2.m_PublicTransportVehicleDatas = __TypeHandle.__Game_Prefabs_PublicTransportVehicleData_RO_ComponentLookup;
-            jobData2.m_CargoTransportVehicleDatas = __TypeHandle.__Game_Prefabs_CargoTransportVehicleData_RO_ComponentLookup;
-            jobData2.m_CullingInfos = __TypeHandle.__Game_Rendering_CullingInfo_RO_ComponentLookup;
-            jobData2.m_Transforms = __TypeHandle.__Game_Objects_Transform_RO_ComponentLookup;
-            jobData2.m_TransportStops = __TypeHandle.__Game_Routes_TransportStop_RO_ComponentLookup;
-            jobData2.m_OutsideConnections = __TypeHandle.__Game_Objects_OutsideConnection_RO_ComponentLookup;
-            jobData2.m_EconomyResourcesBuffers = __TypeHandle.__Game_Economy_Resources_RO_BufferLookup;
-            jobData2.m_RouteWaypointBuffers = __TypeHandle.__Game_Routes_RouteWaypoint_RO_BufferLookup;
-            jobData2.m_RouteSegmentBuffers = __TypeHandle.__Game_Routes_RouteSegment_RO_BufferLookup;
-            jobData2.m_RouteVehicleBuffers = __TypeHandle.__Game_Routes_RouteVehicle_RO_BufferLookup;
-            jobData2.m_LayoutElementBuffers = __TypeHandle.__Game_Vehicles_LayoutElement_RO_BufferLookup;
-            jobData2.m_CarNavigationLaneBuffers = __TypeHandle.__Game_Vehicles_CarNavigationLane_RO_BufferLookup;
-            jobData2.m_TrainNavigationLaneBuffers = __TypeHandle.__Game_Vehicles_TrainNavigationLane_RO_BufferLookup;
-            jobData2.m_WatercraftNavigationLaneBuffers = __TypeHandle.__Game_Vehicles_WatercraftNavigationLane_RO_BufferLookup;
-            jobData2.m_AircraftNavigationLaneBuffers = __TypeHandle.__Game_Vehicles_AircraftNavigationLane_RO_BufferLookup;
-            jobData2.m_PathElementBuffers = __TypeHandle.__Game_Pathfind_PathElement_RO_BufferLookup;
-            jobData2.m_SubLaneBuffers = __TypeHandle.__Game_Net_SubLane_RO_BufferLookup;
-            jobData2.m_PassengerBuffers = __TypeHandle.__Game_Vehicles_Passenger_RO_BufferLookup;
-            jobData2.m_XTMConnectedRouteBuffers = __TypeHandle.__Game_Vehicles_XTMChildConnectedRoute_RO_BufferLookup;
-            jobData2.m_ConnectedRouteBuffers = __TypeHandle.__Game_Routes_ConnectedRoute_RO_BufferLookup;
-            jobData2.m_Buildings = __TypeHandle.__Game_Buildings_RO_ComponentLookup;
-            jobData2.m_Odometers = __TypeHandle.__Game_Odometers_RO_ComponentLookup;
-            jobData2.m_Attacheds = __TypeHandle.__Game_Attacheds_RO_ComponentLookup;
-            jobData2.m_Edges = __TypeHandle.__Game_Edges_RO_ComponentLookup;
-            jobData2.m_connectedEdgesBuffers = __TypeHandle.__Game_ConnectEdge_RO_BufferLookup;
-            jobData2.m_ConnectBuildingBuffers = __TypeHandle.__Game_ConnectBuildingBuffers_RO_BufferLookup;
-            jobData2.m_SegmentsResult = m_SegmentsResult;
-            jobData2.m_StopsResult = m_StopsResult;
-            jobData2.m_VehiclesResult = m_VehiclesResult;
-            jobData2.m_StopCapacityResult = m_StopCapacityResult;
-            jobData2.m_BoolResult = m_BoolResult;
-            jobData2.Schedule(Dependency).Complete();
+            var updateJob = new UpdateJob
+            {
+                m_RouteEntity = e,
+                m_Colors = GetComponentLookup<Game.Routes.Color>(),
+                m_PathInformation = GetComponentLookup<PathInformation>(),
+                m_Connected = GetComponentLookup<Connected>(),
+                m_WaitingPassengers = GetComponentLookup<WaitingPassengers>(),
+                m_Positions = GetComponentLookup<Position>(),
+                m_RouteLanes = GetComponentLookup<RouteLane>(),
+                m_CurrentRoutes = GetComponentLookup<CurrentRoute>(),
+                m_Targets = GetComponentLookup<Target>(),
+                m_PathOwners = GetComponentLookup<PathOwner>(),
+                m_Owners = GetComponentLookup<Owner>(),
+                m_Waypoints = GetComponentLookup<Waypoint>(),
+                m_Trains = GetComponentLookup<Train>(),
+                m_Curves = GetComponentLookup<Curve>(),
+                m_MasterLanes = GetComponentLookup<MasterLane>(),
+                m_SlaveLanes = GetComponentLookup<SlaveLane>(),
+                m_CarCurrentLanes = GetComponentLookup<CarCurrentLane>(),
+                m_TrainCurrentLanes = GetComponentLookup<TrainCurrentLane>(),
+                m_WatercraftCurrentLanes = GetComponentLookup<WatercraftCurrentLane>(),
+                m_AircraftCurrentLanes = GetComponentLookup<AircraftCurrentLane>(),
+                m_Pets = GetComponentLookup<Game.Creatures.Pet>(),
+                m_PrefabRefs = GetComponentLookup<PrefabRef>(),
+                m_TransportLineData = GetComponentLookup<TransportLineData>(),
+                m_TrainDatas = GetComponentLookup<TrainData>(),
+                m_PublicTransportVehicleDatas = GetComponentLookup<PublicTransportVehicleData>(),
+                m_CargoTransportVehicleDatas = GetComponentLookup<CargoTransportVehicleData>(),
+                m_Buildings = GetComponentLookup<Building>(),
+                m_Odometers = GetComponentLookup<Odometer>(),
+                m_Attacheds = GetComponentLookup<Attached>(),
+                m_Edges = GetComponentLookup<Game.Net.Edge>(),
+                m_CullingInfos = GetComponentLookup<CullingInfo>(),
+                m_Transforms = GetComponentLookup<Game.Objects.Transform>(),
+                m_TransportStops = GetComponentLookup<Game.Routes.TransportStop>(),
+                m_OutsideConnections = GetComponentLookup<Game.Objects.OutsideConnection>(),
+                m_EconomyResourcesBuffers = GetBufferLookup<Game.Economy.Resources>(),
+                m_RouteWaypointBuffers = GetBufferLookup<RouteWaypoint>(),
+                m_RouteSegmentBuffers = GetBufferLookup<RouteSegment>(),
+                m_RouteVehicleBuffers = GetBufferLookup<RouteVehicle>(),
+                m_LayoutElementBuffers = GetBufferLookup<LayoutElement>(),
+                m_CarNavigationLaneBuffers = GetBufferLookup<CarNavigationLane>(),
+                m_TrainNavigationLaneBuffers = GetBufferLookup<TrainNavigationLane>(),
+                m_WatercraftNavigationLaneBuffers = GetBufferLookup<WatercraftNavigationLane>(),
+                m_AircraftNavigationLaneBuffers = GetBufferLookup<AircraftNavigationLane>(),
+                m_PathElementBuffers = GetBufferLookup<PathElement>(),
+                m_SubLaneBuffers = GetBufferLookup<Game.Net.SubLane>(),
+                m_PassengerBuffers = GetBufferLookup<Passenger>(),
+                m_XTMConnectedRouteBuffers = GetBufferLookup<XTMChildConnectedRoute>(),
+                m_ConnectedRouteBuffers = GetBufferLookup<ConnectedRoute>(),
+                m_connectedEdgesBuffers = GetBufferLookup<ConnectedEdge>(),
+                m_ConnectBuildingBuffers = GetBufferLookup<ConnectedBuilding>(),
+                m_SegmentsResult = m_SegmentsResult,
+                m_StopsResult = m_StopsResult,
+                m_VehiclesResult = m_VehiclesResult,
+                m_StopCapacityResult = m_StopCapacityResult,
+                m_BoolResult = m_BoolResult
+            };
+            updateJob.Schedule(Dependency).Complete();
         }
 
         protected override ComponentType[] ComponentsToCheck => new ComponentType[]
@@ -252,17 +193,6 @@ namespace BelzontTLM
 
         }
 
-        private void __AssignQueries(ref SystemState state)
-        {
-        }
-
-        protected override void OnCreateForCompiler()
-        {
-            base.OnCreateForCompiler();
-            __AssignQueries(ref CheckedStateRef);
-            __TypeHandle.__AssignHandles(ref CheckedStateRef);
-        }
-
         public XTMLineViewerSection()
         {
         }
@@ -282,201 +212,5 @@ namespace BelzontTLM
 
         private NativeArray<int> m_StopCapacityResult;
 
-        private TypeHandle __TypeHandle;
-
-        public readonly struct LineStopConnnection : IEquatable<LineStopConnnection>
-        {
-            public Entity line { get; }
-            public Entity stop { get; }
-            public LineStopConnnection(Entity line, Entity stop)
-            {
-                this.line = line;
-                this.stop = stop;
-            }
-
-            public bool Equals(LineStopConnnection other)
-            {
-                return line == other.line && stop == other.stop;
-            }
-        }
-
-        public readonly struct LineStop
-        {
-            public Entity entity { get; }
-
-            public float position { get; }
-
-            public int cargo { get; }
-
-            public bool isCargo { get; }
-
-            public bool isOutsideConnection { get; }
-
-            public NativeHashSet<LineStopConnnection> linesConnected { get; }
-
-            public Vector3 worldPosition { get; }
-
-            public Quaternion rotation { get; }
-
-
-            public LineStop(Entity entity, float position, int cargo, bool isCargo, bool isOutsideConnection, NativeHashSet<LineStopConnnection> linesConnected, Vector3 worldPosition, Quaternion rotation)
-            {
-                this.entity = entity;
-                this.position = position;
-                this.cargo = cargo;
-                this.isCargo = isCargo;
-                this.isOutsideConnection = isOutsideConnection;
-                this.linesConnected = linesConnected;
-                this.worldPosition = worldPosition;
-                this.rotation = rotation;
-            }
-        }
-
-        public readonly struct LineVehicle
-        {
-            internal float odometer { get; }
-
-            public Entity entity { get; }
-
-            public float position { get; }
-
-            public int cargo { get; }
-
-            public int capacity { get; }
-
-            public bool isCargo { get; }
-
-            public Vector3 worldPosition { get; }
-
-            public Quaternion rotation { get; }
-
-            public LineVehicle(Entity entity, float position, int cargo, int capacity, Vector3 worldPosition, Quaternion rotation, float odometer, bool isCargo = false)
-            {
-                this.entity = entity;
-                this.position = position;
-                this.cargo = cargo;
-                this.capacity = capacity;
-                this.isCargo = isCargo;
-                this.worldPosition = worldPosition;
-                this.rotation = rotation;
-                this.odometer = odometer;
-            }
-        }
-
-        public readonly struct LineSegment
-        {
-            public float start { get; }
-
-            public float end { get; }
-            public float sizeMeters { get; }
-
-            public bool broken { get; }
-
-            public float duration { get; }
-
-            public LineSegment(float start, float end, bool broken, float sizeMeters, float duration)
-            {
-                this.start = start;
-                this.end = end;
-                this.broken = broken;
-                this.sizeMeters = sizeMeters;
-                this.duration = duration;
-            }
-        }
-
-        public class Vector3Json
-        {
-            public float x, y, z;
-
-            public Vector3Json(Vector3 src)
-            {
-                x = src.x;
-                y = src.y;
-                z = src.z;
-            }
-        }
-
-        public class LineStopNamed
-        {
-            public Entity entity { get; }
-            public float position { get; }
-            public int cargo { get; }
-            public bool isCargo { get; }
-            public bool isOutsideConnection { get; }
-            public ValuableName name { get; }
-            public Entity parent { get; }
-            public ValuableName parentName { get; }
-            public Entity district { get; }
-            public ValuableName districtName { get; }
-            public LineStopConnnection[] connectedLines { get; }
-            public Vector3Json worldPosition { get; }
-            public float azimuth { get; }
-
-            public LineStopNamed(LineStop src, NameSystem nameSystem, EntityManager em)
-            {
-                entity = src.entity;
-                position = src.position;
-                cargo = src.cargo;
-                isOutsideConnection = src.isOutsideConnection;
-                isCargo = src.isCargo;
-                name = nameSystem.GetName(src.entity).ToValueableName();
-                parent = em.TryGetComponent<Owner>(src.entity, out var owner) ? owner.m_Owner : Entity.Null;
-                while (em.TryGetComponent<Owner>(parent, out var ownerParent))
-                {
-                    parent = ownerParent.m_Owner;
-                }
-                parentName = parent != Entity.Null ? nameSystem.GetName(parent).ToValueableName() : default;
-                district = parent != Entity.Null
-                                    ? em.TryGetComponent<CurrentDistrict>(parent, out var currentDistrict) ? currentDistrict.m_District : Entity.Null
-                                    : em.TryGetComponent<Attached>(entity, out var attachParent)
-                                        ? TryGetByBorderDistrict(em, attachParent.m_Parent)
-                                        : em.TryGetComponent<Building>(entity, out var building)
-                                            ? TryGetByBorderDistrict(em, building.m_RoadEdge)
-                                            : Entity.Null;
-                districtName = district != Entity.Null ? nameSystem.GetName(district).ToValueableName() : default;
-                connectedLines = new LineStopConnnection[src.linesConnected.Count];
-                var enumerator = src.linesConnected.GetEnumerator();
-                int i = 0;
-                while (enumerator.MoveNext())
-                {
-                    connectedLines[i++] = enumerator.Current;
-                }
-                worldPosition = new(src.worldPosition);
-                azimuth = src.rotation.eulerAngles.y;
-
-                static Entity TryGetByBorderDistrict(EntityManager em, Entity attachParent) => em.TryGetComponent<BorderDistrict>(attachParent, out var borders)
-                                            ? borders.m_Left != Entity.Null
-                                                ? borders.m_Left : borders.m_Right
-                                            : Entity.Null;
-            }
-        }
-        public class LineVehicleNamed
-        {
-            public Entity entity { get; }
-            public float position { get; }
-            public int cargo { get; }
-            public int capacity { get; }
-            public bool isCargo { get; }
-            public ValuableName name { get; }
-            public Vector3Json worldPosition { get; }
-            public float azimuth { get; }
-            public float odometer { get; }
-            public float maintenanceRange { get; }
-
-            public LineVehicleNamed(LineVehicle src, NameSystem nameSystem, EntityManager entityManager)
-            {
-                entity = src.entity;
-                position = src.position;
-                cargo = src.cargo;
-                capacity = src.capacity;
-                isCargo = src.isCargo;
-                name = nameSystem.GetName(src.entity).ToValueableName();
-                worldPosition = new(src.worldPosition);
-                azimuth = src.rotation.eulerAngles.y;
-                odometer = src.odometer;
-                var data = entityManager.TryGetComponent(entityManager.GetComponentData<PrefabRef>(src.entity).m_Prefab, out PublicTransportVehicleData publicTransportVehicleData);
-                maintenanceRange = data ? publicTransportVehicleData.m_MaintenanceRange : -1;
-            }
-        }
     }
 }

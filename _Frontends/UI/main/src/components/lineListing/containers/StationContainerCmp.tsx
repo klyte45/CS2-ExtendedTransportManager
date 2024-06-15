@@ -57,7 +57,7 @@ export class StationContainerCmp extends Component<{
                 <div style={{ display: "block" }}>{replaceArgs(translate(`lineStationDetail.waiting.${station.isCargo ? "cargo" : "passengers"}`), { quantity: passengerValueFmt })}</div>
                 <div>{station.arrivingVehicle
                     ? <>{translate(`lineStationDetail.nextVehicleData`)} <b>{nameToString(station.arrivingVehicle.name) + " - " + station.arrivingVehicle.entity.Index}</b>
-                        <div style={{ display: "inline", fontSize: "var(--fontSizeXS)" }}>↳<i> {nextVehicleDistanceFmt}&nbsp;-&nbsp;{stopsYetToPassText}</i></div></>
+                        <div style={{ display: "inline", fontSize: "var(--fontSizeXS)" }}>↳<i> {nextVehicleDistanceFmt} - {stopsYetToPassText}</i></div></>
                     : <b className="lineView-warning">{translate(`lineStationDetail.noNextVehicleData`)}</b>}</div>
             </div>
         </Tooltip>;

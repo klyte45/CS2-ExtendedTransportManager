@@ -7,6 +7,7 @@ using Game.Common;
 using Game.Routes;
 using Game.UI;
 using System;
+using Unity.Collections;
 using Unity.Entities;
 using UnityEngine;
 using static Belzont.Utils.NameSystemExtensions;
@@ -26,6 +27,7 @@ namespace BelzontTLM
             eventCaller("lineManagement.setRouteNumber", SetRouteInternalNumber);
             eventCaller("lineManagement.setIgnorePalette", SetRouteIgnorePalette);
             eventCaller("lineManagement.setRouteFixedColor", SetRouteFixedColor);
+            eventCaller("lineManagement.setFirstStop", SetFirstStop);
         }
 
         public void SetupCaller(Action<string, object[]> eventCaller)
@@ -93,6 +95,30 @@ namespace BelzontTLM
             entityCommandBuffer.SetComponent(entity, component);
             entityCommandBuffer.AddComponent<XTMPaletteRequireUpdate>(entity);
             return color;
+        }
+
+        private bool SetFirstStop(Entity route, int stopCurrentIdx)
+        {
+            EntityCommandBuffer entityCommandBuffer = m_EndFrameBarrier.CreateCommandBuffer();
+            EntityManager.TryGetBuffer<RouteWaypoint>(route, false, out var waypoints);
+            var length = waypoints.Length;
+            if (stopCurrentIdx <= 0 || stopCurrentIdx >= length) return false;
+
+            var targetNativeArray = new NativeArray<RouteWaypoint>(length, Allocator.Temp);
+            var originalAsNativeArray = waypoints.AsNativeArray();
+            for (int i = 0; i < length; i++)
+            {
+                targetNativeArray[i] = originalAsNativeArray[(i + stopCurrentIdx) % length];
+                var waypoint = EntityManager.GetComponentData<Waypoint>(targetNativeArray[i].m_Waypoint);
+                waypoint.m_Index = i;
+                entityCommandBuffer.SetComponent(targetNativeArray[i].m_Waypoint, waypoint);
+            }
+            waypoints.Clear();
+            waypoints.AddRange(targetNativeArray);
+            entityCommandBuffer.AddComponent<Updated>(route);
+            targetNativeArray.Dispose();
+            originalAsNativeArray.Dispose();
+            return true;
         }
         private ValuableName SetRouteName(Entity entity, string newName)
         {

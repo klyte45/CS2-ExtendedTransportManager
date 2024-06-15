@@ -81,7 +81,8 @@ export type MapViewerOptions = {
     showDistances: boolean,
     showVehicles: boolean,
     showIntegrations: boolean,
-    useWhiteBackground: boolean
+    useWhiteBackground: boolean,
+    useHalfTripIfSimetric: boolean
 }
 
 export class LineManagementService {
@@ -99,5 +100,8 @@ export class LineManagementService {
     }
     static async setLineName(entity: Entity, x: string): Promise<NameFormatted | NameCustom> {
         return await engine.call("k45::xtm.lineManagement.setRouteName", entity, x);
+    }
+    static async setFirstStop(route: Entity, stop: number): Promise<NameFormatted | NameCustom> {
+        return await engine.call("k45::xtm.lineManagement.setFirstStop", route, stop);
     }
 }

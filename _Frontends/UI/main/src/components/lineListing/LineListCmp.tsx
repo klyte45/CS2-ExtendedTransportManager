@@ -1,4 +1,4 @@
-import { LineData, LineManagementService } from "#service/LineManagementService";
+import { LineData, LineManagementService, MapViewerOptions } from "#service/LineManagementService";
 import { ColorUtils, DefaultPanelScreen, Entity, GameScrollComponent, NameCustom, NameFormatted, NameType, SimpleInput, UnitSettings, getGameUnits, metersTo, nameToString, replaceArgs, translateUnitResult } from "@klyte45/euis-components";
 import { Component } from "react";
 import LineDetailCmp from "./LineDetailCmp";
@@ -13,6 +13,7 @@ type State = {
     currentLineViewer?: LineData,
     unitsData?: UnitSettings,
     filterExclude: string[]
+    mapViewOptions: MapViewerOptions
 }
 
 const TypeToIcons = {
@@ -32,6 +33,14 @@ export default class LineListCmp extends Component<any, State> {
     constructor(props: any) {
         super(props);
         this.state = {
+            mapViewOptions: {
+                showDistricts: true,
+                showDistances: true,
+                showVehicles: false,
+                showIntegrations: true,
+                useWhiteBackground: false,
+                useHalfTripIfSimetric: true
+            },
             linesList: [],
             indexedLineList: {},
             filterExclude: []
@@ -42,6 +51,9 @@ export default class LineListCmp extends Component<any, State> {
             engine.on("k45::xtm.lineViewer.getCityLines->", async (x) => {
                 getGameUnits().then(x => this.setState({ unitsData: x }))
                 this.reloadLines(x)
+                if (this.state.currentLineViewer) {
+                    engine.trigger("k45::xtm.lineViewer.getCityLines->!")
+                }
             });
         })
         engine.call("k45::xtm.lineViewer.getCityLines", true)
@@ -75,6 +87,8 @@ export default class LineListCmp extends Component<any, State> {
     render() {
         if (this.state.currentLineViewer) {
             return <><LineDetailCmp
+                mapViewOptions={this.state.mapViewOptions}
+                setMapViewOptions={(x) => this.setState({ mapViewOptions: x })}
                 currentLine={this.state.currentLineViewer?.entity}
                 onBack={() => this.setState({ currentLineViewer: undefined, }, () => engine.call("k45::xtm.lineViewer.getCityLines", true))}
                 getLineById={(x) => this.getLineById(x)}
@@ -161,12 +175,6 @@ export default class LineListCmp extends Component<any, State> {
     }
     getLineById(x: number): LineData {
         return this.state.indexedLineList[x.toFixed(0)];
-    }
-    async sendRouteName(lineData: LineData, newName: string) {
-        const response: NameFormatted | NameCustom = await LineManagementService.setLineName(lineData.entity, newName)
-
-        engine.call("k45::xtm.lineViewer.getCityLines", true)
-        return nameToString(response);
     }
 
     async sendAcronym(entity: Entity, newAcronym: string) {
