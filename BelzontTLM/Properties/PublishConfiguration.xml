@@ -44,6 +44,9 @@ The most up to date information about installation and known issues and bugs are
 - Economy 2.0 update
 - New side tabs to navigate between mod screens
 - Added requirement to subscribe the Unified Icon Library
+- Added button to define a stop as first stop of a line (at the screen inside Line Details after clicking in a stop - Stop Information tab)
+- Added simetric view mode on line viewers for lines that are detected as simetric (like generally rail lines are)
+  - NOTE: it detects based on stop buildings ownership, so custom station buildings stops (that not belongs to an asset) may not be detetected...
 - Added support to exporting palettes from city to a .hex file under `&lt;Palettes Folder&gt;/Exported` folder. You can share the file with other players.
 - Added support to subfolders under the palettes folder. Each subfolder will have a folded group in the palette library screen.
 - Added buttons to go to palette folder in some palette related screens.

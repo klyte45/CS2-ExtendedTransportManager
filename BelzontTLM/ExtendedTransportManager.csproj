@@ -51,6 +51,7 @@
       <_Parameter1>$(ModId)</_Parameter1>
       <_Parameter2>$(DisplayName)</_Parameter2>
       <_Parameter3>$(ShortDescription)</_Parameter3>
+      <_Parameter4>$(ForumLink)</_Parameter4>
     </AssemblyAttribute>
   </ItemGroup>  
 
@@ -195,5 +196,13 @@
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
     <Resource Include="*.md" />      
+  </ItemGroup>
+
+  <ItemGroup>
+    <Resource Remove="changelog.md" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <EmbeddedResource Include="changelog.md" />
   </ItemGroup>
 </Project>
