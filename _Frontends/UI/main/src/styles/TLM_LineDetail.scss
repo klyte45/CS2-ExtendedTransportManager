@@ -233,6 +233,10 @@
                 font-weight: bolder;
                 font-size: 21.000000rem;
                 transform: translateY(-50.000000%);
+
+                &.faded {
+                    opacity: 0.5;
+                }
             }
 
             .stationBullet {
@@ -247,6 +251,30 @@
                 display: block;
                 border-radius: 9999rem;
                 pointer-events: auto;
+
+                &.faded {
+                    opacity: 0.5;
+                }
+            }
+
+            .stationDirection {
+                position: absolute;
+                right: -20rem;
+                height: 16rem;
+                width: 16rem;
+                background: white;
+                border: 1rem solid black;
+                display: block;
+
+                &.up {
+                    clip-path: border-box polygon(nonzero, 50% 0%, 100% 100%, 0% 100%);
+                    top: 0%;
+                }
+
+                &.down {
+                    bottom: 0%;
+                    clip-path: border-box polygon(nonzero, 0% 0%, 50% 100%, 100% 0%);
+                }
             }
 
             .stationIntersections {
@@ -258,10 +286,18 @@
                 overflow-y: hidden;
                 white-space: nowrap;
                 padding: 12rem 12rem 0 0;
+
+                &.faded {
+                    opacity: 0.5;
+                }
             }
 
             .lineIntersection .formatContainer {
                 width: 47rem;
+
+                &.faded {
+                    opacity: 0.5;
+                }
             }
 
         }
@@ -302,6 +338,10 @@
             transform: translateY(-50%);
             --integrationLineColor: transparent;
             --integrationBackgroundImage: none;
+
+            &.faded {
+                opacity: 0.5;
+            }
 
             .integrationLineCutted {
                 position: absolute;
@@ -354,6 +394,7 @@
                 &.sz1 {
                     --scale-format: scale(.45);
                     --form-border-width: 3;
+
                     .formatContainer {
                         margin: -15rem;
                     }

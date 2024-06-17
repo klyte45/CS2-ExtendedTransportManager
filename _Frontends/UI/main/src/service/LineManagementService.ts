@@ -44,6 +44,7 @@ export type StationData = {
     arrivingVehicle?: VehicleData,
     arrivingVehicleDistance?: number,
     arrivingVehicleStops?: number,
+    index?: number
 };
 export type VehicleData = {
     readonly entity: Entity,

@@ -14,6 +14,7 @@ export class StationIntegrationContainerCmp extends Component<{
     keyId: number;
     normalizedPosition: number;
     totalStationCount: number
+    isFaded?: boolean
 }, { measureUnit?: UnitSystem; }> {
 
     constructor(props) {
@@ -46,7 +47,7 @@ export class StationIntegrationContainerCmp extends Component<{
             }, new Set<string>())]
         const stepEachColor = 100 / colors.length;
         return <div className="stationIntegrationContainer" style={{ top: (100 * this.props.normalizedPosition) + "%", minHeight: (100 / this.props.totalStationCount) + "%" }}       >
-            <div className="lineStation">
+            <div className={["lineStation", this.props.isFaded && "faded"].join(" ")}>
                 <div className="integrationLineCutted" style={colors.length == 1 || colors.length > 6 ? {
                     "--integrationLineColor": ColorUtils.getClampedColor(colors.length > 6 ? "#444444" : colors[0])
                 } as CSSProperties : {

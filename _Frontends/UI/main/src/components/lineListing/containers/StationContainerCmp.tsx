@@ -11,7 +11,9 @@ export class StationContainerCmp extends Component<{
     keyId: number;
     normalizedPosition: number;
     totalStationCount: number
-    onSelectStop: (entity: StationData) => void
+    onSelectStop: (entity: StationData) => void,
+    isFaded?: boolean
+    direction?: number
 }, { measureUnit?: UnitSystem; }> {
 
     constructor(props) {
@@ -73,8 +75,9 @@ export class StationContainerCmp extends Component<{
         const id = `linestation-${station.entity.Index}-${this.props.keyId}`
         return <div className="lineStationContainer" style={{ top: (100 * this.props.normalizedPosition) + "%", minHeight: (100 / this.props.totalStationCount) + "%" }}>
             <div className="lineStation row col-12 align-items-center">
-                <div className="stationName">{nameToString(station.name)}</div>
-                <div className="stationBullet" id={id} onClick={() => this.stopClicked(station)} />
+                <div className={["stationName", this.props.isFaded && "faded"].join(" ")}>{nameToString(station.name)}</div>
+                <div className={["stationBullet", this.props.isFaded && "faded"].join(" ")} id={id} onClick={() => this.stopClicked(station)} />
+                {!this.props.isFaded && !!this.props.direction && <div className={["stationDirection", this.props.direction > 0 ? "down" : "up"].join(" ")} />}
                 {this.generateTooltip()}
             </div>
         </div>;

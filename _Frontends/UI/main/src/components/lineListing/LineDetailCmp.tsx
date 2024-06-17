@@ -61,10 +61,14 @@ export default class LineDetailCmp extends Component<Props, State> {
     constructor(props: any) {
         super(props);
         this.state = {
-
             currentTab: 0,
             measureUnit: UnitSystem.Metric
         }
+    }
+
+    private stopUpdating: boolean = false;
+    private updateViewData() {
+        this.reloadData(true).then(() => setTimeout(() => !this.stopUpdating && this.updateViewData(), 3000))
     }
 
     componentDidMount() {
@@ -78,15 +82,16 @@ export default class LineDetailCmp extends Component<Props, State> {
                         ...this.enrichVehicleInfo(x, details.Stops, details.LineData.length)
                     }
                 })
-                details.Stops = details.Stops.map((x, _, arr) => {
+                details.Stops = details.Stops.map((x, i, arr) => {
                     return {
                         ...x,
-                        ...this.enrichStopInfo(x, arr, details.Vehicles, details.LineData)
+                        ...this.enrichStopInfo(i, x, arr, details.Vehicles, details.LineData)
                     }
                 })
                 this.setState({
                     lineDetails: details,
-                    isLineSimetric: checkSimetry(details.Stops)
+                    isLineSimetric: checkSimetry(details.Stops),
+                    currentStopSelected: this.state.currentStopSelected ? details.Stops.find(x => x.entity.Index == this.state.currentStopSelected.entity.Index) : undefined
                 }, () => this.reloadData());
             });
 
@@ -98,15 +103,16 @@ export default class LineDetailCmp extends Component<Props, State> {
                 this.reloadData();
             });
         })
-        this.reloadData(true);
+        this.updateViewData();
     }
-    enrichStopInfo(station: StationData, allStations: StationData[], vehicles: VehicleData[], lineData: LineData): Partial<StationData> {
+    enrichStopInfo(index: number, station: StationData, allStations: StationData[], vehicles: VehicleData[], lineData: LineData): Partial<StationData> {
         const arrivingVehicle = vehicles.length == 0 ? [] : vehicles.map(x => [x.position > station.position ? x.position - 1 : x.position, x] as [number, VehicleData]).sort((a, b) => b[0] - a[0])[0]
 
         return {
             arrivingVehicle: arrivingVehicle[1],
             arrivingVehicleDistance: arrivingVehicle ? (station.position - arrivingVehicle[0]) * lineData.length : undefined,
             arrivingVehicleStops: arrivingVehicle ? allStations.map(x => x.position >= station.position ? x.position - 1 : x.position).filter(x => x > arrivingVehicle[0]).length : undefined,
+            index
         }
     }
     enrichVehicleInfo(vehicle: VehicleData, stations: StationData[], lineLength: number): Partial<VehicleData> {
@@ -123,6 +129,7 @@ export default class LineDetailCmp extends Component<Props, State> {
         }
     }
     componentWillUnmount(): void {
+        this.stopUpdating = true;
         engine.off("k45::xtm.lineViewer.getRouteDetail->");
         engine.off("k45::xtm.common.onMeasureUnitsChanged", this.measureCallback);
         engine.off("k45::xtm.lineViewer.getCityLines->!");
@@ -148,10 +155,13 @@ export default class LineDetailCmp extends Component<Props, State> {
         const lineDetails = this.state.lineDetails;
         if (!lineDetails) return null;
         const lineCommonData = lineDetails?.LineData;
-        const subtitle = !lineDetails ? undefined : Object.values(lineDetails.Stops.reduce((p, n) => {
-            p[n.district.Index] = n
+        const subtitle = !lineDetails ? undefined : Object.values(lineDetails.Stops
+            .reduce((p, n) => {
+            p[n.district.Index] ??= n
             return p;
         }, {} as Record<number, StationData>))
+            .map(x => x)
+            .sort((a, b) => a.index - b.index)
             .map(x => DistrictService.getEffectiveDistrictName(x)).join(" - ");
 
         const componentsMapViewer: Record<MapViewerTabsNames, () => JSX.Element> = {
@@ -192,27 +202,7 @@ export default class LineDetailCmp extends Component<Props, State> {
                     <Cs2CheckboxWithLine isChecked={() => this.props.mapViewOptions.useWhiteBackground} title={translate("lineViewer.useWhiteBackgroundLbl")} onValueToggle={(x) => this.toggleWhiteBG(x)} />
                     <Cs2CheckboxWithLine isChecked={() => this.props.mapViewOptions.useHalfTripIfSimetric} title={translate("lineViewer.showHalfTripIfSimmetric")} onValueToggle={(x) => this.toggleUseHalfTripIfSimetric(x)} />
                 </DefaultPanelScreen>,
-            [MapViewerTabsNames.StopInfo]: () => <>
-                <DefaultPanelScreen title={nameToString(this.state.currentStopSelected?.name)} isSubScreen={true} buttonsRowContent={<>
-                    {
-                        this.state.lineDetails?.Stops[0]?.entity.Index == this.state.currentStopSelected?.entity.Index
-                            ? <button className="darkestBtn" disabled>{translate("lineViewer.alreadyFirstStop")}</button>
-                            : <button className="neutralBtn" onClick={() => this.setSelectedAsFirstStop()}>{translate("lineViewer.setAsFirstStop")}</button>
-                    }
-                    {this.state.currentStopSelected?.parent?.Index
-                        ? <button className="neutralBtn" onClick={() => LineManagementService.selectEntity(this.state.currentStopSelected.parent)}>{translate("lineViewer.selectBuilding")}</button>
-                        : <button className="darkestBtn">{translate("lineViewer.notABuilding")}</button>
-                    }
-                    <button className="neutralBtn" onClick={() => LineManagementService.selectEntity(this.state.currentStopSelected.entity)}>{translate("lineViewer.selectStop")}</button>
-                    <button className="neutralBtn" onClick={() => LineManagementService.focusToEntity(this.state.currentStopSelected.entity)}>{translate("lineViewer.goToStop")}</button>
-
-
-
-                </>}>
-                    <Cs2FormLine title={"Coming soon!"} />
-                    {/* <img src="coui://cctv.xtm.k45/" />*/}
-                </DefaultPanelScreen>
-            </>,
+            [MapViewerTabsNames.StopInfo]: this.stopInfo,
             [MapViewerTabsNames.VehicleInfo]: () => <></>,
             [MapViewerTabsNames.Debug]: () => <>{JSON.stringify(this.state.lineDetails ?? "LOADING", null, 2)}</>
         }
@@ -227,9 +217,10 @@ export default class LineDetailCmp extends Component<Props, State> {
                     setSelection={(x) => this.setSelection(x)}
                     onSelectStop={(x) => this.onStopSelected(x)}
                     simetricLine={this.state.isLineSimetric}
+                    currentStopSelected={this.state.currentStopSelected}
                 />
                 <div className="lineViewContent">
-                    <Tabs selectedIndex={this.state.currentTab} onSelect={x => this.state.currentTab != x && this.setState({ currentTab: x })}>
+                    <Tabs selectedIndex={this.state.currentTab} onSelect={x => this.state.currentTab != x && this.setState({ currentTab: x, currentStopSelected: undefined })}>
                         <TabList id="sideNav" >
                             {tabsOrder.map((x, i) => !x ? <div className="space" key={i}></div> : <Tab key={i} disabled={!clickableTabs.includes(x)}>{translate("lineViewer." + x)}</Tab>)}
                         </TabList>
@@ -285,6 +276,84 @@ export default class LineDetailCmp extends Component<Props, State> {
         this.props.setMapViewOptions({ ...this.props.mapViewOptions, showVehicles: x, showIntegrations: this.props.mapViewOptions.showIntegrations && !x });
     }
 
+
+
+    private stopInfo = () => {
+        var station = this.state.currentStopSelected;
+        if (!station) return;
+
+        const isSimetric = checkSimetry(this.state.lineDetails.Stops);
+        const halfTripIdx = this.state.lineDetails.Stops.length / 2
+        const hasInverseStop = isSimetric && station.index != 0 && station.index != halfTripIdx
+        let inverseStop: StationData;
+        if (hasInverseStop) {
+            const delta = this.state.lineDetails.Stops.length - station.index;
+            inverseStop = this.state.lineDetails.Stops[delta]
+        }
+
+        let passengerValueFmt: string;
+        if (station.isCargo) {
+            let val = kilogramsTo(station.cargo, this.state.measureUnit);
+            passengerValueFmt = replaceArgs(engine.translate(val[0]), { ...val[1], SIGN: "" }).trim();
+        } else {
+            passengerValueFmt = station.cargo.toFixed();
+        }
+        let nextVehicleDistanceFmt: string;
+        let stopsYetToPassText: string;
+        if (station.arrivingVehicle) {
+            let val = metersTo(station.arrivingVehicleDistance, this.state.measureUnit);
+            nextVehicleDistanceFmt = replaceArgs(engine.translate(val[0]), { ...val[1], SIGN: "" }).trim();
+            stopsYetToPassText = station.arrivingVehicle
+                ? station.arrivingVehicleStops
+                    ? replaceArgs(translate("lineStationDetail.nextVehicleStopsRemaning"), { stops: station.arrivingVehicleStops.toFixed() })
+                    : translate("lineStationDetail.nextVehicleIncoming")
+                : "";
+        }
+        const fullStationTitle = nameToString(station.name) + (
+            isSimetric
+                ? " " + replaceArgs(translate("lineStationDetail.platformDestinationFmt"), { stationName: nameToString(this.state.lineDetails.Stops[station.index < halfTripIdx ? halfTripIdx : 0].name) })
+                : ""
+        )
+        return <>
+            <DefaultPanelScreen title={fullStationTitle} isSubScreen={true} buttonsRowContent={<>
+                {this.state.lineDetails?.Stops[0]?.entity.Index == station.entity.Index
+                    ? <button className="darkestBtn" disabled>{translate("lineStationDetail.alreadyFirstStop")}</button>
+                    : <button className="neutralBtn" onClick={() => this.setSelectedAsFirstStop()}>{translate("lineStationDetail.setAsFirstStop")}</button>}
+                {station.parent?.Index
+                    ? <button className="neutralBtn" onClick={() => LineManagementService.selectEntity(station.parent)}>{translate("lineStationDetail.selectBuilding")}</button>
+                    : <button className="darkestBtn">{translate("lineStationDetail.notABuilding")}</button>}
+                <button className="neutralBtn" onClick={() => LineManagementService.selectEntity(station.entity)}>{translate("lineStationDetail.selectStop")}</button>
+                <button className="neutralBtn" onClick={() => LineManagementService.focusToEntity(station.entity)}>{translate("lineStationDetail.goToStop")}</button>
+                {
+                    hasInverseStop
+                        ? <>
+                            <div style={{ display: "flex", flexGrow: 5 }}></div>
+                            <button className="neutralBtn" onClick={() => this.onStopSelected(inverseStop)}>{translate("lineStationDetail.seeInverseStop")}</button>
+                        </>
+                        : <></>
+                }
+            </>}>
+                <Cs2FormLine title={translate(station.isCargo ? "lineStationDetail.cargoWaiting" : "lineStationDetail.passengerWaiting")}>{passengerValueFmt}</Cs2FormLine>
+                <Cs2FormLine title={translate("lineStationDetail.nextVehicleInformation")}>{
+                    this.state.lineDetails.LineData.vehicles == 0
+                        ? <span style={{ "color": "var(--negativeColor)" }}>{translate("lineStationDetail.noNextVehicleData")}</span>
+                        :
+                        <div style={{ display: "flex", flexDirection: "row", alignItems: "stretch" }}>
+                            <div style={{ display: "flex", flexDirection: "column", alignItems: "flex-end", justifyContent: "space-around", paddingRight: "5px" }}>
+                                <div>{nameToString(station.arrivingVehicle.name) + " - " + station.arrivingVehicle.entity.Index}</div>
+                                <div>{nextVehicleDistanceFmt}</div>
+                                <div>{stopsYetToPassText}</div>
+                            </div>
+                            <div>
+                                <button className="neutralBtn" onClick={() => LineManagementService.focusToEntity(station.arrivingVehicle.entity)} >{translate("lineStationDetail.followVehicle")}</button>
+                                <button className="neutralBtn" onClick={() => LineManagementService.selectEntity(station.arrivingVehicle.entity)} >{translate("lineStationDetail.viewDetailsGame")}</button>
+                            </div>
+                        </div>
+                }</Cs2FormLine>
+                {/* <img src="coui://cctv.xtm.k45/" />*/}
+            </DefaultPanelScreen >
+        </>;
+    }
 }
 
 
@@ -293,8 +362,7 @@ function checkSimetry(stops: StationData[]): boolean {
     if (length % 1 == 1) return false;
     const otherSideIdx = stops.length / 2 + 1
     for (let i = 1; i < otherSideIdx; i++) {
-        if (stops[i].parent.Index != stops[length - i].parent.Index) return false;
+        if (!stops[i].parent.Index || stops[i].parent.Index != stops[length - i].parent.Index) return false;
     }
     return true;
 }
-

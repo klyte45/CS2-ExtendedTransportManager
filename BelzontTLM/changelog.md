@@ -2,8 +2,9 @@
 - Economy 2.0 update
 - New side tabs to navigate between mod screens
 - Added requirement to subscribe the Unified Icon Library
-- Added button to define a stop as first stop of a line (at the screen inside Line Details after clicking in a stop - Stop Information tab)
-- Also added buttons for: focus to stop, select stop and select building of the stop (if applicable)
+- Initial implementation of stop details screen when clicking in a stop of the map:
+	- Added button to define a stop as first stop of a line)
+	- Also added buttons for: focus to stop, select stop and select building of the stop (if applicable)
 - Added simetric view mode on line viewers for lines that are detected as simetric (like generally rail lines are)
   - NOTE: it detects based on stop buildings ownership, so custom station buildings stops (that not belongs to an asset) may not be detetected...
 - Added support to exporting palettes from city to a .hex file under `<Palettes Folder>/Exported` folder. You can share the file with other players.

@@ -16,7 +16,8 @@ export class TlmViewerCmp extends Component<{
     setSelection: (line: Entity) => void;
     getLineById: (line: number) => LineData;
     onSelectStop: (entity: StationData) => void
-    simetricLine?: boolean
+    simetricLine?: boolean,
+    currentStopSelected?: StationData
 } & MapViewerOptions> {
 
     constructor(props) {
@@ -48,6 +49,7 @@ export class TlmViewerCmp extends Component<{
                                     <div className="integrationsRailing">
                                         {targetStops.map((station, i) => {
                                             return <StationIntegrationContainerCmp
+                                                isFaded={this.props.currentStopSelected && this.props.currentStopSelected.entity.Index != station.entity.Index && (!this.props.simetricLine || this.props.currentStopSelected.parent.Index != station.parent.Index)}
                                                 getLineById={(x) => this.props.getLineById(x)}
                                                 setSelection={(x) => this.props.setSelection(x)}
                                                 station={station}
@@ -60,6 +62,7 @@ export class TlmViewerCmp extends Component<{
                                             />
                                         })}
                                         {!showSimetricMode && <StationIntegrationContainerCmp
+                                            isFaded={this.props.currentStopSelected && this.props.currentStopSelected.entity.Index != targetStops[0].entity.Index && (!this.props.simetricLine || this.props.currentStopSelected.parent.Index != targetStops[0].parent.Index)}
                                             thisLineId={lineDetails.LineData.entity}
                                             getLineById={(x) => this.props.getLineById(x)}
                                             setSelection={(x) => this.props.setSelection(x)}
@@ -73,6 +76,8 @@ export class TlmViewerCmp extends Component<{
                                 <div className="stationRailing">
                                     {targetStops.map((station, i) => {
                                         return <StationContainerCmp
+                                            direction={this.props.currentStopSelected && showSimetricMode && this.props.currentStopSelected?.parent.Index == station.parent.Index ? this.props.currentStopSelected?.index < targetLenght ? 1 : -1 : 0}
+                                            isFaded={this.props.currentStopSelected && this.props.currentStopSelected.entity.Index != station.entity.Index && (!showSimetricMode || this.props.currentStopSelected.parent.Index != station.parent.Index)}
                                             station={station}
                                             vehicles={lineDetails.Vehicles}
                                             keyId={i}
@@ -83,6 +88,7 @@ export class TlmViewerCmp extends Component<{
                                         />
                                     })}
                                     {!showSimetricMode && <StationContainerCmp
+                                        isFaded={this.props.currentStopSelected && this.props.currentStopSelected.entity.Index != targetStops[0].entity.Index && (!showSimetricMode|| this.props.currentStopSelected.parent.Index != targetStops[0].parent.Index)}
                                         station={targetStops[0]}
                                         vehicles={lineDetails.Vehicles}
                                         keyId={-1}
