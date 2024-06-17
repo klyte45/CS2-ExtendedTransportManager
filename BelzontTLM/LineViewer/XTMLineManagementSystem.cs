@@ -6,6 +6,7 @@ using Game;
 using Game.Common;
 using Game.Routes;
 using Game.UI;
+using Game.UI.InGame;
 using System;
 using Unity.Collections;
 using Unity.Entities;
@@ -19,6 +20,7 @@ namespace BelzontTLM
     {
         private NameSystem m_NameSystem;
         private EndFrameBarrier m_EndFrameBarrier;
+        private SelectedInfoUISystem m_SelectedUI;
 
         public void SetupCallBinder(Action<string, Delegate> eventCaller)
         {
@@ -28,6 +30,8 @@ namespace BelzontTLM
             eventCaller("lineManagement.setIgnorePalette", SetRouteIgnorePalette);
             eventCaller("lineManagement.setRouteFixedColor", SetRouteFixedColor);
             eventCaller("lineManagement.setFirstStop", SetFirstStop);
+            eventCaller("lineManagement.selectEntity", SelectEntity);
+            eventCaller("lineManagement.focusToEntity", FocusToEntity);
         }
 
         public void SetupCaller(Action<string, object[]> eventCaller)
@@ -127,10 +131,19 @@ namespace BelzontTLM
             entityCommandBuffer.AddComponent<Updated>(entity);
             return m_NameSystem.GetName(entity).ToValueableName();
         }
+        private void FocusToEntity(Entity e)
+        {
+            m_SelectedUI.Focus(e);
+        }
+        private void SelectEntity(Entity e)
+        {
+            m_SelectedUI.SetSelection(e);
+        }
         protected override void OnCreate()
         {
             m_NameSystem = World.GetOrCreateSystemManaged<NameSystem>();
             m_EndFrameBarrier = World.GetOrCreateSystemManaged<EndFrameBarrier>();
+            m_SelectedUI = World.GetOrCreateSystemManaged<SelectedInfoUISystem>();
         }
 
         protected override void OnUpdate()

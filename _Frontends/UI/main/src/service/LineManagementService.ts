@@ -104,4 +104,10 @@ export class LineManagementService {
     static async setFirstStop(route: Entity, stop: number): Promise<NameFormatted | NameCustom> {
         return await engine.call("k45::xtm.lineManagement.setFirstStop", route, stop);
     }
+    static async focusToEntity(entity: Entity): Promise<NameFormatted | NameCustom> {
+        return await engine.call("k45::xtm.lineManagement.focusToEntity", entity);
+    }
+    static async selectEntity(entity: Entity): Promise<NameFormatted | NameCustom> {
+        return await engine.call("k45::xtm.lineManagement.selectEntity", entity);
+    }
 }

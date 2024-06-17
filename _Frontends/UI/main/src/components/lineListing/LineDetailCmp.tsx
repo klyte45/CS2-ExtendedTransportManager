@@ -199,6 +199,12 @@ export default class LineDetailCmp extends Component<Props, State> {
                             ? <button className="darkestBtn" disabled>{translate("lineViewer.alreadyFirstStop")}</button>
                             : <button className="neutralBtn" onClick={() => this.setSelectedAsFirstStop()}>{translate("lineViewer.setAsFirstStop")}</button>
                     }
+                    {this.state.currentStopSelected?.parent?.Index
+                        ? <button className="neutralBtn" onClick={() => LineManagementService.selectEntity(this.state.currentStopSelected.parent)}>{translate("lineViewer.selectBuilding")}</button>
+                        : <button className="darkestBtn">{translate("lineViewer.notABuilding")}</button>
+                    }
+                    <button className="neutralBtn" onClick={() => LineManagementService.selectEntity(this.state.currentStopSelected.entity)}>{translate("lineViewer.selectStop")}</button>
+                    <button className="neutralBtn" onClick={() => LineManagementService.focusToEntity(this.state.currentStopSelected.entity)}>{translate("lineViewer.goToStop")}</button>
 
 
 
