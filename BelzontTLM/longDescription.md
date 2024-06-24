@@ -5,6 +5,12 @@ This is successor from both Transport Lines Manager (TLM) and Improved Transport
 
 The overall idea is bring some tools to better manage and visualize the public transport of the city.
 
+## How to find the mod screen
+
+If using single monitor, use the [EUIS](https://mods.paradoxplaza.com/mods/74151/Windows) mod shortcut to open the main screen overlay over the game screen, then find this mod icon in the taskbar. By default, it's `Ctrl+Tab`.
+
+When using multiple monitors, it may be visible in any of them, except if disabled at EUIS settings screen.
+
 ## Current features
 
 - Auto color - import palettes to the city then apply to transport type
@@ -25,6 +31,9 @@ The overall idea is bring some tools to better manage and visualize the public t
   - Octogon for freight trains (NEW)
   - 8-point star for freight ships (NEW)
   - Thick square cross for freight airplanes (NEW)
+
+**Note:** Check full features by reading the changelogs. The features above are just the initial feature set. 
+	
 
 ## Experimental mod warning!
 Since it's a very complex mod, it may cause issues in the game due their early stage of development. This mod may take months until get the same number of features it had in CS1.

@@ -1,4 +1,4 @@
-# v0.1.3r0 (??-JUN-24)
+# v0.1.3r0 (24-JUN-24)
 - Economy 2.0 update
 - New side tabs to navigate between mod screens
 - Added requirement to subscribe the Unified Icon Library
