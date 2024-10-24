@@ -3,31 +3,9 @@ using BelzontTLM.Palettes;
 using Game;
 using System.IO;
 using Game.Modding;
-#if BEPINEX_CS2
-using ExtendedTransportManager;
-using System.Collections.Generic;
-using Belzont.Utils;
-using Game.UI.Menu;
-using BepInEx;
-#endif
 
 namespace BelzontTLM
 {
-#if BEPINEX_CS2
-
-    [BepInPlugin(MyPluginInfo.PLUGIN_GUID, MyPluginInfo.PLUGIN_NAME, MyPluginInfo.PLUGIN_VERSION)]
-    public class EUIBepinexPlugin : BaseUnityPlugin
-    {
-        public void Awake()
-        {
-            LogUtils.LogsEnabled = false;
-            LogUtils.Logger = Logger;
-            LogUtils.DoInfoLog($"STARTING MOD!");
-            Redirector.PatchAll();
-        }
-    }
-
-#endif
     public class ExtendedTransportManagerMod : BasicIMod, IMod
     {
         public static new ExtendedTransportManagerMod Instance => (ExtendedTransportManagerMod)BasicIMod.Instance;

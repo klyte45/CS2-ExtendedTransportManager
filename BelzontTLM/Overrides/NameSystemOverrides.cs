@@ -18,9 +18,9 @@ namespace BelzontTLM.Overrides
             prefabSystem = world.GetExistingSystemManaged<PrefabSystem>();
             entityManager = world.EntityManager;
 
-            var GetRouteName = typeof(NameSystem).GetMethod("GetRouteName", RedirectorUtils.allFlags);
+            var getRouteName = typeof(NameSystem).GetMethod("GetRouteName", RedirectorUtils.allFlags);
 
-            AddRedirect(GetRouteName, GetType().GetMethod("GetRouteName", RedirectorUtils.allFlags));
+            AddRedirect(getRouteName, GetType().GetMethod(nameof(GetRouteName), RedirectorUtils.allFlags));
         }
         private static PrefabSystem prefabSystem;
         private static EntityManager entityManager;

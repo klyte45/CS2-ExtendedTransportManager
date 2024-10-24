@@ -1,14 +1,2 @@
-# v0.1.3r0 (24-JUN-24)
-- Economy 2.0 update
-- New side tabs to navigate between mod screens
-- Added requirement to subscribe the Unified Icon Library
-- Initial implementation of stop details screen when clicking in a stop of the map:
-	- Added button to define a stop as first stop of a line)
-	- Also added buttons for: focus to stop, select stop and select building of the stop (if applicable)
-- Added simetric view mode on line viewers for lines that are detected as simetric (like generally rail lines are)
-  - NOTE: it detects based on stop buildings ownership, so custom station buildings stops (that not belongs to an asset) may not be detetected...
-- Added support to exporting palettes from city to a .hex file under `<Palettes Folder>/Exported` folder. You can share the file with other players.
-- Added support to subfolders under the palettes folder. Each subfolder will have a folded group in the palette library screen.
-- Added buttons to go to palette folder in some palette related screens.
-- Added button to reload palettes from folder at palette library screen.
-- Fixed error when clicking on a line with no vehicles - _TypeError: Cannot read properties of undefined (reading '1')_
+# v0.1.3r2 (24-OCT-24)
+- Recompiled for game version 1.1.11
