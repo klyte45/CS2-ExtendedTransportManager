@@ -51,6 +51,9 @@ The most up to date information about installation and known issues and bugs are
   <GameVersion Value="1.1.*" />
   <ChangeLog># v0.1.3r2 (24-OCT-24)
 - Recompiled for game version 1.1.11</ChangeLog>
+  <ExternalLink Type="github" Url="https://github.com/klyte45/CS2-ExtendedTransportManager" />
+  <ExternalLink Type="youtube" Url="https://www.youtube.com/Klyte45" />
+  <ExternalLink Type="kofi" Url="https://ko-fi.com/klyte45" />
   <Tag Value="Code Mod" />
   <Screenshot Value="Screenshots\00_lineListing.jpg" />
   <Screenshot Value="Screenshots\01_LineData.jpg" />

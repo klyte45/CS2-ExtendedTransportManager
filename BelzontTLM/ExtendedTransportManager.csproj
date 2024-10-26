@@ -34,6 +34,7 @@
     <DisplayName>Extended Transport Manager</DisplayName>
     <ShortDescription>Expanded tools for public transport management.</ShortDescription>
     <ForumLink>https://forum.paradoxplaza.com/forum/threads/xtm-extended-transport-manager.1651555/</ForumLink>
+    <GitHubLink>https://github.com/klyte45/CS2-ExtendedTransportManager</GitHubLink>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
   </PropertyGroup>
 
