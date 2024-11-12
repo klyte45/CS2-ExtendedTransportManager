@@ -3,10 +3,9 @@ import LineListCmp from "#components/lineListing/LineListCmp";
 import CityPaletteLibraryCmp from "#components/palettes/CityPaletteLibraryCmp";
 import PaletteSetupSettings from "#components/palettes/PaletteSetupSettings";
 import "#styles/root.scss";
-import translate from "#utility/translate"
-import { MainSideTabMenuComponent, MenuItem } from "@klyte45/euis-components";
+import translate from "#utility/translate";
+import { ErrorBoundary, MainSideTabMenuComponent, MenuItem } from "@klyte45/euis-components";
 import { Component } from "react";
-import { Tab, TabList, TabPanel, Tabs } from "react-tabs";
 
 type State = {
   lastIdx: number
@@ -61,29 +60,5 @@ export default class Root extends Component<any, State> {
         />
       </ErrorBoundary>
     </>;
-
-
-  }
-}
-
-class ErrorBoundary extends Component {
-  constructor(props) {
-    super(props);
-    this.state = { hasError: false };
-  }
-
-  componentDidCatch(error, info) {
-    // Display fallback UI
-    this.setState({ hasError: true });
-    // You can also log the error to an error reporting service
-    console.log(error, info);
-  }
-
-  render() {
-    if ((this.state as any)?.hasError) {
-      // You can render any custom fallback UI
-      return <h1>Something went wrong.</h1>;
-    }
-    return this.props.children;
   }
 }
