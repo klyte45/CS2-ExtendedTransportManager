@@ -93,7 +93,8 @@ namespace BelzontTLM
 
         private void SendRouteDetail(XTMLineViewerResult result)
         {
-            SendEvent("lineViewer.getRouteDetail->", result);
+            LogUtils.DoInfoLog($"Send route detail to: '{$"lineViewer.getRouteDetail:{result.LineData.entity.Index}->"}'");
+            SendEvent($"lineViewer.getRouteDetail:{result.LineData.entity.Index}->", result);
         }
 
 
@@ -131,7 +132,7 @@ namespace BelzontTLM
                     },
                     Any = new ComponentType[]
                     {
-                        ComponentType.ReadOnly<Updated>()                        
+                        ComponentType.ReadOnly<Updated>()
                     },
                     None = new ComponentType[]
                     {

@@ -1,7 +1,7 @@
 import { LineData, LineManagementService, MapViewerOptions } from "#service/LineManagementService";
 import { ColorUtils, DefaultPanelScreen, Entity, GameScrollComponent, NameCustom, NameFormatted, NameType, SimpleInput, UnitSettings, getGameUnits, metersTo, nameToString, replaceArgs, translateUnitResult } from "@klyte45/euis-components";
 import { Component } from "react";
-import LineDetailCmp from "./LineDetailCmp";
+import { LineDetailCmp } from "./LineDetailCmp";
 import { TlmLineFormatCmp } from "./containers/TlmLineFormatCmp";
 import "#styles/LineList.scss"
 import translate from "#utility/translate";

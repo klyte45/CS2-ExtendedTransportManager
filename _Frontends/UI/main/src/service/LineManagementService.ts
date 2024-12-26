@@ -111,4 +111,26 @@ export class LineManagementService {
     static async selectEntity(entity: Entity): Promise<NameFormatted | NameCustom> {
         return await engine.call("k45::xtm.lineManagement.selectEntity", entity);
     }
+    static checkSimetry(stops: StationData[]): boolean {
+        const length = stops.length;
+        if (length % 1 == 1) return false;
+        const otherSideIdx = stops.length / 2 + 1
+        for (let i = 1; i < otherSideIdx; i++) {
+            if (!stops[i] || !stops[length - i]) continue;
+            if (!stops[i].parent.Index || stops[i].parent.Index != stops[length - i].parent.Index) return false;
+        }
+        return true;
+    }
+    static async getRouteDetail(entity: Entity, force: boolean): Promise<LineDetails> {
+        engine.call("k45::xtm.lineViewer.getRouteDetail", entity, force)
+        return new Promise((res) => {
+            const eventName = `k45::xtm.lineViewer.getRouteDetail:${entity.Index}->`;
+            console.log("waiting for event", eventName)
+            const onResponse = (x: LineDetails) => {
+                res(x);
+                engine.off(eventName, onResponse)
+            }
+            engine.on(eventName, onResponse)
+        })
+    }
 }

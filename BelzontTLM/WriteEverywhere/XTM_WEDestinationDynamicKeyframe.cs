@@ -1,6 +1,6 @@
 ﻿using Belzont.Utils;
+using Colossal.OdinSerializer.Utilities;
 using Colossal.Serialization.Entities;
-using Game.UI;
 using Unity.Collections;
 using Unity.Entities;
 
@@ -18,6 +18,46 @@ namespace BelzontTLM
         readonly Entity IXTM_WEDestinationData.TargetEntity => targetEntity;
         readonly FixedString32Bytes IXTM_WEDestinationData.Prefix => prefix;
         readonly FixedString32Bytes IXTM_WEDestinationData.Suffix => suffix;
+
+        public struct UIData
+        {
+            public Entity targetEntity;
+            public string prefix;
+            public string suffix;
+            public XTM_WEDestinationKeyframeType type;
+            public ushort framesLength;
+
+            public readonly XTM_WEDestinationDynamicKeyframe ToComponent()
+                => new()
+                {
+                    targetEntity = targetEntity,
+                    prefix = prefix ?? "",
+                    suffix = suffix ?? "",
+                    type = type,
+                    framesLength = framesLength,
+
+                };
+
+            public readonly bool IsValid()
+                => framesLength > 0 && type switch
+                {
+                    XTM_WEDestinationKeyframeType.RouteName => true,
+                    XTM_WEDestinationKeyframeType.EntityName => targetEntity != Entity.Null,
+                    XTM_WEDestinationKeyframeType.RouteNumber => true,
+                    XTM_WEDestinationKeyframeType.FixedString => !prefix.IsNullOrWhitespace(),
+                    _ => false
+                };
+        }
+
+        public readonly UIData ToUI()
+            => new()
+            {
+                targetEntity = targetEntity,
+                prefix = prefix.ToString(),
+                suffix = suffix.ToString(),
+                type = type,
+                framesLength = framesLength
+            };
 
         public readonly void Serialize<TWriter>(TWriter writer) where TWriter : IWriter
         {
@@ -38,5 +78,5 @@ namespace BelzontTLM
             reader.Read(out suffix);
             reader.Read(out framesLength);
         }
-            }
+    }
 }

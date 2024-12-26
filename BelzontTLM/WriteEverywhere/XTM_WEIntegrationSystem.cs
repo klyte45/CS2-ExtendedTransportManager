@@ -22,11 +22,9 @@ namespace BelzontTLM
         private bool weInitialized;
         private bool weAvailable;
         private NameSystem m_nameSystem;
-        private EntityQuery m_uninitiatedRoutesStatic;
         private EntityQuery m_uninitiatedRoutesDynamic;
         private EntityQuery m_deletedLinesGarbage;
         private EntityQuery m_routeChanged;
-        private TransportLineSystem m_lineSystem;
         private ModificationEndBarrier m_modificationEndBarrier;
         private XTMLineManagementSystem m_managementSystem;
         private SimulationSystem m_simulationSystem;
@@ -34,6 +32,8 @@ namespace BelzontTLM
         public void SetupCallBinder(Action<string, Delegate> eventCaller)
         {
             eventCaller("weIntegration.isAvailable", () => weAvailable);
+            eventCaller("weIntegration.getBlindsKeyframes", GetBlindsKeyframes);
+            eventCaller("weIntegration.setBlindsKeyframes", SetBlindsKeyframes);
         }
 
         public void SetupCaller(Action<string, object[]> eventCaller)
@@ -44,28 +44,68 @@ namespace BelzontTLM
         {
         }
 
+        #region UI Calls
+
+        private XTM_WEDestinationBlind.UIData[] GetBlindsKeyframes(Entity line)
+        {
+            if (!EntityManager.TryGetBuffer<XTM_WEDestinationBlind>(line, true, out var data))
+            {
+                return default;
+            }
+            var result = new XTM_WEDestinationBlind.UIData[data.Length];
+            for (int i = 0; i < data.Length; i++)
+            {
+                result[i] = data[i].ToUI();
+            }
+            return result;
+        }
+
+        private bool SetBlindsKeyframes(Entity line, XTM_WEDestinationBlind.UIData[] frames)
+        {
+            if (!EntityManager.TryGetBuffer<XTM_WEDestinationBlind>(line, false, out var data))
+            {
+                return false;
+            }
+            var length = frames.Length;
+            var filteredFrames = frames.Where((x, i) => x.keyframes != null).Select(x =>
+            {
+                x.keyframes = x.keyframes.Where(x => x.IsValid()).ToArray();
+                return x;
+            }).Where(x => x.keyframes.Length > 0).ToArray();
+            if (filteredFrames.Length == 0) return false;
+            var totalLength = Math.Max(filteredFrames.Length, data.Length);
+            for (int i = 0; i < totalLength; i++)
+            {
+                if (i < filteredFrames.Length)
+                {
+                    if (i < data.Length)
+                    {
+                        data[i].Dispose();
+                        data[i] = XTM_WEDestinationBlind.From(filteredFrames[i]);
+                    }
+                    else
+                    {
+                        data.Add(XTM_WEDestinationBlind.From(filteredFrames[i]));
+                    }
+                }
+                else
+                {
+                    data[i].Dispose();
+                }
+            }
+            data.Length = filteredFrames.Length;
+            return true;
+        }
+
+        #endregion
+
         protected override void OnCreate()
         {
             base.OnCreate();
             m_nameSystem = World.GetOrCreateSystemManaged<NameSystem>();
-            m_lineSystem = World.GetOrCreateSystemManaged<TransportLineSystem>();
             m_modificationEndBarrier = World.GetOrCreateSystemManaged<ModificationEndBarrier>();
             m_managementSystem = World.GetOrCreateSystemManaged<XTMLineManagementSystem>();
             m_simulationSystem = World.GetOrCreateSystemManaged<SimulationSystem>();
-            m_uninitiatedRoutesStatic = GetEntityQuery(new EntityQueryDesc[] {
-                new() {
-                    All = new ComponentType[]
-                    {
-                        ComponentType.ReadOnly<TransportLine>(),
-                    },
-                    None = new ComponentType[]
-                    {
-                        ComponentType.ReadOnly<XTM_WEDestinationStatic>(),
-                        ComponentType.ReadOnly<Temp>(),
-                        ComponentType.ReadOnly<Deleted>(),
-                    }
-                }
-            });
             m_uninitiatedRoutesDynamic = GetEntityQuery(new EntityQueryDesc[] {
                 new() {
                     All = new ComponentType[]
@@ -74,7 +114,7 @@ namespace BelzontTLM
                     },
                     None = new ComponentType[]
                     {
-                        ComponentType.ReadOnly<XTM_WEDestinationDynamic>(),
+                        ComponentType.ReadOnly<XTM_WEDestinationBlind>(),
                         ComponentType.ReadOnly<Temp>(),
                         ComponentType.ReadOnly<Deleted>(),
                     }
@@ -84,7 +124,7 @@ namespace BelzontTLM
                 new() {
                     Any = new ComponentType[]
                     {
-                        ComponentType.ReadOnly<XTM_WEDestinationDynamic>(),
+                        ComponentType.ReadOnly<XTM_WEDestinationBlind>(),
                     },
                     None = new ComponentType[]
                     {
@@ -96,8 +136,7 @@ namespace BelzontTLM
                 new() {
                     All = new ComponentType[]
                     {
-                        ComponentType.ReadOnly<XTM_WEDestinationStatic>(),
-                        ComponentType.ReadOnly<XTM_WEDestinationDynamic>(),
+                        ComponentType.ReadOnly<XTM_WEDestinationBlind>(),
                         ComponentType.ReadOnly<TransportLine>(),
                         ComponentType.ReadOnly<Updated>(),
                     },
@@ -108,7 +147,7 @@ namespace BelzontTLM
                     }
                 }
             });
-            RequireAnyForUpdate(m_routeChanged, m_deletedLinesGarbage, m_uninitiatedRoutesDynamic, m_uninitiatedRoutesStatic);
+            RequireAnyForUpdate(m_routeChanged, m_deletedLinesGarbage, m_uninitiatedRoutesDynamic);
         }
 
 
@@ -160,15 +199,15 @@ namespace BelzontTLM
 
         private string GetStaticData(Entity stop, Entity route)
         {
-            if (EntityManager.TryGetBuffer<XTM_WEDestinationStatic>(route, true, out var destinations) && destinations.Length > 0)
+            if (EntityManager.TryGetBuffer<XTM_WEDestinationBlind>(route, true, out var destinations) && destinations.Length > 0)
             {
-                if (destinations.Length == 1) return ((IXTM_WEDestinationData)destinations[0]).GetString(EntityManager, m_nameSystem, m_managementSystem, stop);
+                if (destinations.Length == 1) return destinations[0].GetStaticKeyframe().GetString(EntityManager, m_nameSystem, m_managementSystem, stop);
             }
             return "XTM INIT...";
         }
         private string GetDynamicData(Entity stop, Entity route)
         {
-            if (EntityManager.TryGetBuffer<XTM_WEDestinationDynamic>(route, true, out var destinations) && destinations.Length > 0)
+            if (EntityManager.TryGetBuffer<XTM_WEDestinationBlind>(route, true, out var destinations) && destinations.Length > 0)
             {
                 if (destinations.Length == 1) return destinations[0].GetCurrentText(m_simulationSystem.frameIndex, EntityManager, m_nameSystem, m_managementSystem, stop);
             }
@@ -180,14 +219,6 @@ namespace BelzontTLM
         protected override void OnUpdate()
         {
             if (GameManager.instance.isGameLoading) return;
-            if (!m_uninitiatedRoutesStatic.IsEmptyIgnoreFilter)
-            {
-                Dependency = new XTM_WEInitStatic
-                {
-                    m_entityHdl = GetEntityTypeHandle(),
-                    m_cmdBuffer = m_modificationEndBarrier.CreateCommandBuffer().AsParallelWriter(),
-                }.ScheduleParallel(m_uninitiatedRoutesStatic, Dependency);
-            }
             if (!m_uninitiatedRoutesDynamic.IsEmptyIgnoreFilter)
             {
                 Dependency = new XTM_WEInitDynamic
@@ -198,43 +229,21 @@ namespace BelzontTLM
             }
             if (!m_routeChanged.IsEmptyIgnoreFilter)
             {
-
+                LogUtils.DoInfoLog("ROUTE CHANGED");
             }
             if (!m_deletedLinesGarbage.IsEmptyIgnoreFilter)
             {
-                LogUtils.DoInfoLog("CLEANING WE");
                 Dependency = new XTM_WEDestroyDynamic
                 {
                     m_entityHdl = GetEntityTypeHandle(),
                     m_cmdBuffer = m_modificationEndBarrier.CreateCommandBuffer().AsParallelWriter(),
-                    m_destinationHdl = GetBufferTypeHandle<XTM_WEDestinationDynamic>()
+                    m_destinationHdl = GetBufferTypeHandle<XTM_WEDestinationBlind>()
                 }.ScheduleParallel(m_deletedLinesGarbage, Dependency);
 
             }
             Dependency.Complete();
         }
 
-        [BurstCompile]
-        private struct XTM_WEInitStatic : IJobChunk
-        {
-            public EntityTypeHandle m_entityHdl;
-            public EntityCommandBuffer.ParallelWriter m_cmdBuffer;
-
-            public void Execute(in ArchetypeChunk chunk, int unfilteredChunkIndex, bool useEnabledMask, in v128 chunkEnabledMask)
-            {
-                var entities = chunk.GetNativeArray(m_entityHdl);
-                var size = entities.Length;
-                for (int i = 0; i < size; i++)
-                {
-                    var entity = entities[i];
-                    var buff = m_cmdBuffer.AddBuffer<XTM_WEDestinationStatic>(unfilteredChunkIndex, entity);
-                    buff.Add(new XTM_WEDestinationStatic
-                    {
-                        type = XTM_WEDestinationKeyframeType.RouteName
-                    });
-                }
-            }
-        }
         [BurstCompile]
         private struct XTM_WEInitDynamic : IJobChunk
         {
@@ -248,8 +257,8 @@ namespace BelzontTLM
                 for (int i = 0; i < size; i++)
                 {
                     var entity = entities[i];
-                    var buff = m_cmdBuffer.AddBuffer<XTM_WEDestinationDynamic>(unfilteredChunkIndex, entity);
-                    var singleFrame = new XTM_WEDestinationDynamic();
+                    var buff = m_cmdBuffer.AddBuffer<XTM_WEDestinationBlind>(unfilteredChunkIndex, entity);
+                    var singleFrame = new XTM_WEDestinationBlind();
                     singleFrame.AddKeyframe(new XTM_WEDestinationDynamicKeyframe
                     {
                         type = XTM_WEDestinationKeyframeType.RouteName,
@@ -263,7 +272,7 @@ namespace BelzontTLM
         private struct XTM_WEDestroyDynamic : IJobChunk
         {
             public EntityTypeHandle m_entityHdl;
-            public BufferTypeHandle<XTM_WEDestinationDynamic> m_destinationHdl;
+            public BufferTypeHandle<XTM_WEDestinationBlind> m_destinationHdl;
             public EntityCommandBuffer.ParallelWriter m_cmdBuffer;
 
             public void Execute(in ArchetypeChunk chunk, int unfilteredChunkIndex, bool useEnabledMask, in v128 chunkEnabledMask)
@@ -280,7 +289,7 @@ namespace BelzontTLM
                         var destination = destinationBuffer[j];
                         destination.Dispose();
                     }
-                    m_cmdBuffer.RemoveComponent<XTM_WEDestinationDynamic>(unfilteredChunkIndex, entity);
+                    m_cmdBuffer.RemoveComponent<XTM_WEDestinationBlind>(unfilteredChunkIndex, entity);
                 }
             }
         }
