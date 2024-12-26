@@ -157,9 +157,9 @@ export default class LineDetailCmp extends Component<Props, State> {
         const lineCommonData = lineDetails?.LineData;
         const subtitle = !lineDetails ? undefined : Object.values(lineDetails.Stops
             .reduce((p, n) => {
-            p[n.district.Index] ??= n
-            return p;
-        }, {} as Record<number, StationData>))
+                p[n.district.Index] ??= n
+                return p;
+            }, {} as Record<number, StationData>))
             .map(x => x)
             .sort((a, b) => a.index - b.index)
             .map(x => DistrictService.getEffectiveDistrictName(x)).join(" - ");
@@ -311,7 +311,7 @@ export default class LineDetailCmp extends Component<Props, State> {
         }
         const fullStationTitle = nameToString(station.name) + (
             isSimetric
-                ? " " + replaceArgs(translate("lineStationDetail.platformDestinationFmt"), { stationName: nameToString(this.state.lineDetails.Stops[station.index < halfTripIdx ? halfTripIdx : 0].name) })
+                ? " " + replaceArgs(translate("lineStationDetail.platformDestinationFmt"), { stationName: nameToString(this.state.lineDetails.Stops[station.index < halfTripIdx ? halfTripIdx : 0]?.name) ?? "???" })
                 : ""
         )
         return <>
@@ -358,10 +358,12 @@ export default class LineDetailCmp extends Component<Props, State> {
 
 
 function checkSimetry(stops: StationData[]): boolean {
+    console.log(stops);
     const length = stops.length;
     if (length % 1 == 1) return false;
     const otherSideIdx = stops.length / 2 + 1
     for (let i = 1; i < otherSideIdx; i++) {
+        if (!stops[i] || !stops[length - i]) continue;
         if (!stops[i].parent.Index || stops[i].parent.Index != stops[length - i].parent.Index) return false;
     }
     return true;

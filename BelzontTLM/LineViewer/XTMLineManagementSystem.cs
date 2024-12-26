@@ -2,6 +2,7 @@
 using Belzont.Utils;
 using BelzontTLM.Palettes;
 using Colossal.Entities;
+using Colossal.OdinSerializer.Utilities;
 using Game;
 using Game.Common;
 using Game.Routes;
@@ -149,5 +150,10 @@ namespace BelzontTLM
         protected override void OnUpdate()
         {
         }
+
+        public string GetEffectiveRouteNumber(Entity route)
+            => EntityManager.TryGetComponent<XTMRouteExtraData>(route, out var extraData) && !extraData.Acronym.IsNullOrWhitespace()
+                ? extraData.Acronym
+                : EntityManager.GetComponentData<RouteNumber>(route).m_Number.ToString();
     }
 }

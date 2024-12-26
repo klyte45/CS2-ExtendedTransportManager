@@ -206,11 +206,7 @@ namespace BelzontTLM.Palettes
 
         public void Deserialize<TReader>(TReader reader) where TReader : IReader
         {
-            reader.Read(out uint version);
-            if (version > CURRENT_VERSION)
-            {
-                throw new Exception("Invalid version of XTMPaletteSettedUpInformation!");
-            }
+            reader.CheckVersionK45(CURRENT_VERSION, GetType());
             reader.Read(out paletteEnabled);
             reader.Read(out lineNumberRef);
             reader.Read(out string guidPalette);
@@ -218,6 +214,7 @@ namespace BelzontTLM.Palettes
             paletteGuid = new Guid(guidPalette);
             paletteChecksum = new Guid(checksumPalette);
         }
+
     }
     public struct XTMPaletteRequireUpdate : IComponentData, IQueryTypeParameter { }
     public struct XTMPaletteLockedColor : IComponentData, IQueryTypeParameter, IEmptySerializable { }

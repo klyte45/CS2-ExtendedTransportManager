@@ -1,8 +1,8 @@
 ﻿using Belzont.Interfaces;
 using BelzontTLM.Palettes;
 using Game;
-using System.IO;
 using Game.Modding;
+using System.IO;
 
 namespace BelzontTLM
 {
@@ -15,7 +15,6 @@ namespace BelzontTLM
 
         public override void DoOnCreateWorld(UpdateSystem updateSystem)
         {
-
             updateSystem.UpdateBefore<XTMRouteAutoColorSystem>(SystemUpdatePhase.UIUpdate);
             updateSystem.UpdateBefore<XTMStopsLinkingSystem>(SystemUpdatePhase.UIUpdate);
 
@@ -24,6 +23,8 @@ namespace BelzontTLM
 
             updateSystem.UpdateAfter<XTMLineViewerSection>(SystemUpdatePhase.UIUpdate);
             updateSystem.UpdateAfter<XTMLineListingSection>(SystemUpdatePhase.UIUpdate);
+
+            updateSystem.UpdateAt<XTM_WEIntegrationSystem>(SystemUpdatePhase.ModificationEnd);
         }
 
         public override void OnDispose()
