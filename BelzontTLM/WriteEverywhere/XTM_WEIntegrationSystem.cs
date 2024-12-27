@@ -14,6 +14,7 @@ using System.Reflection;
 using Unity.Burst;
 using Unity.Burst.Intrinsics;
 using Unity.Entities;
+using UnityEngine;
 
 namespace BelzontTLM
 {
@@ -119,6 +120,7 @@ namespace BelzontTLM
                     All = new ComponentType[]
                     {
                         ComponentType.ReadOnly<TransportLine>(),
+                        ComponentType.ReadOnly<RouteWaypoint>(),
                     },
                     None = new ComponentType[]
                     {
@@ -144,7 +146,7 @@ namespace BelzontTLM
                 new() {
                     All = new ComponentType[]
                     {
-                        ComponentType.ReadOnly<XTM_WEDestinationBlind>(),
+                        ComponentType.ReadWrite<XTM_WEDestinationBlind>(),
                         ComponentType.ReadOnly<TransportLine>(),
                         ComponentType.ReadOnly<Updated>(),
                     },
@@ -269,6 +271,7 @@ namespace BelzontTLM
                 Dependency = new XTM_WEInitDynamic
                 {
                     m_entityHdl = GetEntityTypeHandle(),
+                    m_waypointHdl = GetBufferTypeHandle<RouteWaypoint>(),
                     m_cmdBuffer = m_modificationEndBarrier.CreateCommandBuffer().AsParallelWriter(),
                 }.ScheduleParallel(m_uninitiatedRoutesDynamic, Dependency);
             }
@@ -300,24 +303,41 @@ namespace BelzontTLM
         private struct XTM_WEInitDynamic : IJobChunk
         {
             public EntityTypeHandle m_entityHdl;
+            public BufferTypeHandle<RouteWaypoint> m_waypointHdl;
             public EntityCommandBuffer.ParallelWriter m_cmdBuffer;
 
             public void Execute(in ArchetypeChunk chunk, int unfilteredChunkIndex, bool useEnabledMask, in v128 chunkEnabledMask)
             {
                 var entities = chunk.GetNativeArray(m_entityHdl);
+                var waypointBuffs = chunk.GetBufferAccessor(ref m_waypointHdl);
                 var size = entities.Length;
                 for (int i = 0; i < size; i++)
                 {
                     var entity = entities[i];
+                    var waypoints = waypointBuffs[i];
                     var buff = m_cmdBuffer.AddBuffer<XTM_WEDestinationBlind>(unfilteredChunkIndex, entity);
-                    var singleFrame = new XTM_WEDestinationBlind();
-                    singleFrame.AddKeyframe(new XTM_WEDestinationDynamicKeyframe
-                    {
-                        type = XTM_WEDestinationKeyframeType.RouteName,
-                        framesLength = 1
-                    });
-                    buff.Add(singleFrame);
+                    var frame1 = new XTM_WEDestinationBlind();
+                    SetupKeyframes(ref frame1);
+                    frame1.SetUseUntilStopIndirect(ref waypoints, Mathf.CeilToInt(waypoints.Length / 2f));
+                    buff.Add(frame1);
+                    var frame2 = new XTM_WEDestinationBlind();
+                    SetupKeyframes(ref frame2);
+                    buff.Add(frame2);
                 }
+            }
+
+            private static void SetupKeyframes(ref XTM_WEDestinationBlind singleFrame)
+            {
+                singleFrame.AddKeyframe(new XTM_WEDestinationDynamicKeyframe
+                {
+                    type = XTM_WEDestinationKeyframeType.EntityNameOrDistrict,
+                    framesLength = 3
+                });
+                singleFrame.AddKeyframe(new XTM_WEDestinationDynamicKeyframe
+                {
+                    type = XTM_WEDestinationKeyframeType.RouteNumber,
+                    framesLength = 2
+                });
             }
         }
         [BurstCompile]

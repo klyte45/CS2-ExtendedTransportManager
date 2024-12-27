@@ -11,6 +11,17 @@ If using single monitor, use the [EUIS](https://mods.paradoxplaza.com/mods/74151
 
 When using multiple monitors, it may be visible in any of them, except if disabled at EUIS settings screen.
 
+## For Write Everywhere users! *(new at 0.1.4)*
+
+Now you can edit dynamic blinds for each line:
+	- Add multiple keyframes and setup how many frames it shall be shown in game. Each keyframe can show a destination, the line name/number or a fixed text
+	- Select one of the keyframes to be used when a static destination blind is used (may be useful in future for classic custom vehicles)
+	- Add multiple steps! Each step will be used until before the selected stop (or end of the line). Each step may have one or more keyframes.
+
+By default, XTM creates two steps each line with two keyframes: Line number and the selected stop for that step end. The steps will target the stop at middle of the line *(n ÷ 2)* and the end of the line.
+
+[See the video showing the feature](https://youtu.be/pZarWDrBHZQ)
+
 ## Current features
 
 - Auto color - import palettes to the city then apply to transport type

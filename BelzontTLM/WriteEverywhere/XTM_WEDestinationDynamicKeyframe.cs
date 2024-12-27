@@ -4,6 +4,7 @@ using Colossal.OdinSerializer.Utilities;
 using Colossal.Serialization.Entities;
 using Game.Areas;
 using Game.Common;
+using Game.Net;
 using Game.Objects;
 using Game.Routes;
 using Game.UI;
@@ -108,11 +109,12 @@ namespace BelzontTLM
                 : !em.TryGetComponent(attached.m_Parent, out BorderDistrict border) ? ns.GetName(attached.m_Parent).Translate()
                 : border.m_Left != Entity.Null ? ns.GetName(border.m_Left).Translate()
                 : border.m_Right != Entity.Null ? ns.GetName(border.m_Left).Translate()
-                : ns.GetName(attached.m_Parent).Translate();
+                : !em.TryGetComponent(attached.m_Parent, out Aggregated agg) ? "?????"
+                : ns.GetName(agg.m_Aggregate).Translate();
 
         private static string GetFirstStop(EntityManager em, NameSystem ns, Entity stopEntity, bool checkAttachment)
-                        => !em.TryGetComponent(stopEntity, out Owner line) ? "???"
-                            : !em.TryGetBuffer(line.m_Owner, true, out DynamicBuffer<RouteWaypoint> waypoints) ? "?!??"
+                        => !em.TryGetComponent(stopEntity, out Owner line) ? "??!?"
+                            : !em.TryGetBuffer(line.m_Owner, true, out DynamicBuffer<RouteWaypoint> waypoints) ? "?!?!?"
                             : GetNextStop(em, ns, waypoints[0].m_Waypoint, checkAttachment);
     }
 }

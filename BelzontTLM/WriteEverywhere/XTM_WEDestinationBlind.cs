@@ -81,6 +81,13 @@ namespace BelzontTLM
             }
         }
 
+        public void SetUseUntilStopIndirect(ref DynamicBuffer<RouteWaypoint> buff, int index)
+        {
+            index %= buff.Length;
+            useUntilStop = buff[index].m_Waypoint;
+            cachedStopOrder = index;
+        }
+
         public readonly int StopOrder => cachedStopOrder;
 
         public void AddKeyframe(XTM_WEDestinationDynamicKeyframe keyframe)
@@ -159,6 +166,11 @@ namespace BelzontTLM
             result.OnKeyframesChanged();
 
             return result;
+        }
+
+        internal void SetUseUntilStopIndirect(ref DynamicBuffer<RouteWaypoint> waypoints, object value)
+        {
+            throw new NotImplementedException();
         }
     }
 }
