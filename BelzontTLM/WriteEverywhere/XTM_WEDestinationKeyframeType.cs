@@ -5,6 +5,8 @@
         RouteName,
         EntityName,
         RouteNumber,
-        FixedString
+        FixedString,
+        NextStopSimple,
+        EntityNameOrDistrict
     }
 }

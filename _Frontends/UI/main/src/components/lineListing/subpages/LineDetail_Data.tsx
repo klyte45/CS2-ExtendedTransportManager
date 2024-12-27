@@ -6,7 +6,7 @@ type LineDetail_DataProps = {
     lineDetails: LineDetails; measureUnit: UnitSystem; lineCommonData: LineData;
 };
 export const LineDetail_Data = ({ lineDetails, measureUnit, lineCommonData }: LineDetail_DataProps): JSX.Element => {
-    return <DefaultPanelScreen title={translate("lineViewer.lineData")} isSubScreen={true}>
+    return <DefaultPanelScreen title={translate("lineViewer.lineData")} size="h2">
         <Cs2FormLine title={translate("lineViewer.dataTotalLength")}>{[metersTo(lineDetails.Segments.reduce((p, n) => p + n.sizeMeters, 0), measureUnit)].map(x => replaceArgs(engine.translate(x[0]), { ...x[1], "SIGN": "" }))[0]}</Cs2FormLine>
         <Cs2FormLine title={translate("lineViewer.dataVehicleCount")}>{lineCommonData.vehicles}</Cs2FormLine>
         <Cs2FormLine title={translate("lineViewer.dataStopsCount")}>{lineCommonData.stops}</Cs2FormLine>

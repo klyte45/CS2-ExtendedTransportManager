@@ -53,9 +53,16 @@ namespace BelzontTLM
                 return default;
             }
             var result = new XTM_WEDestinationBlind.UIData[data.Length];
+            var stops = EntityManager.GetBuffer<RouteWaypoint>(line);
+            RouteWaypoint lastStop = default;
+            for (int j = stops.Length - 1; j >= 0; j--)
+            {
+                lastStop = stops[j];
+                if (EntityManager.HasComponent<Connected>(lastStop.m_Waypoint)) break;
+            }
             for (int i = 0; i < data.Length; i++)
             {
-                result[i] = data[i].ToUI();
+                result[i] = data[i].ToUI(EntityManager, m_nameSystem, m_managementSystem, lastStop.m_Waypoint);
             }
             return result;
         }
@@ -70,6 +77,7 @@ namespace BelzontTLM
             var filteredFrames = frames.Where((x, i) => x.keyframes != null).Select(x =>
             {
                 x.keyframes = x.keyframes.Where(x => x.IsValid()).ToArray();
+                x.staticKeyframeIdx = Math.Min(x.staticKeyframeIdx, x.keyframes.Length - 1);
                 return x;
             }).Where(x => x.keyframes.Length > 0).ToArray();
             if (filteredFrames.Length == 0) return false;
@@ -164,7 +172,8 @@ namespace BelzontTLM
                     {
                         var originalValue = staticDestination.GetValue(null) as Func<Entity, string>;
                         staticDestination.SetValue(null, (Entity entity)
-                            => EntityManager.TryGetComponent<Target>(entity, out var target)
+                            => EntityManager.HasComponent<CurrentRoute>(entity)
+                            && EntityManager.TryGetComponent<Target>(entity, out var target)
                             && target.m_Target != Entity.Null
                             && EntityManager.TryGetComponent<Owner>(target.m_Target, out var ownerRoute)
                                 ? GetStaticData(target.m_Target, ownerRoute.m_Owner)
@@ -178,10 +187,23 @@ namespace BelzontTLM
                     {
                         var originalValue = dynamicDestination.GetValue(null) as Func<Entity, string>;
                         dynamicDestination.SetValue(null, (Entity entity)
-                            => EntityManager.TryGetComponent<Target>(entity, out var target)
+                            => EntityManager.HasComponent<CurrentRoute>(entity)
+                            && EntityManager.TryGetComponent<Target>(entity, out var target)
                             && target.m_Target != Entity.Null
                             && EntityManager.TryGetComponent<Owner>(target.m_Target, out var ownerRoute)
-                                ? GetDynamicData(target.m_Target, ownerRoute.m_Owner)
+                                ? GetDynamicData(entity, target.m_Target, ownerRoute.m_Owner)
+                                : originalValue(entity));
+                    }
+                    else
+                    {
+                        return;
+                    }
+                    if (t.GetField("GetTargetTransportLineNumber_binding", RedirectorUtils.allFlags) is FieldInfo lineNumber)
+                    {
+                        var originalValue = lineNumber.GetValue(null) as Func<Entity, string>;
+                        lineNumber.SetValue(null, (Entity entity)
+                            => EntityManager.TryGetComponent<CurrentRoute>(entity, out var ownerLine)
+                                ? m_managementSystem.GetEffectiveRouteNumber(ownerLine.m_Route)
                                 : originalValue(entity));
                     }
                     else
@@ -201,15 +223,38 @@ namespace BelzontTLM
         {
             if (EntityManager.TryGetBuffer<XTM_WEDestinationBlind>(route, true, out var destinations) && destinations.Length > 0)
             {
-                if (destinations.Length == 1) return destinations[0].GetStaticKeyframe().GetString(EntityManager, m_nameSystem, m_managementSystem, stop);
+                if (destinations.Length == 1) return destinations[0].GetStaticKeyframe().GetString(EntityManager, m_nameSystem, m_managementSystem, stop, destinations[0]);
+                if (!EntityManager.TryGetComponent<Waypoint>(stop, out var waypoint)) return "????";
+                var idx = waypoint.m_Index;
+                for (int i = 0; i < destinations.Length; i++)
+                {
+                    var stopOrder = destinations[i].StopOrder;
+                    if (stopOrder > idx || stopOrder == -1)
+                    {
+                        return destinations[i].GetStaticKeyframe().GetString(EntityManager, m_nameSystem, m_managementSystem, stop, destinations[i]);
+                    }
+                }
+                return "<MISSING STEP>";
             }
             return "XTM INIT...";
         }
-        private string GetDynamicData(Entity stop, Entity route)
+        private string GetDynamicData(Entity srcVehicle, Entity stop, Entity route)
         {
             if (EntityManager.TryGetBuffer<XTM_WEDestinationBlind>(route, true, out var destinations) && destinations.Length > 0)
             {
-                if (destinations.Length == 1) return destinations[0].GetCurrentText(m_simulationSystem.frameIndex, EntityManager, m_nameSystem, m_managementSystem, stop);
+                var randomSeed = EntityManager.TryGetComponent(srcVehicle, out PseudoRandomSeed seed) ? seed.m_Seed : (ushort)srcVehicle.Index;
+                if (destinations.Length == 1) return destinations[0].GetCurrentText(m_simulationSystem.frameIndex + randomSeed, EntityManager, m_nameSystem, m_managementSystem, stop, destinations[0]);
+                if (!EntityManager.TryGetComponent<Waypoint>(stop, out var waypoint)) return "????";
+                var idx = waypoint.m_Index;
+                for (int i = 0; i < destinations.Length; i++)
+                {
+                    var stopOrder = destinations[i].StopOrder;
+                    if (stopOrder > idx || stopOrder == -1)
+                    {
+                        return destinations[i].GetCurrentText(m_simulationSystem.frameIndex + randomSeed, EntityManager, m_nameSystem, m_managementSystem, stop, destinations[i]);
+                    }
+                }
+                return "<MISSING STEP>";
             }
             return "XTM INIT...";
         }
@@ -229,7 +274,14 @@ namespace BelzontTLM
             }
             if (!m_routeChanged.IsEmptyIgnoreFilter)
             {
-                LogUtils.DoInfoLog("ROUTE CHANGED");
+                Dependency = new XTM_WEUpdateDynamic
+                {
+                    m_entityHdl = GetEntityTypeHandle(),
+                    m_cmdBuffer = m_modificationEndBarrier.CreateCommandBuffer().AsParallelWriter(),
+                    m_destinationHdl = GetBufferTypeHandle<XTM_WEDestinationBlind>(),
+                    m_waypointsLists = GetBufferLookup<RouteWaypoint>(),
+                    m_waypointsComponents = GetComponentLookup<Waypoint>()
+                }.ScheduleParallel(m_routeChanged, Dependency);
             }
             if (!m_deletedLinesGarbage.IsEmptyIgnoreFilter)
             {
@@ -265,6 +317,33 @@ namespace BelzontTLM
                         framesLength = 1
                     });
                     buff.Add(singleFrame);
+                }
+            }
+        }
+        [BurstCompile]
+        private struct XTM_WEUpdateDynamic : IJobChunk
+        {
+            public EntityTypeHandle m_entityHdl;
+            public BufferTypeHandle<XTM_WEDestinationBlind> m_destinationHdl;
+            public EntityCommandBuffer.ParallelWriter m_cmdBuffer;
+            public BufferLookup<RouteWaypoint> m_waypointsLists;
+            public ComponentLookup<Waypoint> m_waypointsComponents;
+
+            public void Execute(in ArchetypeChunk chunk, int unfilteredChunkIndex, bool useEnabledMask, in v128 chunkEnabledMask)
+            {
+                var entities = chunk.GetNativeArray(m_entityHdl);
+                var destinations = chunk.GetBufferAccessor(ref m_destinationHdl);
+                var size = entities.Length;
+                for (int i = 0; i < size; i++)
+                {
+                    var entity = entities[i];
+                    var destinationBuffer = destinations[i];
+                    var steps = destinationBuffer.Length;
+                    for (int j = 0; j < steps; j++)
+                    {
+                        var destination = destinationBuffer[j];
+                        destination.OnLineStopsChanged(m_waypointsLists, m_waypointsComponents, entity);
+                    }
                 }
             }
         }

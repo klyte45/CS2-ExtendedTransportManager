@@ -48,13 +48,14 @@ namespace BelzontTLM
                         LogUtils.DoWarnLog($"Error trying to map connections... (Owner)\n{e}");
                     }
                 }
+                Attached parent = default;
                 try
                 {
-                    if (EntityManager.TryGetComponent<Attached>(entitesToCheck[i], out var parent))
+                    if (EntityManager.TryGetComponent(entitesToCheck[i], out parent) && parent.m_Parent != Entity.Null)
                     {
-                        DynamicBuffer<XTMChildConnectedRoute> buffer = !EntityManager.HasBuffer<XTMChildConnectedRoute>(parent.m_Parent)
-                            ? EntityManager.AddBuffer<XTMChildConnectedRoute>(parent.m_Parent)
-                            : EntityManager.GetBuffer<XTMChildConnectedRoute>(parent.m_Parent);
+                        DynamicBuffer<XTMChildConnectedRoute> buffer = EntityManager.HasBuffer<XTMChildConnectedRoute>(parent.m_Parent)
+                            ? EntityManager.GetBuffer<XTMChildConnectedRoute>(parent.m_Parent)
+                            : EntityManager.AddBuffer<XTMChildConnectedRoute>(parent.m_Parent);
                         if (!buffer.IsCreated) continue;
                         if (CollectionUtils.TryAddUniqueValue(buffer, new XTMChildConnectedRoute(entitesToCheck[i])))
                         {
@@ -67,7 +68,7 @@ namespace BelzontTLM
                     gotError = true;
                     if (ExtendedTransportManagerMod.DebugMode)
                     {
-                        LogUtils.DoWarnLog($"Error trying to map connections... (Attached)\n{e}");
+                        LogUtils.DoWarnLog($"Error trying to map connections... (Attached - {entitesToCheck[i]} : {parent.m_Parent})\n{e}");
                     }
                 }
                 if (!gotError) EntityManager.AddComponent<XTMStopLinkMapped>(entitesToCheck[i]);

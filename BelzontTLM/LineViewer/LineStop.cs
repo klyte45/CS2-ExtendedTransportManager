@@ -8,6 +8,8 @@ namespace BelzontTLM
     {
         public Entity entity { get; }
 
+        public Entity waypoint { get; }
+
         public float position { get; }
 
         public int cargo { get; }
@@ -23,8 +25,9 @@ namespace BelzontTLM
         public Quaternion rotation { get; }
 
 
-        public LineStop(Entity entity, float position, int cargo, bool isCargo, bool isOutsideConnection, NativeHashSet<LineStopConnnection> linesConnected, Vector3 worldPosition, Quaternion rotation)
+        public LineStop(Entity waypoint, Entity entity, float position, int cargo, bool isCargo, bool isOutsideConnection, NativeHashSet<LineStopConnnection> linesConnected, Vector3 worldPosition, Quaternion rotation)
         {
+            this.waypoint = waypoint;
             this.entity = entity;
             this.position = position;
             this.cargo = cargo;

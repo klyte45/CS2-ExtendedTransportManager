@@ -58,7 +58,7 @@ export const LineDetail_StopInfo = ({ currentStopSelected: station, lineDetails,
             : ""
     );
     return <>
-        <DefaultPanelScreen title={fullStationTitle} isSubScreen={true} buttonsRowContent={<>
+        <DefaultPanelScreen title={fullStationTitle} size="h2" buttonsRowContent={<>
             {lineDetails?.Stops[0]?.entity.Index == station.entity.Index
                 ? <button className="darkestBtn" disabled>{translate("lineStationDetail.alreadyFirstStop")}</button>
                 : <button className="neutralBtn" onClick={() => setSelectedAsFirstStop()}>{translate("lineStationDetail.setAsFirstStop")}</button>}

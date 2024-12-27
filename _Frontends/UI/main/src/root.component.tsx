@@ -1,5 +1,5 @@
 ///<reference path="euis.d.ts" />
-import LineListCmp from "#components/lineListing/LineListCmp";
+import { LineListCmp } from "#components/lineListing/LineListCmp";
 import CityPaletteLibraryCmp from "#components/palettes/CityPaletteLibraryCmp";
 import PaletteSetupSettings from "#components/palettes/PaletteSetupSettings";
 import "#styles/root.scss";
@@ -42,7 +42,7 @@ export default class Root extends Component<any, State> {
         name: translate("cityPalettesLibrary.title"),
         panelContent: <CityPaletteLibraryCmp />
       },
-      {     
+      {
         iconUrl: "coui://uil/Standard/Tools.svg",
         name: translate("palettesSettings.title"),
         panelContent: <PaletteSetupSettings />

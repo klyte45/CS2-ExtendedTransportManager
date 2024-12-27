@@ -182,7 +182,7 @@ namespace BelzontTLM
 
                         var transformData = m_Transforms[stopPoint];
 
-                        LineStop lineStop = new LineStop(stopPoint, position, waiting, isCargo, m_OutsideConnections.HasComponent(stopPoint), linesConnected, transformData.m_Position, transformData.m_Rotation);
+                        LineStop lineStop = new LineStop(stations[l].m_Waypoint, stopPoint, position, waiting, isCargo, m_OutsideConnections.HasComponent(stopPoint), linesConnected, transformData.m_Position, transformData.m_Rotation);
                         m_StopsResult.Add(lineStop);
                     }
                 }

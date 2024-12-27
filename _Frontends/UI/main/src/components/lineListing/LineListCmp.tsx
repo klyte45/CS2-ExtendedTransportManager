@@ -1,6 +1,6 @@
 import { LineData, LineManagementService, MapViewerOptions } from "#service/LineManagementService";
 import { ColorUtils, DefaultPanelScreen, Entity, GameScrollComponent, NameCustom, NameFormatted, NameType, SimpleInput, UnitSettings, getGameUnits, metersTo, nameToString, replaceArgs, translateUnitResult } from "@klyte45/euis-components";
-import { Component } from "react";
+import { Component, useEffect, useState } from "react";
 import { LineDetailCmp } from "./LineDetailCmp";
 import { TlmLineFormatCmp } from "./containers/TlmLineFormatCmp";
 import "#styles/LineList.scss"
@@ -28,42 +28,35 @@ const TypeToIcons = {
     [`${TransportType.Airplane}.true`]: "coui://GameUI/Media/Game/Icons/CargoplaneLine.svg",
 }
 
+export const LineListCmp = () => {
+    const [linesList, setLinesList] = useState<LineData[]>([]);
+    const [indexedLineList, setIndexedLineList] = useState<Record<string, LineData>>({});
+    const [selectedLine, setSelectedLine] = useState<Entity>();
+    const [unitsData, setUnitsData] = useState<UnitSettings>();
+    const [filterExclude, setFilterExclude] = useState<string[]>([]);
+    const [mapViewOptions, setMapViewOptions] = useState<MapViewerOptions>({
+        showDistricts: true,
+        showDistances: true,
+        showVehicles: false,
+        showIntegrations: true,
+        useWhiteBackground: false,
+        useHalfTripIfSimetric: true
+    });
 
-export default class LineListCmp extends Component<any, State> {
-    constructor(props: any) {
-        super(props);
-        this.state = {
-            mapViewOptions: {
-                showDistricts: true,
-                showDistances: true,
-                showVehicles: false,
-                showIntegrations: true,
-                useWhiteBackground: false,
-                useHalfTripIfSimetric: true
-            },
-            linesList: [],
-            indexedLineList: {},
-            filterExclude: []
-        }
-    }
-    componentDidMount() {
+    useEffect(() => {
         engine.whenReady.then(async () => {
             engine.on("k45::xtm.lineViewer.getCityLines->", async (x) => {
-                getGameUnits().then(x => this.setState({ unitsData: x }))
-                this.reloadLines(x)
-                if (this.state.currentLineViewer) {
-                    engine.trigger("k45::xtm.lineViewer.getCityLines->!")
-                }
+                getGameUnits().then(setUnitsData)
+                reloadLines(x);
             });
         })
         engine.call("k45::xtm.lineViewer.getCityLines", true)
-    }
+        return () => {
+            engine.off("k45::xtm.lineViewer.getCityLines->");
+        }
+    }, [])
 
-    componentWillUnmount(): void {
-        engine.off("k45::xtm.lineViewer.getCityLines->");
-    }
-
-    async reloadLines(res: LineData[]) {
+    const reloadLines = async (res: LineData[]) => {
         const refOrder = Object.keys(TypeToIcons);
         const lineList = res.sort((a, b) => {
             const typeA = `${a.type}.${a.isCargo}`
@@ -72,130 +65,104 @@ export default class LineListCmp extends Component<any, State> {
             if (typeA != typeB) return refOrder.indexOf(typeA) - refOrder.indexOf(typeB);
             return a.routeNumber - b.routeNumber
         });
-        this.setState({
-            linesList: lineList,
-            indexedLineList: lineList.reduce((p, n) => {
-                p[n.entity.Index.toFixed(0)] = n;
-                return p;
-            }, {}),
-        });
-
-        if (!this.state.currentLineViewer) {
-            engine.call("k45::xtm.lineViewer.getCityLines", false)
-        }
-    }
-    render() {
-        if (this.state.currentLineViewer) {
-            return <><LineDetailCmp
-                mapViewOptions={this.state.mapViewOptions}
-                setMapViewOptions={(x) => this.setState({ mapViewOptions: x })}
-                currentLine={this.state.currentLineViewer?.entity}
-                onBack={() => this.setState({ currentLineViewer: undefined, }, () => engine.call("k45::xtm.lineViewer.getCityLines", true))}
-                getLineById={(x) => this.getLineById(x)}
-                setSelection={x => this.setSelection(x)}
-                onForceReload={() => engine.call("k45::xtm.lineViewer.getCityLines", true)}
-            /></>
-        }
-
-        return <DefaultPanelScreen title={translate("lineList.title")} subtitle={translate("lineList.subtitle")}>
-            <section style={{ position: "absolute", top: 0, left: 0, right: 0, height: 50 }} className="filterRow">
-                {
-                    Object.entries(TypeToIcons).map(x => {
-                        let splittedType = x[0].split(".")
-                        let type = splittedType[0];
-                        let isCargo = splittedType[1] == "true";
-                        return <button key={x[0]} className={this.state.filterExclude.includes(x[0]) ? "unselected" : ""} onClick={() => this.toggleFilterType(x[0])}>
-                            <img src={x[1]} data-tooltip={this.getNameFor(type, isCargo)} />
-                        </button>
-                    })
-                }
-                <div className="space" />
-                <button className="txt" onClick={() => this.setState({ filterExclude: [] })}>{translate("lineList.showAll")}</button>
-                <button className="txt" onClick={() => this.setState({ filterExclude: Object.keys(TypeToIcons) })}>{translate("lineList.hideAll")}</button>
-                <button className="txt" onClick={() => this.setState({ filterExclude: Object.keys(TypeToIcons).filter(x => x.endsWith(".true")) })}>{translate("lineList.passengerLines")}</button>
-                <button className="txt" onClick={() => this.setState({ filterExclude: Object.keys(TypeToIcons).filter(x => x.endsWith(".false")) })}>{translate("lineList.cargoRoutes")}</button>
-                <div className="space" />
-                <div className="righter">
-                    {replaceArgs(translate("lineList.linesCurrentFilterFormat"), { LINECOUNT: `${this.state.linesList.filter(x => !this.state.filterExclude.includes(`${x.type}.${x.isCargo}`)).length}` })}
-                </div>
-            </section>
-            <section style={{ position: "absolute", top: 50, left: 0, right: 0, bottom: 0 }} className="LineList">
-                <GameScrollComponent>
-                    {this.state.linesList.map((x, i) => {
-                        const typeIndex = `${x.type}.${x.isCargo}`;
-                        if (this.state.filterExclude.includes(typeIndex)) return null;
-
-                        const fontColor = ColorUtils.toRGBA(ColorUtils.getContrastColorFor(ColorUtils.toColor01(x.color)));
-                        const effectiveIdentifier = x.xtmData?.Acronym || x.routeNumber.toFixed();
-
-                        return <div key={i} className="BgItem">
-                            <div onClick={() => this.setState({ currentLineViewer: x })} className="lineAcronym" style={{
-                                "--xtm-line-color": ColorUtils.getClampedColor(x.color),
-                                "--xtm-font-color": fontColor,
-                                "--xtm-font-multiplier": effectiveIdentifier.length < 2 ? 1 : 1 / Math.min(4, effectiveIdentifier.length - 1),
-                                "--xtm-game-icon": `url(${TypeToIcons[typeIndex]})`
-                            } as any}>
-                                <div className="text">{effectiveIdentifier}</div>
-                                <TlmLineFormatCmp className="icon" {...x} borderWidth="2px" contentOverride={<div className="gameIcon"></div>} />
-                            </div>
-                            <div className="lineName">{nameToString(x.name)}</div>
-                            <div className="lineType">{this.getNameFor(x.type, x.isCargo)}</div>
-                            <div className="lineLength">{translateUnitResult(metersTo(x.length, this.state.unitsData?.unitSystem?.value__ ?? 0))}</div>
-                            <div className="lineVehicles">{`${x.vehicles} ${nameToString({
-                                nameId: `Transport.LEGEND_VEHICLES[${x.type}]`,
-                                __Type: NameType.Localized
-                            })}`}</div>
-
-                        </div>;
-                    })}
-                </GameScrollComponent>
-            </section>
-        </DefaultPanelScreen>;
+        setLinesList(lineList)
+        setIndexedLineList(lineList.reduce((p, n) => {
+            p[n.entity.Index.toFixed(0)] = n;
+            return p;
+        }, {}));
     }
 
-    toggleFilterType(type: string) {
-        let newVal = this.state.filterExclude.filter(x => x != type);
-        if (newVal.length == this.state.filterExclude.length) {
+    function toggleFilterType(type: string) {
+        let newVal = filterExclude.filter(x => x != type);
+        if (newVal.length == filterExclude.length) {
             newVal.push(type);
         }
-        this.setState({
-            filterExclude: newVal
-        })
+        setFilterExclude(newVal)
+    }
+    function getLineById(x: number): LineData {
+        return indexedLineList[x.toFixed(0)];
     }
 
-    getNameFor(type: string, isCargo: boolean) {
-        return nameToString({
-            nameId: isCargo ? `Transport.ROUTES[${type}]` : `Transport.LINES[${type}]`,
-            __Type: NameType.Localized
-        })
+    if (selectedLine) {
+        return <><LineDetailCmp
+            mapViewOptions={mapViewOptions}
+            setMapViewOptions={(x) => setMapViewOptions(x)}
+            initialCurrentLine={selectedLine}
+            onBack={() => { setSelectedLine(undefined); engine.call("k45::xtm.lineViewer.getCityLines", true) }}
+            getLineById={(x) => getLineById(x)}
+            onForceReload={() => engine.call("k45::xtm.lineViewer.getCityLines", true)}
+        /></>
     }
 
-    async setSelection(x: Entity) {
-        return new Promise<void>((res) => this.setState({ currentLineViewer: this.state.indexedLineList[x.Index.toFixed(0)] }, () => res(null)))
-    }
-    getLineById(x: number): LineData {
-        return this.state.indexedLineList[x.toFixed(0)];
-    }
-
-    async sendAcronym(entity: Entity, newAcronym: string) {
-        try {
-            const response = await LineManagementService.setLineAcronym(entity, newAcronym);
-
-            engine.call("k45::xtm.lineViewer.getCityLines", true)
-            return response;
-        } catch (e) {
-            console.warn(e);
-        }
-    }
-    async sendRouteNumber(lineData: LineData, newNumber: string) {
-        const numberParsed = parseInt(newNumber);
-        if (isFinite(numberParsed)) {
-            const response: number = await engine.call("k45::xtm.lineViewer.setRouteNumber", lineData.entity, numberParsed)
-
-            engine.call("k45::xtm.lineViewer.getCityLines", true)
-            return response.toFixed();
-        }
-        return lineData.routeNumber?.toString();
-    }
+    return <DefaultPanelScreen title={translate("lineList.title")} subtitle={translate("lineList.subtitle")}>
+        <section style={{ position: "absolute", top: 0, left: 0, right: 0, height: 50 }} className="filterRow">
+            {
+                Object.entries(TypeToIcons).map(x => {
+                    let splittedType = x[0].split(".")
+                    let type = splittedType[0];
+                    let isCargo = splittedType[1] == "true";
+                    return <button key={x[0]} className={filterExclude.includes(x[0]) ? "unselected" : ""} onClick={() => toggleFilterType(x[0])}>
+                        <img src={x[1]} data-tooltip={getNameFor(type, isCargo)} />
+                    </button>
+                })
+            }
+            <div className="space" />
+            <button className="txt" onClick={() => setFilterExclude([])}>{translate("lineList.showAll")}</button>
+            <button className="txt" onClick={() => setFilterExclude(Object.keys(TypeToIcons))}>{translate("lineList.hideAll")}</button>
+            <button className="txt" onClick={() => setFilterExclude(Object.keys(TypeToIcons).filter(x => x.endsWith(".true")))}>{translate("lineList.passengerLines")}</button>
+            <button className="txt" onClick={() => setFilterExclude(Object.keys(TypeToIcons).filter(x => x.endsWith(".false")))}>{translate("lineList.cargoRoutes")}</button>
+            <div className="space" />
+            <div className="righter">
+                {replaceArgs(translate("lineList.linesCurrentFilterFormat"), { LINECOUNT: `${linesList.filter(x => !filterExclude.includes(`${x.type}.${x.isCargo}`)).length}` })}
+            </div>
+        </section>
+        <section style={{ position: "absolute", top: 50, left: 0, right: 0, bottom: 0 }} className="LineList">
+            <GameScrollComponent>
+                {linesList.filter(x => !filterExclude.includes(`${x.type}.${x.isCargo}`)).map((x, i) =>
+                    <LineItemContainer onClick={() => setSelectedLine(x.entity)} lineData={x} key={i} unitsData={unitsData} />
+                )}
+            </GameScrollComponent>
+        </section>
+    </DefaultPanelScreen>;
 }
 
+
+function getNameFor(type: string, isCargo: boolean) {
+    return nameToString({
+        nameId: isCargo ? `Transport.ROUTES[${type}]` : `Transport.LINES[${type}]`,
+        __Type: NameType.Localized
+    })
+}
+
+type LineItemContainerProps = {
+    lineData: LineData,
+    onClick(): void,
+    unitsData?: UnitSettings
+}
+
+
+const LineItemContainer = ({ lineData: x, onClick, unitsData }: LineItemContainerProps) => {
+    const typeIndex = `${x.type}.${x.isCargo}`;
+    const fontColor = ColorUtils.toRGBA(ColorUtils.getContrastColorFor(ColorUtils.toColor01(x.color)));
+    const effectiveIdentifier = x.xtmData?.Acronym || x.routeNumber.toFixed();
+
+    return <div className="BgItem">
+        <div onClick={onClick} className="lineAcronym" style={{
+            "--xtm-line-color": ColorUtils.getClampedColor(x.color),
+            "--xtm-font-color": fontColor,
+            "--xtm-font-multiplier": effectiveIdentifier.length < 2 ? 1 : 1 / Math.min(4, effectiveIdentifier.length - 1),
+            "--xtm-game-icon": `url(${TypeToIcons[typeIndex]})`
+        } as any}>
+            <div className="text">{effectiveIdentifier}</div>
+            <TlmLineFormatCmp className="icon" {...x} borderWidth="2px" contentOverride={<div className="gameIcon"></div>} />
+        </div>
+        <div className="lineName">{nameToString(x.name)}</div>
+        <div className="lineType">{getNameFor(x.type, x.isCargo)}</div>
+        <div className="lineLength">{translateUnitResult(metersTo(x.length, unitsData?.unitSystem?.value__ ?? 0))}</div>
+        <div className="lineVehicles">{`${x.vehicles} ${nameToString({
+            nameId: `Transport.LEGEND_VEHICLES[${x.type}]`,
+            __Type: NameType.Localized
+        })}`}</div>
+
+    </div>;
+}

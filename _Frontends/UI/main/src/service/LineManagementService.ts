@@ -26,6 +26,7 @@ export type LineData = {
 
 export type StationData = {
     readonly entity: Entity,
+    readonly waypoint: Entity,
     readonly position: number,
     readonly cargo: number,
     readonly isCargo: boolean,
@@ -122,15 +123,15 @@ export class LineManagementService {
         return true;
     }
     static async getRouteDetail(entity: Entity, force: boolean): Promise<LineDetails> {
-        engine.call("k45::xtm.lineViewer.getRouteDetail", entity, force)
-        return new Promise((res) => {
-            const eventName = `k45::xtm.lineViewer.getRouteDetail:${entity.Index}->`;
-            console.log("waiting for event", eventName)
+        await engine.call("k45::xtm.lineViewer.getRouteDetail", entity, force)
+        const eventName = `k45::xtm.lineViewer.getRouteDetail:${entity.Index}->`;
+        const response = new Promise<LineDetails>((res) => {
             const onResponse = (x: LineDetails) => {
                 res(x);
-                engine.off(eventName, onResponse)
             }
             engine.on(eventName, onResponse)
         })
+        response.then(() => engine.off(eventName))
+        return response;
     }
 }

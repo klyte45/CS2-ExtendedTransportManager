@@ -33,7 +33,7 @@ export const LineDetail_MapSettings = ({ mapViewOptions, setMapViewOptions }: Li
         setMapViewOptions({ ...mapViewOptions, showVehicles: x, showIntegrations: mapViewOptions.showIntegrations && !x });
     }
 
-    return <DefaultPanelScreen title={translate("lineViewer.showOnMap")} isSubScreen={true}>
+    return <DefaultPanelScreen title={translate("lineViewer.showOnMap")} size="h2">
         <Cs2CheckboxWithLine isChecked={() => mapViewOptions.showDistances} title={translate("lineViewer.showDistancesLbl")} onValueToggle={(x) => toggleDistances(x)} />
         <Cs2CheckboxWithLine isChecked={() => mapViewOptions.showDistricts} title={translate("lineViewer.showDistrictsLbl")} onValueToggle={(x) => toggleDistricts(x)} />
         <Cs2CheckboxWithLine isChecked={() => mapViewOptions.showVehicles} title={translate("lineViewer.showVehiclesLbl")} onValueToggle={(x) => toggleVehiclesShow(x)} />

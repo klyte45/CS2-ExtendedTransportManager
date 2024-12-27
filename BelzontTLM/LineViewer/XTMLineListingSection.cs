@@ -65,8 +65,7 @@ namespace BelzontTLM
         {
             base.OnCreate();
             m_linesQueue = GetEntityQuery(new EntityQueryDesc[] {
-                new EntityQueryDesc
-                {
+                new() {
                     All = new ComponentType[]
                     {
                         ComponentType.ReadOnly<Route>(),

@@ -45,7 +45,7 @@ export const LineDetail_General = ({ lineCommonData: currentLine, reloadData }: 
     }
 
 
-    return <DefaultPanelScreen title={translate("lineViewer.generalData")} isSubScreen={true}>
+    return <DefaultPanelScreen title={translate("lineViewer.generalData")} size="h2">
         < Input title={translate("lineViewerEditor.lineName")} getValue={() => nameToString(currentLine?.name)} onValueChanged={async (x) => await setLineName(x)} />
         <Input title={translate("lineViewerEditor.internalNumber")} getValue={() => currentLine?.routeNumber.toString()} maxLength={11} onValueChanged={(x) => SendNewRouteNumber(x)} />
         <Input title={translate("lineViewerEditor.displayIdentifier")} getValue={() => currentLine?.xtmData?.Acronym} maxLength={30} onValueChanged={(x) => setLineAcronym(x)} />

@@ -4,13 +4,15 @@ import "#styles/LineDetailCmp.scss";
 import "#styles/TLM_LineDetail.scss";
 import translate from "#utility/translate";
 import { Cs2FormLine, DefaultPanelScreen, Entity, UnitSystem, getGameUnits, nameToString } from "@klyte45/euis-components";
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { Tab, TabList, TabPanel, Tabs } from "react-tabs";
 import { TlmViewerCmp } from "./containers/TlmViewerCmp";
 import { LineDetail_General } from "./subpages/LineDetail_General";
 import { LineDetail_Data } from "./subpages/LineDetail_Data";
 import { LineDetail_StopInfo } from "./subpages/LineDetail_StopInfo";
 import { LineDetail_MapSettings } from "./subpages/LineDetail_MapSettings";
+import { WEIntegrationService } from "#service/WEIntegrationService";
+import { LineDetail_WriteEverywhere } from "./subpages/LineDetail_WriteEverywhere";
 
 enum MapViewerTabsNames {
     General = "tabGeneralSettings",
@@ -19,13 +21,16 @@ enum MapViewerTabsNames {
     Debug = "tabDebug",
     MapSettings = "mapSettings",
     StopInfo = "stopData",
-    VehicleInfo = "vehicleData"
+    VehicleInfo = "vehicleData",
+    WEIntegration = "weIntegration"
 }
 
 const tabsOrder: (MapViewerTabsNames | undefined)[] = [
     MapViewerTabsNames.General,
     MapViewerTabsNames.LineData,
     MapViewerTabsNames.LineSettings,
+    undefined,
+    MapViewerTabsNames.WEIntegration,
     //MapViewerTabsNames.Debug,
     undefined,
     MapViewerTabsNames.MapSettings,
@@ -33,37 +38,35 @@ const tabsOrder: (MapViewerTabsNames | undefined)[] = [
     MapViewerTabsNames.VehicleInfo
 ]
 
-const clickableTabs = [
-    MapViewerTabsNames.General,
-    MapViewerTabsNames.LineData,
-    MapViewerTabsNames.LineSettings,
-    MapViewerTabsNames.Debug,
-    MapViewerTabsNames.MapSettings
-]
 
 type Props = {
-    currentLine: Entity,
+    initialCurrentLine: Entity,
     getLineById: (x: number) => LineData,
-    setSelection: (x: Entity) => Promise<void>,
     onBack: () => void,
     onForceReload(): void,
     mapViewOptions: MapViewerOptions,
     setMapViewOptions: (options: MapViewerOptions) => any
 }
 
-export const LineDetailCmp = ({ currentLine,
+export const LineDetailCmp = ({ initialCurrentLine,
     getLineById,
-    setSelection: onSetSelection,
     onBack,
     onForceReload,
     mapViewOptions,
     setMapViewOptions }: Props) => {
+    const [currentLine, setCurrentLine] = useState(initialCurrentLine);
     const [currentTab, setCurrentTab] = useState(0);
     const [measureUnit, setMeasureUnit] = useState(UnitSystem.Metric);
-    const [stopUpdating, setStopUpdating] = useState(false);
     const [lineDetails, setLineDetails] = useState<LineDetails>();
     const [isLineSimetric, setIsLineSimetric] = useState(false);
     const [currentStopSelected, setCurrentStopSelected] = useState<StationData>();
+    const [clickableTabs, setClickableTabs] = useState([
+        MapViewerTabsNames.General,
+        MapViewerTabsNames.LineData,
+        MapViewerTabsNames.LineSettings,
+        MapViewerTabsNames.Debug,
+        MapViewerTabsNames.MapSettings
+    ]);
 
     useEffect(() => {
         engine.whenReady.then(async () => {
@@ -71,42 +74,32 @@ export const LineDetailCmp = ({ currentLine,
             getGameUnits().then(async (x) => {
                 setMeasureUnit(x.unitSystem.value__);
             });
-            engine.on("k45::xtm.lineViewer.getCityLines->!", async () => {
-                reloadData(true);
-            });
         })
-
-        setStopUpdating(false);
         return () => {
-            setStopUpdating(true);
             engine.off("k45::xtm.common.onMeasureUnitsChanged", measureCallback);
-            engine.off("k45::xtm.lineViewer.getCityLines->!");
         }
     }, [currentStopSelected])
     useEffect(() => {
-        LineManagementService.getRouteDetail(currentLine, true).then(details => {
-            details.Vehicles = details.Vehicles.map(x => {
-                return {
-                    ...x,
-                    ...enrichVehicleInfo(x, details.Stops, details.LineData.length)
-                }
-            })
-            details.Stops = details.Stops.map((x, i, arr) => {
-                return {
-                    ...x,
-                    ...enrichStopInfo(i, x, arr, details.Vehicles, details.LineData)
-                }
-            })
-            setLineDetails(details)
-            setIsLineSimetric(LineManagementService.checkSimetry(details.Stops))
-            setCurrentStopSelected(currentStopSelected ? details.Stops.find(x => x.entity.Index == currentStopSelected.entity.Index) : undefined)
+        WEIntegrationService.isAvailable().then(x => {
+            if (x) setClickableTabs(clickableTabs.concat([MapViewerTabsNames.WEIntegration]))
         })
     }, [])
+    useEffect(() => {
+        const updateCallback = setInterval(() => reloadData(true), 3000);
+        reloadData(true)
+        return () => clearInterval(updateCallback);
+    }, [currentLine])
+
+    useEffect(() => {
+        if (currentTab == tabsOrder.filter(x => x).indexOf(MapViewerTabsNames.StopInfo)) {
+            var newStop = currentStopSelected ? lineDetails.Stops.find(x => x.entity.Index == currentStopSelected.entity.Index) : undefined;
+            setCurrentStopSelected(newStop)
+            if (!newStop) setCurrentTab(0);
+        }
+    }, [lineDetails])
 
     const measureCallback = async () => setMeasureUnit((await getGameUnits()).unitSystem.value__);
-    function updateViewData() {
-        reloadData(true).then(() => setTimeout(() => !stopUpdating && updateViewData(), 3000))
-    }
+
     function onStopSelected(x: StationData): void {
         let targetTabIdx = tabsOrder.filter(x => x).indexOf(MapViewerTabsNames.StopInfo);
         setCurrentTab(targetTabIdx)
@@ -116,6 +109,7 @@ export const LineDetailCmp = ({ currentLine,
     async function reloadData(force: boolean = false) {
         if (force || mapViewOptions.showVehicles) {
             const details = await LineManagementService.getRouteDetail(currentLine, force)
+            if (details.LineData.entity.Index != currentLine.Index) return;
             details.Vehicles = details.Vehicles.map(x => {
                 return {
                     ...x,
@@ -130,14 +124,13 @@ export const LineDetailCmp = ({ currentLine,
             })
             setLineDetails(details)
             setIsLineSimetric(LineManagementService.checkSimetry(details.Stops))
-            setCurrentStopSelected(currentStopSelected ? details.Stops.find(x => x.entity.Index == currentStopSelected.entity.Index) : undefined)
             if (force) {
                 onForceReload?.();
             }
         }
     }
     async function setSelection(x: Entity) {
-        await onSetSelection(x);
+        setCurrentLine(x);
         reloadData(true);
     }
     if (!currentLine) {
@@ -160,11 +153,12 @@ export const LineDetailCmp = ({ currentLine,
     const componentsMapViewer: Record<MapViewerTabsNames, () => JSX.Element> = {
         [MapViewerTabsNames.General]: () => <LineDetail_General lineCommonData={lineCommonData} reloadData={reloadData} />,
         [MapViewerTabsNames.LineData]: () => <LineDetail_Data lineDetails={lineDetails} measureUnit={measureUnit} lineCommonData={lineCommonData} />,
-        [MapViewerTabsNames.LineSettings]: () => <DefaultPanelScreen title={translate("lineViewer.lineSettings")} isSubScreen={true}><Cs2FormLine title={"Coming soon!"} /></DefaultPanelScreen>,
+        [MapViewerTabsNames.LineSettings]: () => <DefaultPanelScreen title={translate("lineViewer.lineSettings")} size="h2"><Cs2FormLine title={"Coming soon!"} /></DefaultPanelScreen>,
         [MapViewerTabsNames.MapSettings]: () => <LineDetail_MapSettings mapViewOptions={mapViewOptions} setMapViewOptions={setMapViewOptions} />,
         [MapViewerTabsNames.StopInfo]: () => <LineDetail_StopInfo currentStopSelected={currentStopSelected} lineDetails={lineDetails} measureUnit={measureUnit} reloadData={reloadData} onStopSelected={onStopSelected} />,
         [MapViewerTabsNames.VehicleInfo]: () => <></>,
-        [MapViewerTabsNames.Debug]: () => <>{JSON.stringify(lineDetails ?? "LOADING", null, 2)}</>
+        [MapViewerTabsNames.Debug]: () => <>{JSON.stringify(lineDetails ?? "LOADING", null, 2)}</>,
+        [MapViewerTabsNames.WEIntegration]: () => <LineDetail_WriteEverywhere lineId={lineDetails.LineData.entity} stops={lineDetails.Stops} />
     }
 
     return <>
@@ -186,7 +180,7 @@ export const LineDetailCmp = ({ currentLine,
                     }
                 }}>
                     <TabList id="sideNav" >
-                        {tabsOrder.map((x, i) => !x ? <div className="space" key={i}></div> : <Tab key={i} disabled={!clickableTabs.includes(x)}>{translate("lineViewer." + x)}</Tab>)}
+                        {tabsOrder.map((x, i) => !x ? <div className="space" key={i}></div> : <Tab key={i} disabled={!clickableTabs.includes(x)}><div>{translate("lineViewer." + x)}</div></Tab>)}
                     </TabList>
                     <div id="dataPanel">
                         {tabsOrder.map((x, i) => x && <TabPanel key={i}>{componentsMapViewer[x]()}</TabPanel>)}
@@ -220,3 +214,5 @@ function enrichVehicleInfo(vehicle: VehicleData, stations: StationData[], lineLe
         distancePrevStop: currentStationSegmentFraction * totalDistanceStations,
     }
 }
+
+

@@ -13,6 +13,7 @@ namespace BelzontTLM
     public class LineStopNamed
     {
         public Entity entity { get; }
+        public Entity waypoint { get; }
         public float position { get; }
         public int cargo { get; }
         public bool isCargo { get; }
@@ -28,6 +29,7 @@ namespace BelzontTLM
 
         public LineStopNamed(LineStop src, NameSystem nameSystem, EntityManager em)
         {
+            waypoint = src.waypoint;
             entity = src.entity;
             position = src.position;
             cargo = src.cargo;

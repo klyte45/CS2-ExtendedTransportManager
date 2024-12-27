@@ -1,5 +1,7 @@
 ﻿using Belzont.Utils;
+using Colossal.Entities;
 using Colossal.Serialization.Entities;
+using Game.Routes;
 using Game.UI;
 using System;
 using System.Linq;
@@ -8,10 +10,10 @@ using Unity.Entities;
 
 namespace BelzontTLM
 {
-    public struct XTM_WEDestinationBlind : ICleanupBufferElementData, IXTM_WEDestinationKeyframeData, ISerializable, IDisposable
+    public struct XTM_WEDestinationBlind : ICleanupBufferElementData, ISerializable, IDisposable
     {
         private const uint CURRENT_VERSION = 0;
-        public Entity useUntilStop;
+        private Entity useUntilStop;
         private int cachedStopOrder;
         private NativeList<XTM_WEDestinationDynamicKeyframe> keyframes;
         private int staticKeyframeIdx;
@@ -24,15 +26,17 @@ namespace BelzontTLM
             public int staticKeyframeIdx;
         }
 
-        public UIData ToUI()
+        public UIData ToUI(EntityManager em, NameSystem ns, XTMLineManagementSystem xtmlms, Entity lastStop)
         {
             var tempArr = keyframes.ToArray(Allocator.Temp);
             try
             {
+                var y = useUntilStop == Entity.Null ? lastStop : useUntilStop;
+                var _this = this;
                 return new()
                 {
                     useUntilStop = useUntilStop,
-                    keyframes = tempArr.ToArray().Select(x => x.ToUI()).ToArray(),
+                    keyframes = tempArr.ToArray().Select(x => x.ToUI(em, ns, xtmlms, y, _this)).ToArray(),
                     staticKeyframeIdx = staticKeyframeIdx,
                 };
             }
@@ -41,9 +45,25 @@ namespace BelzontTLM
                 tempArr.Dispose();
             }
         }
+        public bool OnLineStopsChanged(BufferLookup<RouteWaypoint> waypointsLists, ComponentLookup<Waypoint> waypointsComponents, Entity lineOwner)
+        {
+            if (useUntilStop == Entity.Null || !waypointsLists.TryGetBuffer(lineOwner, out var waypoints)) return false;
+            if (waypointsComponents.TryGetComponent(useUntilStop, out Waypoint waypoint))
+            {
+                cachedStopOrder = waypoint.m_Index;
+                return true;
+            }
+            if (cachedStopOrder > 0)
+            {
+                cachedStopOrder = Math.Min(cachedStopOrder, waypoints.Length - 1);
+                useUntilStop = waypoints[cachedStopOrder].m_Waypoint;
+                return true;
+            }
+            useUntilStop = default;
+            cachedStopOrder = -1;
+            return false;
+        }
 
-        Entity IXTM_WEDestinationKeyframeData.UseUntilStop { readonly get => useUntilStop; set => useUntilStop = value; }
-        int IXTM_WEDestinationKeyframeData.CachedStopOrder { readonly get => cachedStopOrder; set => cachedStopOrder = value; }
         public int StaticKeyframeIdx
         {
             get => staticKeyframeIdx; set
@@ -51,6 +71,17 @@ namespace BelzontTLM
                 staticKeyframeIdx = Math.Clamp(value, 0, keyframes.Length);
             }
         }
+
+        public Entity UseUntilStop
+        {
+            get => useUntilStop; set
+            {
+                useUntilStop = value;
+                cachedStopOrder = value != Entity.Null ? World.DefaultGameObjectInjectionWorld.EntityManager.TryGetComponent(value, out Waypoint wp) ? wp.m_Index : -1 : -1;
+            }
+        }
+
+        public readonly int StopOrder => cachedStopOrder;
 
         public void AddKeyframe(XTM_WEDestinationDynamicKeyframe keyframe)
         {
@@ -60,20 +91,6 @@ namespace BelzontTLM
             }
             keyframes.Add(keyframe);
             OnKeyframesChanged();
-        }
-        public bool SetKeyframeAt(XTM_WEDestinationDynamicKeyframe keyframe, int pos)
-        {
-            if (pos >= keyframes.Length) return false;
-            keyframes[pos] = keyframe;
-            OnKeyframesChanged();
-            return true;
-        }
-        public bool RemoveKeyframeAt(int pos)
-        {
-            if (pos >= keyframes.Length || keyframes.Length <= 1) return false;
-            keyframes.RemoveAt(pos);
-            OnKeyframesChanged();
-            return true;
         }
 
         private void OnKeyframesChanged()
@@ -86,10 +103,10 @@ namespace BelzontTLM
             staticKeyframeIdx = Math.Min(staticKeyframeIdx, keyframes.Length);
         }
 
-        public string GetCurrentText(uint simulationFrame, EntityManager em, NameSystem ns, XTMLineManagementSystem xtmlms, Entity stopEntity)
+        public string GetCurrentText(uint simulationFrame, EntityManager em, NameSystem ns, XTMLineManagementSystem xtmlms, Entity stopEntity, XTM_WEDestinationBlind parent)
         {
             if (keyframes.IsEmpty) return "????";
-            if (keyframes.Length == 1 || totalFrames == 0) return ((IXTM_WEDestinationData)keyframes[0]).GetString(em, ns, xtmlms, stopEntity);
+            if (keyframes.Length == 1 || totalFrames == 0) return keyframes[0].GetString(em, ns, xtmlms, stopEntity, parent);
             var targetFrame = simulationFrame % totalFrames;
             var counter = 0;
             for (int i = 0; i <= keyframes.Length; i++)
@@ -97,7 +114,7 @@ namespace BelzontTLM
                 counter += keyframes[i].framesLength;
                 if (counter > targetFrame)
                 {
-                    return ((IXTM_WEDestinationData)keyframes[i]).GetString(em, ns, xtmlms, stopEntity);
+                    return keyframes[i].GetString(em, ns, xtmlms, stopEntity, parent);
                 }
             }
             return "!?!?!?!?";
@@ -127,7 +144,7 @@ namespace BelzontTLM
             if (keyframes.IsCreated) keyframes.Dispose();
         }
 
-        internal IXTM_WEDestinationData GetStaticKeyframe() => keyframes[staticKeyframeIdx];
+        internal XTM_WEDestinationDynamicKeyframe GetStaticKeyframe() => keyframes[staticKeyframeIdx];
 
         internal static XTM_WEDestinationBlind From(UIData uIData)
         {
@@ -135,7 +152,7 @@ namespace BelzontTLM
             foreach (var item in uIData.keyframes) data.Add(item.ToComponent());
             var result = new XTM_WEDestinationBlind()
             {
-                useUntilStop = uIData.useUntilStop,
+                UseUntilStop = uIData.useUntilStop,
                 keyframes = data,
                 staticKeyframeIdx = uIData.staticKeyframeIdx,
             };
