@@ -58,9 +58,11 @@ Since it's a very complex mod, it may cause issues in the game due their early s
 The most up to date information about installation and known issues and bugs are in the forums topic.</LongDescription>
   <Thumbnail Value="Properties/Thumbnail.png" />
   <ForumLink Value="https://forum.paradoxplaza.com/forum/threads/xtm-extended-transport-manager.1651555/" />
-  <ModVersion Value="0.1.4.0" />
+  <ModVersion Value="0.1.4.1" />
   <GameVersion Value="1.2.*" />
-  <ChangeLog># v0.1.4r0 (27-DEC-24)
+  <ChangeLog># v0.1.4r1 (27-DEC-24)
+- Fixing "Missing Step" destination when settings are actually well formed (i.e. there's a step targeting the end of line)
+From earlier version (r0)
 - Added support to Write Everywhere custom blinds settings
 - Fixed behavior of the route number shown by Write Everywhere if a custom route number was set in XTM</ChangeLog>
   <Tag Value="Code Mod" />

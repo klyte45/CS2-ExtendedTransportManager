@@ -251,7 +251,7 @@ namespace BelzontTLM
                 for (int i = 0; i < destinations.Length; i++)
                 {
                     var stopOrder = destinations[i].StopOrder;
-                    if (stopOrder > idx || stopOrder == -1)
+                    if (stopOrder > idx || stopOrder <= 0)
                     {
                         return destinations[i].GetCurrentText(m_simulationSystem.frameIndex + randomSeed, EntityManager, m_nameSystem, m_managementSystem, stop, destinations[i]);
                     }
