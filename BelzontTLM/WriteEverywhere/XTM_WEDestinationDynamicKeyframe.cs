@@ -108,7 +108,7 @@ namespace BelzontTLM
                      ? ns.GetName(connected.m_Connected).Translate()
                 : !em.TryGetComponent(attached.m_Parent, out BorderDistrict border) ? ns.GetName(attached.m_Parent).Translate()
                 : border.m_Left != Entity.Null ? ns.GetName(border.m_Left).Translate()
-                : border.m_Right != Entity.Null ? ns.GetName(border.m_Left).Translate()
+                : border.m_Right != Entity.Null ? ns.GetName(border.m_Right).Translate()
                 : !em.TryGetComponent(attached.m_Parent, out Aggregated agg) ? "?????"
                 : ns.GetName(agg.m_Aggregate).Translate();
 

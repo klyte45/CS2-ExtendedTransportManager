@@ -250,8 +250,7 @@ namespace BelzontTLM
                 var idx = waypoint.m_Index;
                 for (int i = 0; i < destinations.Length; i++)
                 {
-                    var stopOrder = destinations[i].StopOrder;
-                    if (stopOrder > idx || stopOrder <= 0)
+                    if (destinations[i].StopOrder > idx || destinations[i].UseUntilStop == Entity.Null)
                     {
                         return destinations[i].GetCurrentText(m_simulationSystem.frameIndex + randomSeed, EntityManager, m_nameSystem, m_managementSystem, stop, destinations[i]);
                     }
