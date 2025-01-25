@@ -22,7 +22,7 @@
   <!--Mod data-->
   <PropertyGroup>
     <ModId>74238</ModId>
-    <Version>0.1.4.2</Version>
+    <Version>0.1.4.3</Version>
     <GameVersion>1.2.*</GameVersion>
     <ThumbnailPath>Properties/Thumbnail.png</ThumbnailPath>
     <DisplayName>Extended Transport Manager</DisplayName>
@@ -45,16 +45,6 @@
       <DisplayName>Unified Icon Library</DisplayName>
     </Dependency>
   </ItemGroup>
-
-  <Target Name="EUIS Build" BeforeTargets="DeployWIP" AfterTargets="RunModPostProcessor">
-    <Message Importance="high" Text="EUIS Build!" />
-    <MSBuild Projects="../BelzontTLM_EUIS/XTM_EUIS.csproj" Targets="Build" BuildInParallel="false" />
-    <ItemGroup>
-      <EuisResult Include="..\BelzontTLM_EUIS\bin\$(Configuration)\$(TargetFramework)\*.euis" />      
-    </ItemGroup>
-    <Copy SourceFiles="@(EuisResult)" DestinationFolder="$(OutDir)" />
-  </Target>
-
 
   <ItemGroup>
     <Reference Include="Game">

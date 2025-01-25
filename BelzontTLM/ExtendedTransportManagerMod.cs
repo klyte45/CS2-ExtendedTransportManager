@@ -1,7 +1,12 @@
-﻿using Belzont.Interfaces;
+﻿#if !RELEASE
+#define LOCAL
+#endif
+
+using Belzont.Interfaces;
 using BelzontTLM.Palettes;
 using Game;
 using Game.Modding;
+using System.Collections.Generic;
 using System.IO;
 
 namespace BelzontTLM
@@ -38,5 +43,18 @@ namespace BelzontTLM
         public override BasicModData CreateSettingsFile() => new XTMModData(this);
 
         public string PalettesFolder => Path.Combine(ModSettingsRootFolder, "Palettes");
+
+#if LOCAL
+        private string BaseUrlApps => "http://localhost:8501";
+#else
+        private string BaseUrlApps => $"coui://{CouiHost}/UI";
+#endif
+
+        protected override bool EuisIsMandatory => true;
+        protected override bool UseEuisRegister => true;
+        protected override Dictionary<string, EuisAppRegister> EuisApps => new()
+        {
+            ["main"] = new("XTM - Main settings window", $"{BaseUrlApps}/k45-xtm-main.js", $"{BaseUrlApps}/k45-xtm-main.css", $"coui://{CouiHost}/UI/images/XTM.svg")
+        };
     }
 }

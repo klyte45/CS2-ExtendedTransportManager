@@ -5,8 +5,6 @@ VisualStudioVersion = 17.3.32929.385
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ExtendedTransportManager", "BelzontTLM\ExtendedTransportManager.csproj", "{38911405-6695-4DE5-9B63-857718EC55C0}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "XTM_EUIS", "BelzontTLM_EUIS\XTM_EUIS.csproj", "{A92BC2E1-85A5-430D-A42B-AD40FFA29765}"
-EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "_Frontends", "_Frontends\_Frontends.csproj", "{588E9E58-0743-437B-9EB9-D5EAC62E6F59}"
 EndProject
 Global
@@ -19,10 +17,6 @@ Global
 		{38911405-6695-4DE5-9B63-857718EC55C0}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{38911405-6695-4DE5-9B63-857718EC55C0}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{38911405-6695-4DE5-9B63-857718EC55C0}.Release|Any CPU.Build.0 = Release|Any CPU
-		{A92BC2E1-85A5-430D-A42B-AD40FFA29765}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{A92BC2E1-85A5-430D-A42B-AD40FFA29765}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{A92BC2E1-85A5-430D-A42B-AD40FFA29765}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{A92BC2E1-85A5-430D-A42B-AD40FFA29765}.Release|Any CPU.Build.0 = Release|Any CPU
 		{588E9E58-0743-437B-9EB9-D5EAC62E6F59}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{588E9E58-0743-437B-9EB9-D5EAC62E6F59}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{588E9E58-0743-437B-9EB9-D5EAC62E6F59}.Release|Any CPU.ActiveCfg = Release|Any CPU
