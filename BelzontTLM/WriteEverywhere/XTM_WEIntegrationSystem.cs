@@ -8,6 +8,7 @@ using Game.SceneFlow;
 using Game.Simulation;
 using Game.Tools;
 using Game.UI;
+using Game.Vehicles;
 using System;
 using System.Linq;
 using System.Reflection;
@@ -178,7 +179,7 @@ namespace BelzontTLM
                             && EntityManager.TryGetComponent<Target>(entity, out var target)
                             && target.m_Target != Entity.Null
                             && EntityManager.TryGetComponent<Owner>(target.m_Target, out var ownerRoute)
-                                ? GetStaticData(target.m_Target, ownerRoute.m_Owner)
+                                ? GetStaticData(entity, target.m_Target, ownerRoute.m_Owner)
                                 : originalValue(entity));
                     }
                     else
@@ -221,19 +222,22 @@ namespace BelzontTLM
             }
         }
 
-        private string GetStaticData(Entity stop, Entity route)
+        private string GetStaticData(Entity srcVehicle, Entity stop, Entity route)
         {
             if (EntityManager.TryGetBuffer<XTM_WEDestinationBlind>(route, true, out var destinations) && destinations.Length > 0)
             {
-                if (destinations.Length == 1) return destinations[0].GetStaticKeyframe().GetString(EntityManager, m_nameSystem, m_managementSystem, stop, destinations[0]);
+                var mainVehicle = EntityManager.TryGetComponent<Controller>(srcVehicle, out var ctl) ? ctl.m_Controller : srcVehicle;
+                var offsetStops = EntityManager.TryGetComponent<Game.Vehicles.PublicTransport>(mainVehicle, out var pt) && (pt.m_State & PublicTransportFlags.Boarding) == 0 ? 0 : 1;
+
+                if (destinations.Length == 1) return destinations[0].GetStaticKeyframe().GetString(EntityManager, m_nameSystem, m_managementSystem, stop, destinations[0], offsetStops);
                 if (!EntityManager.TryGetComponent<Waypoint>(stop, out var waypoint)) return "????";
-                var idx = waypoint.m_Index;
+                var idx = waypoint.m_Index + offsetStops - 1;
                 for (int i = 0; i < destinations.Length; i++)
                 {
                     var stopOrder = destinations[i].StopOrder;
-                    if (stopOrder > idx || stopOrder == -1)
+                    if ((idx >= 0 && stopOrder > idx) || destinations[i].UseUntilStop == Entity.Null)
                     {
-                        return destinations[i].GetStaticKeyframe().GetString(EntityManager, m_nameSystem, m_managementSystem, stop, destinations[i]);
+                        return destinations[i].GetStaticKeyframe().GetString(EntityManager, m_nameSystem, m_managementSystem, stop, destinations[i], offsetStops);
                     }
                 }
                 return "<MISSING STEP>";
@@ -245,14 +249,19 @@ namespace BelzontTLM
             if (EntityManager.TryGetBuffer<XTM_WEDestinationBlind>(route, true, out var destinations) && destinations.Length > 0)
             {
                 var randomSeed = EntityManager.TryGetComponent(srcVehicle, out PseudoRandomSeed seed) ? seed.m_Seed : (ushort)srcVehicle.Index;
-                if (destinations.Length == 1) return destinations[0].GetCurrentText(m_simulationSystem.frameIndex + randomSeed, EntityManager, m_nameSystem, m_managementSystem, stop, destinations[0]);
+
+                var mainVehicle = EntityManager.TryGetComponent<Controller>(srcVehicle, out var ctl) ? ctl.m_Controller : srcVehicle;
+                var offsetStops = EntityManager.TryGetComponent<Game.Vehicles.PublicTransport>(mainVehicle, out var pt) && (pt.m_State & (PublicTransportFlags.Boarding)) == 0 ? 0 : 1;
+
+                if (destinations.Length == 1) return destinations[0].GetCurrentText(m_simulationSystem.frameIndex + randomSeed, EntityManager, m_nameSystem, m_managementSystem, stop, offsetStops);
+
                 if (!EntityManager.TryGetComponent<Waypoint>(stop, out var waypoint)) return "????";
-                var idx = waypoint.m_Index;
+                var idx = waypoint.m_Index + offsetStops - 1;
                 for (int i = 0; i < destinations.Length; i++)
                 {
-                    if (destinations[i].StopOrder > idx || destinations[i].UseUntilStop == Entity.Null)
+                    if ((idx >= 0 && destinations[i].StopOrder > idx) || destinations[i].UseUntilStop == Entity.Null)
                     {
-                        return destinations[i].GetCurrentText(m_simulationSystem.frameIndex + randomSeed, EntityManager, m_nameSystem, m_managementSystem, stop, destinations[i]);
+                        return destinations[i].GetCurrentText(m_simulationSystem.frameIndex + randomSeed, EntityManager, m_nameSystem, m_managementSystem, stop, offsetStops);
                     }
                 }
                 return "<MISSING STEP>";

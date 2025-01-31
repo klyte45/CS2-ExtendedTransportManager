@@ -59,7 +59,7 @@ namespace BelzontTLM
                 suffix = suffix.ToString(),
                 type = type,
                 framesLength = framesLength,
-                sample = GetString(em, ns, xtmlms, stopEntity, parent)
+                sample = GetString(em, ns, xtmlms, stopEntity, parent, 0)
             };
 
         public readonly void Serialize<TWriter>(TWriter writer) where TWriter : IWriter
@@ -80,26 +80,34 @@ namespace BelzontTLM
             reader.Read(out suffix);
         }
 
-        public readonly string GetString(EntityManager em, NameSystem ns, XTMLineManagementSystem xtmlms, Entity stopEntity, XTM_WEDestinationBlind parent)
+        public readonly string GetString(EntityManager em, NameSystem ns, XTMLineManagementSystem xtmlms, Entity stopEntity, XTM_WEDestinationBlind parent, int offsetStops)
             => type switch
             {
                 XTM_WEDestinationKeyframeType.EntityName => $"{prefix}{(parent.UseUntilStop == Entity.Null ? GetFirstStop(em, ns, stopEntity, false) : GetNextStop(em, ns, parent.UseUntilStop, false))}{suffix}",
                 XTM_WEDestinationKeyframeType.RouteNumber => $"{prefix}{(em.TryGetComponent<Owner>(stopEntity, out var ownerLine) ? xtmlms.GetEffectiveRouteNumber(ownerLine.m_Owner) : "<?>")}{suffix}",
                 XTM_WEDestinationKeyframeType.RouteName => $"{prefix}{(em.TryGetComponent<Owner>(stopEntity, out var ownerLine) ? ns.GetName(ownerLine.m_Owner).Translate() : "<?>")}{suffix}",
                 XTM_WEDestinationKeyframeType.FixedString => prefix.ToString(),
-                XTM_WEDestinationKeyframeType.NextStopSimple => $"{prefix}{GetNextStop(em, ns, stopEntity, false)}{suffix}",
+                XTM_WEDestinationKeyframeType.NextStopSimple => $"{prefix}{GetNextStop(em, ns, stopEntity, false, offsetStops)}{suffix}",
                 XTM_WEDestinationKeyframeType.EntityNameOrDistrict => $"{prefix}{(parent.UseUntilStop == Entity.Null ? GetFirstStop(em, ns, stopEntity, true) : GetNextStop(em, ns, parent.UseUntilStop, true))}{suffix}",
                 _ => "????"
             };
+        private static string GetNextStop(EntityManager em, NameSystem ns, Entity stopEntity, bool checkAttachment, int startOffset = 0)
+        {
+            if (!em.TryGetComponent(stopEntity, out Waypoint waypoint)) return "??";
+            if (!em.TryGetComponent(stopEntity, out Owner line)) return "???";
+            if (!em.TryGetBuffer(line.m_Owner, true, out DynamicBuffer<RouteWaypoint> waypoints)) return "?!??";
+            for (int i = startOffset; i < waypoints.Length; i++)
+            {
+                var wp = waypoints[(waypoint.m_Index + i) % waypoints.Length].m_Waypoint;
+                if (em.TryGetComponent(wp, out Connected connected))
+                {
+                    return checkAttachment ? CheckAttachment(em, ns, connected) : ns.GetName(connected.m_Connected).Translate();
+                }
+            }
+            return "!!!!?";
+        }
 
-        private static string GetNextStop(EntityManager em, NameSystem ns, Entity stopEntity, bool checkAttachment)
-            => em.TryGetComponent(stopEntity, out Connected connected)
-                    ? checkAttachment ? CheckAttachment(em, ns, connected)
-                    : ns.GetName(connected.m_Connected).Translate()
-                : !em.TryGetComponent(stopEntity, out Waypoint waypoint) ? "??"
-                : !em.TryGetComponent(stopEntity, out Owner line) ? "???"
-                : !em.TryGetBuffer(line.m_Owner, true, out DynamicBuffer<RouteWaypoint> waypoints) ? "?!??"
-                : GetNextStop(em, ns, waypoints[(waypoint.m_Index + 1) % waypoints.Length].m_Waypoint, checkAttachment);
+
 
         private static string CheckAttachment(EntityManager em, NameSystem ns, Connected connected)
             => em.HasComponent<Owner>(connected.m_Connected)

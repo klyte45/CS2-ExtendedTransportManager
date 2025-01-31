@@ -1,2 +1,2 @@
-# v0.1.4r3 (25-JAN-25)
-- Updating to be compatible with EUIS 0.2
+# v0.1.4r4 (??-???-25)
+- Improved behavior of the distinations blinds: now it switches to next stop when vehcile start boarding at the stop - it was when the vehicle left the previous stop, causing strange situations specially on 2-stop lines.

@@ -58,7 +58,7 @@ Since it's a very complex mod, it may cause issues in the game due their early s
 The most up to date information about installation and known issues and bugs are in the forums topic.</LongDescription>
   <Thumbnail Value="Properties/Thumbnail.png" />
   <ForumLink Value="https://forum.paradoxplaza.com/forum/threads/xtm-extended-transport-manager.1651555/" />
-  <ModVersion Value="0.1.4.3" />
+  <ModVersion Value="65534.2025.0131.1833" />
   <GameVersion Value="1.2.*" />
   <ChangeLog># v0.1.4r3 (25-JAN-25)
 - Updating to be compatible with EUIS 0.2</ChangeLog>

@@ -110,10 +110,10 @@ namespace BelzontTLM
             staticKeyframeIdx = Math.Min(staticKeyframeIdx, keyframes.Length);
         }
 
-        public string GetCurrentText(uint simulationFrame, EntityManager em, NameSystem ns, XTMLineManagementSystem xtmlms, Entity stopEntity, XTM_WEDestinationBlind parent)
+        public string GetCurrentText(uint simulationFrame, EntityManager em, NameSystem ns, XTMLineManagementSystem xtmlms, Entity stopEntity, int offsetStops)
         {
             if (keyframes.IsEmpty) return "????";
-            if (keyframes.Length == 1 || totalFrames == 0) return keyframes[0].GetString(em, ns, xtmlms, stopEntity, parent);
+            if (keyframes.Length == 1 || totalFrames == 0) return keyframes[0].GetString(em, ns, xtmlms, stopEntity, this, offsetStops);
             var targetFrame = simulationFrame % totalFrames;
             var counter = 0;
             for (int i = 0; i <= keyframes.Length; i++)
@@ -121,7 +121,7 @@ namespace BelzontTLM
                 counter += keyframes[i].framesLength;
                 if (counter > targetFrame)
                 {
-                    return keyframes[i].GetString(em, ns, xtmlms, stopEntity, parent);
+                    return keyframes[i].GetString(em, ns, xtmlms, stopEntity, this, offsetStops);
                 }
             }
             return "!?!?!?!?";
