@@ -58,10 +58,12 @@ Since it's a very complex mod, it may cause issues in the game due their early s
 The most up to date information about installation and known issues and bugs are in the forums topic.</LongDescription>
   <Thumbnail Value="Properties/Thumbnail.png" />
   <ForumLink Value="https://forum.paradoxplaza.com/forum/threads/xtm-extended-transport-manager.1651555/" />
-  <ModVersion Value="65534.2025.0131.1833" />
+  <ModVersion Value="0.1.4.4" />
   <GameVersion Value="1.2.*" />
-  <ChangeLog># v0.1.4r3 (25-JAN-25)
-- Updating to be compatible with EUIS 0.2</ChangeLog>
+  <ChangeLog># v0.1.4r4 (18-MAR-25)
+- Fixes for 1.2.5 (CS1 10th anniversary) patch
+- Improved behavior of the distinations blinds: now it switches to next stop when vehcile start boarding at the stop - it was when the vehicle left the previous stop, causing strange situations specially on 2-stop lines.
+  - NOTICE: The behavior above won't apply to dummy traffic (for now)</ChangeLog>
   <Tag Value="Code Mod" />
   <Screenshot Value="Screenshots\00_lineListing.jpg" />
   <Screenshot Value="Screenshots\01_LineData.jpg" />
