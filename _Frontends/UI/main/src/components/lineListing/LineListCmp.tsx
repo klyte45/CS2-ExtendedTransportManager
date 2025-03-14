@@ -17,15 +17,15 @@ type State = {
 }
 
 const TypeToIcons = {
-    [`${TransportType.Bus}.false`]: "coui://GameUI/Media/Game/Icons/BusLine.svg",
-    [`${TransportType.Tram}.false`]: "coui://GameUI/Media/Game/Icons/TramLine.svg",
-    [`${TransportType.Subway}.false`]: "coui://GameUI/Media/Game/Icons/SubwayLine.svg",
-    [`${TransportType.Train}.false`]: "coui://GameUI/Media/Game/Icons/TrainLine.svg",
-    [`${TransportType.Ship}.false`]: "coui://GameUI/Media/Game/Icons/PassengershipLine.svg",
-    [`${TransportType.Airplane}.false`]: "coui://GameUI/Media/Game/Icons/PassengerplaneLine.svg",
-    [`${TransportType.Train}.true`]: "coui://GameUI/Media/Game/Icons/CargoTrainLine.svg",
-    [`${TransportType.Ship}.true`]: "coui://GameUI/Media/Game/Icons/CargoshiipLine.svg",
-    [`${TransportType.Airplane}.true`]: "coui://GameUI/Media/Game/Icons/CargoplaneLine.svg",
+    [`${TransportType.Bus}.false`]: "assetdb://gameui/Media/Game/Icons/BusLine.svg",
+    [`${TransportType.Tram}.false`]: "assetdb://gameui/Media/Game/Icons/TramLine.svg",
+    [`${TransportType.Subway}.false`]: "assetdb://gameui/Media/Game/Icons/SubwayLine.svg",
+    [`${TransportType.Train}.false`]: "assetdb://gameui/Media/Game/Icons/TrainLine.svg",
+    [`${TransportType.Ship}.false`]: "assetdb://gameui/Media/Game/Icons/PassengerShipLine.svg",
+    [`${TransportType.Airplane}.false`]: "assetdb://gameui/Media/Game/Icons/PassengerAirplaneLine.svg",
+    [`${TransportType.Train}.true`]: "assetdb://gameui/Media/Game/Icons/CargoTrainLine.svg",
+    [`${TransportType.Ship}.true`]: "assetdb://gameui/Media/Game/Icons/CargoShipLine.svg",
+    [`${TransportType.Airplane}.true`]: "assetdb://gameui/Media/Game/Icons/CargoAirplaneLine.svg",
 }
 
 export const LineListCmp = () => {
