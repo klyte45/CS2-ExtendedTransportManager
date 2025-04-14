@@ -168,50 +168,56 @@ namespace BelzontTLM
             if (!weInitialized)
             {
                 weInitialized = true;
-                if (AppDomain.CurrentDomain.GetAssemblies().SingleOrDefault(assembly => assembly.GetName().Name == "BelzontWE") is Assembly weAssembly
-                    && weAssembly.GetExportedTypes().FirstOrDefault(x => x.Name == "WEVehicleFn") is Type t)
+                if (AppDomain.CurrentDomain.GetAssemblies().SingleOrDefault(assembly => assembly.GetName().Name == "BelzontWE") is Assembly weAssembly)
                 {
-                    if (t.GetField("GetTargetDestinationStatic_binding", RedirectorUtils.allFlags) is FieldInfo staticDestination)
+                    if (weAssembly.GetExportedTypes().FirstOrDefault(x => x.Name == "WEVehicleFn") is Type t)
                     {
-                        var originalValue = staticDestination.GetValue(null) as Func<Entity, string>;
-                        staticDestination.SetValue(null, (Entity entity)
-                            => EntityManager.HasComponent<CurrentRoute>(entity)
-                            && EntityManager.TryGetComponent<Target>(entity, out var target)
-                            && target.m_Target != Entity.Null
-                            && EntityManager.TryGetComponent<Owner>(target.m_Target, out var ownerRoute)
-                                ? GetStaticData(entity, target.m_Target, ownerRoute.m_Owner)
-                                : originalValue(entity));
+                        if (t.GetField("GetTargetDestinationStatic_binding", RedirectorUtils.allFlags) is FieldInfo staticDestination)
+                        {
+                            var originalValue = staticDestination.GetValue(null) as Func<Entity, string>;
+                            staticDestination.SetValue(null, (Entity entity)
+                                => EntityManager.HasComponent<CurrentRoute>(entity)
+                                && EntityManager.TryGetComponent<Target>(entity, out var target)
+                                && target.m_Target != Entity.Null
+                                && EntityManager.TryGetComponent<Owner>(target.m_Target, out var ownerRoute)
+                                    ? GetStaticData(entity, target.m_Target, ownerRoute.m_Owner)
+                                    : originalValue(entity));
+                        }
+                        else
+                        {
+                            return;
+                        }
+                        if (t.GetField("GetTargetDestinationDynamic_binding", RedirectorUtils.allFlags) is FieldInfo dynamicDestination)
+                        {
+                            var originalValue = dynamicDestination.GetValue(null) as Func<Entity, string>;
+                            dynamicDestination.SetValue(null, (Entity entity)
+                                => EntityManager.HasComponent<CurrentRoute>(entity)
+                                && EntityManager.TryGetComponent<Target>(entity, out var target)
+                                && target.m_Target != Entity.Null
+                                && EntityManager.TryGetComponent<Owner>(target.m_Target, out var ownerRoute)
+                                    ? GetDynamicData(entity, target.m_Target, ownerRoute.m_Owner)
+                                    : originalValue(entity));
+                        }
+                        else
+                        {
+                            return;
+                        }
+                        if (t.GetField("GetTargetTransportLineNumber_binding", RedirectorUtils.allFlags) is FieldInfo lineNumber)
+                        {
+                            var originalValue = lineNumber.GetValue(null) as Func<Entity, string>;
+                            lineNumber.SetValue(null, (Entity entity)
+                                => EntityManager.TryGetComponent<CurrentRoute>(entity, out var ownerLine)
+                                    ? m_managementSystem.GetEffectiveRouteNumber(ownerLine.m_Route)
+                                    : originalValue(entity));
+                        }
                     }
-                    else
+
+                    if (weAssembly.GetExportedTypes().FirstOrDefault(x => x.Name == "WERouteFn") is Type routeFn)
                     {
-                        return;
-                    }
-                    if (t.GetField("GetTargetDestinationDynamic_binding", RedirectorUtils.allFlags) is FieldInfo dynamicDestination)
-                    {
-                        var originalValue = dynamicDestination.GetValue(null) as Func<Entity, string>;
-                        dynamicDestination.SetValue(null, (Entity entity)
-                            => EntityManager.HasComponent<CurrentRoute>(entity)
-                            && EntityManager.TryGetComponent<Target>(entity, out var target)
-                            && target.m_Target != Entity.Null
-                            && EntityManager.TryGetComponent<Owner>(target.m_Target, out var ownerRoute)
-                                ? GetDynamicData(entity, target.m_Target, ownerRoute.m_Owner)
-                                : originalValue(entity));
-                    }
-                    else
-                    {
-                        return;
-                    }
-                    if (t.GetField("GetTargetTransportLineNumber_binding", RedirectorUtils.allFlags) is FieldInfo lineNumber)
-                    {
-                        var originalValue = lineNumber.GetValue(null) as Func<Entity, string>;
-                        lineNumber.SetValue(null, (Entity entity)
-                            => EntityManager.TryGetComponent<CurrentRoute>(entity, out var ownerLine)
-                                ? m_managementSystem.GetEffectiveRouteNumber(ownerLine.m_Route)
-                                : originalValue(entity));
-                    }
-                    else
-                    {
-                        return;
+                        if (routeFn.GetField("GetTransportLineNumber_binding", RedirectorUtils.allFlags) is FieldInfo lineNumber)
+                        {
+                            lineNumber.SetValue(null, (Entity entity) => m_managementSystem.GetEffectiveRouteNumber(entity));
+                        }
                     }
                     weAvailable = true;
                 }
