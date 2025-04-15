@@ -52,7 +52,7 @@ namespace BelzontTLM
                 };
         }
 
-        public readonly UIData ToUI(EntityManager em, NameSystem ns, XTMLineManagementSystem xtmlms, Entity stopEntity, XTM_WEDestinationBlind parent)
+        public readonly UIData ToUI(EntityManager em, NameSystem ns, XTMLineManagementController xtmlms, Entity stopEntity, XTM_WEDestinationBlind parent)
             => new()
             {
                 prefix = prefix.ToString(),
@@ -80,7 +80,7 @@ namespace BelzontTLM
             reader.Read(out suffix);
         }
 
-        public readonly string GetString(EntityManager em, NameSystem ns, XTMLineManagementSystem xtmlms, Entity stopEntity, XTM_WEDestinationBlind parent, int offsetStops)
+        public readonly string GetString(EntityManager em, NameSystem ns, XTMLineManagementController xtmlms, Entity stopEntity, XTM_WEDestinationBlind parent, int offsetStops)
             => type switch
             {
                 XTM_WEDestinationKeyframeType.EntityName => $"{prefix}{(parent.UseUntilStop == Entity.Null ? GetFirstStop(em, ns, stopEntity, false) : GetNextStop(em, ns, parent.UseUntilStop, false))}{suffix}",

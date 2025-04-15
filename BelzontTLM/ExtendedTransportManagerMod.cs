@@ -20,16 +20,16 @@ namespace BelzontTLM
 
         public override void DoOnCreateWorld(UpdateSystem updateSystem)
         {
-            updateSystem.UpdateBefore<XTMRouteAutoColorSystem>(SystemUpdatePhase.UIUpdate);
+            updateSystem.UpdateBefore<XTMRouteAutoColorController>(SystemUpdatePhase.UIUpdate);
             updateSystem.UpdateBefore<XTMStopsLinkingSystem>(SystemUpdatePhase.UIUpdate);
 
-            updateSystem.UpdateAt<XTMLineViewerSystem>(SystemUpdatePhase.UIUpdate);
-            updateSystem.UpdateAt<XTMLineManagementSystem>(SystemUpdatePhase.UIUpdate);
+            updateSystem.UpdateAt<XTMLineViewerController>(SystemUpdatePhase.UIUpdate);
+            updateSystem.UpdateAt<XTMLineManagementController>(SystemUpdatePhase.UIUpdate);
 
             updateSystem.UpdateAfter<XTMLineViewerSection>(SystemUpdatePhase.UIUpdate);
             updateSystem.UpdateAfter<XTMLineListingSection>(SystemUpdatePhase.UIUpdate);
 
-            updateSystem.UpdateAt<XTM_WEIntegrationSystem>(SystemUpdatePhase.ModificationEnd);
+            updateSystem.UpdateAt<XTM_WEIntegrationController>(SystemUpdatePhase.ModificationEnd);
         }
 
         public override void OnDispose()

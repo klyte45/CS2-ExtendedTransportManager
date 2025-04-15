@@ -20,7 +20,7 @@ using TransportType = Game.Prefabs.TransportType;
 
 namespace BelzontTLM.Palettes
 {
-    public partial class XTMRouteAutoColorSystem : GameSystemBase, IBelzontBindable, IBelzontSerializableSingleton<XTMRouteAutoColorSystem>
+    public partial class XTMRouteAutoColorController : GameSystemBase, IBelzontBindable, IBelzontSerializableSingleton<XTMRouteAutoColorController>
     {
         private const int CURRENT_VERSION = 2;
 
@@ -126,12 +126,12 @@ namespace BelzontTLM.Palettes
         private EntityQuery m_linesToUpdateData;
         private EntityQuery m_linesWithDataToForceUpdate;
 
-        private static XTMRouteAutoColorSystem Instance { get; set; }
+        private static XTMRouteAutoColorController Instance { get; set; }
 
         private EndFrameBarrier m_EndFrameBarrier;
         private IconCommandSystem m_IconCommandSystem;
         private TypeHandle typeHandle;
-        private XTMPaletteSystem paletteSystem;
+        private XTMPaletteController paletteSystem;
         private bool m_setupIsDirty;
 
         protected override void OnCreate()
@@ -201,12 +201,12 @@ namespace BelzontTLM.Palettes
                 }
             });
 
-            paletteSystem = World.GetOrCreateSystemManaged<XTMPaletteSystem>();
+            paletteSystem = World.GetOrCreateSystemManaged<XTMPaletteController>();
 
 
         }
 
-        private static XTMPaletteSystem PaletteSystem => Instance.paletteSystem;
+        private static XTMPaletteController PaletteSystem => Instance.paletteSystem;
 
         #region Runtime Jobs
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -460,8 +460,8 @@ namespace BelzontTLM.Palettes
             arraySave.Dispose();
         }
 
-        void IBelzontSerializableSingleton<XTMRouteAutoColorSystem>.Serialize<TWriter>(TWriter writer) => Serialize(writer);
-        void IBelzontSerializableSingleton<XTMRouteAutoColorSystem>.Deserialize<TReader>(TReader reader) => Deserialize(reader);
+        void IBelzontSerializableSingleton<XTMRouteAutoColorController>.Serialize<TWriter>(TWriter writer) => Serialize(writer);
+        void IBelzontSerializableSingleton<XTMRouteAutoColorController>.Deserialize<TReader>(TReader reader) => Deserialize(reader);
         JobHandle IJobSerializable.SetDefaults(Context context) => default;
 
         #endregion

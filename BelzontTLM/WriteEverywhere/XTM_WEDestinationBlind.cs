@@ -26,7 +26,7 @@ namespace BelzontTLM
             public int staticKeyframeIdx;
         }
 
-        public UIData ToUI(EntityManager em, NameSystem ns, XTMLineManagementSystem xtmlms, Entity lastStop)
+        public UIData ToUI(EntityManager em, NameSystem ns, XTMLineManagementController xtmlms, Entity lastStop)
         {
             var tempArr = keyframes.ToArray(Allocator.Temp);
             try
@@ -110,7 +110,7 @@ namespace BelzontTLM
             staticKeyframeIdx = Math.Min(staticKeyframeIdx, keyframes.Length);
         }
 
-        public string GetCurrentText(uint simulationFrame, EntityManager em, NameSystem ns, XTMLineManagementSystem xtmlms, Entity stopEntity, int offsetStops)
+        public string GetCurrentText(uint simulationFrame, EntityManager em, NameSystem ns, XTMLineManagementController xtmlms, Entity stopEntity, int offsetStops)
         {
             if (keyframes.IsEmpty) return "????";
             if (keyframes.Length == 1 || totalFrames == 0) return keyframes[0].GetString(em, ns, xtmlms, stopEntity, this, offsetStops);

@@ -16,14 +16,14 @@ namespace BelzontTLM.Overrides
         public void DoPatches(World world)
         {
             prefabSystem = world.GetExistingSystemManaged<PrefabSystem>();
-            managementSystem = world.GetOrCreateSystemManaged<XTMLineManagementSystem>();
+            managementSystem = world.GetOrCreateSystemManaged<XTMLineManagementController>();
             entityManager = world.EntityManager;
 
             var getRouteName = typeof(NameSystem).GetMethod("GetRouteName", RedirectorUtils.allFlags);
 
             AddRedirect(getRouteName, GetType().GetMethod(nameof(GetRouteName), RedirectorUtils.allFlags));
         }
-        private static XTMLineManagementSystem managementSystem;
+        private static XTMLineManagementController managementSystem;
         private static PrefabSystem prefabSystem;
         private static EntityManager entityManager;
 

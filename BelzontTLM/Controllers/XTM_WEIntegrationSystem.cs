@@ -19,7 +19,7 @@ using UnityEngine;
 
 namespace BelzontTLM
 {
-    public partial class XTM_WEIntegrationSystem : GameSystemBase, IBelzontBindable
+    public partial class XTM_WEIntegrationController : GameSystemBase, IBelzontBindable
     {
         private bool weInitialized;
         private bool weAvailable;
@@ -28,7 +28,7 @@ namespace BelzontTLM
         private EntityQuery m_deletedLinesGarbage;
         private EntityQuery m_routeChanged;
         private ModificationEndBarrier m_modificationEndBarrier;
-        private XTMLineManagementSystem m_managementSystem;
+        private XTMLineManagementController m_managementSystem;
         private SimulationSystem m_simulationSystem;
 
         public void SetupCallBinder(Action<string, Delegate> eventCaller)
@@ -114,7 +114,7 @@ namespace BelzontTLM
             base.OnCreate();
             m_nameSystem = World.GetOrCreateSystemManaged<NameSystem>();
             m_modificationEndBarrier = World.GetOrCreateSystemManaged<ModificationEndBarrier>();
-            m_managementSystem = World.GetOrCreateSystemManaged<XTMLineManagementSystem>();
+            m_managementSystem = World.GetOrCreateSystemManaged<XTMLineManagementController>();
             m_simulationSystem = World.GetOrCreateSystemManaged<SimulationSystem>();
             m_uninitiatedRoutesDynamic = GetEntityQuery(new EntityQueryDesc[] {
                 new() {
