@@ -2,6 +2,7 @@
 using Game.Common;
 using Game.Routes;
 using Game.Vehicles;
+using Unity.Burst;
 using Unity.Collections;
 using Unity.Entities;
 using Unity.Jobs;
@@ -10,6 +11,7 @@ namespace BelzontTLM
 {
     public partial class XTMLineViewerSection
     {
+        [BurstCompile]
         private struct LineRequirementsCheckJob : IJob
         {
             public void Execute()

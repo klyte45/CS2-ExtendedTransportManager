@@ -13,9 +13,13 @@ namespace BelzontTLM
             this.stop = stop;
         }
 
-        public bool Equals(LineStopConnnection other)
-        {
-            return line == other.line && stop == other.stop;
-        }
+        public override bool Equals(object o) => o.GetType() == typeof(LineStopConnnection) && Equals((LineStopConnnection)o);
+        public bool Equals(LineStopConnnection other) => line == other.line && stop == other.stop;
+
+        public override int GetHashCode() => HashCode.Combine(line, stop);
+
+        public static bool operator ==(LineStopConnnection left, LineStopConnnection right) => left.Equals(right);
+
+        public static bool operator !=(LineStopConnnection left, LineStopConnnection right) => !(left == right);
     }
 }

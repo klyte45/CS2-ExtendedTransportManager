@@ -9,6 +9,7 @@ using Game.Rendering;
 using Game.Routes;
 using Game.Vehicles;
 using System;
+using Unity.Burst;
 using Unity.Collections;
 using Unity.Entities;
 using Unity.Jobs;
@@ -19,6 +20,7 @@ namespace BelzontTLM
 {
     public partial class XTMLineViewerSection
     {
+        [BurstCompile]
         private struct UpdateJob : IJob
         {
             public void Execute()
