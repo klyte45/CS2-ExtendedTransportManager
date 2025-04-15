@@ -13,7 +13,7 @@ using Unity.Jobs;
 
 namespace BelzontTLM.Palettes
 {
-    public partial class XTMPaletteController : GameSystemBase, IBelzontBindable, IBelzontSerializableSingleton<XTMPaletteController>
+    public partial class XTMPaletteSystem : GameSystemBase, IBelzontBindable, IBelzontSerializableSingleton<XTMPaletteSystem>
     {
         const int CURRENT_VERSION = 1;
         #region UI Bindings
@@ -113,7 +113,7 @@ namespace BelzontTLM.Palettes
         }
 
 
-        void IBelzontSerializableSingleton<XTMPaletteController>.Serialize<TWriter>(TWriter writer)
+        void IBelzontSerializableSingleton<XTMPaletteSystem>.Serialize<TWriter>(TWriter writer)
         {
             var xml = XmlUtils.DefaultXmlSerialize(ToXml());
             writer.Write(CURRENT_VERSION);
@@ -124,7 +124,7 @@ namespace BelzontTLM.Palettes
             arraySave.Dispose();
         }
 
-        void IBelzontSerializableSingleton<XTMPaletteController>.Deserialize<TReader>(TReader reader)
+        void IBelzontSerializableSingleton<XTMPaletteSystem>.Deserialize<TReader>(TReader reader)
         {
             reader.Read(out int version);
             if (version > CURRENT_VERSION)

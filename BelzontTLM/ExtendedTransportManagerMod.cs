@@ -17,12 +17,12 @@ namespace BelzontTLM
 
         public override string Acronym => "XTM";
 
-
+        
         public override void DoOnCreateWorld(UpdateSystem updateSystem)
         {
-            updateSystem.UpdateBefore<XTMRouteAutoColorController>(SystemUpdatePhase.UIUpdate);
-            updateSystem.UpdateBefore<XTMStopsLinkingSystem>(SystemUpdatePhase.UIUpdate);
+            updateSystem.UpdateAt<XTMStopsLinkingSystem>(SystemUpdatePhase.MainLoop);
 
+            updateSystem.UpdateBefore<XTMRouteAutoColorSystem>(SystemUpdatePhase.UIUpdate);
             updateSystem.UpdateAt<XTMLineViewerController>(SystemUpdatePhase.UIUpdate);
             updateSystem.UpdateAt<XTMLineManagementController>(SystemUpdatePhase.UIUpdate);
 

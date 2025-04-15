@@ -14,15 +14,8 @@ namespace BelzontTLM
             m_StopEntity = waypoint;
         }
 
-        public bool Equals(XTMChildConnectedRoute other)
-        {
-            return m_StopEntity.Equals(other.m_StopEntity);
-        }
+        public bool Equals(XTMChildConnectedRoute other) => m_StopEntity.Equals(other.m_StopEntity);
 
-        public override int GetHashCode()
-        {
-            return m_StopEntity.GetHashCode();
-
-        }
+        public override int GetHashCode() => m_StopEntity.GetHashCode();
     }
 }
