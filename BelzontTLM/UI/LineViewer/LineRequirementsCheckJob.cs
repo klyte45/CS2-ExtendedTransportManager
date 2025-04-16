@@ -11,6 +11,14 @@ namespace BelzontTLM
 {
     public partial class XTMLineViewerSection
     {
+        private struct LineRequirementsCheckOutput
+        {
+            public Entity selectedEntity;
+            public bool isValidLine;
+            public bool bool1;
+        }
+
+
         [BurstCompile]
         private struct LineRequirementsCheckJob : IJob
         {
@@ -18,17 +26,20 @@ namespace BelzontTLM
             {
                 if (IsLine(m_SelectedEntity))
                 {
-                    m_BoolResult[0] = true;
-                    m_BoolResult[1] = true;
-                    m_EntityResult[0] = m_SelectedEntity;
+                    output[0] = new LineRequirementsCheckOutput
+                    {
+                        isValidLine = true,
+                        bool1 = true,
+                        selectedEntity = m_SelectedEntity
+                    };
                     return;
                 }
                 NativeList<ConnectedRoute> connectedRoutes = new(10, Allocator.Temp);
-                bool flag = TryGetStationRoutes(m_SelectedEntity, connectedRoutes);
-                bool flag2 = TryGetStopRoutes(m_SelectedEntity, connectedRoutes);
-                if (flag || flag2)
+                bool hasStationRoutes = TryGetStationRoutes(m_SelectedEntity, connectedRoutes);
+                bool hasStopRoutes = TryGetStopRoutes(m_SelectedEntity, connectedRoutes);
+                if (hasStationRoutes || hasStopRoutes)
                 {
-                    bool flag3 = false;
+                    bool foundSelectedEntity = false;
                     Entity entity = Entity.Null;
                     for (int i = connectedRoutes.Length - 1; i >= 0; i--)
                     {
@@ -38,20 +49,26 @@ namespace BelzontTLM
                             entity = owner.m_Owner;
                             if (entity == m_SelectedRouteEntity)
                             {
-                                flag3 = true;
+                                foundSelectedEntity = true;
                             }
                         }
                     }
-                    if (!flag3)
+                    if (!foundSelectedEntity)
                     {
-                        m_BoolResult[0] = true;
-                        m_BoolResult[1] = true;
-                        m_EntityResult[0] = entity;
+                        output[0] = new LineRequirementsCheckOutput
+                        {
+                            isValidLine = true,
+                            bool1 = true,
+                            selectedEntity = entity
+                        };
                         return;
                     }
-                    m_BoolResult[0] = true;
-                    m_BoolResult[1] = false;
-                    m_EntityResult[0] = Entity.Null;
+                    output[0] = new LineRequirementsCheckOutput
+                    {
+                        isValidLine = true,
+                        bool1 = false,
+                        selectedEntity = Entity.Null
+                    };
                     return;
                 }
                 else
@@ -59,14 +76,20 @@ namespace BelzontTLM
                     Entity value;
                     if (IsVehicle(out value))
                     {
-                        m_BoolResult[0] = true;
-                        m_BoolResult[1] = true;
-                        m_EntityResult[0] = value;
+                        output[0] = new LineRequirementsCheckOutput
+                        {
+                            isValidLine = true,
+                            bool1 = true,
+                            selectedEntity = value
+                        };
                         return;
                     }
-                    m_BoolResult[0] = false;
-                    m_BoolResult[1] = false;
-                    m_EntityResult[0] = Entity.Null;
+                    output[0] = new LineRequirementsCheckOutput
+                    {
+                        isValidLine = false,
+                        bool1 = false,
+                        selectedEntity = Entity.Null
+                    };
                     return;
                 }
             }
@@ -168,9 +191,7 @@ namespace BelzontTLM
             [ReadOnly]
             public BufferLookup<InstalledUpgrade> m_InstalledUpgradeBuffers;
 
-            public NativeArray<bool> m_BoolResult;
-
-            public NativeArray<Entity> m_EntityResult;
+            public NativeArray<LineRequirementsCheckOutput> output;
         }
     }
 }

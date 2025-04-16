@@ -32,36 +32,17 @@ namespace BelzontTLM
 
         protected override void Reset()
         {
-            m_SegmentsResult.Clear();
-            m_StopsResult.Clear();
-            m_VehiclesResult.Clear();
         }
 
         protected override void OnCreate()
         {
             base.OnCreate();
-            m_BoolResult = new NativeArray<bool>(3, Allocator.Persistent, NativeArrayOptions.ClearMemory);
-            m_EntityResult = new NativeArray<Entity>(1, Allocator.Persistent, NativeArrayOptions.ClearMemory);
-            m_StopCapacityResult = new NativeArray<int>(1, Allocator.Persistent, NativeArrayOptions.ClearMemory);
-            m_SegmentsResult = new NativeList<LineSegment>(Allocator.Persistent);
-            m_StopsResult = new NativeList<LineStop>(Allocator.Persistent);
-            m_VehiclesResult = new NativeList<LineVehicle>(Allocator.Persistent);
             m_NameSystem = World.GetOrCreateSystemManaged<NameSystem>();
             m_PrefabSystem = World.GetOrCreateSystemManaged<PrefabSystem>();
         }
 
         protected override void OnDestroy()
         {
-            m_BoolResult.Dispose();
-            m_EntityResult.Dispose();
-            m_StopCapacityResult.Dispose();
-            m_SegmentsResult.Dispose();
-            for (int i = 0; i < m_StopsResult.Length; i++)
-            {
-                m_StopsResult[i].linesConnected.Dispose();
-            }
-            m_StopsResult.Dispose();
-            m_VehiclesResult.Dispose();
             base.OnDestroy();
         }
 
@@ -72,6 +53,7 @@ namespace BelzontTLM
                 if (ExtendedTransportManagerMod.DebugMode) LogUtils.DoLog("Entity is null!");
                 return;
             }
+            using var reqCheckOutput = new NativeArray<LineRequirementsCheckOutput>(1, Allocator.Temp);
             var requirementsCheckJob = new LineRequirementsCheckJob
             {
                 m_SelectedEntity = e,
@@ -90,18 +72,24 @@ namespace BelzontTLM
                 m_ConnectedRouteBuffers = GetBufferLookup<ConnectedRoute>(),
                 m_SubObjectBuffers = GetBufferLookup<Game.Objects.SubObject>(),
                 m_InstalledUpgradeBuffers = GetBufferLookup<InstalledUpgrade>(),
-                m_BoolResult = m_BoolResult,
-                m_EntityResult = m_EntityResult
+                output = reqCheckOutput
             };
             requirementsCheckJob.Schedule(Dependency).Complete();
-            if (!m_BoolResult[0])
+            if (!reqCheckOutput[0].isValidLine)
             {
                 if (ExtendedTransportManagerMod.DebugMode) LogUtils.DoLog("Bool result is false!");
                 return;
             }
-            var updateJob = new UpdateJob
+            NativeList<LineDetailDataUnsafe> output = new(Allocator.Temp);
+            FillJobParams(output, e).Schedule(Dependency).Complete();
+            m_currentData = output[0].ConvertAndDispose();
+            output.Dispose();
+        }
+
+        private LineDetailDataJob FillJobParams(NativeList<LineDetailDataUnsafe> output, Entity e = default)
+        {
+            return new LineDetailDataJob
             {
-                m_RouteEntity = e,
                 m_Colors = GetComponentLookup<Game.Routes.Color>(),
                 m_PathInformation = GetComponentLookup<PathInformation>(),
                 m_Connected = GetComponentLookup<Connected>(),
@@ -151,13 +139,10 @@ namespace BelzontTLM
                 m_ConnectedRouteBuffers = GetBufferLookup<ConnectedRoute>(),
                 m_connectedEdgesBuffers = GetBufferLookup<ConnectedEdge>(),
                 m_ConnectBuildingBuffers = GetBufferLookup<ConnectedBuilding>(),
-                m_SegmentsResult = m_SegmentsResult,
-                m_StopsResult = m_StopsResult,
-                m_VehiclesResult = m_VehiclesResult,
-                m_StopCapacityResult = m_StopCapacityResult,
-                m_BoolResult = m_BoolResult
+                m_EntityType = GetEntityTypeHandle(),
+                m_output = output.AsParallelWriter(),
+                m_singleRunEntity = e
             };
-            updateJob.Schedule(Dependency).Complete();
         }
 
         protected override ComponentType[] ComponentsToCheck => new ComponentType[]
@@ -171,23 +156,23 @@ namespace BelzontTLM
         {
             var result = new XTMLineViewerResult
             {
-                StopCapacity = m_StopCapacityResult[0],
-                Segments = new LineSegment[m_SegmentsResult.Length],
-                Stops = new LineStopNamed[m_StopsResult.Length],
-                Vehicles = new LineVehicleNamed[m_VehiclesResult.Length],
+                StopCapacity = m_currentData.stopCapacity,
+                Segments = new LineSegment[m_currentData.m_SegmentsResult?.Length ?? 0],
+                Stops = new LineStopNamed[m_currentData.m_StopsResult?.Length ?? 0],
+                Vehicles = new LineVehicleNamed[m_currentData.m_VehiclesResult?.Length ?? 0],
                 LineData = LineItemStruct.ForEntity(e, EntityManager, m_PrefabSystem, m_NameSystem)
             };
-            for (int i = 0; i < m_SegmentsResult.Length; i++)
+            for (int i = 0; i < result.Segments.Length; i++)
             {
-                result.Segments[i] = m_SegmentsResult[i];
+                result.Segments[i] = m_currentData.m_SegmentsResult[i];
             }
-            for (int j = 0; j < m_VehiclesResult.Length; j++)
+            for (int j = 0; j < result.Vehicles.Length; j++)
             {
-                result.Vehicles[j] = new(m_VehiclesResult[j], m_NameSystem, EntityManager);
+                result.Vehicles[j] = new(m_currentData.m_VehiclesResult[j], m_NameSystem, EntityManager);
             }
-            for (int k = 0; k < m_StopsResult.Length; k++)
+            for (int k = 0; k < result.Stops.Length; k++)
             {
-                result.Stops[k] = new(m_StopsResult[k], m_NameSystem, EntityManager);
+                result.Stops[k] = new(m_currentData.m_StopsResult[k], m_NameSystem, EntityManager);
             }
             return result;
 
@@ -199,18 +184,7 @@ namespace BelzontTLM
 
         private NameSystem m_NameSystem;
         private PrefabSystem m_PrefabSystem;
-
-        private NativeArray<bool> m_BoolResult;
-
-        private NativeArray<Entity> m_EntityResult;
-
-        private NativeList<LineSegment> m_SegmentsResult;
-
-        private NativeList<LineStop> m_StopsResult;
-
-        private NativeList<LineVehicle> m_VehiclesResult;
-
-        private NativeArray<int> m_StopCapacityResult;
+        private LineDetailData m_currentData;
 
     }
 }

@@ -5,7 +5,6 @@ using Game.Common;
 using Game.Prefabs;
 using Game.Routes;
 using Game.Tools;
-using Game.UI;
 using System;
 using Unity.Collections;
 using Unity.Entities;
@@ -30,7 +29,7 @@ namespace BelzontTLM
             m_LineListingSection.Enqueue(Entity.Null, (x) =>
             {
                 if (BasicIMod.TraceMode) LogUtils.DoTraceLog("SENDING OBJ: {0}", x);
-                SendEvent("lineViewer.getCityLines->", x);
+                SendEvent("lineViewer.getCityLines->", x, null);
             },
             force);
         }
@@ -78,7 +77,6 @@ namespace BelzontTLM
 
         private EntityQuery m_UnititalizedXTMLineQuery;
         private EntityQuery m_modifiedLineQuery;
-        private NameSystem m_NameSystem;
         private EndFrameBarrier m_EndFrameBarrier;
         private XTMLineViewerSection m_LineVisualizerSection;
         private XTMLineListingSection m_LineListingSection;
@@ -101,8 +99,7 @@ namespace BelzontTLM
         {
             m_UnititalizedXTMLineQuery = GetEntityQuery(new EntityQueryDesc[]
             {
-                new EntityQueryDesc
-                {
+                new() {
                     All = new ComponentType[]
                     {
                         ComponentType.ReadOnly<Route>(),
@@ -120,8 +117,7 @@ namespace BelzontTLM
             });
             m_modifiedLineQuery = GetEntityQuery(new EntityQueryDesc[]
             {
-                new EntityQueryDesc
-                {
+                new() {
                     All = new ComponentType[]
                     {
                         ComponentType.ReadOnly<Route>(),
@@ -140,7 +136,7 @@ namespace BelzontTLM
                     }
                 }
             });
-            m_NameSystem = World.GetOrCreateSystemManaged<NameSystem>();
+
             m_EndFrameBarrier = World.GetOrCreateSystemManaged<EndFrameBarrier>();
             m_LineVisualizerSection = World.GetOrCreateSystemManaged<XTMLineViewerSection>();
             m_LineListingSection = World.GetOrCreateSystemManaged<XTMLineListingSection>();

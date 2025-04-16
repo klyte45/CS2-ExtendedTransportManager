@@ -9,7 +9,9 @@ using Game.Rendering;
 using Game.Routes;
 using Game.Vehicles;
 using System;
+using System.Linq;
 using Unity.Burst;
+using Unity.Burst.Intrinsics;
 using Unity.Collections;
 using Unity.Entities;
 using Unity.Jobs;
@@ -20,18 +22,102 @@ namespace BelzontTLM
 {
     public partial class XTMLineViewerSection
     {
-        [BurstCompile]
-        private struct UpdateJob : IJob
+        public struct LineDetailData
         {
+            public LineSegment[] m_SegmentsResult;
+            public LineStop[] m_StopsResult;
+            public LineVehicle[] m_VehiclesResult;
+            public int stopCapacity;
+            public bool isCargo;
+        }
+
+
+        public struct LineDetailDataUnsafe : IDisposable
+        {
+            public NativeList<LineSegment> m_SegmentsResult;
+
+            public NativeList<LineStop> m_StopsResult;
+
+            public NativeList<LineVehicle> m_VehiclesResult;
+
+            public int stopCapacity;
+
+            public bool isCargo;
+
+            public void Dispose()
+            {
+                m_SegmentsResult.Dispose();
+                m_StopsResult.Dispose();
+                m_VehiclesResult.Dispose();
+            }
+
+            public LineDetailData ConvertAndDispose()
+            {
+                var segResultArray = m_SegmentsResult.ToArray(Allocator.Temp);
+                var stopsResult = m_StopsResult.ToArray(Allocator.Temp);
+                var vehiclesResult = m_VehiclesResult.ToArray(Allocator.Temp);
+                try
+                {
+                    return new LineDetailData()
+                    {
+                        m_SegmentsResult = segResultArray.ToArray(),
+                        m_StopsResult = stopsResult.ToArray(),
+                        m_VehiclesResult = vehiclesResult.ToArray(),
+                        stopCapacity = stopCapacity,
+                        isCargo = isCargo
+                    };
+                }
+                finally
+                {
+                    segResultArray.Dispose();
+                    stopsResult.Dispose();
+                    vehiclesResult.Dispose();
+                    Dispose();
+                }
+            }
+        }
+
+        [BurstCompile]
+        private struct LineDetailDataJob : IJobChunk, IJob
+        {
+            public Entity m_singleRunEntity;
+
             public void Execute()
+            {
+                ExecuteEntity(m_singleRunEntity);
+            }
+
+            public void Execute(in ArchetypeChunk chunk, int unfilteredChunkIndex, bool useEnabledMask, in v128 chunkEnabledMask)
+            {
+                var entities = chunk.GetNativeArray(m_EntityType);
+                for (int i = 0; i < entities.Length; i++)
+                {
+                    var entity = entities[i];
+                    ExecuteEntity(entity);
+                }
+            }
+
+            private void ExecuteEntity(Entity entity)
+            {
+                var output = new LineDetailDataUnsafe()
+                {
+                    m_SegmentsResult = new NativeList<LineSegment>(Allocator.Temp),
+                    m_StopsResult = new NativeList<LineStop>(Allocator.Temp),
+                    m_VehiclesResult = new NativeList<LineVehicle>(Allocator.Temp),
+                };
+                Execute(entity, output);
+                m_output.AddNoResize(output);
+            }
+
+            public void Execute(Entity routeEntity, LineDetailDataUnsafe output)
             {
                 NativeList<float> stopsPointsDistanceFromStart = new(Allocator.Temp);
                 float num = 0f;
-                m_BoolResult[2] = false;
-                m_StopCapacityResult[0] = 0;
-                DynamicBuffer<RouteWaypoint> stations = m_RouteWaypointBuffers[m_RouteEntity];
-                DynamicBuffer<RouteSegment> routeSegments = m_RouteSegmentBuffers[m_RouteEntity];
-                DynamicBuffer<RouteVehicle> vehiclesBuffer = m_RouteVehicleBuffers[m_RouteEntity];
+                output.isCargo = false;
+                output.stopCapacity = 0;
+                DynamicBuffer<RouteWaypoint> stations = m_RouteWaypointBuffers[routeEntity];
+                DynamicBuffer<RouteSegment> routeSegments = m_RouteSegmentBuffers[routeEntity];
+                DynamicBuffer<RouteVehicle> vehiclesBuffer = m_RouteVehicleBuffers[routeEntity];
                 for (int i = 0; i < routeSegments.Length; i++)
                 {
                     stopsPointsDistanceFromStart.Add(num);
@@ -50,14 +136,14 @@ namespace BelzontTLM
                         bool broken = pathInformation.m_Origin == Entity.Null && pathInformation.m_Destination == Entity.Null;
                         var distance = pathInformation.m_Distance;
                         LineSegment lineSegment = new LineSegment(start, end, broken, distance, pathInformation.m_Duration);
-                        m_SegmentsResult.Add(lineSegment);
+                        output.m_SegmentsResult.Add(lineSegment);
                     }
                 }
-                bool isCargo = m_PrefabRefs.TryGetComponent(m_RouteEntity, out PrefabRef prefabRef) && m_TransportLineData.TryGetComponent(prefabRef.m_Prefab, out TransportLineData transportLineData) && transportLineData.m_CargoTransport;
+                bool isCargo = m_PrefabRefs.TryGetComponent(routeEntity, out PrefabRef prefabRef) && m_TransportLineData.TryGetComponent(prefabRef.m_Prefab, out TransportLineData transportLineData) && transportLineData.m_CargoTransport;
                 for (int k = 0; k < vehiclesBuffer.Length; k++)
                 {
                     Entity vehicle = vehiclesBuffer[k].m_Vehicle;
-                    if (GetVehiclePosition(m_RouteEntity, vehicle, out int num2, out float num3, out float num4, out bool flag2))
+                    if (GetVehiclePosition(routeEntity, vehicle, out int num2, out float num3, out float num4, out bool flag2))
                     {
                         int num5 = num2;
                         float segmentLength = GetSegmentLength(stations, routeSegments, num5);
@@ -76,10 +162,10 @@ namespace BelzontTLM
                         float num7 = num6 / num;
                         var transform = m_Transforms[vehicle];
                         LineVehicle lineVehicle = new LineVehicle(vehicle, num7, item, item2, transform.m_Position, transform.m_Rotation, m_Odometers[vehicle].m_Distance, isCargo);
-                        m_VehiclesResult.Add(lineVehicle);
-                        if (item2 > m_StopCapacityResult[0])
+                        output.m_VehiclesResult.Add(lineVehicle);
+                        if (item2 > output.stopCapacity)
                         {
-                            m_StopCapacityResult[0] = item2;
+                            output.stopCapacity = item2;
                         }
                     }
                 }
@@ -118,13 +204,13 @@ namespace BelzontTLM
                         if (hasOwner)
                         {
                             xtmOwner = GetRealOwner(owner).m_Owner;
-                            AddLinesFromXTMConnections(ref linesConnected, xtmOwner, connected.m_Connected);
+                            AddLinesFromXTMConnections(ref linesConnected, routeEntity, xtmOwner, connected.m_Connected);
                             if (m_Buildings.TryGetComponent(xtmOwner, out var building))
                             {
                                 roadsToMap.Enqueue(building.m_RoadEdge);
                                 while (roadsToMap.TryDequeue(out Entity nextItem))
                                 {
-                                    if (roadsMapped.Add(nextItem) && ScanLinesAtRoadEdge(ref linesConnected, nextItem, xtmOwner, connected.m_Connected) && m_Edges.TryGetComponent(nextItem, out var edge))
+                                    if (roadsMapped.Add(nextItem) && ScanLinesAtRoadEdge(ref linesConnected, routeEntity, nextItem, xtmOwner, connected.m_Connected) && m_Edges.TryGetComponent(nextItem, out var edge))
                                     {
                                         if (m_connectedEdgesBuffers.TryGetBuffer(edge.m_Start, out var connectedStart))
                                         {
@@ -154,7 +240,7 @@ namespace BelzontTLM
                         if (m_Attacheds.TryGetComponent(connected.m_Connected, out var attachment) && !roadsMapped.Contains(attachment.m_Parent))
                         {
                             roadsMapped.Add(attachment.m_Parent);
-                            if (ScanLinesAtRoadEdge(ref linesConnected, attachment.m_Parent, Entity.Null, connected.m_Connected) && m_Edges.TryGetComponent(attachment.m_Parent, out var edge))
+                            if (ScanLinesAtRoadEdge(ref linesConnected, routeEntity, attachment.m_Parent, Entity.Null, connected.m_Connected) && m_Edges.TryGetComponent(attachment.m_Parent, out var edge))
                             {
                                 if (m_connectedEdgesBuffers.TryGetBuffer(edge.m_Start, out var connectedStart))
                                 {
@@ -162,7 +248,7 @@ namespace BelzontTLM
                                     {
                                         if (roadsMapped.Add(connectedStart[k].m_Edge))
                                         {
-                                            ScanLinesAtRoadEdge(ref linesConnected, connectedStart[k].m_Edge, Entity.Null, connected.m_Connected);
+                                            ScanLinesAtRoadEdge(ref linesConnected, routeEntity, connectedStart[k].m_Edge, Entity.Null, connected.m_Connected);
                                         }
                                     }
                                 }
@@ -172,7 +258,7 @@ namespace BelzontTLM
                                     {
                                         if (roadsMapped.Add(connectedEnd[k].m_Edge))
                                         {
-                                            ScanLinesAtRoadEdge(ref linesConnected, connectedEnd[k].m_Edge, Entity.Null, connected.m_Connected);
+                                            ScanLinesAtRoadEdge(ref linesConnected, routeEntity, connectedEnd[k].m_Edge, Entity.Null, connected.m_Connected);
                                         }
                                     }
                                 }
@@ -185,13 +271,13 @@ namespace BelzontTLM
                         var transformData = m_Transforms[stopPoint];
 
                         LineStop lineStop = new LineStop(stations[l].m_Waypoint, stopPoint, position, waiting, isCargo, m_OutsideConnections.HasComponent(stopPoint), linesConnected, transformData.m_Position, transformData.m_Rotation);
-                        m_StopsResult.Add(lineStop);
+                        output.m_StopsResult.Add(lineStop);
                     }
                 }
-                m_BoolResult[2] = isCargo;
+                output.isCargo = isCargo;
             }
 
-            private bool ScanLinesAtRoadEdge(ref NativeHashSet<LineStopConnnection> linesConnected, Entity road, Entity srcBuilding, Entity srcConnected)
+            private bool ScanLinesAtRoadEdge(ref NativeHashSet<LineStopConnnection> linesConnected, Entity routeEntity, Entity road, Entity srcBuilding, Entity srcConnected)
             {
                 var buildingIsConnected = false;
                 if (m_ConnectBuildingBuffers.TryGetBuffer(road, out var connectedBuildings))
@@ -200,7 +286,7 @@ namespace BelzontTLM
                     {
                         if (connectedBuildings[i].m_Building != srcBuilding)
                         {
-                            AddLinesFromXTMConnections(ref linesConnected, connectedBuildings[i].m_Building, srcConnected);
+                            AddLinesFromXTMConnections(ref linesConnected, routeEntity, connectedBuildings[i].m_Building, srcConnected);
                         }
                         else
                         {
@@ -208,11 +294,11 @@ namespace BelzontTLM
                         }
                     }
                 }
-                AddLinesFromXTMConnections(ref linesConnected, road, srcConnected);
+                AddLinesFromXTMConnections(ref linesConnected, routeEntity, road, srcConnected);
                 return buildingIsConnected;
             }
 
-            private void AddLinesFromXTMConnections(ref NativeHashSet<LineStopConnnection> linesConnected, Entity xtmOwner, Entity srcConnected)
+            private void AddLinesFromXTMConnections(ref NativeHashSet<LineStopConnnection> linesConnected, Entity routeEntity, Entity xtmOwner, Entity srcConnected)
             {
                 if (m_XTMConnectedRouteBuffers.TryGetBuffer(xtmOwner, out var ownerStopsBuffer))
                 {
@@ -224,7 +310,7 @@ namespace BelzontTLM
                             {
                                 if (m_Owners.TryGetComponent(connectedRoutes[k].m_Waypoint, out var stopEntity)
                                     && m_Connected.TryGetComponent(connectedRoutes[k].m_Waypoint, out var connection)
-                                    && (stopEntity.m_Owner != m_RouteEntity || srcConnected != connection.m_Connected))
+                                    && (stopEntity.m_Owner != routeEntity || srcConnected != connection.m_Connected))
                                 {
                                     linesConnected.Add(new(stopEntity.m_Owner, connection.m_Connected));
                                 }
@@ -531,7 +617,7 @@ namespace BelzontTLM
             }
 
             [ReadOnly]
-            public Entity m_RouteEntity;
+            public EntityTypeHandle m_EntityType;
 
             [ReadOnly]
             public ComponentLookup<Game.Routes.Color> m_Colors;
@@ -676,15 +762,8 @@ namespace BelzontTLM
             [ReadOnly]
             public BufferLookup<Passenger> m_PassengerBuffers;
 
-            public NativeList<LineSegment> m_SegmentsResult;
-
-            public NativeList<LineStop> m_StopsResult;
-
-            public NativeList<LineVehicle> m_VehiclesResult;
-
-            public NativeArray<int> m_StopCapacityResult;
-
-            public NativeArray<bool> m_BoolResult;
+            public NativeList<LineDetailDataUnsafe>.ParallelWriter m_output;
         }
     }
 }
+

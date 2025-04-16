@@ -32,7 +32,7 @@ namespace BelzontTLM
                     m_EntityType = GetEntityTypeHandle(),
                     m_cmdBuffer = cmdBuffer.AsParallelWriter(),
                     m_hashSet = output.AsParallelWriter()
-                }.Schedule(m_connectableRoutesNotMapped, Dependency);
+                }.ScheduleParallel(m_connectableRoutesNotMapped, Dependency);
                 Dependency.Complete();
                 using var outputArray = output.ToNativeArray(Allocator.Temp);
 
@@ -45,7 +45,7 @@ namespace BelzontTLM
                     {
                         for (int i = 0; i < currentBuffer.Length; i++)
                         {
-                            valuesToAdd.Add(currentBuffer[i]);
+                            valuesToAdd.Add(currentBuffer[i]); 
                         }
                         buffer = cmdBuffer.SetBuffer<XTMChildConnectedRoute>(kvp.Key);
                         buffer.Clear();
@@ -60,11 +60,9 @@ namespace BelzontTLM
                         buffer.Add(route);
                     }
                 }
-
             }
         }
 
-        [BurstCompile]
         private struct PairEntityRoute : IEquatable<PairEntityRoute>
         {
             public readonly Entity target;
@@ -88,7 +86,7 @@ namespace BelzontTLM
             public static bool operator !=(PairEntityRoute left, PairEntityRoute right) => !(left == right);
         }
 
-        //  [BurstCompile]
+        [BurstCompile]
         private struct StopMappingJob : IJobChunk
         {
             public EntityTypeHandle m_EntityType;

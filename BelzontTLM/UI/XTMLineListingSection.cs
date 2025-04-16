@@ -7,21 +7,17 @@ using Game.Routes;
 using Game.Tools;
 using Game.UI;
 using Game.UI.InGame;
-using System.Collections.Generic;
-using System.Linq;
 using Unity.Collections;
 using Unity.Entities;
-using Unity.Jobs;
 using static Belzont.Utils.NameSystemExtensions;
 
 namespace BelzontTLM
 {
-    public partial class XTMLineListingSection : BelzontQueueSystem<List<XTMLineListingSection.LineItemStruct>>
+    public partial class XTMLineListingSection : BelzontQueueSystem<XTMLineListingSection.LineItemStruct[]>
     {
         private EntityQuery m_linesQueue;
         private PrefabSystem m_PrefabSystem;
         private NameSystem m_NameSystem;
-        private EntityQuery m_ModifiedLineQuery;
 
         protected override ComponentType[] ComponentsToCheck => new ComponentType[]
         {
@@ -32,7 +28,7 @@ namespace BelzontTLM
             typeof(XTMPaletteRequireUpdate)
         };
 
-        protected override List<LineItemStruct> OnProcess(Entity e)
+        protected override LineItemStruct[] OnProcess(Entity e)
         {
             NativeArray<UITransportLineData> sortedLines = TransportUIUtils.GetSortedLines(this.m_linesQueue, base.EntityManager, this.m_PrefabSystem);
             var output = new LineItemStruct[sortedLines.Length];
@@ -55,7 +51,7 @@ namespace BelzontTLM
                 }
                 output[i] = item;
             }
-            return output.ToList();
+            return output;
         }
 
         protected override void Reset() { }
@@ -81,30 +77,6 @@ namespace BelzontTLM
                     }
                 }
             });
-            m_ModifiedLineQuery = GetEntityQuery(new EntityQueryDesc[]
-            {
-                new EntityQueryDesc
-                {
-                    All = new ComponentType[]
-                    {
-                        ComponentType.ReadOnly<Route>(),
-                        ComponentType.ReadWrite<TransportLine>(),
-                        ComponentType.ReadOnly<RouteWaypoint>(),
-                        ComponentType.ReadOnly<PrefabRef>()
-                    },
-                    Any = new ComponentType[]
-                    {
-                        ComponentType.ReadOnly<Created>(),
-                        ComponentType.ReadOnly<Deleted>(),
-                        ComponentType.ReadOnly<Updated>(),
-                        ComponentType.ReadOnly<XTMPaletteRequireUpdate>(),
-                    },
-                    None = new ComponentType[]
-                    {
-                        ComponentType.ReadOnly<Temp>()
-                    }
-                }
-           });
             m_PrefabSystem = World.GetOrCreateSystemManaged<PrefabSystem>();
             m_NameSystem = World.GetOrCreateSystemManaged<NameSystem>();
         }
@@ -167,7 +139,7 @@ namespace BelzontTLM
                     routeNumber = routeNum.m_Number,
                     xtmData = xtmData,
                     isFixedColor = entityManager.HasComponent<XTMPaletteLockedColor>(entity)
-            };
+                };
             }
 
             public void FillFromUITransportLine(UITransportLineData data)
