@@ -1,4 +1,8 @@
-# v0.1.4r7 (15-APR-25)
+# v0.1.4r8 (16-APR-25)
+- Changing behaviors on when stop mapping happens
+- Refactoring job that processes the line data fetching
+
+## FROM v0.1.4r7 (15-APR-25)
 - Rewritten code that was causing general slowdown in the game
 
 ## FROM v0.1.4r6 (15-APR-25)
