@@ -24,7 +24,7 @@
     <ModId>74238</ModId>
     <Version>0.1.4.8</Version>
     <Version Condition="'$(Configuration)'=='Debug'">65534.$([System.DateTime]::Now.ToString("yyyy.Mdd.HHmm"))</Version>
-    <GameVersion>1.2.*</GameVersion>
+    <GameVersion>1.3.*</GameVersion>
     <ThumbnailPath>Properties/Thumbnail.png</ThumbnailPath>
     <DisplayName>Extended Transport Manager</DisplayName>
     <ShortDescription>Expanded tools for public transport management.</ShortDescription>
