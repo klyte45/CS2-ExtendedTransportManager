@@ -16,7 +16,6 @@ using Unity.Burst;
 using Unity.Burst.Intrinsics;
 using Unity.Entities;
 using UnityEngine;
-using static UnityEngine.GraphicsBuffer;
 using Target = Game.Common.Target;
 
 namespace BelzontTLM
@@ -224,6 +223,10 @@ namespace BelzontTLM
                         {
                             wpDestination.SetValue(null, (Entity entity) => GetStaticData(entity));
                         }
+                        if (routeFn.GetField("GetWaypointStaticDestinationEntity_binding", RedirectorUtils.allFlags) is FieldInfo wpDestinationEntity)
+                        {
+                            wpDestinationEntity.SetValue(null, (Entity entity) => GetStaticEntity(entity));
+                        }
                     }
                     weAvailable = true;
                 }
@@ -256,18 +259,44 @@ namespace BelzontTLM
 
         private string GetStaticText(Entity stop, DynamicBuffer<XTM_WEDestinationBlind> destinations, int offsetStops)
         {
-            if (destinations.Length == 1) return destinations[0].GetStaticKeyframe().GetString(EntityManager, m_nameSystem, m_managementSystem, stop, destinations[0], offsetStops);
-            if (!EntityManager.TryGetComponent<Waypoint>(stop, out var waypoint)) return "????";
+            var destination = GetTargetDestination(stop, destinations, offsetStops);
+            return destination.GetStaticKeyframe().GetString(EntityManager, m_nameSystem, m_managementSystem, stop, destination, offsetStops);
+        }
+
+        private Entity GetStaticEntity(Entity stop)
+        {
+            if (EntityManager.TryGetComponent<Owner>(stop, out var routeOwner) && EntityManager.TryGetBuffer<XTM_WEDestinationBlind>(routeOwner.m_Owner, true, out var destinations) && destinations.Length > 0)
+            {
+                return GetStaticEntity(stop, destinations, 1);
+            }
+            return default;
+        }
+
+        private Entity GetStaticEntity(Entity stop, DynamicBuffer<XTM_WEDestinationBlind> destinations, int offsetStops)
+        {
+            var destination = GetTargetDestination(stop, destinations, offsetStops);
+            return destination.UseUntilStop != Entity.Null ? destination.UseUntilStop
+            : EntityManager.TryGetComponent<Owner>(stop, out var line) && EntityManager.TryGetBuffer<RouteWaypoint>(line.m_Owner, true, out var waypoints) ? waypoints[0].m_Waypoint
+            : Entity.Null;
+
+        }
+
+
+
+        private XTM_WEDestinationBlind GetTargetDestination(Entity stop, DynamicBuffer<XTM_WEDestinationBlind> destinations, int offsetStops)
+        {
+            if (destinations.Length == 1) return destinations[0];
+            if (!EntityManager.TryGetComponent<Waypoint>(stop, out var waypoint)) return default;
             var idx = waypoint.m_Index + offsetStops - 1;
             for (int i = 0; i < destinations.Length; i++)
             {
                 var stopOrder = destinations[i].StopOrder;
                 if ((idx >= 0 && stopOrder > idx) || destinations[i].UseUntilStop == Entity.Null)
                 {
-                    return destinations[i].GetStaticKeyframe().GetString(EntityManager, m_nameSystem, m_managementSystem, stop, destinations[i], offsetStops);
+                    return destinations[i];
                 }
             }
-            return "<MISSING STEP>";
+            return default;
         }
 
         private string GetDynamicData(Entity srcVehicle, Entity stop, Entity route)

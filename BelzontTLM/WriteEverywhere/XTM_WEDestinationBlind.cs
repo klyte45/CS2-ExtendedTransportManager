@@ -1,6 +1,7 @@
 ﻿using Belzont.Utils;
 using Colossal.Entities;
 using Colossal.Serialization.Entities;
+using Game.Common;
 using Game.Routes;
 using Game.UI;
 using System;
@@ -74,13 +75,12 @@ namespace BelzontTLM
 
         public Entity UseUntilStop
         {
-            get => useUntilStop; set
+            readonly get => useUntilStop; set
             {
                 useUntilStop = value;
                 cachedStopOrder = value != Entity.Null ? World.DefaultGameObjectInjectionWorld.EntityManager.TryGetComponent(value, out Waypoint wp) ? wp.m_Index : -1 : -1;
             }
         }
-
         public void SetUseUntilStopIndirect(ref DynamicBuffer<RouteWaypoint> buff, int index)
         {
             index %= buff.Length;
