@@ -89,6 +89,11 @@
                     color: var(--menuText1Inverted)
                 }
             }
+
+            >div {
+                coh-font-fit-mode: shrink;
+                coh-font-fit-min-size: 5rem;
+            }
         }
     }
 }

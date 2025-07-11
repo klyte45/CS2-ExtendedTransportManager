@@ -30,6 +30,7 @@ namespace BelzontTLM
             updateSystem.UpdateAfter<XTMLineListingSection>(SystemUpdatePhase.UIUpdate);
 
             updateSystem.UpdateAt<XTM_WEIntegrationController>(SystemUpdatePhase.ModificationEnd);
+            updateSystem.UpdateAt<XTM_STIntegrationController>(SystemUpdatePhase.UIUpdate);
         }
 
         public override void OnDispose()

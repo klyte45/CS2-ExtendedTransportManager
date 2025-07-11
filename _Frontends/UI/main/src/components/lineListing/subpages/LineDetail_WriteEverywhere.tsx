@@ -56,7 +56,7 @@ export const LineDetail_WriteEverywhere = ({ lineId, stops }: Props) => {
         }}>{translate("weIntegrationBlinds.addStep")}</button>
             <div style={{ flexGrow: 1 }} />
             {WEIntegrationService.hasClipboard() && <button className="neutralBtn" onClick={() => WEIntegrationService.setBlindsKeyframes(lineId, WEIntegrationService.getClipboard(stops)).then(fetchData)}>{translate("weIntegrationBlinds.pasteFromClipboard")}</button>}
-            <button className="neutralBtn" onClick={() => { WEIntegrationService.setClipboard(currentData, stops); fetchData() }}>{translate("weIntegrationBlinds.copyToClipboard")}</button>
+            <button className="neutralBtn" onClick={() => { WEIntegrationService.setClipboard(currentData, stops); fetchData() }}>{translate("weIntegrationBlinds.copyToClipboard")}</button>            
         </>,
         [BlindsState.Editing]: () => <>
             <button className="positiveBtn" onClick={() => setStep(editingData, currentEditingIdx) && setState(BlindsState.Listing)}>{translate("weIntegrationBlinds.saveStep")}</button>

@@ -227,12 +227,17 @@
 
             .stationName {
                 position: absolute;
-                width: 99.000000%;
+                width: 65.000000%;
+                margin-left: 21%;
                 top: 50.000000%;
                 text-align: right;
                 font-weight: bolder;
                 font-size: 21.000000rem;
+                max-height: 26rem;
                 transform: translateY(-50.000000%);
+                line-height: 90%;
+                coh-font-fit-mode: shrink;
+                coh-font-fit-min-size: 5rem;
 
                 &.faded {
                     opacity: 0.5;
@@ -431,6 +436,9 @@
             .newDistrict {
                 font-size: 70%;
                 position: absolute;
+                max-width: 100%;
+                coh-font-fit-mode: shrink;
+                coh-font-fit-min-size: 3rem;
 
                 &.outsideConn {
                     color: var(--cityBorderNameColor);

@@ -3,7 +3,7 @@ import { LineData, LineDetails, LineManagementService, MapViewerOptions, Station
 import "#styles/LineDetailCmp.scss";
 import "#styles/TLM_LineDetail.scss";
 import translate from "#utility/translate";
-import { Cs2FormLine, DefaultPanelScreen, Entity, UnitSystem, getGameUnits, nameToString } from "@klyte45/euis-components";
+import { DefaultPanelScreen, Entity, UnitSystem, getGameUnits, nameToString } from "@klyte45/euis-components";
 import { useEffect, useMemo, useState } from "react";
 import { Tab, TabList, TabPanel, Tabs } from "react-tabs";
 import { TlmViewerCmp } from "./containers/TlmViewerCmp";
@@ -13,11 +13,13 @@ import { LineDetail_StopInfo } from "./subpages/LineDetail_StopInfo";
 import { LineDetail_MapSettings } from "./subpages/LineDetail_MapSettings";
 import { WEIntegrationService } from "#service/WEIntegrationService";
 import { LineDetail_WriteEverywhere } from "./subpages/LineDetail_WriteEverywhere";
+import { STIntegrationService } from "#service/STIntegrationService";
+import { LineDetail_SmartTransportation } from "./subpages/LineDetail_SmartTransportation";
 
 enum MapViewerTabsNames {
     General = "tabGeneralSettings",
     LineData = "tabLineData",
-    LineSettings = "tabSettings",
+    SmartTransportation = "stIntegration",
     Debug = "tabDebug",
     MapSettings = "mapSettings",
     StopInfo = "stopData",
@@ -28,8 +30,8 @@ enum MapViewerTabsNames {
 const tabsOrder: (MapViewerTabsNames | undefined)[] = [
     MapViewerTabsNames.General,
     MapViewerTabsNames.LineData,
-    MapViewerTabsNames.LineSettings,
     undefined,
+    MapViewerTabsNames.SmartTransportation,
     MapViewerTabsNames.WEIntegration,
     //MapViewerTabsNames.Debug,
     undefined,
@@ -63,7 +65,6 @@ export const LineDetailCmp = ({ initialCurrentLine,
     const [clickableTabs, setClickableTabs] = useState([
         MapViewerTabsNames.General,
         MapViewerTabsNames.LineData,
-        MapViewerTabsNames.LineSettings,
         MapViewerTabsNames.Debug,
         MapViewerTabsNames.MapSettings
     ]);
@@ -80,8 +81,14 @@ export const LineDetailCmp = ({ initialCurrentLine,
         }
     }, [currentStopSelected])
     useEffect(() => {
-        WEIntegrationService.isAvailable().then(x => {
-            if (x) setClickableTabs(clickableTabs.concat([MapViewerTabsNames.WEIntegration]))
+        Promise.all([
+            WEIntegrationService.isAvailable(),
+            STIntegrationService.isAvailable()
+        ]).then(([weAvailable, stAvailable]) => {
+            const newClickableTabs = [...clickableTabs];
+            if (weAvailable) newClickableTabs.push(MapViewerTabsNames.WEIntegration);
+            if (stAvailable) newClickableTabs.push(MapViewerTabsNames.SmartTransportation);
+            setClickableTabs(newClickableTabs);
         })
     }, [])
     useEffect(() => {
@@ -153,7 +160,7 @@ export const LineDetailCmp = ({ initialCurrentLine,
     const componentsMapViewer: Record<MapViewerTabsNames, () => JSX.Element> = {
         [MapViewerTabsNames.General]: () => <LineDetail_General lineCommonData={lineCommonData} reloadData={reloadData} />,
         [MapViewerTabsNames.LineData]: () => <LineDetail_Data lineDetails={lineDetails} measureUnit={measureUnit} lineCommonData={lineCommonData} />,
-        [MapViewerTabsNames.LineSettings]: () => <DefaultPanelScreen title={translate("lineViewer.lineSettings")} size="h2"><Cs2FormLine title={"Coming soon!"} /></DefaultPanelScreen>,
+        [MapViewerTabsNames.SmartTransportation]: () => <LineDetail_SmartTransportation lineDetails={lineDetails} />,
         [MapViewerTabsNames.MapSettings]: () => <LineDetail_MapSettings mapViewOptions={mapViewOptions} setMapViewOptions={setMapViewOptions} />,
         [MapViewerTabsNames.StopInfo]: () => <LineDetail_StopInfo currentStopSelected={currentStopSelected} lineDetails={lineDetails} measureUnit={measureUnit} reloadData={reloadData} onStopSelected={onStopSelected} />,
         [MapViewerTabsNames.VehicleInfo]: () => <></>,

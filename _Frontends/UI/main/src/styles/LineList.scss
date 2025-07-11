@@ -25,7 +25,7 @@ section.LineList {
                 height: 180.000000%;
                 text-align: center;
                 line-height: 90.000000rem;
-                font-size: calc(50.000000rem * var(--xtm-font-multiplier));
+                font-size: 50.000000rem;
                 overflow-x: hidden;
                 overflow-y: hidden;
                 background-color: var(--xtm-line-color);
@@ -38,7 +38,12 @@ section.LineList {
                 position: absolute;
 
                 .text {
-                    transform: rotateZ(30.000000deg);
+                    coh-font-fit-mode: shrink;
+                    coh-font-fit-min-size: 5rem;
+                    padding-left: 5rem;
+                    padding-right: 0rem;
+                    height: 70rem;
+                    padding-top: 15rem;
                 }
 
                 .icon {
@@ -64,7 +69,14 @@ section.LineList {
                 padding-right: 15rem;
                 padding-top: 5rem;
                 font-weight: bold;
-                font-size: 120%;
+                font-size: 130%;
+                white-space: nowrap;
+                coh-font-fit-mode: shrink;
+                coh-font-fit-min-size: 5rem;
+                height: 33rem;
+                display: flex;
+                align-items: center;
+                justify-content: flex-start;
             }
 
             .lineType {

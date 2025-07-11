@@ -54,6 +54,13 @@
             height: auto;
             line-height: 100.000000%;
             transform: translateY(-50%);
+            coh-font-fit-mode: shrink;
+            coh-font-fit-min-size: 5rem;
+            height: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+
         }
 
         &.Bus.passengers {
@@ -61,6 +68,11 @@
             .before,
             .after {
                 clip-path: polygon(25% 0%, 75% 0%, 100% 50%, 75% 100%, 25% 100%, 0% 50%);
+            }
+
+            +.num {
+                padding-left: 6rem;
+                padding-right: 6rem;
             }
         }
 
@@ -71,6 +83,10 @@
                 clip-path: border-box polygon(nonzero, 20.000000% 0.000000%, 80.000000% 0.000000%, 100.000000% 100.000000%, 0.000000% 100.000000%);
             }
 
+            +.num {
+                padding-left: 8rem;
+                padding-right: 8rem;
+            }
         }
 
         &.Ship.passengers {
@@ -80,6 +96,9 @@
                 clip-path: polygon(50% 0%, 100% 50%, 50% 100%, 0% 50%);
             }
 
+            +.num {
+                padding: 10rem;
+            }
         }
 
         &.Train.passengers {
@@ -87,6 +106,19 @@
             .before,
             .after {
                 clip-path: circle(50% at 50% 50%);
+            }
+
+            +.num {
+                padding: 4rem;
+            }
+
+        }
+
+        &.Subway.passengers {
+
+
+            +.num {
+                padding: 4rem;
             }
 
         }
@@ -98,6 +130,12 @@
                 clip-path: polygon(50% 0%, 100% 38%, 82% 100%, 18% 100%, 0% 38%);
             }
 
+            +.num {
+                padding-top: 4rem;
+                padding-bottom: 4rem;
+                padding-left: 7rem;
+                padding-right: 7rem;
+            }
         }
 
 
@@ -111,6 +149,12 @@
                         16.6666% 33.3333%, 16.6666% 16.6666%, 33.3333% 16.6666%, 50% 0%);
             }
 
+            +.num {
+                padding-top: 9rem;
+                padding-bottom: 9rem;
+                padding-left: 9rem;
+                padding-right: 9rem;
+            }
         }
 
         &.Train.cargo {
@@ -120,6 +164,10 @@
                 clip-path: polygon(30% 0%, 70% 0%, 100% 30%, 100% 70%, 70% 100%, 30% 100%, 0% 70%, 0% 30%);
             }
 
+            +.num {
+                padding: 4rem;
+            }
+
         }
 
         &.Airplane.cargo {
@@ -127,6 +175,10 @@
             .before,
             .after {
                 clip-path: polygon(0% 15%, 15% 15%, 15% 0%, 85% 0%, 85% 15%, 100% 15%, 100% 85%, 85% 85%, 85% 100%, 15% 100%, 15% 85%, 0% 85%);
+            }
+
+            +.num {
+                padding: 4rem;
             }
 
         }
