@@ -31,7 +31,7 @@ const tabsOrder: (MapViewerTabsNames | undefined)[] = [
     MapViewerTabsNames.General,
     MapViewerTabsNames.LineData,
     undefined,
-    MapViewerTabsNames.SmartTransportation,
+    //MapViewerTabsNames.SmartTransportation,
     MapViewerTabsNames.WEIntegration,
     //MapViewerTabsNames.Debug,
     undefined,

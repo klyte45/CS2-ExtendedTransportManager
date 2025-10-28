@@ -4,7 +4,8 @@
     <OutputType>Library</OutputType>
     <Configurations>Debug;Release</Configurations>
     <Bursted Condition="'$(Configuration)'=='Release'">true</Bursted>
-    <Bursted Condition="'$(Configuration)'=='Debug'">true</Bursted>    
+    <Bursted Condition="'$(Configuration)'=='Debug'">true</Bursted>
+    <RootNamespace>BelzontTLM</RootNamespace>
     <!--The file where mod information which is required for publishing mod on PDX mods are stored-->
     <PublishConfigurationPath>Properties\PublishConfiguration.xml</PublishConfigurationPath>
   </PropertyGroup>
@@ -13,14 +14,11 @@
   <Import Project="$([System.Environment]::GetEnvironmentVariable('CSII_TOOLPATH', 'EnvironmentVariableTarget.User'))\Mod.props" />
   <Import Project="$([System.Environment]::GetEnvironmentVariable('CSII_TOOLPATH', 'EnvironmentVariableTarget.User'))\Mod.targets" />
   <Import Project="$(SolutionDir)\_Build\belzont_public.targets" />
-
-  <!--File with machine specific data - can be disabled-->
-  <Import Project="$(K45_CS2_ALLROOT)\_Shared\belzont.targets" />
   
   <!--Mod data-->
-  <PropertyGroup>
+  <PropertyGroup>        
     <ModId>74238</ModId>
-    <Version>0.1.4.12</Version>
+    <Version>0.1.5.0</Version>
     <Version Condition="'$(Configuration)'=='Debug'">65534.$([System.DateTime]::Now.ToString("yyyy.Mdd.HHmm"))</Version>
     <GameVersion>1.3.*</GameVersion>
     <ThumbnailPath>Properties/Thumbnail.png</ThumbnailPath>
@@ -47,118 +45,118 @@
 
   <ItemGroup>
     <Reference Include="Game">
-      <HintPath>$(K45_CS2_ALLROOT)\_Managed DLLs\Game.dll</HintPath>
+      <HintPath>$(CSII_MANAGEDPATH)\Game.dll</HintPath>
       <Private>false</Private>
     </Reference>
     <Reference Include="Colossal.Core">
-      <HintPath>$(K45_CS2_ALLROOT)\_Managed DLLs\Colossal.Core.dll</HintPath>
+      <HintPath>$(CSII_MANAGEDPATH)\Colossal.Core.dll</HintPath>
       <Private>false</Private>
     </Reference>
     <Reference Include="Colossal.Logging">
-      <HintPath>$(K45_CS2_ALLROOT)\_Managed DLLs\Colossal.Logging.dll</HintPath>
+      <HintPath>$(CSII_MANAGEDPATH)\Colossal.Logging.dll</HintPath>
       <Private>false</Private>
     </Reference>
     <Reference Include="Colossal.Collections">
-      <HintPath>$(K45_CS2_ALLROOT)\_Managed DLLs\Colossal.Collections.dll</HintPath>
+      <HintPath>$(CSII_MANAGEDPATH)\Colossal.Collections.dll</HintPath>
       <Private>false</Private>
     </Reference>
     <Reference Include="Colossal.UI">
-      <HintPath>$(K45_CS2_ALLROOT)\_Managed DLLs\Colossal.UI.dll</HintPath>
+      <HintPath>$(CSII_MANAGEDPATH)\Colossal.UI.dll</HintPath>
       <Private>false</Private>
     </Reference>
     <Reference Include="Colossal.UI.Binding">
-      <HintPath>$(K45_CS2_ALLROOT)\_Managed DLLs\Colossal.UI.Binding.dll</HintPath>
+      <HintPath>$(CSII_MANAGEDPATH)\Colossal.UI.Binding.dll</HintPath>
       <Private>false</Private>
     </Reference>
     <Reference Include="Colossal.Localization">
-      <HintPath>$(K45_CS2_ALLROOT)\_Managed DLLs\Colossal.Localization.dll</HintPath>
+      <HintPath>$(CSII_MANAGEDPATH)\Colossal.Localization.dll</HintPath>
       <Private>false</Private>
     </Reference>
     <Reference Include="Colossal.IO.AssetDatabase">
-      <HintPath>$(K45_CS2_ALLROOT)\_Managed DLLs\Colossal.IO.AssetDatabase.dll</HintPath>
+      <HintPath>$(CSII_MANAGEDPATH)\Colossal.IO.AssetDatabase.dll</HintPath>
       <Private>false</Private>
     </Reference>
     <Reference Include="UnityEngine.CoreModule">
-      <HintPath>$(K45_CS2_ALLROOT)\_Managed DLLs\UnityEngine.CoreModule.dll</HintPath>
+      <HintPath>$(CSII_MANAGEDPATH)\UnityEngine.CoreModule.dll</HintPath>
       <Private>false</Private>
     </Reference>
     <Reference Include="Unity.Burst">
-      <HintPath>$(K45_CS2_ALLROOT)\_Managed DLLs\Unity.Burst.dll</HintPath>
+      <HintPath>$(CSII_MANAGEDPATH)\Unity.Burst.dll</HintPath>
       <Private>false</Private>
     </Reference>
     <Reference Include="Unity.Collections">
-      <HintPath>$(K45_CS2_ALLROOT)\_Managed DLLs\Unity.Collections.dll</HintPath>
+      <HintPath>$(CSII_MANAGEDPATH)\Unity.Collections.dll</HintPath>
       <Private>false</Private>
     </Reference>
     <Reference Include="Unity.Entities">
-      <HintPath>$(K45_CS2_ALLROOT)\_Managed DLLs\Unity.Entities.dll</HintPath>
+      <HintPath>$(CSII_MANAGEDPATH)\Unity.Entities.dll</HintPath>
       <Private>false</Private>
     </Reference>
     <Reference Include="Unity.Mathematics">
-      <HintPath>$(K45_CS2_ALLROOT)\_Managed DLLs\Unity.Mathematics.dll</HintPath>
+      <HintPath>$(CSII_MANAGEDPATH)\Unity.Mathematics.dll</HintPath>
       <Private>false</Private>
     </Reference>  
     <Reference Include="cohtml.Net">
-      <HintPath>$(K45_CS2_ALLROOT)\_Managed DLLs\cohtml.Net.dll</HintPath>
+      <HintPath>$(CSII_MANAGEDPATH)\cohtml.Net.dll</HintPath>
       <Private>False</Private>
     </Reference>
     <Reference Include="Cohtml.Runtime">
-      <HintPath>$(K45_CS2_ALLROOT)\_Managed DLLs\Cohtml.Runtime.dll</HintPath>
+      <HintPath>$(CSII_MANAGEDPATH)\Cohtml.Runtime.dll</HintPath>
       <Private>False</Private>
     </Reference>
     <Reference Include="Colossal.OdinSerializer">
-      <HintPath>$(K45_CS2_ALLROOT)\_Managed DLLs\Colossal.OdinSerializer.dll</HintPath>
+      <HintPath>$(CSII_MANAGEDPATH)\Colossal.OdinSerializer.dll</HintPath>
       <Private>False</Private>
     </Reference>
     <Reference Include="Colossal.AssetPipeline">
-      <HintPath>$(K45_CS2_ALLROOT)\_Managed DLLs\Colossal.AssetPipeline.dll</HintPath>
+      <HintPath>$(CSII_MANAGEDPATH)\Colossal.AssetPipeline.dll</HintPath>
       <Private>False</Private>
     </Reference>
     <Reference Include="UnityEngine.InputLegacyModule">
-      <HintPath>$(K45_CS2_ALLROOT)\_Managed DLLs\UnityEngine.InputLegacyModule.dll</HintPath>
+      <HintPath>$(CSII_MANAGEDPATH)\UnityEngine.InputLegacyModule.dll</HintPath>
       <Private>False</Private>
     </Reference>
     <Reference Include="Colossal.Mono.Cecil">
-      <HintPath>$(K45_CS2_ALLROOT)\_Managed DLLs\Colossal.Mono.Cecil.dll</HintPath>
+      <HintPath>$(CSII_MANAGEDPATH)\Colossal.Mono.Cecil.dll</HintPath>
       <Private>False</Private>
     </Reference>
     <Reference Include="UnityEngine.ScreenCaptureModule">
-      <HintPath>$(K45_CS2_ALLROOT)\_Managed DLLs\UnityEngine.ScreenCaptureModule.dll</HintPath>
+      <HintPath>$(CSII_MANAGEDPATH)\UnityEngine.ScreenCaptureModule.dll</HintPath>
       <Private>False</Private>
     </Reference>
     <Reference Include="Unity.Mathematics">
-      <HintPath>$(K45_CS2_ALLROOT)\_Managed DLLs\Unity.Mathematics.dll</HintPath>
+      <HintPath>$(CSII_MANAGEDPATH)\Unity.Mathematics.dll</HintPath>
       <Private>False</Private>
     </Reference>
     <Reference Include="UnityEngine.ImageConversionModule">
-      <HintPath>$(K45_CS2_ALLROOT)\_Managed DLLs\UnityEngine.ImageConversionModule.dll</HintPath>
+      <HintPath>$(CSII_MANAGEDPATH)\UnityEngine.ImageConversionModule.dll</HintPath>
       <Private>False</Private>
     </Reference>
     <Reference Include="Colossal.Mathematics">
-      <HintPath>$(K45_CS2_ALLROOT)\_Managed DLLs\Colossal.Mathematics.dll</HintPath>
+      <HintPath>$(CSII_MANAGEDPATH)\Colossal.Mathematics.dll</HintPath>
       <Private>False</Private>
     </Reference>
     <Reference Include="Colossal.PSI.Common">
-      <HintPath>$(K45_CS2_ALLROOT)\_Managed DLLs\Colossal.PSI.Common.dll</HintPath>
+      <HintPath>$(CSII_MANAGEDPATH)\Colossal.PSI.Common.dll</HintPath>
       <Private>False</Private>
     </Reference>
   </ItemGroup>
 
   <ItemGroup>
     <Reference Include="System">
-      <HintPath>$(K45_CS2_ALLROOT)\_Managed DLLs\System.dll</HintPath>
+      <HintPath>$(CSII_MANAGEDPATH)\System.dll</HintPath>
       <Private>false</Private>
     </Reference>
     <Reference Update="System.Core">
-      <HintPath>$(K45_CS2_ALLROOT)\_Managed DLLs\System.Core.dll</HintPath>
+      <HintPath>$(CSII_MANAGEDPATH)\System.Core.dll</HintPath>
       <Private>false</Private>
     </Reference>
     <Reference Update="System.Data">
-      <HintPath>$(K45_CS2_ALLROOT)\_Managed DLLs\System.Data.dll</HintPath>
+      <HintPath>$(CSII_MANAGEDPATH)\System.Data.dll</HintPath>
       <Private>false</Private>
     </Reference>
     <Reference Include="mscorlib">
-      <HintPath>$(K45_CS2_ALLROOT)\_Managed DLLs\mscorlib.dll</HintPath>
+      <HintPath>$(CSII_MANAGEDPATH)\mscorlib.dll</HintPath>
       <Private>False</Private>
     </Reference>
   </ItemGroup>

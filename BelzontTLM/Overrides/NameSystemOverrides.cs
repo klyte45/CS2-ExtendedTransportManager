@@ -1,9 +1,6 @@
 
 using Belzont.Utils;
-using Colossal.Entities;
-using Colossal.OdinSerializer.Utilities;
 using Game.Prefabs;
-using Game.Routes;
 using Game.UI;
 using Unity.Entities;
 using static Game.UI.NameSystem;
@@ -30,7 +27,7 @@ namespace BelzontTLM.Overrides
         private static bool GetRouteName(ref Name __result, ref Entity route, ref Entity prefab)
         {
             RoutePrefab prefab2 = prefabSystem.GetPrefab<RoutePrefab>(prefab);
-            __result = Name.FormattedName(prefab2.m_LocaleID + "[" + prefab2.name + "]", "NUMBER", managementSystem.GetEffectiveRouteNumber(route) );
+            __result = Name.FormattedName(prefab2.m_LocaleID + "[" + prefab2.name + "]", "NUMBER", managementSystem.GetEffectiveRouteNumber(route));
             return false;
         }
 

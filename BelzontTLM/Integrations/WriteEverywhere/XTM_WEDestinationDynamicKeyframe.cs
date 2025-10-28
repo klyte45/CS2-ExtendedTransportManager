@@ -1,4 +1,5 @@
 ﻿using Belzont.Utils;
+using BelzontTLM;
 using Colossal.Entities;
 using Colossal.OdinSerializer.Utilities;
 using Colossal.Serialization.Entities;
@@ -11,7 +12,7 @@ using Game.UI;
 using Unity.Collections;
 using Unity.Entities;
 
-namespace BelzontTLM
+namespace BelzontTLM.Integrations.WriteEverywhere
 {
     public struct XTM_WEDestinationDynamicKeyframe : ISerializable
     {

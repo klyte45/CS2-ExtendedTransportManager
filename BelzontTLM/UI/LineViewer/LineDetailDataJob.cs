@@ -9,7 +9,6 @@ using Game.Rendering;
 using Game.Routes;
 using Game.Vehicles;
 using System;
-using System.Linq;
 using Unity.Burst;
 using Unity.Burst.Intrinsics;
 using Unity.Collections;
@@ -60,9 +59,9 @@ namespace BelzontTLM
                 {
                     return new LineDetailData()
                     {
-                        m_SegmentsResult = segResultArray.ToArray(),
-                        m_StopsResult = stopsResult.ToArray(),
-                        m_VehiclesResult = vehiclesResult.ToArray(),
+                        m_SegmentsResult = [.. segResultArray],
+                        m_StopsResult = [.. stopsResult],
+                        m_VehiclesResult = [.. vehiclesResult],
                         stopCapacity = stopCapacity,
                         isCargo = isCargo
                     };
@@ -105,11 +104,11 @@ namespace BelzontTLM
                     m_StopsResult = new NativeList<LineStop>(Allocator.Temp),
                     m_VehiclesResult = new NativeList<LineVehicle>(Allocator.Temp),
                 };
-                Execute(entity, output);
+                Execute(entity, ref output);
                 m_output.AddNoResize(output);
             }
 
-            public void Execute(Entity routeEntity, LineDetailDataUnsafe output)
+            public void Execute(Entity routeEntity, ref LineDetailDataUnsafe output)
             {
                 NativeList<float> stopsPointsDistanceFromStart = new(Allocator.Temp);
                 float num = 0f;
@@ -157,15 +156,15 @@ namespace BelzontTLM
                             num6 += segmentLength - num4;
                         }
                         ValueTuple<int, int> cargo = GetCargo(vehicle);
-                        int item = cargo.Item1;
-                        int item2 = cargo.Item2;
+                        int ammount = cargo.Item1;
+                        int capacity = cargo.Item2;
                         float num7 = num6 / num;
                         var transform = m_Transforms[vehicle];
-                        LineVehicle lineVehicle = new LineVehicle(vehicle, num7, item, item2, transform.m_Position, transform.m_Rotation, m_Odometers[vehicle].m_Distance, isCargo);
+                        LineVehicle lineVehicle = new LineVehicle(vehicle, num7, ammount, capacity, transform.m_Position, transform.m_Rotation, m_Odometers[vehicle].m_Distance, isCargo);
                         output.m_VehiclesResult.Add(lineVehicle);
-                        if (item2 > output.stopCapacity)
+                        if (capacity > output.stopCapacity)
                         {
-                            output.stopCapacity = item2;
+                            output.stopCapacity = capacity;
                         }
                     }
                 }
@@ -544,8 +543,8 @@ namespace BelzontTLM
 
             private ValueTuple<int, int> GetCargo(Entity entity)
             {
-                int num = 0;
-                int num2 = 0;
+                int waiting = 0;
+                int capacity = 0;
                 if (m_PrefabRefs.TryGetComponent(entity, out PrefabRef prefabRef))
                 {
                     if (m_LayoutElementBuffers.TryGetBuffer(entity, out DynamicBuffer<LayoutElement> dynamicBuffer))
@@ -559,7 +558,7 @@ namespace BelzontTLM
                                 {
                                     if (!m_Pets.HasComponent(dynamicBuffer2[j].m_Passenger))
                                     {
-                                        num++;
+                                        waiting++;
                                     }
                                 }
                             }
@@ -567,7 +566,7 @@ namespace BelzontTLM
                             {
                                 for (int k = 0; k < dynamicBuffer3.Length; k++)
                                 {
-                                    num += dynamicBuffer3[k].m_Amount;
+                                    waiting += dynamicBuffer3[k].m_Amount;
                                 }
                             }
                             if (m_PrefabRefs.TryGetComponent(vehicle, out PrefabRef prefabRef2))
@@ -575,11 +574,11 @@ namespace BelzontTLM
                                 Entity prefab = prefabRef2.m_Prefab;
                                 if (m_PublicTransportVehicleDatas.TryGetComponent(prefab, out PublicTransportVehicleData publicTransportVehicleData))
                                 {
-                                    num2 += publicTransportVehicleData.m_PassengerCapacity;
+                                    capacity += publicTransportVehicleData.m_PassengerCapacity;
                                 }
                                 else if (m_CargoTransportVehicleDatas.TryGetComponent(prefab, out CargoTransportVehicleData cargoTransportVehicleData))
                                 {
-                                    num2 += cargoTransportVehicleData.m_CargoCapacity;
+                                    capacity += cargoTransportVehicleData.m_CargoCapacity;
                                 }
                             }
                         }
@@ -592,7 +591,7 @@ namespace BelzontTLM
                             {
                                 if (!m_Pets.HasComponent(dynamicBuffer4[l].m_Passenger))
                                 {
-                                    num++;
+                                    waiting++;
                                 }
                             }
                         }
@@ -600,20 +599,20 @@ namespace BelzontTLM
                         {
                             for (int m = 0; m < dynamicBuffer5.Length; m++)
                             {
-                                num += dynamicBuffer5[m].m_Amount;
+                                waiting += dynamicBuffer5[m].m_Amount;
                             }
                         }
                         if (m_PublicTransportVehicleDatas.TryGetComponent(prefabRef.m_Prefab, out PublicTransportVehicleData publicTransportVehicleData2))
                         {
-                            num2 = publicTransportVehicleData2.m_PassengerCapacity;
+                            capacity = publicTransportVehicleData2.m_PassengerCapacity;
                         }
                         else if (m_CargoTransportVehicleDatas.TryGetComponent(prefabRef.m_Prefab, out CargoTransportVehicleData cargoTransportVehicleData2))
                         {
-                            num2 += cargoTransportVehicleData2.m_CargoCapacity;
+                            capacity += cargoTransportVehicleData2.m_CargoCapacity;
                         }
                     }
                 }
-                return new ValueTuple<int, int>(num, num2);
+                return new ValueTuple<int, int>(waiting, capacity);
             }
 
             [ReadOnly]

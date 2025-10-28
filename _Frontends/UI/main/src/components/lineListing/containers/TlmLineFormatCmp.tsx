@@ -31,6 +31,7 @@ export class TlmLineFormatCmp extends Component<{
             <div className="num">
                 {this.props.contentOverride ?? (this.props.text)}
             </div>
+            <div className="cargoMarker">©</div>
         </div>;
     }
 }

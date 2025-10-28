@@ -1,7 +1,6 @@
 ﻿using Belzont.Utils;
 using Colossal.Entities;
 using Colossal.Serialization.Entities;
-using Game.Common;
 using Game.Routes;
 using Game.UI;
 using System;
@@ -9,7 +8,7 @@ using System.Linq;
 using Unity.Collections;
 using Unity.Entities;
 
-namespace BelzontTLM
+namespace BelzontTLM.Integrations.WriteEverywhere
 {
     public struct XTM_WEDestinationBlind : ICleanupBufferElementData, ISerializable, IDisposable
     {

@@ -34,7 +34,7 @@ namespace BelzontTLM.Palettes
         public void SetupEventBinder(Action<string, Delegate> eventCaller)
         {
         }
-        private TransportType[] PassengerLineAllowed = new[] { TransportType.Bus, TransportType.Tram, TransportType.Subway, TransportType.Train, TransportType.Ship, TransportType.Airplane };
+        private TransportType[] PassengerLineAllowed = new[] { TransportType.Bus, TransportType.Tram, TransportType.Subway, TransportType.Train, TransportType.Ship, TransportType.Airplane, TransportType.Ferry };
         private TransportType[] CargoLineAllowed = new[] { TransportType.Train, TransportType.Ship, TransportType.Airplane };
         public void SetupCallBinder(Action<string, Delegate> eventCaller)
         {
@@ -118,8 +118,8 @@ namespace BelzontTLM.Palettes
         }
 
 
-        public SimpleEnumerableList<TransportType, Guid> PaletteSettingsPassenger = new();
-        public SimpleEnumerableList<TransportType, Guid> PaletteSettingsCargo = new();
+        public SimpleEnumerableList<TransportType, Guid> PaletteSettingsPassenger = [];
+        public SimpleEnumerableList<TransportType, Guid> PaletteSettingsCargo = [];
 
 
         private EntityQuery m_linesWithNoData;

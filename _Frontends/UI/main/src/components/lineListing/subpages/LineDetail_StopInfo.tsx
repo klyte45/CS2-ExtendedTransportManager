@@ -78,9 +78,9 @@ export const LineDetail_StopInfo = ({ currentStopSelected: station, lineDetails,
             <Cs2FormLine title={translate("lineStationDetail.nextVehicleInformation")}>{lineDetails.LineData.vehicles == 0
                 ? <span style={{ "color": "var(--negativeColor)" }}>{translate("lineStationDetail.noNextVehicleData")}</span>
                 :
-                <div style={{ display: "flex", flexDirection: "row", alignItems: "stretch" }}>
+                <div style={{ display: "flex", flexDirection: "row", justifyContent: "flex-end", alignItems: "stretch" }}>
                     <div style={{ display: "flex", flexDirection: "column", alignItems: "flex-end", justifyContent: "space-around", paddingRight: "5px" }}>
-                        <div>{nameToString(station.arrivingVehicle.name) + " - " + station.arrivingVehicle.entity.Index}</div>
+                        <div>{nameToString(station.arrivingVehicle.name)}</div>
                         <div>{nextVehicleDistanceFmt}</div>
                         <div>{stopsYetToPassText}</div>
                     </div>

@@ -7,14 +7,6 @@ import "#styles/LineList.scss"
 import translate from "#utility/translate";
 import { TransportType } from "#enum/TransportType";
 
-type State = {
-    linesList: LineData[],
-    indexedLineList: Record<string, LineData>
-    currentLineViewer?: LineData,
-    unitsData?: UnitSettings,
-    filterExclude: string[]
-    mapViewOptions: MapViewerOptions
-}
 
 const TypeToIcons = {
     [`${TransportType.Bus}.false`]: "assetdb://gameui/Media/Game/Icons/BusLine.svg",
@@ -22,6 +14,7 @@ const TypeToIcons = {
     [`${TransportType.Subway}.false`]: "assetdb://gameui/Media/Game/Icons/SubwayLine.svg",
     [`${TransportType.Train}.false`]: "assetdb://gameui/Media/Game/Icons/PassengerTrainLine.svg",
     [`${TransportType.Ship}.false`]: "assetdb://gameui/Media/Game/Icons/PassengerShipLine.svg",
+    [`${TransportType.Ferry}.false`]: "assetdb://gameui/Media/Game/Icons/PassengerShipLine.svg",
     [`${TransportType.Airplane}.false`]: "assetdb://gameui/Media/Game/Icons/PassengerAirplaneLine.svg",
     [`${TransportType.Train}.true`]: "assetdb://gameui/Media/Game/Icons/CargoTrainLine.svg",
     [`${TransportType.Ship}.true`]: "assetdb://gameui/Media/Game/Icons/CargoShipLine.svg",
@@ -111,6 +104,7 @@ export const LineListCmp = () => {
             <button className="txt" onClick={() => setFilterExclude(Object.keys(TypeToIcons))}>{translate("lineList.hideAll")}</button>
             <button className="txt" onClick={() => setFilterExclude(Object.keys(TypeToIcons).filter(x => x.endsWith(".true")))}>{translate("lineList.passengerLines")}</button>
             <button className="txt" onClick={() => setFilterExclude(Object.keys(TypeToIcons).filter(x => x.endsWith(".false")))}>{translate("lineList.cargoRoutes")}</button>
+            <button className="txt" onClick={() => engine.call("k45::xtm.lineViewer.getCityLines", true)}>{translate("lineList.refresh")}</button>
             <div className="space" />
             <div className="righter">
                 {replaceArgs(translate("lineList.linesCurrentFilterFormat"), { LINECOUNT: `${linesList.filter(x => !filterExclude.includes(`${x.type}.${x.isCargo}`)).length}` })}

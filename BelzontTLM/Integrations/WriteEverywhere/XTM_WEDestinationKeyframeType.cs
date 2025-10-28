@@ -1,4 +1,4 @@
-﻿namespace BelzontTLM
+﻿namespace BelzontTLM.Integrations.WriteEverywhere
 {
     public enum XTM_WEDestinationKeyframeType
     {

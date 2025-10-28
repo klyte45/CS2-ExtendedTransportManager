@@ -56,6 +56,7 @@ namespace BelzontTLM
                     entityCommandBuffer.AddComponent<Updated>(unitializedLines[i]);
                     LogUtils.DoInfoLog($"Initialized Line data @ entity id #{unitializedLines[i].Index}");
                 }
+                unitializedLines.Dispose();
             }
             if (!m_modifiedLineQuery.IsEmptyIgnoreFilter)
             {
