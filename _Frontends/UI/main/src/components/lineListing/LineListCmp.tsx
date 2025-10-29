@@ -104,7 +104,6 @@ export const LineListCmp = () => {
             <button className="txt" onClick={() => setFilterExclude(Object.keys(TypeToIcons))}>{translate("lineList.hideAll")}</button>
             <button className="txt" onClick={() => setFilterExclude(Object.keys(TypeToIcons).filter(x => x.endsWith(".true")))}>{translate("lineList.passengerLines")}</button>
             <button className="txt" onClick={() => setFilterExclude(Object.keys(TypeToIcons).filter(x => x.endsWith(".false")))}>{translate("lineList.cargoRoutes")}</button>
-            <button className="txt" onClick={() => engine.call("k45::xtm.lineViewer.getCityLines", true)}>{translate("lineList.refresh")}</button>
             <div className="space" />
             <div className="righter">
                 {replaceArgs(translate("lineList.linesCurrentFilterFormat"), { LINECOUNT: `${linesList.filter(x => !filterExclude.includes(`${x.type}.${x.isCargo}`)).length}` })}
@@ -112,8 +111,12 @@ export const LineListCmp = () => {
         </section>
         <section style={{ position: "absolute", top: 50, left: 0, right: 0, bottom: 0 }} className="LineList">
             <GameScrollComponent>
-                {linesList.filter(x => !filterExclude.includes(`${x.type}.${x.isCargo}`)).map((x, i) =>
-                    <LineItemContainer onClick={() => setSelectedLine(x.entity)} lineData={x} key={i} unitsData={unitsData} />
+                {linesList.filter(x => !filterExclude.includes(`${x.type}.${x.isCargo}`)).flatMap((x, i, a) =>
+                    [
+                        i > 0 && (a[i - 1].type != x.type || a[i - 1].isCargo != x.isCargo) ? <div key={"sep_" + i} className="typeSeparator" /> : null,
+                        <LineItemContainer onClick={() => setSelectedLine(x.entity)} lineData={x} key={i} unitsData={unitsData} />,
+                    ]
+
                 )}
             </GameScrollComponent>
         </section>

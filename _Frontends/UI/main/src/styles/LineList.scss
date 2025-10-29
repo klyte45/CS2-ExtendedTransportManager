@@ -2,6 +2,12 @@ section.LineList {
     background-color: transparent;
     display: flex;
 
+    .typeSeparator {
+        width: 100%;
+        height: 10rem;
+        background-color: var(--menuPanel1);
+    }
+
     component-slot {
         display: flex;
         flex-wrap: wrap;
