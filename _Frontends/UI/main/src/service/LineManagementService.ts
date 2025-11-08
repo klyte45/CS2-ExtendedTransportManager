@@ -70,12 +70,19 @@ export type SegmentData = {
     readonly duration: number
 }
 
+export type VehicleModel = {
+    entity: Entity,
+    isSecondary: boolean
+}
+
 export type LineDetails = {
     LineData: LineData,
     StopCapacity: number,
     Stops: StationData[]
     Vehicles: VehicleData[],
-    Segments: SegmentData[]
+    Segments: SegmentData[],
+    SelectedVehicleModels: VehicleModel[],
+    AvailableVehicleModels: VehicleModel[]
 }
 
 export type MapViewerOptions = {
@@ -112,6 +119,9 @@ export class LineManagementService {
     static async selectEntity(entity: Entity): Promise<NameFormatted | NameCustom> {
         return await engine.call("k45::xtm.lineManagement.selectEntity", entity);
     }
+    static async selectVehicleModel(entity: Entity, model: VehicleModel): Promise<void> { return await engine.call("k45::xtm.lineManagement.selectVehicleModel", entity, model); }
+    static async deselectVehicleModel(entity: Entity, model: VehicleModel): Promise<any> { return await engine.call("k45::xtm.lineManagement.deselectVehicleModel", entity, model); }
+
     static checkSimetry(stops: StationData[]): boolean {
         const length = stops.length;
         if (length % 1 == 1) return false;

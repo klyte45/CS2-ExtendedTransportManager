@@ -3,7 +3,7 @@ import { LineData, LineDetails, LineManagementService, MapViewerOptions, Station
 import "#styles/LineDetailCmp.scss";
 import "#styles/TLM_LineDetail.scss";
 import translate from "#utility/translate";
-import { DefaultPanelScreen, Entity, UnitSystem, getGameUnits, nameToString } from "@klyte45/euis-components";
+import { DefaultPanelScreen, Entity, GameScrollComponent, UnitSystem, getGameUnits, nameToString } from "@klyte45/euis-components";
 import { useEffect, useMemo, useState } from "react";
 import { Tab, TabList, TabPanel, Tabs } from "react-tabs";
 import { TlmViewerCmp } from "./containers/TlmViewerCmp";
@@ -33,7 +33,7 @@ const tabsOrder: (MapViewerTabsNames | undefined)[] = [
     undefined,
     //MapViewerTabsNames.SmartTransportation,
     MapViewerTabsNames.WEIntegration,
-    //MapViewerTabsNames.Debug,
+    MapViewerTabsNames.Debug,
     undefined,
     MapViewerTabsNames.MapSettings,
     MapViewerTabsNames.StopInfo,
@@ -158,13 +158,13 @@ export const LineDetailCmp = ({ initialCurrentLine,
         .map(x => DistrictService.getEffectiveDistrictName(x)).join(" - ");
 
     const componentsMapViewer: Record<MapViewerTabsNames, () => JSX.Element> = {
-        [MapViewerTabsNames.General]: () => <LineDetail_General lineCommonData={lineCommonData} reloadData={reloadData} />,
+        [MapViewerTabsNames.General]: () => <LineDetail_General lineDetails={lineDetails} reloadData={reloadData} />,
         [MapViewerTabsNames.LineData]: () => <LineDetail_Data lineDetails={lineDetails} measureUnit={measureUnit} lineCommonData={lineCommonData} />,
         [MapViewerTabsNames.SmartTransportation]: () => <LineDetail_SmartTransportation lineDetails={lineDetails} />,
         [MapViewerTabsNames.MapSettings]: () => <LineDetail_MapSettings mapViewOptions={mapViewOptions} setMapViewOptions={setMapViewOptions} />,
         [MapViewerTabsNames.StopInfo]: () => <LineDetail_StopInfo currentStopSelected={currentStopSelected} lineDetails={lineDetails} measureUnit={measureUnit} reloadData={reloadData} onStopSelected={onStopSelected} />,
         [MapViewerTabsNames.VehicleInfo]: () => <></>,
-        [MapViewerTabsNames.Debug]: () => <>{JSON.stringify(lineDetails ?? "LOADING", null, 2)}</>,
+        [MapViewerTabsNames.Debug]: () => <GameScrollComponent><div style={{ whiteSpace: 'pre' }}>{JSON.stringify(lineDetails ?? "LOADING", null, 2)}</div></GameScrollComponent>,
         [MapViewerTabsNames.WEIntegration]: () => <LineDetail_WriteEverywhere lineId={lineDetails.LineData.entity} stops={lineDetails.Stops} />
     }
 

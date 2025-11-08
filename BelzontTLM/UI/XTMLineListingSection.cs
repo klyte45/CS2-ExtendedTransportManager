@@ -107,8 +107,10 @@ namespace BelzontTLM
                 var routeNum = entityManager.GetComponentData<RouteNumber>(entity);
                 entityManager.TryGetComponent<XTMRouteExtraData>(entity, out var xtmData);
                 PrefabRef componentData2 = entityManager.GetComponentData<PrefabRef>(entity);
-                TransportLinePrefab prefab = m_PrefabSystem.GetPrefab<TransportLinePrefab>(componentData2.m_Prefab);
-                TransportLineData componentData3 = entityManager.GetComponentData<TransportLineData>(componentData2.m_Prefab);
+                if (!m_PrefabSystem.TryGetPrefab<TransportLinePrefab>(componentData2.m_Prefab, out var prefab) || !entityManager.TryGetComponent(componentData2.m_Prefab, out TransportLineData componentData3))
+                {
+                    return null;
+                }
                 bool visible = !entityManager.HasComponent<HiddenRoute>(entity);
                 Color color = entityManager.GetComponentData<Color>(entity);
                 int cargo = 0;

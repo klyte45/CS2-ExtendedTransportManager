@@ -33,6 +33,8 @@ namespace BelzontTLM
             eventCaller("lineManagement.setFirstStop", SetFirstStop);
             eventCaller("lineManagement.selectEntity", SelectEntity);
             eventCaller("lineManagement.focusToEntity", FocusToEntity);
+            eventCaller("lineManagement.selectVehicleModel", SelectVehicleModel);
+            eventCaller("lineManagement.deselectVehicleModel", DeselectVehicleModel);
         }
 
         public void SetupCaller(Action<string, object[]> eventCaller)
@@ -155,5 +157,98 @@ namespace BelzontTLM
             => EntityManager.TryGetComponent<XTMRouteExtraData>(route, out var extraData) && !extraData.Acronym.IsNullOrWhitespace()
                 ? extraData.Acronym
                 : EntityManager.GetComponentData<RouteNumber>(route).m_Number.ToString();
+
+
+        private void SelectVehicleModel(Entity targetEntity, AvailableVehicle vehicle)
+        {
+            if (vehicle.entity == Entity.Null)
+            {
+                return;
+            }
+            DynamicBuffer<VehicleModel> buffer = EntityManager.GetBuffer<VehicleModel>(targetEntity, false);
+            bool isPrimary = !vehicle.isSecondary;
+            bool isSecondary = vehicle.isSecondary;
+            var primary = isPrimary ? vehicle.entity : Entity.Null;
+            var secondary = isSecondary ? vehicle.entity : Entity.Null;
+            bool wasAssigned = false;
+            for (int i = 0; i < buffer.Length; i++)
+            {
+                VehicleModel vehicleModel = buffer[i];
+                if (isPrimary && (vehicleModel.m_PrimaryPrefab == Entity.Null || vehicleModel.m_PrimaryPrefab == vehicle.entity))
+                {
+                    vehicleModel.m_PrimaryPrefab = vehicle.entity;
+                    wasAssigned = true;
+                }
+                if (isSecondary && (vehicleModel.m_SecondaryPrefab == Entity.Null || vehicleModel.m_SecondaryPrefab == vehicle.entity))
+                {
+                    vehicleModel.m_SecondaryPrefab = vehicle.entity;
+                    wasAssigned = true;
+                }
+                if (wasAssigned)
+                {
+                    buffer[i] = vehicleModel;
+                    return;
+                }
+            }
+            if (isPrimary)
+            {
+                buffer.Add(new VehicleModel
+                {
+                    m_PrimaryPrefab = primary,
+                    m_SecondaryPrefab = Entity.Null
+                });
+            }
+            else if (isSecondary)
+            {
+                buffer.Add(new VehicleModel
+                {
+                    m_PrimaryPrefab = Entity.Null,
+                    m_SecondaryPrefab = secondary
+                });
+            }
+        }
+
+        private void DeselectVehicleModel(Entity targetEntity, AvailableVehicle vehicle)
+        {
+            if (vehicle.entity == Entity.Null)
+            {
+                return;
+            }
+            DynamicBuffer<VehicleModel> buffer = base.EntityManager.GetBuffer<VehicleModel>(targetEntity, false);
+            bool wasCleaned = false;
+            bool cantRemoveLast = buffer.Length == 1;
+            if (cantRemoveLast && (buffer[0].m_PrimaryPrefab == Entity.Null || buffer[0].m_SecondaryPrefab == Entity.Null))
+            {
+                return;
+            }
+            for (int i = 0; i < buffer.Length; i++)
+            {
+                VehicleModel vehicleModel = buffer[i];
+                if (!vehicle.isSecondary && vehicleModel.m_PrimaryPrefab == vehicle.entity)
+                {
+                    vehicleModel.m_PrimaryPrefab = Entity.Null;
+                    wasCleaned = true;
+                }
+                if (vehicle.isSecondary && vehicleModel.m_SecondaryPrefab == vehicle.entity)
+                {
+                    vehicleModel.m_SecondaryPrefab = Entity.Null;
+                    wasCleaned = true;
+                }
+
+                if (vehicleModel.m_PrimaryPrefab == Entity.Null && vehicleModel.m_SecondaryPrefab == Entity.Null)
+                {
+                    buffer.RemoveAtSwapBack(i);
+                }
+                else
+                {
+                    buffer[i] = vehicleModel;
+                }
+
+                if (wasCleaned)
+                {
+                    break;
+                }
+            }
+        }
     }
 }

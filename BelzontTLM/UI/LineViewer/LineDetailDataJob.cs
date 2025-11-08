@@ -9,6 +9,7 @@ using Game.Rendering;
 using Game.Routes;
 using Game.Vehicles;
 using System;
+using System.Linq;
 using Unity.Burst;
 using Unity.Burst.Intrinsics;
 using Unity.Collections;
@@ -26,6 +27,7 @@ namespace BelzontTLM
             public LineSegment[] m_SegmentsResult;
             public LineStop[] m_StopsResult;
             public LineVehicle[] m_VehiclesResult;
+            public AvailableVehicle[] m_availableVehicles;
             public int stopCapacity;
             public bool isCargo;
         }
@@ -50,7 +52,7 @@ namespace BelzontTLM
                 m_VehiclesResult.Dispose();
             }
 
-            public LineDetailData ConvertAndDispose()
+            public LineDetailData ConvertAndDispose(NativeArray<Entity> availablePrimaryVehicles, NativeArray<Entity> availableSecondaryVehicles)
             {
                 var segResultArray = m_SegmentsResult.ToArray(Allocator.Temp);
                 var stopsResult = m_StopsResult.ToArray(Allocator.Temp);
@@ -62,6 +64,11 @@ namespace BelzontTLM
                         m_SegmentsResult = [.. segResultArray],
                         m_StopsResult = [.. stopsResult],
                         m_VehiclesResult = [.. vehiclesResult],
+                        m_availableVehicles =
+                        [
+                            .. availablePrimaryVehicles.ToArray().Select(e => new AvailableVehicle(e, false)),
+                            .. availableSecondaryVehicles.ToArray().Select(e => new AvailableVehicle(e, true)),
+                        ],
                         stopCapacity = stopCapacity,
                         isCargo = isCargo
                     };
@@ -71,6 +78,8 @@ namespace BelzontTLM
                     segResultArray.Dispose();
                     stopsResult.Dispose();
                     vehiclesResult.Dispose();
+                    availablePrimaryVehicles.Dispose();
+                    availableSecondaryVehicles.Dispose();
                     Dispose();
                 }
             }
