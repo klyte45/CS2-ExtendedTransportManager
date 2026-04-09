@@ -16,7 +16,7 @@
   <Import Project="$(SolutionDir)\_Build\belzont_public.targets" />
   <Import Project="$(SolutionDir)\..\_Shared\local_shared.targets" />
   
-  <!--Mod data-->
+  <!--Mod  data-->
   <PropertyGroup>        
     <ModId>74238</ModId>
     <Version>0.1.5.1</Version>
