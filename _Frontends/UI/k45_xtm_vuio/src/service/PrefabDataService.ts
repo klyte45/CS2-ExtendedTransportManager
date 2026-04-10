@@ -1,4 +1,5 @@
-import { Entity, ValuableName } from "@klyte45/euis-components";
+import { Entity, ValuableName } from "@klyte45/vuio-commons";
+import engine from "cohtml/cohtml";
 
 const prefix = 'k45::xtm.prefabData.';
 export class PrefabDataService {

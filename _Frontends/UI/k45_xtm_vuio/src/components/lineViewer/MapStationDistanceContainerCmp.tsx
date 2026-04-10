@@ -1,49 +1,41 @@
 import { SegmentData, StationData } from "#service/LineManagementService";
-import { replaceArgs } from "@klyte45/euis-components";
+import { replaceArgs } from "@klyte45/vuio-commons";
 import engine from "cohtml/cohtml";
-import { UnitSystem, useCachedLocalization } from "cs2/l10n";
-import { CSSProperties, Component, ReactNode } from "react";
+import { LocalizedNumber, Unit, UnitSystem, useCachedLocalization } from "cs2/l10n";
+import { CSSProperties, useEffect, useState } from "react";
 
-
-export class MapStationDistanceContainerCmp extends Component<{
+type Props = {
     segments: SegmentData[];
     stop: StationData;
     nextStop: StationData;
     normalizedPosition: number;
-}, { measureUnit?: UnitSystem; }> {
+};
 
-    constructor(props) {
-        super(props);
-        this.state = {};
-    }
-    private measureCallback = async () => this.setState({ measureUnit: useCachedLocalization().unitSettings.unitSystem });
-    componentDidMount() {
-        const locale = useCachedLocalization();
-        engine.on("k45::xtm.common.onMeasureUnitsChanged", this.measureCallback);
-        this.setState({ measureUnit: locale.unitSettings.unitSystem });
+export function MapStationDistanceContainerCmp({ segments, stop, nextStop, normalizedPosition }: Props) {
+    const locale = useCachedLocalization();
+    const [measureUnit, setMeasureUnit] = useState<UnitSystem>(locale.unitSettings.unitSystem);
 
-    }
-    override componentWillUnmount() {
-        engine.off("k45::xtm.common.onMeasureUnitsChanged", this.measureCallback);
+    useEffect(() => {
+        const measureCallback = () => setMeasureUnit(useCachedLocalization().unitSettings.unitSystem);
+        engine.on("k45::xtm.common.onMeasureUnitsChanged", measureCallback);
+        return () => engine.off("k45::xtm.common.onMeasureUnitsChanged", measureCallback);
+    }, []);
+
+    if (!isFinite(measureUnit)) return null;
+    const refNextStopPos = nextStop.position < stop.position ? 1 + nextStop.position : nextStop.position;
+    const totalDistanceSegments = segments.filter(x => x.end > stop.position && x.start < refNextStopPos);
+    const nextVehicleDistanceFmt = LocalizedNumber({
+        value: totalDistanceSegments.reduce((p, n) => p + n.sizeMeters, 0),
+        unit: Unit.Length,
+        signed: false
+    });
+    const topOffset: CSSProperties = { top: (100 * normalizedPosition) + "%" };
+    let waypointsText = "";
+    if (totalDistanceSegments.length > 1) {
+        waypointsText = `(${totalDistanceSegments.length - 1}wp) - `;
     }
 
-    render(): ReactNode {
-        if (!isFinite(this.state.measureUnit)) return null;
-        const thisStop = this.props.stop;
-        const nextStop = this.props.nextStop;
-        const refNextStopPos = nextStop.position < thisStop.position ? 1 + nextStop.position : nextStop.position;
-        const totalDistanceSegments = this.props.segments.filter(x => x.end > thisStop.position && x.start < refNextStopPos);
-        const val = metersTo(totalDistanceSegments.reduce((p, n) => p + n.sizeMeters, 0), this.state.measureUnit);
-        const nextVehicleDistanceFmt = replaceArgs(engine.translate(val[0]), { ...val[1], SIGN: "" }).trim();
-        let topOffset: CSSProperties;
-        topOffset = { top: (100 * this.props.normalizedPosition) + "%" }
-        let waypointsText = "";
-        if (totalDistanceSegments.length > 1) {
-            waypointsText = `(${totalDistanceSegments.length - 1}wp) - `
-        }
-
-        return <div className="stationDistanceContainer" style={topOffset}>
-            <div className="distanceLbl">{waypointsText + nextVehicleDistanceFmt}</div>
-        </div>;
-    }
+    return <div className="stationDistanceContainer" style={topOffset}>
+        <div className="distanceLbl">{waypointsText + nextVehicleDistanceFmt}</div>
+    </div>;
 }

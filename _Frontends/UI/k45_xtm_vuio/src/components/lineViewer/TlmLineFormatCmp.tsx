@@ -1,37 +1,30 @@
 import "#styles/TLM_FormatContainer.scss";
-import { CSSProperties, Component, ReactNode } from "react";
+import { CSSProperties } from "react";
 import { TransportType } from "#enum/TransportType";
 import { ColorUtils } from "@klyte45/vuio-commons";
 
-export class TlmLineFormatCmp extends Component<{
+type Props = {
     color: string;
     strokeColor?: string;
     text?: string;
     type: TransportType;
-    isCargo: boolean
+    isCargo: boolean;
     contentOverride?: JSX.Element | null;
     className?: string;
-    borderWidth?: string
-}, {}> {
+    borderWidth?: string;
+};
 
-    constructor(props) {
-        super(props);
-        this.state = {
-        };
-    }
-
-    render(): ReactNode {
-        const fontColor = ColorUtils.toRGBA(ColorUtils.getContrastColorFor(ColorUtils.toColor01(this.props.color)));
-        return <div className={this.props.className + " formatContainer"} style={{ "--fontColor": fontColor } as CSSProperties}>
-            <div style={{ "--currentBgColor": ColorUtils.getClampedColor(this.props.color), "--form-border-width": this.props.borderWidth ?? "0" } as CSSProperties} className={`format ${this.props.type} ${this.props.isCargo ? "cargo" : "passengers"}`}>
-                {this.props.borderWidth && <div className="before"></div>}
-                <div className="after"></div>
-            </div>
-            <div className="num">
-                {this.props.contentOverride ?? (this.props.text)}
-            </div>
-            <div className="cargoMarker">©</div>
-        </div>;
-    }
+export function TlmLineFormatCmp({ color, text, type, isCargo, contentOverride, className, borderWidth }: Props) {
+    const fontColor = ColorUtils.toRGBA(ColorUtils.getContrastColorFor(ColorUtils.toColor01(color)));
+    return <div className={className + " formatContainer"} style={{ "--fontColor": fontColor } as CSSProperties}>
+        <div style={{ "--currentBgColor": ColorUtils.getClampedColor(color), "--form-border-width": borderWidth ?? "0" } as CSSProperties} className={`format ${type} ${isCargo ? "cargo" : "passengers"}`}>
+            {borderWidth && <div className="before"></div>}
+            <div className="after"></div>
+        </div>
+        <div className="num">
+            {contentOverride ?? text}
+        </div>
+        <div className="cargoMarker">©</div>
+    </div>;
 }
 

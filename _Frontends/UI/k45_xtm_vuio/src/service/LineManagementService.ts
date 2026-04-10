@@ -1,5 +1,6 @@
 import { TransportType } from "#enum/TransportType";
-import { Entity, NameCustom, NameFormatted, NameLocalized } from "@klyte45/euis-components";
+import { Entity, NameCustom, NameFormatted, NameLocalized } from "@klyte45/vuio-commons";
+import engine from "cohtml/cohtml";
 
 export type LineData = {
     __Type: string,

@@ -1,5 +1,6 @@
-import { Entity, ValuableObject } from "@klyte45/euis-components";
+import { Entity, EnumValueType } from "@klyte45/vuio-commons";
 import { StationData } from "./LineManagementService";
+import engine from "cohtml/cohtml";
 
 export enum WEDestinationKeyframeType {
     RouteName,
@@ -19,7 +20,7 @@ export type WEDestinationDynamicKeyframe = {
     targetEntity?: Entity
     prefix?: string
     suffix?: string
-    type: ValuableObject<WEDestinationKeyframeType>
+    type: EnumValueType<WEDestinationKeyframeType>
     framesLength: number
     sample?: string
 }
@@ -33,7 +34,7 @@ export class WEIntegrationService {
 
     static setClipboard(newData: WEDynamicBlindItem[], stopData: StationData[]) {
         this.clipboard = newData.map(x => {
-            x.stopPos = x.useUntilStop ? stopData.find(y => y.waypoint.Index == x.useUntilStop.Index)?.position ?? 1 : 1
+            x.stopPos = x.useUntilStop ? stopData.find(y => y.waypoint.Index == x.useUntilStop?.Index)?.position ?? 1 : 1
             return { ...x };
         })
     }
@@ -41,9 +42,11 @@ export class WEIntegrationService {
     static hasClipboard() { return !!this.clipboard }
 
     static getClipboard(stopData: StationData[]) {
-        return this.clipboard.map(x => {
+        return this.clipboard?.map(x => {
             const result = { ...x };
-            result.useUntilStop = x.stopPos == 1 ? { Index: 0, Version: 0 } : stopData.map(t => [Math.abs(t.position - x.stopPos), t] as [number, StationData]).sort((a, b) => a[0] - b[0])[0][1].waypoint
+            result.useUntilStop = x.stopPos == 1
+                ? { Index: 0, Version: 0, __Type: "Unity.Entities.Entity, Unity.Entities, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null" }
+                : stopData.map(t => [Math.abs(t.position - x.stopPos!), t] as [number, StationData]).sort((a, b) => a[0] - b[0])[0][1].waypoint
             return result;
         })
     }

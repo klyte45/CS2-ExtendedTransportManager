@@ -1,37 +1,17 @@
 import { VehicleData } from "#service/LineManagementService";
-import { UnitSystem, getGameUnits } from "@klyte45/euis-components";
-import { nameToString } from "@klyte45/euis-components";
-import engine from "cohtml/cohtml";
-import { useCachedLocalization } from "cs2/l10n";
-import { CSSProperties, Component, ReactNode } from "react";
+import { nameToString } from "@klyte45/vuio-commons";
+import { CSSProperties } from "react";
 
-
-export class MapVehicleContainerCmp extends Component<{
+type Props = {
     vehicle: VehicleData;
-}, { measureUnit?: UnitSystem; }> {
+};
 
-    constructor(props) {
-        super(props);
-        this.state = {};
-    }
-    private measureCallback = async () => this.setState({ measureUnit: useCachedLocalization().unitSettings.unitSystem });
-    componentDidMount() {
-        engine.on("k45::xtm.common.onMeasureUnitsChanged", this.measureCallback);
-        const locale = useCachedLocalization();
-        this.setState({ measureUnit: locale.unitSettings.unitSystem });
-    }
-    override componentWillUnmount() {
-        engine.off("k45::xtm.common.onMeasureUnitsChanged", this.measureCallback);
-    }
-
-    render(): ReactNode {
-        const vehicle = this.props.vehicle;
-        return <div className="vehicleContainer" style={{ top: (vehicle.normalizedPosition * 100) + "%", "--vehicleColor": "gray" } as CSSProperties}>
-            <div className="vehicle" style={{ zIndex: (vehicle.normalizedPosition * 100) + 2000 } as CSSProperties} >
-                <div className="vehicleNeedle" ><div className="painting" /></div>
-                <div className="vehicleName">{nameToString(vehicle.name) + " " + vehicle.entity.Index}</div>
-                <div className="vehicleFill">{(vehicle.cargo / vehicle.capacity * 100).toFixed() + "%"}</div>
-            </div>
-        </div>;
-    }
+export function MapVehicleContainerCmp({ vehicle }: Props) {
+    return <div className="vehicleContainer" style={{ top: (vehicle.normalizedPosition * 100) + "%", "--vehicleColor": "gray" } as CSSProperties}>
+        <div className="vehicle" style={{ zIndex: (vehicle.normalizedPosition * 100) + 2000 } as CSSProperties}>
+            <div className="vehicleNeedle"><div className="painting" /></div>
+            <div className="vehicleName">{nameToString(vehicle.name) + " " + vehicle.entity.Index}</div>
+            <div className="vehicleFill">{(vehicle.cargo / vehicle.capacity * 100).toFixed() + "%"}</div>
+        </div>
+    </div>;
 }

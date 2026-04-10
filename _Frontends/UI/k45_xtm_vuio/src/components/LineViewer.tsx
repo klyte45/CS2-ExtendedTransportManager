@@ -1,6 +1,7 @@
 import { VanillaComponentResolver } from "@klyte45/vuio-commons";
 import { Entity, Name } from "cs2/bindings"
 import { useState } from "react";
+import { TlmViewerCmp } from "./lineViewer/TlmViewerCmp";
 
 type Props = {
     children: React.ReactNode;
@@ -9,9 +10,11 @@ type Props = {
 };
 
 export const XtmLineViewer = ({ children, args, isXtm }: Props) => {
-    return <>
-        {!isXtm && children}
-    </>
+    if (isXtm) {
+        return <></>
+    } else {
+        return <>{children}</>;
+    }
 }
 
 export interface VanillaLineInformation {

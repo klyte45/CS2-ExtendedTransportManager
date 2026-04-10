@@ -1,5 +1,6 @@
 const path = require("path");
 const MOD = require("./mod.json");
+const { TsconfigPathsPlugin } = require("tsconfig-paths-webpack-plugin");
 const MiniCssExtractPlugin = require("mini-css-extract-plugin");
 const { CSSPresencePlugin } = require("./tools/css-presence");
 const TerserPlugin = require("terser-webpack-plugin");
@@ -85,6 +86,7 @@ module.exports = (en) => {
       alias: {
         "mod.json": path.resolve(__dirname, "mod.json"),
       },
+      plugins: [new TsconfigPathsPlugin()],
     },
     output: {
       path: path.resolve(__dirname, outDir),

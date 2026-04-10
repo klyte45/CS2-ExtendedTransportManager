@@ -1,81 +1,60 @@
 import { TransportTypePriority } from "#enum/TransportType";
 import { LineData, StationData, VehicleData } from "#service/LineManagementService";
-import { CSSProperties, Component, ReactNode } from "react";
+import { ColorUtils, Entity, nameToString } from "@klyte45/vuio-commons";
+import { CSSProperties } from "react";
 import { TlmLineFormatCmp } from "./TlmLineFormatCmp";
-import engine from "cohtml/cohtml";
-import { UnitSystem, useCachedLocalization } from "cs2/l10n";
-import { ColorUtils, Entity } from "@klyte45/vuio-commons";
 
-
-export class StationIntegrationContainerCmp extends Component<{
+type Props = {
     station: StationData;
     getLineById: (e: number) => LineData;
     vehicles: VehicleData[];
-    thisLineId: Entity
+    thisLineId: Entity;
     setSelection: (e: Entity) => void;
     keyId: number;
     normalizedPosition: number;
-    totalStationCount: number
-    isFaded?: boolean
-}, { measureUnit?: UnitSystem; }> {
+    totalStationCount: number;
+    isFaded?: boolean;
+};
 
-    constructor(props) {
-        super(props);
-        this.state = {};
-    }
-    private measureCallback = async () => this.setState({ measureUnit: useCachedLocalization().unitSettings.unitSystem });
-    componentDidMount() {
-        engine.on("k45::xtm.common.onMeasureUnitsChanged", this.measureCallback);
-        const locale = useCachedLocalization();
-        this.setState({ measureUnit: locale.unitSettings.unitSystem });
-
-    }
-    override componentWillUnmount() {
-        engine.off("k45::xtm.common.onMeasureUnitsChanged", this.measureCallback);
-    }
-
-    render(): ReactNode {
-        const station = this.props.station;
-        const linesToIntegrate = [...station.connectedLines.reduce((p, n) => {
-            if (this.props.thisLineId.Index != n.line.Index) p.add(n.line.Index)
-            return p;
-        }, new Set<number>())].map(x => this.props.getLineById(x))
-            .sort((a, b) => (TransportTypePriority.indexOf(a.type) - TransportTypePriority.indexOf(b.type)) || (a.routeNumber - b.routeNumber))
-        if (linesToIntegrate.length == 0) return null;
-        const colors = [...linesToIntegrate
-            .reduce((p, n) => {
-                p.add(n.color)
-                return p;
-            }, new Set<string>())]
-        const stepEachColor = 100 / colors.length;
-        return <div className="stationIntegrationContainer" style={{ top: (100 * this.props.normalizedPosition) + "%", minHeight: (100 / this.props.totalStationCount) + "%" }}       >
-            <div className={["lineStation", this.props.isFaded && "faded"].join(" ")}>
-                <div className="integrationLineCutted" style={colors.length == 1 || colors.length > 6 ? {
-                    "--integrationLineColor": ColorUtils.getClampedColor(colors.length > 6 ? "#444444" : colors[0])
-                } as CSSProperties : {
-                    "--integrationBackgroundImage": `linear-gradient(to right, ${colors.flatMap((x, i, arr) => {
-                        const targetColor = ColorUtils.getClampedColor(x);
-                        const margin = 3;
-                        return [
-                            `transparent ${i * stepEachColor}%`,
-                            `transparent ${i * stepEachColor + margin}%`,
-                            `${targetColor} ${i * stepEachColor + margin}%`,
-                            `${targetColor} ${(i + 1) * stepEachColor - margin}%`,
-                            `transparent ${(i + 1) * stepEachColor - margin}%`,
-                            `transparent ${(i + 1) * stepEachColor}%`
-                        ]
-                    }).join(", ")})`
-                } as CSSProperties} />
-                <div className="integrationStationBulletBG" />
-                <div className="integrationStationBullet" />
-                {<div className={`stationIntersectionsContainer ${linesToIntegrate.length > 4 ? "sz1" : ""}`}>
-                    {linesToIntegrate.map((lineData, i) => {
-                        return <div className="lineIntersection" key={i} data-tooltip={nameToString(lineData.name)} data-tootip-position="top left" onClick={() => this.props.setSelection(lineData.entity)} >
-                            <TlmLineFormatCmp {...lineData} text={lineData.xtmData?.Acronym || lineData.routeNumber.toFixed()} />
-                        </div>;
-                    })}
-                </div>}
-            </div>
-        </div>;
-    }
+export function StationIntegrationContainerCmp({ station, getLineById, thisLineId, setSelection, normalizedPosition, totalStationCount, isFaded }: Props) {
+    const linesToIntegrate = [...station.connectedLines.reduce((p, n) => {
+        if (thisLineId.Index != n.line.Index) p.add(n.line.Index);
+        return p;
+    }, new Set<number>())].map(x => getLineById(x))
+        .sort((a, b) => (TransportTypePriority.indexOf(a.type) - TransportTypePriority.indexOf(b.type)) || (a.routeNumber - b.routeNumber));
+    if (linesToIntegrate.length == 0) return null;
+    const colors = [...linesToIntegrate.reduce((p, n) => {
+        p.add(n.color);
+        return p;
+    }, new Set<string>())];
+    const stepEachColor = 100 / colors.length;
+    return <div className="stationIntegrationContainer" style={{ top: (100 * normalizedPosition) + "%", minHeight: (100 / totalStationCount) + "%" }}>
+        <div className={["lineStation", isFaded && "faded"].join(" ")}>
+            <div className="integrationLineCutted" style={colors.length == 1 || colors.length > 6 ? {
+                "--integrationLineColor": ColorUtils.getClampedColor(colors.length > 6 ? "#444444" : colors[0])
+            } as CSSProperties : {
+                "--integrationBackgroundImage": `linear-gradient(to right, ${colors.flatMap((x, i) => {
+                    const targetColor = ColorUtils.getClampedColor(x);
+                    const margin = 3;
+                    return [
+                        `transparent ${i * stepEachColor}%`,
+                        `transparent ${i * stepEachColor + margin}%`,
+                        `${targetColor} ${i * stepEachColor + margin}%`,
+                        `${targetColor} ${(i + 1) * stepEachColor - margin}%`,
+                        `transparent ${(i + 1) * stepEachColor - margin}%`,
+                        `transparent ${(i + 1) * stepEachColor}%`
+                    ];
+                }).join(", ")})`
+            } as CSSProperties} />
+            <div className="integrationStationBulletBG" />
+            <div className="integrationStationBullet" />
+            {<div className={`stationIntersectionsContainer ${linesToIntegrate.length > 4 ? "sz1" : ""}`}>
+                {linesToIntegrate.map((lineData, i) => {
+                    return <div className="lineIntersection" key={i} data-tooltip={nameToString(lineData.name)} data-tootip-position="top left" onClick={() => setSelection(lineData.entity)}>
+                        <TlmLineFormatCmp {...lineData} text={lineData.xtmData?.Acronym || lineData.routeNumber.toFixed()} />
+                    </div>;
+                })}
+            </div>}
+        </div>
+    </div>;
 }
