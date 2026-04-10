@@ -1,7 +1,8 @@
+import { Unit } from "#enum/Unit";
 import { SegmentData, StationData } from "#service/LineManagementService";
 import { replaceArgs } from "@klyte45/vuio-commons";
 import engine from "cohtml/cohtml";
-import { LocalizedNumber, Unit, UnitSystem, useCachedLocalization } from "cs2/l10n";
+import { LocalizedNumber, UnitSystem, useLocalization } from "cs2/l10n";
 import { CSSProperties, useEffect, useState } from "react";
 
 type Props = {
@@ -12,11 +13,11 @@ type Props = {
 };
 
 export function MapStationDistanceContainerCmp({ segments, stop, nextStop, normalizedPosition }: Props) {
-    const locale = useCachedLocalization();
+    const locale = useLocalization();
     const [measureUnit, setMeasureUnit] = useState<UnitSystem>(locale.unitSettings.unitSystem);
 
     useEffect(() => {
-        const measureCallback = () => setMeasureUnit(useCachedLocalization().unitSettings.unitSystem);
+        const measureCallback = () => setMeasureUnit(useLocalization().unitSettings.unitSystem);
         engine.on("k45::xtm.common.onMeasureUnitsChanged", measureCallback);
         return () => engine.off("k45::xtm.common.onMeasureUnitsChanged", measureCallback);
     }, []);
@@ -24,7 +25,7 @@ export function MapStationDistanceContainerCmp({ segments, stop, nextStop, norma
     if (!isFinite(measureUnit)) return null;
     const refNextStopPos = nextStop.position < stop.position ? 1 + nextStop.position : nextStop.position;
     const totalDistanceSegments = segments.filter(x => x.end > stop.position && x.start < refNextStopPos);
-    const nextVehicleDistanceFmt = LocalizedNumber({
+    const nextVehicleDistanceFmt = LocalizedNumber.renderString(locale, {
         value: totalDistanceSegments.reduce((p, n) => p + n.sizeMeters, 0),
         unit: Unit.Length,
         signed: false

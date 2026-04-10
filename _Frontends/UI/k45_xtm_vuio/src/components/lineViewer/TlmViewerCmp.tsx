@@ -7,10 +7,10 @@ import { StationContainerCmp } from "./StationContainerCmp";
 import { StationIntegrationContainerCmp } from "./StationIntegrationContainerCmp";
 import { TlmLineFormatCmp } from "./TlmLineFormatCmp";
 import { ColorUtils, Entity } from "@klyte45/vuio-commons";
+import { Scrollable, ScrollController } from "cs2/ui";
 
 type Props = {
     lineDetails: LineDetails;
-    lineCommonData: LineData;
     setSelection: (line: Entity) => void;
     getLineById: (line: number) => LineData;
     onSelectStop: (entity: StationData) => void;
@@ -18,7 +18,9 @@ type Props = {
     currentStopSelected?: StationData;
 } & MapViewerOptions;
 
-export function TlmViewerCmp({ lineDetails, lineCommonData, setSelection, getLineById, onSelectStop, simetricLine, currentStopSelected, showDistricts, showDistances, showVehicles, showIntegrations, useWhiteBackground, useHalfTripIfSimetric }: Props) {
+export function TlmViewerCmp({ lineDetails, setSelection, getLineById, onSelectStop, simetricLine, currentStopSelected, showDistricts, showDistances, showVehicles, showIntegrations, useWhiteBackground, useHalfTripIfSimetric }: Props) {
+
+    const lineCommonData: LineData = lineDetails.LineData;
     const showSimetricMode = simetricLine && !showVehicles && useHalfTripIfSimetric;
     const targetStops = showSimetricMode ? lineDetails.Stops.slice(0, lineDetails.Stops.length / 2 + 1) : lineDetails.Stops;
     const targetLenght = targetStops.length - (showSimetricMode ? 1 : 0);
@@ -31,7 +33,7 @@ export function TlmViewerCmp({ lineDetails, lineCommonData, setSelection, getLin
                         <TlmLineFormatCmp {...lineCommonData} text={lineCommonData.xtmData?.Acronym || lineCommonData.routeNumber.toFixed()} />
                     </div>
                 </div>
-                <div className="lineStationsContainer">
+                <Scrollable className="lineStationsContainer">
                     <div className="linePath" style={{ "--lineColor": ColorUtils.getClampedColor(lineCommonData.color), height: (50 * (targetStops.length + 1)) + "rem" } as CSSProperties}>
                         <div className="lineBg"></div>
                         <div className="railingContainer">
@@ -143,7 +145,7 @@ export function TlmViewerCmp({ lineDetails, lineCommonData, setSelection, getLin
                             }
                         </div>
                     </div>
-                </div>
+                </Scrollable>
             </>
         }
     </div>;

@@ -1,0 +1,480 @@
+#TlmViewer {
+    height: 100%;
+    --districtBorderColor: #eee;
+    --cityBorderNameColor: #ee0;
+
+    &.mapWhiteBg {
+        background-color: #eee;
+        color: black;
+        --districtBorderColor: #111;
+        --cityBorderNameColor: rgb(158, 127, 0);
+    }
+
+    .lineBlock {
+        text-align: center;
+
+        &.btn {
+            text-transform: none;
+        }
+    }
+
+    .titleRow {
+        margin-top: 8rem;
+        margin-bottom: 8rem;
+
+        .formatContainer {
+            left: 50%;
+            margin-left: -15rem;
+        }
+    }
+
+
+    .lineBlock text {
+        text-align: center;
+        height: 40rem;
+        text-shadow: 0 0 6rem black;
+    }
+
+
+    .flexContainer .mat-tab-body-content {
+        height: 100%;
+        overflow: visible;
+        display: flex;
+        flex-wrap: wrap;
+        padding: 0 0 25rem;
+    }
+
+    .lineStationsContainer {
+        position: absolute;
+        top: 80.000000rem;
+        left: 0.000000rem;
+        right: 0.000000rem;
+        bottom: 0.000000rem;
+    }
+
+    .linePath {
+        position: relative;
+        min-height: 100.000000%;
+        overflow: hidden;
+
+        .lineBg {
+            position: absolute;
+            top: 10.000000rem;
+            bottom: 30.000000rem;
+            left: 50.000000%;
+            width: 20.000000rem;
+            margin-left: 5.000000rem;
+            background-color: var(--lineColor);
+            border-radius: 50rem;
+        }
+
+        .railingContainer {
+            position: absolute;
+            top: 10.000000rem;
+            bottom: 30.000000rem;
+            left: 0.000000;
+            right: 0;
+            margin-left: 5.000000rem;
+
+
+            %commonRailing {
+                position: absolute;
+                top: 20rem;
+                bottom: 20rem;
+                pointer-events: auto;
+                z-index: 999;
+
+            }
+
+            .stationRailing {
+                @extend %commonRailing;
+                right: 50%;
+                left: 0%;
+
+                // margin-left: 20rem;
+                // background-color: blue;
+                &:hover {
+                    z-index: 20454;
+                }
+
+                .lineStationContainer {
+                    @extend %lineStationContainer;
+
+                }
+            }
+
+            .districtRailing {
+                @extend %commonRailing;
+                right: 0%;
+                left: 0%;
+                pointer-events: none;
+
+                .districtLimitsContainer {
+                    @extend %districtLimitContainer;
+                }
+            }
+
+            .distanceRailing {
+                @extend %commonRailing;
+                right: 0%;
+                left: 0%;
+                pointer-events: none;
+
+                .stationDistanceContainer {
+                    @extend %distanceContainer;
+                }
+            }
+
+            .vehiclesRailing {
+                @extend %commonRailing;
+                left: 50%;
+                margin-left: 20rem;
+                //background-color: magenta;
+
+                .vehicleContainer {
+                    @extend %vehicleContainer;
+                }
+            }
+
+            .integrationsRailing {
+                @extend %commonRailing;
+                left: 50%;
+                //background-color: magenta;
+
+                .stationIntegrationContainer {
+                    @extend %stationIntegrationContainer;
+                }
+            }
+        }
+
+    }
+
+    %vehicleContainer {
+        position: absolute;
+        margin-left: 20rem;
+
+        &:hover,
+        *:hover {
+            z-index: 89999 !important;
+        }
+
+        .vehicle {
+            position: relative;
+            left: 0.000000rem;
+            display: flex;
+            flex-direction: column;
+            transform: translateY(-50.000000%);
+            background-color: var(--vehicleColor);
+            padding-top: 6.000000rem;
+            padding-left: 6.000000rem;
+            padding-right: 6.000000rem;
+            padding-bottom: 6.000000rem;
+            border-top-left-radius: 4.000000rem 4.000000rem;
+            border-top-right-radius: 4.000000rem 4.000000rem;
+            border-bottom-left-radius: 4.000000rem 4.000000rem;
+            border-bottom-right-radius: 4.000000rem 4.000000rem;
+            border: 1rem solid black;
+            white-space: pre-wrap;
+
+            max-width: 200rem;
+
+            &:hover {
+                box-shadow: 0rem 0rem 5rem black;
+            }
+
+            * {
+                pointer-events: auto;
+                display: block;
+            }
+
+            .vehicleNeedle {
+                top: 50.000000%;
+                background-color: black;
+                clip-path: border-box polygon(nonzero, 100.000000% 0.000000rem, 0.000000rem 50.000000%, 100.000000% 100.000000%);
+                height: 15.000000rem;
+                width: 15.000000rem;
+                left: -15.000000rem;
+                margin-top: -1.500000rem;
+                position: absolute;
+
+                .painting {
+                    position: absolute;
+                    top: 1rem;
+                    left: 2rem;
+                    right: 0;
+                    bottom: 1rem;
+                    background-color: var(--vehicleColor);
+                    clip-path: border-box polygon(nonzero, 100.000000% 0.000000rem, 0.000000rem 50.000000%, 100.000000% 100.000000%);
+                    position: absolute;
+                }
+            }
+        }
+
+    }
+
+    %lineStationContainer {
+        width: 100%;
+        height: 60rem;
+        position: absolute;
+
+
+        .lineStation {
+            height: 60rem;
+            position: relative;
+            transform: translateY(-50%);
+
+            .stationName {
+                position: absolute;
+                width: 65.000000%;
+                margin-left: 21%;
+                top: 50.000000%;
+                text-align: right;
+                font-weight: bolder;
+                font-size: 21.000000rem;
+                max-height: 26rem;
+                transform: translateY(-50.000000%);
+                line-height: 90%;
+                coh-font-fit-mode: shrink;
+                coh-font-fit-min-size: 5rem;
+
+                &.faded {
+                    opacity: 0.5;
+                }
+            }
+
+            .stationBullet {
+                position: absolute;
+                right: -20rem;
+                top: 50%;
+                margin-top: - 8rem;
+                height: 16rem;
+                width: 16rem;
+                background: white;
+                border: 1rem solid black;
+                display: block;
+                border-radius: 9999rem;
+                pointer-events: auto;
+
+                &.faded {
+                    opacity: 0.5;
+                }
+            }
+
+            .stationDirection {
+                position: absolute;
+                right: -20rem;
+                height: 16rem;
+                width: 16rem;
+                background: white;
+                border: 1rem solid black;
+                display: block;
+
+                &.up {
+                    clip-path: border-box polygon(nonzero, 50% 0%, 100% 100%, 0% 100%);
+                    top: 0%;
+                }
+
+                &.down {
+                    bottom: 0%;
+                    clip-path: border-box polygon(nonzero, 0% 0%, 50% 100%, 100% 0%);
+                }
+            }
+
+            .stationIntersections {
+                position: absolute;
+                left: 50%;
+                margin-left: 40rem;
+                height: 30rem;
+                overflow-x: auto;
+                overflow-y: hidden;
+                white-space: nowrap;
+                padding: 12rem 12rem 0 0;
+
+                &.faded {
+                    opacity: 0.5;
+                }
+            }
+
+            .lineIntersection .formatContainer {
+                width: 47rem;
+
+                &.faded {
+                    opacity: 0.5;
+                }
+            }
+
+        }
+
+        .tlm-station-tooltip {
+            background-color: var(--tooltipColor);
+            filter: var(--tooltipFilter);
+            border-radius: 4rem;
+            font-size: var(--fontSizeS);
+            color: var(--textColorDim);
+            pointer-events: none;
+            display: flex;
+
+            position: absolute;
+            padding: 7rem 10rem;
+            z-index: 100000;
+            overflow: hidden;
+            left: 100%;
+            margin-left: 30rem;
+            max-width: 100%;
+            word-wrap: nowrap;
+
+            * {
+                display: flex;
+                flex-wrap: wrap;
+            }
+        }
+    }
+
+    %stationIntegrationContainer {
+        width: 100%;
+        height: 50rem;
+        position: absolute;
+
+        .lineStation {
+            height: 50rem;
+            position: relative;
+            transform: translateY(-50%);
+            --integrationLineColor: transparent;
+            --integrationBackgroundImage: none;
+
+            &.faded {
+                opacity: 0.5;
+            }
+
+            .integrationLineCutted {
+                position: absolute;
+                left: 40rem;
+                top: 2rem;
+                bottom: 2rem;
+                width: 20rem;
+                background-color: var(--integrationLineColor);
+                background-image: var(--integrationBackgroundImage);
+                display: block;
+            }
+
+            .integrationStationBulletBG {
+                position: absolute;
+                left: 0;
+                width: 60rem;
+                height: 24rem;
+                border-radius: 9999rem;
+                background-color: darkgray;
+                border: 1rem solid black;
+                top: 50%;
+                margin-top: -12rem;
+            }
+
+            .integrationStationBullet {
+                position: absolute;
+                left: 40rem;
+                top: 50%;
+                margin-top: - 8rem;
+                height: 16rem;
+                width: 16rem;
+                background-color: white;
+                border: 1rem solid black;
+                display: block;
+                border-radius: 9999rem;
+                pointer-events: auto;
+            }
+
+            .stationIntersectionsContainer {
+                position: absolute;
+                left: 60rem;
+                top: 50%;
+                width: 230rem;
+                display: flex;
+                flex-wrap: wrap;
+                flex-direction: row;
+                transform: translateY(-50%);
+                --scale-format: scale(.70);
+
+                &.sz1 {
+                    --scale-format: scale(.45);
+                    --form-border-width: 3;
+
+                    .formatContainer {
+                        margin: -15rem;
+                    }
+                }
+
+                .formatContainer {
+                    margin: -5rem;
+                    transform: var(--scale-format);
+                }
+            }
+        }
+    }
+
+    %districtLimitContainer {
+        width: 100%;
+        position: absolute;
+        transform: translateY(-50%);
+
+        .districtDiv {
+            position: relative;
+
+            .before {
+                content: "";
+                height: 2rem;
+                background-image: linear-gradient(to left, transparent, transparent 50%, var(--districtBorderColor) 50%, var(--districtBorderColor) 75%, transparent 75%);
+                background-size: 20.000000rem auto;
+                position: absolute;
+                left: 0;
+                right: 0;
+                top: 0rem
+            }
+
+            .oldDistrict,
+            .newDistrict {
+                font-size: 70%;
+                position: absolute;
+                max-width: 100%;
+                coh-font-fit-mode: shrink;
+                coh-font-fit-min-size: 3rem;
+
+                &.outsideConn {
+                    color: var(--cityBorderNameColor);
+                }
+
+                &.noDistrict {
+                    color: gray;
+                }
+            }
+
+            .newDistrict {
+                top: 5rem;
+            }
+
+            .oldDistrict {
+                bottom: 100%;
+                padding-bottom: 5rem;
+            }
+
+        }
+    }
+
+    %distanceContainer {
+        width: 100%;
+        position: absolute;
+        transform: translateY(-50%);
+
+        .distanceLbl {
+            background-color: black;
+            position: absolute;
+            color: white;
+            font-size: calc(var(--fontSizeS) * 0.75);
+            right: 50%;
+            margin-right: 5rem;
+            transform: translateY(-50%);
+            padding-left: 3rem;
+            padding-right: 3rem;
+        }
+    }
+
+}

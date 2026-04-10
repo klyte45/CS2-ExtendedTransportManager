@@ -27,3 +27,4 @@ export const TransportTypePriority = [
     TransportType.Tram,
     TransportType.Bus
 ]
+

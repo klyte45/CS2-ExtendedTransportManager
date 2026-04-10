@@ -134,7 +134,7 @@ export class LineManagementService {
         return true;
     }
     static async getRouteDetail(entity: Entity, force: boolean): Promise<LineDetails> {
-        await engine.call("k45::xtm.lineViewer.getRouteDetail", entity, force)
+        const x = await engine.call("k45::xtm.lineViewer.getRouteDetail", entity, force)
         const eventName = `k45::xtm.lineViewer.getRouteDetail:${entity.Index}->`;
         const response = new Promise<LineDetails>((res) => {
             const onResponse = (x: LineDetails) => {

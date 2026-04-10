@@ -1,5 +1,10 @@
-.xtm-line-view-container>div {
-    width: 600rem !important;
+.xtm-line-view-container {
+    >div {
+        width: 600rem !important;
+    }
 
-    
+    [class^=track-container_] {
+        width: 100% !important;
+    }
+
 }

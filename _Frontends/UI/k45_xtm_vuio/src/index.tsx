@@ -45,7 +45,6 @@ const XtmLineViewerRegister = (Component: any): any => {
 const XtmLineSelectedInfoPanelRegister = (Component: any): any => {
     return (args: any) => {
         const component = Component(args);
-        console.log("XtmLineSelectedInfoPanelRegister", component, args);
         return component;
     };
 }

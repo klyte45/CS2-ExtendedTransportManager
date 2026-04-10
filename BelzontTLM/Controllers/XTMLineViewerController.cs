@@ -141,27 +141,6 @@ namespace BelzontTLM
             m_EndFrameBarrier = World.GetOrCreateSystemManaged<EndFrameBarrier>();
             m_LineVisualizerSection = World.GetOrCreateSystemManaged<XTMLineViewerSection>();
             m_LineListingSection = World.GetOrCreateSystemManaged<XTMLineListingSection>();
-
-            //if (GameObject.Find(CCTV_GO) is null)
-            //{
-            //    var goCctv = new GameObject();
-            //    goCctv.name = CCTV_GO;
-            //    GameObject.DontDestroyOnLoad(goCctv);
-            //    cctvCamera = goCctv.AddComponent<Camera>();
-            //    cctvCamera.depthTextureMode = DepthTextureMode.None;
-            //    cctvCamera.targetTexture = null;
-            //    cctvCamera.cameraType = CameraType.Game;
-            //    var liveView = goCctv.AddComponent<CohtmlLiveView>();
-            //    liveView.LiveViewName = "cctv.xtm.k45";
-            //    liveView.TargetTexture = new RenderTexture(512, 512, 16)
-            //    {
-            //        graphicsFormat = UnityEngine.Experimental.Rendering.GraphicsFormat.R8G8B8A8_UNorm
-            //    };
-
-            //    LogUtils.DoLog("ON CREATE ");
-            //    LogUtils.DoLog("liveView => {0} {1} {2} {3} {4}", liveView.name, liveView.LiveViewName, liveView.TargetCamera, liveView.TargetTexture, liveView.System);
-            //}
-
         }
 
 
