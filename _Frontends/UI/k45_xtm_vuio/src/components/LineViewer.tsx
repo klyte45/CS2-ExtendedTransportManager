@@ -2,7 +2,7 @@ import { toEntityTyped, toVanillaEntity, VanillaComponentResolver } from "@klyte
 import { Entity, Name, selectedInfo } from "cs2/bindings"
 import { useEffect, useState } from "react";
 import { TlmViewerCmp } from "./lineViewer/TlmViewerCmp";
-import { LineData, LineDetails, LineManagementService, StationData, VehicleData } from "#service/LineManagementService";
+import { LineData, LineDetails, LineManagementService, MapViewerOptions, StationData, VehicleData } from "#service/LineManagementService";
 import { TransportType } from "#enum/TransportType";
 import engine from "cohtml/cohtml";
 import "#styles/TLM_LineDetail.scss";
@@ -11,6 +11,7 @@ type Props = {
     children: React.ReactNode;
     args: VanillaLineInformation;
     isXtm: boolean;
+    xtmOptions: MapViewerOptions;
 };
 
 const TypeToIcons = {
@@ -26,12 +27,9 @@ const TypeToIcons = {
     [`${TransportType.Airplane}.true`]: "assetdb://gameui/Media/Game/Icons/CargoAirplaneLine.svg",
 }
 
-export const XtmLineViewer = ({ children, args, isXtm }: Props) => {
+export const XtmLineViewer = ({ children, args, isXtm, xtmOptions }: Props) => {
     if (isXtm) {
         const currentLine = toEntityTyped(selectedInfo.selectedRoute$.value);
-        const mapViewOptions = {
-            showVehicles: true,
-        }
         const [linesList, setLinesList] = useState<LineData[]>([]);
         const [indexedLineList, setIndexedLineList] = useState<Record<string, LineData>>({});
 
@@ -72,7 +70,7 @@ export const XtmLineViewer = ({ children, args, isXtm }: Props) => {
         const [isLineSimetric, setIsLineSimetric] = useState(false);
 
         async function reloadData(force: boolean) {
-            if (force || mapViewOptions.showVehicles) {
+            if (force || xtmOptions.showVehicles) {
                 const details = await LineManagementService.getRouteDetail(currentLine, true)
                 if (details.LineData.entity.Index != currentLine.Index) return;
                 details.Vehicles = details.Vehicles.map(x => {
@@ -97,12 +95,12 @@ export const XtmLineViewer = ({ children, args, isXtm }: Props) => {
                 lineDetails={lineDetails}
                 onSelectStop={(entity) => selectedInfo.selectEntity(toVanillaEntity(entity.entity))}
                 setSelection={(e) => selectedInfo.selectEntity(toVanillaEntity(e))}
-                showDistances={true}
-                showIntegrations={true}
-                useHalfTripIfSimetric={true}
-                showDistricts={true}
-                showVehicles={true}
-                useWhiteBackground={false}
+                showDistances={xtmOptions.showDistances}
+                showIntegrations={xtmOptions.showIntegrations}
+                useHalfTripIfSimetric={xtmOptions.useHalfTripIfSimetric}
+                showDistricts={xtmOptions.showDistricts}
+                showVehicles={xtmOptions.showVehicles}
+                useWhiteBackground={xtmOptions.useWhiteBackground}
                 getLineById={(x) => indexedLineList[x]}
                 simetricLine={isLineSimetric}
             />

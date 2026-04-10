@@ -3,6 +3,10 @@
     --districtBorderColor: #eee;
     --cityBorderNameColor: #ee0;
 
+    [class^=content_] {
+        height: 100%;
+    }
+
     &.mapWhiteBg {
         background-color: #eee;
         color: black;

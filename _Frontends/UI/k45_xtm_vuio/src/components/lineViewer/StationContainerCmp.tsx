@@ -73,7 +73,6 @@ export function StationContainerCmp({ station, vehicles: _vehicles, keyId, norma
     }
 
     function handleStopClick() {
-        engine.call("k45::xtm.lineViewer.setCctvPosition", station.worldPosition.x, station.worldPosition.y, station.worldPosition.z, station.azimuth, 0, 20);
         onSelectStop(station);
     }
 
