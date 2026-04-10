@@ -1,6 +1,6 @@
 {
   "compilerOptions": {
-    "jsx":"react-jsx",
+    "jsx": "react-jsx",
     "ignoreDeprecations": "6.0",
     "target": "ESNext",
     "module": "ESNext",
@@ -11,10 +11,29 @@
     "forceConsistentCasingInFileNames": true,
     "baseUrl": "src",
     "skipLibCheck": true,
-    "typeRoots": ["./types"],
+    "typeRoots": [
+      "./types"
+    ],
     "resolveJsonModule": true,
     "paths": {
-      "mod.json": ["../mod.json"]
+      "mod.json": [
+        "../mod.json"
+      ],
+      "#components/*": [
+        "src/components/*"
+      ],
+      "#enum/*": [
+        "src/enum/*"
+      ],
+      "#service/*": [
+        "src/service/*"
+      ],
+      "#utility/*": [
+        "src/utility/*"
+      ],
+      "#styles/*": [
+        "src/styles/*"
+      ],
     }
-  },
-} 
+  }
+}
