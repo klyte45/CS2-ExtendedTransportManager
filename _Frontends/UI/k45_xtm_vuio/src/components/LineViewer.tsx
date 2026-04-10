@@ -30,7 +30,6 @@ const TypeToIcons = {
 export const XtmLineViewer = ({ children, args, isXtm, xtmOptions }: Props) => {
     if (isXtm) {
         const currentLine = toEntityTyped(selectedInfo.selectedRoute$.value);
-        const [linesList, setLinesList] = useState<LineData[]>([]);
         const [indexedLineList, setIndexedLineList] = useState<Record<string, LineData>>({});
 
         const reloadLines = async (res: LineData[]) => {
@@ -42,7 +41,6 @@ export const XtmLineViewer = ({ children, args, isXtm, xtmOptions }: Props) => {
                 if (typeA != typeB) return refOrder.indexOf(typeA) - refOrder.indexOf(typeB);
                 return a.routeNumber - b.routeNumber
             });
-            setLinesList(lineList)
             setIndexedLineList(lineList.reduce((p, n) => {
                 p[n.entity.Index.toFixed(0)] = n;
                 return p;
@@ -64,7 +62,7 @@ export const XtmLineViewer = ({ children, args, isXtm, xtmOptions }: Props) => {
             const updateCallback = setInterval(() => reloadData(false), 3000);
             reloadData(true);
             return () => clearInterval(updateCallback);
-        }, [currentLine])
+        }, [selectedInfo.selectedRoute$.value])
 
         const [lineDetails, setLineDetails] = useState<LineDetails>();
         const [isLineSimetric, setIsLineSimetric] = useState(false);
@@ -90,11 +88,12 @@ export const XtmLineViewer = ({ children, args, isXtm, xtmOptions }: Props) => {
                 setIsLineSimetric(LineManagementService.checkSimetry(details.Stops))
             }
         }
+        if (!lineDetails) {
+            reloadData(true);
+        }
         if (lineDetails) {
             return <TlmViewerCmp
                 lineDetails={lineDetails}
-                onSelectStop={(entity) => selectedInfo.selectEntity(toVanillaEntity(entity.entity))}
-                setSelection={(e) => selectedInfo.selectEntity(toVanillaEntity(e))}
                 showDistances={xtmOptions.showDistances}
                 showIntegrations={xtmOptions.showIntegrations}
                 useHalfTripIfSimetric={xtmOptions.useHalfTripIfSimetric}

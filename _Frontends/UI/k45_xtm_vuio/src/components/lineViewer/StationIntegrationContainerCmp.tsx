@@ -1,22 +1,22 @@
 import { TransportTypePriority } from "#enum/TransportType";
 import { LineData, StationData, VehicleData } from "#service/LineManagementService";
-import { ColorUtils, Entity, nameToString } from "@klyte45/vuio-commons";
+import { ColorUtils, Entity, nameToString, toVanillaEntity } from "@klyte45/vuio-commons";
 import { CSSProperties } from "react";
 import { TlmLineFormatCmp } from "./TlmLineFormatCmp";
+import { selectedInfo } from "cs2/bindings";
 
 type Props = {
     station: StationData;
     getLineById: (e: number) => LineData;
     vehicles: VehicleData[];
     thisLineId: Entity;
-    setSelection: (e: Entity) => void;
     keyId: number;
     normalizedPosition: number;
     totalStationCount: number;
     isFaded?: boolean;
 };
 
-export function StationIntegrationContainerCmp({ station, getLineById, thisLineId, setSelection, normalizedPosition, totalStationCount, isFaded }: Props) {
+export function StationIntegrationContainerCmp({ station, getLineById, thisLineId, normalizedPosition, totalStationCount, isFaded }: Props) {
     const linesToIntegrate = [...station.connectedLines.reduce((p, n) => {
         if (thisLineId.Index != n.line.Index) p.add(n.line.Index);
         return p;
@@ -50,7 +50,7 @@ export function StationIntegrationContainerCmp({ station, getLineById, thisLineI
             <div className="integrationStationBullet" />
             {<div className={`stationIntersectionsContainer ${linesToIntegrate.length > 4 ? "sz1" : ""}`}>
                 {linesToIntegrate.map((lineData, i) => {
-                    return <div className="lineIntersection" key={i} data-tooltip={nameToString(lineData.name)} data-tootip-position="top left" onClick={() => setSelection(lineData.entity)}>
+                    return <div className="lineIntersection" key={i} data-tooltip={nameToString(lineData.name)} data-tootip-position="top left" onClick={() => selectedInfo.selectEntity(toVanillaEntity(lineData.entity))}>
                         <TlmLineFormatCmp {...lineData} text={lineData.xtmData?.Acronym || lineData.routeNumber.toFixed()} />
                     </div>;
                 })}

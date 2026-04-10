@@ -9,12 +9,12 @@ import iconWhite from "#images/iconWhite.svg";
 import { MapViewerOptions } from "#service/LineManagementService";
 import translate from "#utility/translate";
 
-let IsXtm = false;
+let IsXtm = true;
 let xtmOptions: MapViewerOptions = {
-    showVehicles: false,
+    showVehicles: true,
     showDistricts: true,
     showDistances: true,
-    showIntegrations: true,
+    showIntegrations: false,
     useWhiteBackground: false,
     useHalfTripIfSimetric: true
 }

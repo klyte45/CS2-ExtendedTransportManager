@@ -160,6 +160,14 @@
         &:hover,
         *:hover {
             z-index: 89999 !important;
+            opacity: 1 !important;
+        }
+
+        &.selected .vehicle {
+            background-image: linear-gradient(90deg, var(--vehicleColor) 0%, var(--vehicleColor) var(--vehicleFill), #eeeeee var(--vehicleFill), #eeeeee 100%);
+            border: 1rem solid #dddddd;
+            box-shadow: 0rem 0rem 5rem #dddddd;
+            color: black;
         }
 
         .vehicle {
@@ -168,19 +176,17 @@
             display: flex;
             flex-direction: column;
             transform: translateY(-50.000000%);
-            background-color: var(--vehicleColor);
+            background-image: linear-gradient(90deg, var(--vehicleColor) 0%, var(--vehicleColor) var(--vehicleFill), #000000 var(--vehicleFill), #000000 100%);
             padding-top: 6.000000rem;
             padding-left: 6.000000rem;
             padding-right: 6.000000rem;
             padding-bottom: 6.000000rem;
-            border-top-left-radius: 4.000000rem 4.000000rem;
-            border-top-right-radius: 4.000000rem 4.000000rem;
-            border-bottom-left-radius: 4.000000rem 4.000000rem;
-            border-bottom-right-radius: 4.000000rem 4.000000rem;
+            border-radius: 60rem;
             border: 1rem solid black;
             white-space: pre-wrap;
-
-            max-width: 200rem;
+            height: 2em;
+            width: 240rem;
+            overflow: hidden;
 
             &:hover {
                 box-shadow: 0rem 0rem 5rem black;
@@ -191,26 +197,27 @@
                 display: block;
             }
 
-            .vehicleNeedle {
-                top: 50.000000%;
-                background-color: black;
-                clip-path: border-box polygon(nonzero, 100.000000% 0.000000rem, 0.000000rem 50.000000%, 100.000000% 100.000000%);
-                height: 15.000000rem;
-                width: 15.000000rem;
-                left: -15.000000rem;
-                margin-top: -1.500000rem;
-                position: absolute;
+        }
 
-                .painting {
-                    position: absolute;
-                    top: 1rem;
-                    left: 2rem;
-                    right: 0;
-                    bottom: 1rem;
-                    background-color: var(--vehicleColor);
-                    clip-path: border-box polygon(nonzero, 100.000000% 0.000000rem, 0.000000rem 50.000000%, 100.000000% 100.000000%);
-                    position: absolute;
-                }
+        .vehicleNeedle {
+            top: -8rem;
+            background-color: rgba(0, 0, 0, 1);
+            clip-path: border-box polygon(nonzero, 100% 0rem, 0rem 50%, 100% 100%);
+            height: 16rem;
+            width: 16rem;
+            left: -16rem;
+            margin-top: -1.5rem;
+            position: absolute;
+
+            .painting {
+                position: absolute;
+                top: 1rem;
+                left: 2rem;
+                right: 0;
+                bottom: 1rem;
+                background-color: var(--vehicleColor);
+                clip-path: border-box polygon(nonzero, 100.000000% 0.000000rem, 0.000000rem 50.000000%, 100.000000% 100.000000%);
+                position: absolute;
             }
         }
 
@@ -226,6 +233,10 @@
             height: 60rem;
             position: relative;
             transform: translateY(-50%);
+
+            &:hover .faded {
+                opacity: 1 !important;
+            }
 
             .stationName {
                 position: absolute;
