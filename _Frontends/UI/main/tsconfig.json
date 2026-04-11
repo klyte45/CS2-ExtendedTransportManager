@@ -2,8 +2,9 @@
   "extends": "ts-config-single-spa",  
   "compilerOptions": {
     "baseUrl": "./",
+    "ignoreDeprecations": "6.0",
     "jsx": "react-jsx",
-    "declarationDir": "dist",
+    "declarationDir": "./dist",
     "target": "ES2015",
     "paths": {
       "#components/*": [

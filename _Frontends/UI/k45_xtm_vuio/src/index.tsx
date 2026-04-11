@@ -1,20 +1,22 @@
 import { VanillaComponentResolver } from "@klyte45/vuio-commons";
 import { XtmLineViewer } from "components/LineViewer";
-import { selectedInfo, ValueBinding } from "cs2/bindings";
+import { photo, selectedInfo, ValueBinding } from "cs2/bindings";
 import { FocusDisabled } from "cs2/input";
 import { ModRegistrar } from "cs2/modding";
-import { useState } from "react";
+import { ReactNode, useState } from "react";
 import "#styles/lineViewer.scss";
 import iconWhite from "#images/iconWhite.svg";
 import { MapViewerOptions } from "#service/LineManagementService";
 import translate from "#utility/translate";
+import { InfoRow, InfoSection } from "cs2/ui";
+import { ColorEditorXtm } from "#components/ColorEditorXtm";
 
 let IsXtm = true;
 let xtmOptions: MapViewerOptions = {
-    showVehicles: true,
+    showVehicles: false,
     showDistricts: true,
     showDistances: true,
-    showIntegrations: false,
+    showIntegrations: true,
     useWhiteBackground: false,
     useHalfTripIfSimetric: true
 }
@@ -23,6 +25,7 @@ const register: ModRegistrar = (moduleRegistry) => {
     moduleRegistry.extend("game-ui/game/components/selected-info-panel/selected-info-sections/route-sections/line-visualizer-section/line-visualizer-canvas.tsx", 'LineVisualizerCanvas', XtmLineViewerRegister)
     moduleRegistry.extend("game-ui/game/components/selected-info-panel/selected-info-sections/route-sections/line-visualizer-section/line-visualizer-section.tsx", 'LineVisualizerSection', XtmLineSectionButtonRegister)
 
+    moduleRegistry.extend("game-ui/game/components/selected-info-panel/selected-info-sections/selected-info-sections.tsx", 'selectedInfoSectionComponents', XtmLayoutOverrideRegistering(() => { }))
 }
 
 export default register;
@@ -70,3 +73,16 @@ const XtmLineSectionButtonRegister = (Component: any): any => {
 const XtmLineViewerRegister = (Component: any): any => {
     return (args: any) => <XtmLineViewer args={args} isXtm={IsXtm} xtmOptions={xtmOptions}><Component {...args} /></XtmLineViewer>;
 };
+
+const XtmLayoutOverrideRegistering = (onChange?: () => any) => (componentList: any): any => {
+    const _originalColor = componentList["Game.UI.InGame.ColorSection"]
+    componentList["Game.UI.InGame.ColorSection"] = (args: any) => {
+        if (selectedInfo.selectedEntity$.value?.index != selectedInfo.selectedRoute$.value?.index) {
+            return <_originalColor {...args} />;
+        }
+        return <ColorEditorXtm {...args} />;
+    };
+    componentList["BelzontTLM.XTMInfoPanelSystem"] = () => <>XTM GOES HERE</>;
+    return componentList as any;
+};
+

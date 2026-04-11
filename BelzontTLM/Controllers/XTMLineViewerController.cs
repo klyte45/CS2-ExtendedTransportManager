@@ -8,7 +8,6 @@ using Game.Tools;
 using System;
 using Unity.Collections;
 using Unity.Entities;
-using static BelzontTLM.XTMLineViewerSection;
 
 namespace BelzontTLM
 {
@@ -72,28 +71,14 @@ namespace BelzontTLM
         public void SetupCallBinder(Action<string, Delegate> eventCaller)
         {
             eventCaller("lineViewer.getCityLines", GetCityLines);
-            eventCaller("lineViewer.getRouteDetail", GetRouteDetail);
             eventCaller("lineViewer.setCctvPosition", SetCctvPosition);
         }
 
         private EntityQuery m_UnititalizedXTMLineQuery;
         private EntityQuery m_modifiedLineQuery;
         private EndFrameBarrier m_EndFrameBarrier;
-        private XTMLineViewerSection m_LineVisualizerSection;
         private XTMLineListingSection m_LineListingSection;
 
-
-
-        private void GetRouteDetail(Entity entity, bool force)
-        {
-            m_LineVisualizerSection.AddDependency(m_EndFrameBarrier.producerHandle);
-            m_LineVisualizerSection.Enqueue(entity, SendRouteDetail, force);
-        }
-
-        private void SendRouteDetail(XTMLineViewerResult result)
-        {
-            SendEvent($"lineViewer.getRouteDetail:{result.LineData.entity.Index}->", result);
-        }
 
 
         protected override void OnCreate()
@@ -139,7 +124,6 @@ namespace BelzontTLM
             });
 
             m_EndFrameBarrier = World.GetOrCreateSystemManaged<EndFrameBarrier>();
-            m_LineVisualizerSection = World.GetOrCreateSystemManaged<XTMLineViewerSection>();
             m_LineListingSection = World.GetOrCreateSystemManaged<XTMLineListingSection>();
         }
 

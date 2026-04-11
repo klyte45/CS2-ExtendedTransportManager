@@ -22,13 +22,15 @@ export function TlmViewerCmp({ lineDetails, getLineById, simetricLine, showDistr
     const showSimetricMode = simetricLine && !showVehicles && useHalfTripIfSimetric;
     const targetStops = showSimetricMode ? lineDetails.Stops.slice(0, lineDetails.Stops.length / 2 + 1) : lineDetails.Stops;
     const targetLenght = targetStops.length - (showSimetricMode ? 1 : 0);
+    const selectedEntity = selectedInfo.selectedEntity$.value;
+    const currentStopSelected = selectedEntity ? targetStops.find(x => x.entity.Index == selectedEntity.index || x.parent.Index == selectedEntity.index) : undefined;
 
     return <div id="TlmViewer" className={useWhiteBackground ? "mapWhiteBg" : ""}>
         {!lineDetails ? <></> :
             <>
                 <div>
                     <div className="titleRow" >
-                        <TlmLineFormatCmp {...lineCommonData} text={lineCommonData.xtmData?.Acronym || lineCommonData.routeNumber.toFixed()} onClick={() => selectedInfo.selectEntity(toVanillaEntity(lineCommonData.entity))}/>
+                        <TlmLineFormatCmp {...lineCommonData} text={lineCommonData.xtmData?.Acronym || lineCommonData.routeNumber.toFixed()} onClick={() => selectedInfo.selectEntity(toVanillaEntity(lineCommonData.entity))} />
                     </div>
                 </div>
                 <Scrollable className="lineStationsContainer">
@@ -71,6 +73,7 @@ export function TlmViewerCmp({ lineDetails, getLineById, simetricLine, showDistr
                                         key={i}
                                         normalizedPosition={i / targetLenght}
                                         totalStationCount={targetLenght}
+                                        direction={currentStopSelected && showSimetricMode && currentStopSelected?.parent.Index == station.parent.Index ? currentStopSelected?.index! < targetLenght ? 1 : -1 : 0}
                                     />;
                                 })}
                                 {!showSimetricMode && <StationContainerCmp

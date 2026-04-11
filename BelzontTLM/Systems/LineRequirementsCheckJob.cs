@@ -9,7 +9,7 @@ using Unity.Jobs;
 
 namespace BelzontTLM
 {
-    public partial class XTMLineViewerSection
+    public partial class XTMInfoPanelSystem
     {
         private struct LineRequirementsCheckOutput
         {

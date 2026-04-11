@@ -19,22 +19,18 @@ namespace BelzontTLM
 {
     public partial class XTMLineManagementController : SystemBase, IBelzontBindable
     {
-        private NameSystem m_NameSystem;
         private EndFrameBarrier m_EndFrameBarrier;
-        private SelectedInfoUISystem m_SelectedUI;
-
         public void SetupCallBinder(Action<string, Delegate> eventCaller)
         {
             eventCaller("lineManagement.setRouteAcronym", SetRouteAcronym);
-            eventCaller("lineManagement.setRouteName", SetRouteName);
             eventCaller("lineManagement.setRouteNumber", SetRouteInternalNumber);
             eventCaller("lineManagement.setIgnorePalette", SetRouteIgnorePalette);
             eventCaller("lineManagement.setRouteFixedColor", SetRouteFixedColor);
             eventCaller("lineManagement.setFirstStop", SetFirstStop);
-            eventCaller("lineManagement.selectEntity", SelectEntity);
-            eventCaller("lineManagement.focusToEntity", FocusToEntity);
-            eventCaller("lineManagement.selectVehicleModel", SelectVehicleModel);
-            eventCaller("lineManagement.deselectVehicleModel", DeselectVehicleModel);
+            eventCaller("lineManagement.getRouteAcronym", GetRouteAcronym);
+            eventCaller("lineManagement.getRouteNumber", GetRouteNumber);
+            eventCaller("lineManagement.getIgnorePalette", GetRouteIgnorePalette);
+            eventCaller("lineManagement.getRouteFixedColor", GetRouteFixedColor);
         }
 
         public void SetupCaller(Action<string, object[]> eventCaller)
@@ -76,6 +72,7 @@ namespace BelzontTLM
             entityCommandBuffer.AddComponent<XTMPaletteRequireUpdate>(targetEntity);
             return ignore;
         }
+
         private int SetRouteInternalNumber(Entity entity, int routeNum)
         {
             EntityCommandBuffer entityCommandBuffer = m_EndFrameBarrier.CreateCommandBuffer();
@@ -127,26 +124,10 @@ namespace BelzontTLM
             originalAsNativeArray.Dispose();
             return true;
         }
-        private ValuableName SetRouteName(Entity entity, string newName)
-        {
-            EntityCommandBuffer entityCommandBuffer = m_EndFrameBarrier.CreateCommandBuffer();
-            m_NameSystem.SetCustomName(entity, newName ?? String.Empty);
-            entityCommandBuffer.AddComponent<Updated>(entity);
-            return m_NameSystem.GetName(entity).ToValueableName();
-        }
-        private void FocusToEntity(Entity e)
-        {
-            m_SelectedUI.Focus(e);
-        }
-        private void SelectEntity(Entity e)
-        {
-            m_SelectedUI.SetSelection(e);
-        }
+      
         protected override void OnCreate()
         {
-            m_NameSystem = World.GetOrCreateSystemManaged<NameSystem>();
             m_EndFrameBarrier = World.GetOrCreateSystemManaged<EndFrameBarrier>();
-            m_SelectedUI = World.GetOrCreateSystemManaged<SelectedInfoUISystem>();
         }
 
         protected override void OnUpdate()
@@ -159,96 +140,39 @@ namespace BelzontTLM
                 : EntityManager.GetComponentData<RouteNumber>(route).m_Number.ToString();
 
 
-        private void SelectVehicleModel(Entity targetEntity, AvailableVehicle vehicle)
+      
+        private string GetRouteAcronym(Entity entity)
+            => EntityManager.TryGetComponent<XTMRouteExtraData>(entity, out var extraData)
+                ? extraData.Acronym
+                : string.Empty;
+    
+
+        private int GetRouteNumber(Entity entity)
+            => EntityManager.TryGetComponent<RouteNumber>(entity, out var routeNumber)
+                ? routeNumber.m_Number
+                : 0;
+
+        private bool GetRouteIgnorePalette(Entity entity)
+            => EntityManager.HasComponent<XTMPaletteLockedColor>(entity);
+
+        private string GetRouteFixedColor(Entity entity)
+            => EntityManager.TryGetComponent<Color>(entity, out var color)
+                ? color.m_Color.ToRGB(true)
+                : null;
+
+        private VehicleModel[] GetVehicleModels(Entity entity)
         {
-            if (vehicle.entity == Entity.Null)
+            if (!EntityManager.HasBuffer<VehicleModel>(entity))
             {
-                return;
+                return Array.Empty<VehicleModel>();
             }
-            DynamicBuffer<VehicleModel> buffer = EntityManager.GetBuffer<VehicleModel>(targetEntity, false);
-            bool isPrimary = !vehicle.isSecondary;
-            bool isSecondary = vehicle.isSecondary;
-            var primary = isPrimary ? vehicle.entity : Entity.Null;
-            var secondary = isSecondary ? vehicle.entity : Entity.Null;
-            bool wasAssigned = false;
+            DynamicBuffer<VehicleModel> buffer = EntityManager.GetBuffer<VehicleModel>(entity, true);
+            var result = new VehicleModel[buffer.Length];
             for (int i = 0; i < buffer.Length; i++)
             {
-                VehicleModel vehicleModel = buffer[i];
-                if (isPrimary && (vehicleModel.m_PrimaryPrefab == Entity.Null || vehicleModel.m_PrimaryPrefab == vehicle.entity))
-                {
-                    vehicleModel.m_PrimaryPrefab = vehicle.entity;
-                    wasAssigned = true;
-                }
-                if (isSecondary && (vehicleModel.m_SecondaryPrefab == Entity.Null || vehicleModel.m_SecondaryPrefab == vehicle.entity))
-                {
-                    vehicleModel.m_SecondaryPrefab = vehicle.entity;
-                    wasAssigned = true;
-                }
-                if (wasAssigned)
-                {
-                    buffer[i] = vehicleModel;
-                    return;
-                }
+                result[i] = buffer[i];
             }
-            if (isPrimary)
-            {
-                buffer.Add(new VehicleModel
-                {
-                    m_PrimaryPrefab = primary,
-                    m_SecondaryPrefab = Entity.Null
-                });
-            }
-            else if (isSecondary)
-            {
-                buffer.Add(new VehicleModel
-                {
-                    m_PrimaryPrefab = Entity.Null,
-                    m_SecondaryPrefab = secondary
-                });
-            }
-        }
-
-        private void DeselectVehicleModel(Entity targetEntity, AvailableVehicle vehicle)
-        {
-            if (vehicle.entity == Entity.Null)
-            {
-                return;
-            }
-            DynamicBuffer<VehicleModel> buffer = base.EntityManager.GetBuffer<VehicleModel>(targetEntity, false);
-            bool wasCleaned = false;
-            bool cantRemoveLast = buffer.Length == 1;
-            if (cantRemoveLast && (buffer[0].m_PrimaryPrefab == Entity.Null || buffer[0].m_SecondaryPrefab == Entity.Null))
-            {
-                return;
-            }
-            for (int i = 0; i < buffer.Length; i++)
-            {
-                VehicleModel vehicleModel = buffer[i];
-                if (!vehicle.isSecondary && vehicleModel.m_PrimaryPrefab == vehicle.entity)
-                {
-                    vehicleModel.m_PrimaryPrefab = Entity.Null;
-                    wasCleaned = true;
-                }
-                if (vehicle.isSecondary && vehicleModel.m_SecondaryPrefab == vehicle.entity)
-                {
-                    vehicleModel.m_SecondaryPrefab = Entity.Null;
-                    wasCleaned = true;
-                }
-
-                if (vehicleModel.m_PrimaryPrefab == Entity.Null && vehicleModel.m_SecondaryPrefab == Entity.Null)
-                {
-                    buffer.RemoveAtSwapBack(i);
-                }
-                else
-                {
-                    buffer[i] = vehicleModel;
-                }
-
-                if (wasCleaned)
-                {
-                    break;
-                }
-            }
+            return result;
         }
     }
 }

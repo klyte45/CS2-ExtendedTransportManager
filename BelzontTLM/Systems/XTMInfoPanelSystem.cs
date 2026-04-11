@@ -1,6 +1,8 @@
-﻿using Belzont.Utils;
+﻿using Belzont.Interfaces;
+using Belzont.Utils;
 using Colossal.Collections;
 using Colossal.Entities;
+using Colossal.UI.Binding;
 using Game.Buildings;
 using Game.City;
 using Game.Common;
@@ -12,8 +14,9 @@ using Game.Prefabs;
 using Game.Rendering;
 using Game.Routes;
 using Game.Tools;
-using Game.UI;
+using Game.UI.InGame;
 using Game.Vehicles;
+using System;
 using System.Linq;
 using Unity.Burst;
 using Unity.Burst.Intrinsics;
@@ -21,63 +24,94 @@ using Unity.Collections;
 using Unity.Entities;
 using Unity.Jobs;
 using static BelzontTLM.XTMLineListingSection;
-using static BelzontTLM.XTMLineViewerSection;
 
 namespace BelzontTLM
 {
-    public partial class XTMLineViewerSection : BelzontQueueSystem<XTMLineViewerResult>
+    public partial class XTMInfoPanelSystem : InfoSectionBase, IBelzontBindable
     {
-        public class XTMLineViewerResult
+        private EntityQueryMask entityExistsQuery;
+        private Action<string, object[]> emitter;
+
+        private TransportVehicleSelectData m_TransportVehicleSelectData;
+        private CityConfigurationSystem m_CityConfigurationSystem;
+        private EntityQuery m_DepotQuery;
+        private EntityQuery m_TransportVehiclePrefabQuery;
+
+        private int cooldown = 0;
+        private Entity lastSearchedEntity;
+
+        protected override string group => "K45.XTM";
+
+        protected override void OnCreate()
         {
-            public XTMLineViewerResult() { }
+            base.OnCreate();
+            m_InfoUISystem.AddMiddleSection(this);
+            entityExistsQuery = EntityManager.UniversalQuery.GetEntityQueryMask();
 
-            public LineItemStruct LineData { get; set; }
-            public int StopCapacity { get; set; }
-            public LineStopNamed[] Stops { get; set; }
-            public LineVehicleNamed[] Vehicles { get; set; }
-            public LineSegment[] Segments { get; set; }
 
-            public AvailableVehicle[] SelectedVehicleModels { get; set; }
-            public AvailableVehicle[] AvailableVehicleModels { get; internal set; }
+            m_TransportVehicleSelectData = new TransportVehicleSelectData(this);
+            m_CityConfigurationSystem = World.GetOrCreateSystemManaged<CityConfigurationSystem>();
+            m_DepotQuery = GetEntityQuery(
+            [
+                ComponentType.ReadOnly<Game.Buildings.TransportDepot>(),
+                ComponentType.Exclude<Temp>(),
+                ComponentType.Exclude<Deleted>()
+            ]);
+            m_TransportVehiclePrefabQuery = GetEntityQuery(
+            [
+                TransportVehicleSelectData.GetEntityQueryDesc()
+            ]);
+        }
+        protected override void OnUpdate()
+        {
+            visible = EntityManager.HasComponent<TransportLine>(m_InfoUISystem.selectedRoute);
+            if (visible)
+            {
+                if (--cooldown > 0 && lastSearchedEntity == m_InfoUISystem.selectedRoute) return;
+                cooldown = 15;
+                var lineData = RunUpdate(m_InfoUISystem.selectedRoute);
+                lastSearchedEntity = m_InfoUISystem.selectedRoute;
+                emitter("xtmInfoPanel.lineData->", [lineData]);
+            }
+            else
+            {
+                cooldown = 0;
+            }
         }
 
         protected override void Reset()
         {
         }
 
-        protected override void OnCreate()
+        protected override void OnProcess()
         {
-            base.OnCreate();
-            m_NameSystem = World.GetOrCreateSystemManaged<NameSystem>();
-            m_PrefabSystem = World.GetOrCreateSystemManaged<PrefabSystem>();
-
-
-
-            m_TransportVehicleSelectData = new TransportVehicleSelectData(this);
-            m_CityConfigurationSystem = World.GetOrCreateSystemManaged<CityConfigurationSystem>();
-            m_DepotQuery = GetEntityQuery(new ComponentType[]
-            {
-                ComponentType.ReadOnly<Game.Buildings.TransportDepot>(),
-                ComponentType.Exclude<Temp>(),
-                ComponentType.Exclude<Deleted>()
-            });
-            m_TransportVehiclePrefabQuery = GetEntityQuery(new EntityQueryDesc[]
-            {
-                TransportVehicleSelectData.GetEntityQueryDesc()
-            });
         }
 
-        protected override void OnDestroy()
+        public override void OnWriteProperties(IJsonWriter writer)
         {
-            base.OnDestroy();
         }
 
-        protected override void RunUpdate(Entity e)
+        public void SetupCaller(Action<string, object[]> eventEmitter)
+        {
+            emitter = eventEmitter;
+        }
+
+        public void SetupEventBinder(Action<string, Delegate> eventBinderFn)
+        {
+        }
+
+        public void SetupCallBinder(Action<string, Delegate> callBinderFn)
+        {
+        }
+
+
+
+        protected XTMLineViewerResult RunUpdate(Entity e)
         {
             if (e == Entity.Null)
             {
                 if (ExtendedTransportManagerMod.DebugMode) LogUtils.DoLog("Entity is null!");
-                return;
+                return default;
             }
             using var reqCheckOutput = new NativeArray<LineRequirementsCheckOutput>(1, Allocator.Temp);
             var requirementsCheckJob = new LineRequirementsCheckJob
@@ -104,9 +138,9 @@ namespace BelzontTLM
             if (!reqCheckOutput[0].isValidLine)
             {
                 if (ExtendedTransportManagerMod.DebugMode) LogUtils.DoLog("Bool result is false!");
-                return;
+                return default;
             }
-
+            LineDetailData resultData;
             NativeList<LineDetailDataUnsafe> output = new(Allocator.Temp);
             FillJobParams(output, e).Schedule(Dependency).Complete();
 
@@ -114,7 +148,7 @@ namespace BelzontTLM
             NativeArray<int> results = new NativeArray<int>(2, Allocator.TempJob);
             if (!EntityManager.TryGetComponent<PrefabRef>(e, out var refPrefab) || !EntityManager.TryGetComponent(refPrefab.m_Prefab, out TransportLineData transportLineData))
             {
-                m_currentData = output[0].ConvertAndDispose(default, default);
+                resultData = output[0].ConvertAndDispose(default, default);
             }
             else
             {
@@ -146,11 +180,55 @@ namespace BelzontTLM
                 jobHandle2.Complete();
                 m_TransportVehicleSelectData.PostUpdate(jobHandle2);
 
-                m_currentData = output[0].ConvertAndDispose(availablePrimaryVehicles.ToArray(Allocator.Temp), availableSecondaryVehicles.ToArray(Allocator.Temp));
+                resultData = output[0].ConvertAndDispose(availablePrimaryVehicles.ToArray(Allocator.Temp), availableSecondaryVehicles.ToArray(Allocator.Temp));
             }
             output.Dispose();
+
+            return OnProcess(e, resultData);
         }
 
+        public class XTMLineViewerResult
+        {
+            public XTMLineViewerResult() { }
+
+            public LineItemStruct LineData { get; set; }
+            public int StopCapacity { get; set; }
+            public LineStopNamed[] Stops { get; set; }
+            public LineVehicleNamed[] Vehicles { get; set; }
+            public LineSegment[] Segments { get; set; }
+
+            public AvailableVehicle[] SelectedVehicleModels { get; set; }
+            public AvailableVehicle[] AvailableVehicleModels { get; internal set; }
+        }
+        protected XTMLineViewerResult OnProcess(Entity e, LineDetailData lineDetail)
+        {
+            var models = EntityManager.TryGetBuffer<VehicleModel>(e, true, out var buff) ? buff.ToNativeArray(Allocator.Temp) : default;
+            var result = new XTMLineViewerResult
+            {
+                StopCapacity = lineDetail.stopCapacity,
+                Segments = new LineSegment[lineDetail.m_SegmentsResult?.Length ?? 0],
+                Stops = new LineStopNamed[lineDetail.m_StopsResult?.Length ?? 0],
+                Vehicles = new LineVehicleNamed[lineDetail.m_VehiclesResult?.Length ?? 0],
+                LineData = LineItemStruct.ForEntity(e, EntityManager, m_PrefabSystem, m_NameSystem),
+                SelectedVehicleModels = [.. models.ToArray().SelectMany(x => new AvailableVehicle[] { new(x.m_PrimaryPrefab, false), new(x.m_SecondaryPrefab, true) }).Where(x => x.entity != Entity.Null)],
+                AvailableVehicleModels = lineDetail.m_availableVehicles,
+            };
+            models.Dispose();
+            for (int i = 0; i < result.Segments.Length; i++)
+            {
+                result.Segments[i] = lineDetail.m_SegmentsResult[i];
+            }
+            for (int j = 0; j < result.Vehicles.Length; j++)
+            {
+                result.Vehicles[j] = new(lineDetail.m_VehiclesResult[j], m_NameSystem, EntityManager);
+            }
+            for (int k = 0; k < result.Stops.Length; k++)
+            {
+                result.Stops[k] = new(lineDetail.m_StopsResult[k], m_NameSystem, EntityManager);
+            }
+            return result;
+
+        }
         private LineDetailDataJob FillJobParams(NativeList<LineDetailDataUnsafe> output, Entity e = default)
         {
             return new LineDetailDataJob
@@ -209,55 +287,6 @@ namespace BelzontTLM
                 m_singleRunEntity = e
             };
         }
-
-        protected override ComponentType[] ComponentsToCheck => new ComponentType[]
-        {
-            typeof(Updated),
-            typeof(BatchesUpdated),
-            typeof(Deleted)
-        };
-
-        protected override XTMLineViewerResult OnProcess(Entity e)
-        {
-            var models = EntityManager.TryGetBuffer<VehicleModel>(e, true, out var buff) ? buff.ToNativeArray(Allocator.Temp) : default;
-            var result = new XTMLineViewerResult
-            {
-                StopCapacity = m_currentData.stopCapacity,
-                Segments = new LineSegment[m_currentData.m_SegmentsResult?.Length ?? 0],
-                Stops = new LineStopNamed[m_currentData.m_StopsResult?.Length ?? 0],
-                Vehicles = new LineVehicleNamed[m_currentData.m_VehiclesResult?.Length ?? 0],
-                LineData = LineItemStruct.ForEntity(e, EntityManager, m_PrefabSystem, m_NameSystem),
-                SelectedVehicleModels = [.. models.ToArray().SelectMany(x => new AvailableVehicle[] { new(x.m_PrimaryPrefab, false), new(x.m_SecondaryPrefab, true) }).Where(x => x.entity != Entity.Null)],
-                AvailableVehicleModels = m_currentData.m_availableVehicles,
-            };
-            models.Dispose();
-            for (int i = 0; i < result.Segments.Length; i++)
-            {
-                result.Segments[i] = m_currentData.m_SegmentsResult[i];
-            }
-            for (int j = 0; j < result.Vehicles.Length; j++)
-            {
-                result.Vehicles[j] = new(m_currentData.m_VehiclesResult[j], m_NameSystem, EntityManager);
-            }
-            for (int k = 0; k < result.Stops.Length; k++)
-            {
-                result.Stops[k] = new(m_currentData.m_StopsResult[k], m_NameSystem, EntityManager);
-            }
-            return result;
-
-        }
-
-        public XTMLineViewerSection()
-        {
-        }
-
-        private NameSystem m_NameSystem;
-        private PrefabSystem m_PrefabSystem;
-        private TransportVehicleSelectData m_TransportVehicleSelectData;
-        private CityConfigurationSystem m_CityConfigurationSystem;
-        private EntityQuery m_DepotQuery;
-        private EntityQuery m_TransportVehiclePrefabQuery;
-        private LineDetailData m_currentData;
 
         [BurstCompile]
         private struct TransportVehiclesListJob : IJob

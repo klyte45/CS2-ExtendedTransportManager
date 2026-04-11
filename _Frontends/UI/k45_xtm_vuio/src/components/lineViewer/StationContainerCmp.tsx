@@ -74,7 +74,7 @@ export function StationContainerCmp({ station, vehicles: _vehicles, keyId, norma
     }
 
     function handleStopClick() {
-        selectedInfo.selectEntity(toVanillaEntity(station.parent))
+        selectedInfo.selectEntity(toVanillaEntity(station.entity))
         camera.focusEntity(toVanillaEntity(station.entity))
     }
 

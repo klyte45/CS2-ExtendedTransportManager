@@ -57,40 +57,42 @@ export const XtmLineViewer = ({ children, args, isXtm, xtmOptions }: Props) => {
             return () => {
                 engine.off("k45::xtm.lineViewer.getCityLines->");
             }
-        }, [])
-        useEffect(() => {
-            const updateCallback = setInterval(() => reloadData(false), 3000);
-            reloadData(true);
-            return () => clearInterval(updateCallback);
         }, [selectedInfo.selectedRoute$.value])
+        useEffect(() => {
+            engine.whenReady.then(async () => {
+                engine.on("k45::xtm.xtmInfoPanel.lineData->", async (x) => {
+                    reloadData(x);
+                });
+            })
+            return () => {
+                engine.off("k45::xtm.xtmInfoPanel.lineData->");
+            }
+        }, [])
+
+
 
         const [lineDetails, setLineDetails] = useState<LineDetails>();
         const [isLineSimetric, setIsLineSimetric] = useState(false);
 
-        async function reloadData(force: boolean) {
-            if (force || xtmOptions.showVehicles) {
-                const details = await LineManagementService.getRouteDetail(currentLine, true)
-                if (details.LineData.entity.Index != currentLine.Index) return;
-                details.Vehicles = details.Vehicles.map(x => {
-                    return {
-                        ...x,
-                        ...enrichVehicleInfo(x, details.Stops, details.LineData.length)
-                    }
-                })
-                details.Stops = details.Stops.map((x, i, arr) => {
-                    return {
-                        ...x,
-                        ...enrichStopInfo(i, x, arr, details.Vehicles, details.LineData)
-                    }
-                })
-                setLineDetails(details)
+        async function reloadData(details: LineDetails) {
+            if (details.LineData.entity.Index != currentLine.Index) return;
+            details.Vehicles = details.Vehicles.map(x => {
+                return {
+                    ...x,
+                    ...enrichVehicleInfo(x, details.Stops, details.LineData.length)
+                }
+            })
+            details.Stops = details.Stops.map((x, i, arr) => {
+                return {
+                    ...x,
+                    ...enrichStopInfo(i, x, arr, details.Vehicles, details.LineData)
+                }
+            })
+            setLineDetails(details)
 
-                setIsLineSimetric(LineManagementService.checkSimetry(details.Stops))
-            }
+            setIsLineSimetric(LineManagementService.checkSimetry(details.Stops))
         }
-        if (!lineDetails) {
-            reloadData(true);
-        }
+
         if (lineDetails) {
             return <TlmViewerCmp
                 lineDetails={lineDetails}

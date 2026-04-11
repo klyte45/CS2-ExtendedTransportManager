@@ -20,7 +20,7 @@ using Edge = Game.Net.Edge;
 
 namespace BelzontTLM
 {
-    public partial class XTMLineViewerSection
+    public partial class XTMInfoPanelSystem
     {
         public struct LineDetailData
         {
