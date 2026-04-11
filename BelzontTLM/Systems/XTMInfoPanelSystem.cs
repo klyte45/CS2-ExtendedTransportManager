@@ -64,7 +64,7 @@ namespace BelzontTLM
         }
         protected override void OnUpdate()
         {
-            visible = EntityManager.HasComponent<TransportLine>(m_InfoUISystem.selectedRoute);
+            visible = selectedEntity != Entity.Null && m_InfoUISystem.selectedRoute != Entity.Null;
             if (visible)
             {
                 if (--cooldown > 0 && lastSearchedEntity == m_InfoUISystem.selectedRoute) return;
@@ -75,7 +75,7 @@ namespace BelzontTLM
             }
             else
             {
-                cooldown = 0;
+                MarkDirty();
             }
         }
 
@@ -104,7 +104,11 @@ namespace BelzontTLM
         {
         }
 
-
+        public void MarkDirty()
+        {
+            cooldown = 0;
+            lastSearchedEntity = default;
+        }
 
         protected XTMLineViewerResult RunUpdate(Entity e)
         {

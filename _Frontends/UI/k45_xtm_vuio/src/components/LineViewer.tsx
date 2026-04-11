@@ -6,6 +6,7 @@ import { LineData, LineDetails, LineManagementService, MapViewerOptions, Station
 import { TransportType } from "#enum/TransportType";
 import engine from "cohtml/cohtml";
 import "#styles/TLM_LineDetail.scss";
+import { enrichVehicleInfo, enrichStopInfo } from "#utility/lineViewerUtils";
 
 type Props = {
     children: React.ReactNode;
@@ -28,113 +29,93 @@ const TypeToIcons = {
 }
 
 export const XtmLineViewer = ({ children, args, isXtm, xtmOptions }: Props) => {
-    if (isXtm) {
-        const currentLine = toEntityTyped(selectedInfo.selectedRoute$.value);
-        const [indexedLineList, setIndexedLineList] = useState<Record<string, LineData>>({});
+    const currentLine = toEntityTyped(selectedInfo.selectedRoute$.value);
+    const [indexedLineList, setIndexedLineList] = useState<Record<string, LineData>>({});
+    const [lineDetails, setLineDetails] = useState<LineDetails>();
+    const [isLineSimetric, setIsLineSimetric] = useState(false);
 
-        const reloadLines = async (res: LineData[]) => {
-            const refOrder = Object.keys(TypeToIcons);
-            const lineList = res.sort((a, b) => {
-                const typeA = `${a.type}.${a.isCargo}`
-                const typeB = `${b.type}.${b.isCargo}`
+    const reloadLines = async (res: LineData[]) => {
+        const refOrder = Object.keys(TypeToIcons);
+        const lineList = res.sort((a, b) => {
+            const typeA = `${a.type}.${a.isCargo}`
+            const typeB = `${b.type}.${b.isCargo}`
 
-                if (typeA != typeB) return refOrder.indexOf(typeA) - refOrder.indexOf(typeB);
-                return a.routeNumber - b.routeNumber
-            });
-            setIndexedLineList(lineList.reduce((p, n) => {
-                p[n.entity.Index.toFixed(0)] = n;
-                return p;
-            }, {} as Record<string, LineData>));
-        }
+            if (typeA != typeB) return refOrder.indexOf(typeA) - refOrder.indexOf(typeB);
+            return a.routeNumber - b.routeNumber
+        });
+        setIndexedLineList(lineList.reduce((p, n) => {
+            p[n.entity.Index.toFixed(0)] = n;
+            return p;
+        }, {} as Record<string, LineData>));
+    }
 
-        useEffect(() => {
-            engine.whenReady.then(async () => {
-                engine.on("k45::xtm.lineViewer.getCityLines->", async (x) => {
-                    reloadLines(x);
-                });
-            })
-            engine.call("k45::xtm.lineViewer.getCityLines", true)
-            return () => {
-                engine.off("k45::xtm.lineViewer.getCityLines->");
+    async function reloadData(details: LineDetails) {
+        if (details.LineData.entity.Index != currentLine.Index) return;
+        details.Vehicles = details.Vehicles.map(x => {
+            return {
+                ...x,
+                ...enrichVehicleInfo(x, details.Stops, details.LineData.length)
             }
-        }, [selectedInfo.selectedRoute$.value])
-        useEffect(() => {
-            engine.whenReady.then(async () => {
-                engine.on("k45::xtm.xtmInfoPanel.lineData->", async (x) => {
-                    reloadData(x);
-                });
-            })
-            return () => {
-                engine.off("k45::xtm.xtmInfoPanel.lineData->");
+        })
+        details.Stops = details.Stops.map((x, i, arr) => {
+            return {
+                ...x,
+                ...enrichStopInfo(i, x, arr, details.Vehicles, details.LineData)
             }
-        }, [])
+        })
+        setLineDetails(details)
 
+        setIsLineSimetric(LineManagementService.checkSimetry(details.Stops))
+    }
 
+    useEffect(() => {
+        if (!isXtm) return;
 
-        const [lineDetails, setLineDetails] = useState<LineDetails>();
-        const [isLineSimetric, setIsLineSimetric] = useState(false);
-
-        async function reloadData(details: LineDetails) {
-            if (details.LineData.entity.Index != currentLine.Index) return;
-            details.Vehicles = details.Vehicles.map(x => {
-                return {
-                    ...x,
-                    ...enrichVehicleInfo(x, details.Stops, details.LineData.length)
-                }
-            })
-            details.Stops = details.Stops.map((x, i, arr) => {
-                return {
-                    ...x,
-                    ...enrichStopInfo(i, x, arr, details.Vehicles, details.LineData)
-                }
-            })
-            setLineDetails(details)
-
-            setIsLineSimetric(LineManagementService.checkSimetry(details.Stops))
+        engine.whenReady.then(async () => {
+            engine.on("k45::xtm.lineViewer.getCityLines->", async (x) => {
+                reloadLines(x);
+            }, "XtmLineViewer");
+        })
+        engine.call("k45::xtm.lineViewer.getCityLines", true)
+        return () => {
+            engine.off("k45::xtm.lineViewer.getCityLines->", undefined, "XtmLineViewer");
         }
+    }, [isXtm, selectedInfo.selectedRoute$.value])
 
-        if (lineDetails) {
-            return <TlmViewerCmp
-                lineDetails={lineDetails}
-                showDistances={xtmOptions.showDistances}
-                showIntegrations={xtmOptions.showIntegrations}
-                useHalfTripIfSimetric={xtmOptions.useHalfTripIfSimetric}
-                showDistricts={xtmOptions.showDistricts}
-                showVehicles={xtmOptions.showVehicles}
-                useWhiteBackground={xtmOptions.useWhiteBackground}
-                getLineById={(x) => indexedLineList[x]}
-                simetricLine={isLineSimetric}
-            />
+    useEffect(() => {
+        if (!isXtm) return;
+
+        engine.whenReady.then(async () => {
+            engine.on("k45::xtm.xtmInfoPanel.lineData->", async (x) => {
+                reloadData(x);
+            }, "XtmLineViewer");
+        })
+        return () => {
+            engine.off("k45::xtm.xtmInfoPanel.lineData->", undefined, "XtmLineViewer");
         }
-        return <></>
-    } else {
+    }, [selectedInfo.selectedEntity$.value])
+
+    if (!isXtm) {
         return <>{children}</>;
     }
+
+    if (lineDetails) {
+        return <TlmViewerCmp
+            lineDetails={lineDetails}
+            showDistances={xtmOptions.showDistances}
+            showIntegrations={xtmOptions.showIntegrations}
+            useHalfTripIfSimetric={xtmOptions.useHalfTripIfSimetric}
+            showDistricts={xtmOptions.showDistricts}
+            showVehicles={xtmOptions.showVehicles}
+            useWhiteBackground={xtmOptions.useWhiteBackground}
+            getLineById={(x) => indexedLineList[x]}
+            simetricLine={isLineSimetric}
+        />
+    }
+
+    return <></>
 }
 
-function enrichStopInfo(index: number, station: StationData, allStations: StationData[], vehicles: VehicleData[], lineData: LineData): Partial<StationData> {
-    const arrivingVehicle = vehicles.length == 0 ? [] : vehicles.map(x => [x.position > station.position ? x.position - 1 : x.position, x] as [number, VehicleData]).sort((a, b) => b[0] - a[0])[0]
-
-    return {
-        arrivingVehicle: arrivingVehicle[1],
-        arrivingVehicleDistance: arrivingVehicle ? (station.position - arrivingVehicle[0]) * lineData.length : undefined,
-        arrivingVehicleStops: arrivingVehicle ? allStations.map(x => x.position >= station.position ? x.position - 1 : x.position).filter(x => x > arrivingVehicle[0]).length : undefined,
-        index
-    }
-}
-function enrichVehicleInfo(vehicle: VehicleData, stations: StationData[], lineLength: number): Partial<VehicleData> {
-    const lastStationIdx = (stations.filter(x => x.position < vehicle.position).length + stations.length - 1) % stations.length;
-    const currentStation = stations[lastStationIdx];
-    const nextStation = stations[(lastStationIdx + 1) % stations.length]
-    const nextStationPos = nextStation.position + (nextStation.position < currentStation.position ? 1 : 0)
-    const totalDistanceStations = (nextStationPos - currentStation.position) * lineLength;
-    const currentStationSegmentFraction = (vehicle.position - currentStation.position) / (nextStationPos - currentStation.position)
-    return {
-        normalizedPosition: (lastStationIdx + currentStationSegmentFraction) / stations.length,
-        distanceNextStop: (1 - currentStationSegmentFraction) * totalDistanceStations,
-        distancePrevStop: currentStationSegmentFraction * totalDistanceStations,
-    }
-}
 
 export interface VanillaLineInformation {
     width: number

@@ -1,4 +1,4 @@
-import { TransportTypePriority } from "#enum/TransportType";
+import { TransportType, TransportTypePriority } from "#enum/TransportType";
 import { LineData, StationData, VehicleData } from "#service/LineManagementService";
 import { ColorUtils, Entity, nameToString, toVanillaEntity } from "@klyte45/vuio-commons";
 import { CSSProperties } from "react";
@@ -21,7 +21,7 @@ export function StationIntegrationContainerCmp({ station, getLineById, thisLineI
         if (thisLineId.Index != n.line.Index) p.add(n.line.Index);
         return p;
     }, new Set<number>())].map(x => getLineById(x))
-        .sort((a, b) => (TransportTypePriority.indexOf(a.type) - TransportTypePriority.indexOf(b.type)) || (a.routeNumber - b.routeNumber));
+        .sort((a, b) => (getPriority(a.type) - getPriority(b.type)) || (a.routeNumber - b.routeNumber));
     if (linesToIntegrate.length == 0) return null;
     const colors = [...linesToIntegrate.reduce((p, n) => {
         p.add(n.color);
@@ -57,4 +57,11 @@ export function StationIntegrationContainerCmp({ station, getLineById, thisLineI
             </div>}
         </div>
     </div>;
+}
+
+function getPriority(tt: TransportType): number {
+    switch (tt) {
+        case TransportType.Subway: return getPriority(TransportType.Train);
+        default: return TransportTypePriority.indexOf(tt);
+    }
 }

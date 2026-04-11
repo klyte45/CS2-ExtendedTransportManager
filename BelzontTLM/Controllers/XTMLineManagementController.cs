@@ -20,6 +20,8 @@ namespace BelzontTLM
     public partial class XTMLineManagementController : SystemBase, IBelzontBindable
     {
         private EndFrameBarrier m_EndFrameBarrier;
+        private XTMInfoPanelSystem m_xtmPanel;
+
         public void SetupCallBinder(Action<string, Delegate> eventCaller)
         {
             eventCaller("lineManagement.setRouteAcronym", SetRouteAcronym);
@@ -54,6 +56,7 @@ namespace BelzontTLM
                 entityCommandBuffer.AddComponent(targetEntity, component);
             }
             entityCommandBuffer.AddComponent<Updated>(targetEntity);
+            m_xtmPanel.MarkDirty();
             return acronym;
         }
         private bool SetRouteIgnorePalette(Entity targetEntity, bool ignore)
@@ -70,6 +73,7 @@ namespace BelzontTLM
                 entityCommandBuffer.AddComponent<XTMPaletteLockedColor>(targetEntity);
             }
             entityCommandBuffer.AddComponent<XTMPaletteRequireUpdate>(targetEntity);
+            m_xtmPanel.MarkDirty();
             return ignore;
         }
 
@@ -80,6 +84,7 @@ namespace BelzontTLM
             component.m_Number = routeNum;
             entityCommandBuffer.SetComponent(entity, component);
             entityCommandBuffer.AddComponent<XTMPaletteRequireUpdate>(entity);
+            m_xtmPanel.MarkDirty();
             return routeNum;
         }
         private string SetRouteFixedColor(Entity entity, string color)
@@ -98,6 +103,7 @@ namespace BelzontTLM
             component.m_Color = colorObj;
             entityCommandBuffer.SetComponent(entity, component);
             entityCommandBuffer.AddComponent<XTMPaletteRequireUpdate>(entity);
+            m_xtmPanel.MarkDirty();
             return color;
         }
 
@@ -122,12 +128,14 @@ namespace BelzontTLM
             entityCommandBuffer.AddComponent<Updated>(route);
             targetNativeArray.Dispose();
             originalAsNativeArray.Dispose();
+            m_xtmPanel.MarkDirty();
             return true;
         }
       
         protected override void OnCreate()
         {
             m_EndFrameBarrier = World.GetOrCreateSystemManaged<EndFrameBarrier>();
+            m_xtmPanel = World.GetOrCreateSystemManaged<XTMInfoPanelSystem>();
         }
 
         protected override void OnUpdate()

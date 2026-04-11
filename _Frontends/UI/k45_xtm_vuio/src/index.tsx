@@ -6,10 +6,11 @@ import { ModRegistrar } from "cs2/modding";
 import { ReactNode, useState } from "react";
 import "#styles/lineViewer.scss";
 import iconWhite from "#images/iconWhite.svg";
-import { MapViewerOptions } from "#service/LineManagementService";
+import { LineManagementService, MapViewerOptions } from "#service/LineManagementService";
 import translate from "#utility/translate";
 import { InfoRow, InfoSection } from "cs2/ui";
 import { ColorEditorXtm } from "#components/ColorEditorXtm";
+import { XtmInfoSection } from "#components/XtmInfoSection";
 
 let IsXtm = true;
 let xtmOptions: MapViewerOptions = {
@@ -26,6 +27,10 @@ const register: ModRegistrar = (moduleRegistry) => {
     moduleRegistry.extend("game-ui/game/components/selected-info-panel/selected-info-sections/route-sections/line-visualizer-section/line-visualizer-section.tsx", 'LineVisualizerSection', XtmLineSectionButtonRegister)
 
     moduleRegistry.extend("game-ui/game/components/selected-info-panel/selected-info-sections/selected-info-sections.tsx", 'selectedInfoSectionComponents', XtmLayoutOverrideRegistering(() => { }))
+    moduleRegistry.extend("game-ui/common/charts/simulation-time-scale.ts", 'registerSimulationTimeScale', (x: any) => {
+        console.log("x", { ...x });
+        return x;
+    })
 }
 
 export default register;
@@ -82,7 +87,8 @@ const XtmLayoutOverrideRegistering = (onChange?: () => any) => (componentList: a
         }
         return <ColorEditorXtm {...args} />;
     };
-    componentList["BelzontTLM.XTMInfoPanelSystem"] = () => <>XTM GOES HERE</>;
+    componentList["BelzontTLM.XTMInfoPanelSystem"] = () => <XtmInfoSection />;
     return componentList as any;
 };
+
 
