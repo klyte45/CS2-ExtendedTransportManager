@@ -1,36 +1,37 @@
+import icon1 from "#images/icon1.svg";
+import iconWhite from "#images/iconWhite.svg";
 import { LineDetails, LineManagementService } from "#service/LineManagementService";
+import { WEIntegrationService } from "#service/WEIntegrationService";
+import { enrichStopInfo, enrichVehicleInfo } from "#utility/lineViewerUtils";
 import translate from "#utility/translate";
-import { durationToGameMinutes, Entity, nameToString, replaceArgs, toVanillaEntity, VanillaComponentResolver } from "@klyte45/vuio-commons";
-import engine from "cohtml/cohtml";
-import { camera, selectedInfo, time } from "cs2/bindings";
+import { durationToGameMinutes, Entity, nameToString, replaceArgs, toEntityTyped, toVanillaEntity, VanillaComponentResolver, VanillaWidgets } from "@klyte45/vuio-commons";
 import { useValue } from "cs2/api";
-import { useEffect, useRef, useState } from "react";
-import iconWhite from "#images/iconWhite.svg"
-import icon1 from "#images/icon1.svg"
+import { camera, selectedInfo, time } from "cs2/bindings";
 import { FocusDisabled } from "cs2/input";
 import { LocalizedNumber, Unit, useLocalization } from "cs2/l10n";
-import { enrichVehicleInfo, enrichStopInfo } from "#utility/lineViewerUtils";
-import { WEIntegrationService } from "#service/WEIntegrationService";
 import { Portal } from "cs2/ui";
+import { useEffect, useState } from "react";
 import { LineDetail_WriteEverywhere } from "./WE_BlindEditor/LineDetail_WriteEverywhere";
 
 export const XtmInfoSection = () => {
     const [lineDetails, setLineDetails] = useState<LineDetails>();
     const [weAvailable, setWeAvailable] = useState(false);
     const [weWindowShow, setWeWindowShow] = useState(false);
-    const lastDataKeyRef = useRef("");
+    const [lineNumber, setLineNumber] = useState(0);
+    const [lineAcronym, setLineAcronym] = useState("");
     const localization = useLocalization();
     const selectedEntity = useValue(selectedInfo.selectedEntity$);
     const selectedRoute = useValue(selectedInfo.selectedRoute$);
+    const editorModule = VanillaWidgets.instance.editorItemModule;
 
     useEffect(() => {
         LineManagementService.getCurrentLineInfo().then(reloadData);
+        WEIntegrationService.isAvailable().then(setWeAvailable);
+        LineManagementService.getRouteNumber(toEntityTyped(selectedEntity)).then(setLineNumber);
+        LineManagementService.getRouteAcronym(toEntityTyped(selectedEntity)).then(setLineAcronym);
     }, [selectedEntity, useValue(time.ticks$)]);
 
     async function reloadData(details: LineDetails) {
-        const key = `${details.LineData.entity.Index}|${details.Vehicles.length}|${details.Stops.length}|${details.Vehicles.reduce((p, n) => p + n.odometer + n.cargo + n.position * 100, 0).toFixed(1)}|${details.Stops.reduce((p, n) => p + n.cargo, 0)}`;
-        if (key === lastDataKeyRef.current) return;
-        lastDataKeyRef.current = key;
         details.Vehicles = details.Vehicles.map(x => {
             return {
                 ...x,
@@ -46,7 +47,7 @@ export const XtmInfoSection = () => {
         setLineDetails(details)
 
     }
-
+    console.log(editorModule)
     if (!lineDetails) return <></>;
     if (selectedEntity?.index == selectedRoute?.index) {
 
@@ -62,6 +63,18 @@ export const XtmInfoSection = () => {
                 left: translate("lineViewer.lineData"), uppercase: true, icon: iconWhite, right: <FocusDisabled>
                     {weAvailable && <VanillaComponentResolver.instance.ToolButton onSelect={() => setWeWindowShow(!weWindowShow)} selected={weWindowShow} src="coui://we.k45/UI/images/WE-White.svg" tooltip={translate("weIntegrationBlinds.title")} />}
                 </FocusDisabled>
+            },
+            {
+                left: translate("lineViewerEditor.internalNumber"), right: <VanillaComponentResolver.instance.IntInput value={lineNumber} className={editorModule.input}
+                    onChange={setLineNumber}
+                    onBlur={() => { LineManagementService.setRouteNumber(toEntityTyped(selectedEntity), lineNumber); selectedInfo.clearSelection(); setTimeout(() => selectedInfo.selectEntity(selectedEntity), 300) }} />
+            },
+            {
+                left: translate("lineViewerEditor.displayIdentifier"), right: <VanillaWidgets.instance.StringInputField
+                    className={editorModule.input}
+                    value={lineAcronym} onChange={setLineAcronym}
+                    onChangeEnd={() => { LineManagementService.setRouteAcronym(toEntityTyped(selectedEntity), lineAcronym); selectedInfo.clearSelection(); setTimeout(() => selectedInfo.selectEntity(selectedEntity), 300) }}
+                />
             },
             { left: translate(lineDetails?.LineData.isCargo ? "lineViewer.dataTotalCargoWaiting" : "lineViewer.dataTotalPassengersWaiting"), right: <>{LocalizedNumber.renderString(localization, { value: lineDetails.Stops.reduce((p, n) => p + n.cargo, 0), unit: lineDetails.LineData.isCargo ? Unit.Weight : Unit.Integer })}</> },
             { left: translate(lineDetails?.LineData.isCargo ? "lineViewer.dataTotalCargoLoaded" : "lineViewer.dataTotalPassengersLoaded"), right: <>{LocalizedNumber.renderString(localization, { value: lineDetails.Vehicles.reduce((p, n) => p + n.cargo, 0), unit: lineDetails.LineData.isCargo ? Unit.Weight : Unit.Integer })}</> },

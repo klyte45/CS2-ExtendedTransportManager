@@ -25,7 +25,7 @@ export const ColorEditorXtm = ({ group, tooltipTags, tooltipKeys }: Props) => {
     const onChangeIsIgnorePalette = (value: boolean) => LineManagementService.setIgnorePalette(toEntityTyped(selectedEntity), value).then(setIsIgnorePalette);
     const onChangeFixedColor = (value: string) => {
         trigger("ColorSection", "setColor", { ...ColorUtils.toColor01(value), __Type: "Game.UI.Common.UIColor" });
-        LineManagementService.setLineFixedColor(toEntityTyped(selectedEntity), value).then(setFixedColor);
+        LineManagementService.setRouteFixedColor(toEntityTyped(selectedEntity), value).then(setFixedColor);
     };
 
 

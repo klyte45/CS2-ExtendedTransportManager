@@ -34,7 +34,6 @@ export const XtmLineViewer = ({ children, args, isXtm, xtmOptions }: Props) => {
     const [indexedLineList, setIndexedLineList] = useState<Record<string, LineData>>({});
     const [lineDetails, setLineDetails] = useState<LineDetails>();
     const [isLineSimetric, setIsLineSimetric] = useState(false);
-    const lastDataKeyRef = useRef("");
 
     const reloadLines = async (res: LineData[]) => {
         const refOrder = Object.keys(TypeToIcons);
@@ -52,9 +51,6 @@ export const XtmLineViewer = ({ children, args, isXtm, xtmOptions }: Props) => {
     }
 
     async function reloadData(details: LineDetails) {
-        const key = `${details.LineData.entity.Index}|${details.Stops.length}|${xtmOptions.showVehicles ? `${details.Vehicles.length}|${details.Vehicles.reduce((p, n) => p + n.odometer + n.cargo + n.position * 100, 0).toFixed(1)}` : ""}|${details.Stops.reduce((p, n) => p + n.cargo, 0)}`;
-        if (key === lastDataKeyRef.current) return;
-        lastDataKeyRef.current = key;
         details.Vehicles = details.Vehicles.map(x => {
             return {
                 ...x,
@@ -75,13 +71,13 @@ export const XtmLineViewer = ({ children, args, isXtm, xtmOptions }: Props) => {
     useEffect(() => {
         if (!isXtm) return;
         LineManagementService.listLines().then(reloadLines);
-    }, [isXtm, useValue(selectedInfo.selectedRoute$).index]);
+    }, [isXtm, useValue(selectedInfo.selectedRoute$)]);
 
     useEffect(() => {
         if (!isXtm) return;
         LineManagementService.getCurrentLineInfo().then(reloadData);
         return () => { };
-    }, [useValue(selectedInfo.selectedEntity$).index, useValue(time.ticks$), isXtm])
+    }, [useValue(selectedInfo.selectedEntity$), useValue(time.ticks$), isXtm])
 
     if (!isXtm) {
         return <>{children}</>;
