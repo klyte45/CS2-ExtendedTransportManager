@@ -11,6 +11,7 @@ import translate from "#utility/translate";
 import { InfoRow, InfoSection } from "cs2/ui";
 import { ColorEditorXtm } from "#components/ColorEditorXtm";
 import { XtmInfoSection } from "#components/XtmInfoSection";
+import { useValue } from "cs2/api";
 
 let IsXtm = true;
 let xtmOptions: MapViewerOptions = {
@@ -27,10 +28,6 @@ const register: ModRegistrar = (moduleRegistry) => {
     moduleRegistry.extend("game-ui/game/components/selected-info-panel/selected-info-sections/route-sections/line-visualizer-section/line-visualizer-section.tsx", 'LineVisualizerSection', XtmLineSectionButtonRegister)
 
     moduleRegistry.extend("game-ui/game/components/selected-info-panel/selected-info-sections/selected-info-sections.tsx", 'selectedInfoSectionComponents', XtmLayoutOverrideRegistering(() => { }))
-    moduleRegistry.extend("game-ui/common/charts/simulation-time-scale.ts", 'registerSimulationTimeScale', (x: any) => {
-        console.log("x", { ...x });
-        return x;
-    })
 }
 
 export default register;
@@ -82,7 +79,9 @@ const XtmLineViewerRegister = (Component: any): any => {
 const XtmLayoutOverrideRegistering = (onChange?: () => any) => (componentList: any): any => {
     const _originalColor = componentList["Game.UI.InGame.ColorSection"]
     componentList["Game.UI.InGame.ColorSection"] = (args: any) => {
-        if (selectedInfo.selectedEntity$.value?.index != selectedInfo.selectedRoute$.value?.index) {
+        const selectedEntity = useValue(selectedInfo.selectedEntity$);
+        const selectedRoute = useValue(selectedInfo.selectedRoute$);
+        if (selectedEntity?.index != selectedRoute?.index) {
             return <_originalColor {...args} />;
         }
         return <ColorEditorXtm {...args} />;

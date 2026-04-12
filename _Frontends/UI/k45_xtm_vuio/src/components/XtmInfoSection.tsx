@@ -3,19 +3,28 @@ import translate from "#utility/translate";
 import { durationToGameMinutes, Entity, nameToString, replaceArgs, toVanillaEntity, VanillaComponentResolver } from "@klyte45/vuio-commons";
 import engine from "cohtml/cohtml";
 import { camera, selectedInfo } from "cs2/bindings";
+import { useValue } from "cs2/api";
 import { useEffect, useState } from "react";
 import iconWhite from "#images/iconWhite.svg"
 import icon1 from "#images/icon1.svg"
 import { FocusDisabled } from "cs2/input";
 import { LocalizedNumber, Unit, useLocalization } from "cs2/l10n";
 import { enrichVehicleInfo, enrichStopInfo } from "#utility/lineViewerUtils";
+import { WEIntegrationService } from "#service/WEIntegrationService";
+import { Portal } from "cs2/ui";
+import { LineDetail_WriteEverywhere } from "./WE_BlindEditor/LineDetail_WriteEverywhere";
 
 export const XtmInfoSection = () => {
     const [lineDetails, setLineDetails] = useState<LineDetails>();
+    const [weAvailable, setWeAvailable] = useState(false);
+    const [weWindowShow, setWeWindowShow] = useState(false);
     const localization = useLocalization();
+    const selectedEntity = useValue(selectedInfo.selectedEntity$);
+    const selectedRoute = useValue(selectedInfo.selectedRoute$);
 
     useEffect(() => {
         engine.whenReady.then(async () => {
+            WEIntegrationService.isAvailable().then(setWeAvailable);
             engine.on("k45::xtm.xtmInfoPanel.lineData->", async (x) => {
                 reloadData(x);
             }, "XtmInfoSection");
@@ -43,7 +52,7 @@ export const XtmInfoSection = () => {
         setLineDetails(details);
     }
     if (!lineDetails) return <></>;
-    if (selectedInfo.selectedEntity$.value?.index == selectedInfo.selectedRoute$.value?.index) {
+    if (selectedEntity?.index == selectedRoute?.index) {
 
         const nextVehicleToMaintain = lineDetails.Vehicles.filter(x => x.maintenanceRange > 0).sort((a, b) => (a.odometer - a.maintenanceRange) - (b.odometer - b.maintenanceRange))[0];
 
@@ -52,8 +61,12 @@ export const XtmInfoSection = () => {
             <div>{replaceArgs(translate("lineViewer.dataNextMaintenanceValueFmt"), { distance: LocalizedNumber.renderString(localization, { value: nextVehicleToMaintain.maintenanceRange - nextVehicleToMaintain.odometer, unit: Unit.Length }) })}</div>
         </div> : translate("lineViewer.dataNoNextMaintenance");
 
-        return VanillaComponentResolver.CreateInfoSection([
-            { left: translate("lineViewer.lineData"), uppercase: true, icon: iconWhite },
+        return <>{VanillaComponentResolver.CreateInfoSection([
+            {
+                left: translate("lineViewer.lineData"), uppercase: true, icon: iconWhite, right: <FocusDisabled>
+                    {weAvailable && <VanillaComponentResolver.instance.ToolButton onSelect={() => setWeWindowShow(!weWindowShow)} selected={weWindowShow} src="coui://we.k45/UI/images/WE-White.svg" tooltip={translate("weIntegrationBlinds.title")} />}
+                </FocusDisabled>
+            },
             { left: translate(lineDetails?.LineData.isCargo ? "lineViewer.dataTotalCargoWaiting" : "lineViewer.dataTotalPassengersWaiting"), right: <>{LocalizedNumber.renderString(localization, { value: lineDetails.Stops.reduce((p, n) => p + n.cargo, 0), unit: lineDetails.LineData.isCargo ? Unit.Weight : Unit.Integer })}</> },
             { left: translate(lineDetails?.LineData.isCargo ? "lineViewer.dataTotalCargoLoaded" : "lineViewer.dataTotalPassengersLoaded"), right: <>{LocalizedNumber.renderString(localization, { value: lineDetails.Vehicles.reduce((p, n) => p + n.cargo, 0), unit: lineDetails.LineData.isCargo ? Unit.Weight : Unit.Integer })}</> },
             { left: translate("lineViewer.dataLineFullLapAverageTime"), right: <>{replaceArgs(translate("lineViewer.formatMinutes"), { minutes: durationToGameMinutes(lineDetails.Segments.reduce((p, n) => p + n.duration, 0) * Math.PI + lineDetails.Stops.length * 4).toFixed() })}</> },
@@ -61,9 +74,13 @@ export const XtmInfoSection = () => {
             { left: translate("lineViewer.dataAverageVehicleOccupance"), right: <>{LocalizedNumber.renderString(localization, { value: lineDetails.Vehicles.reduce((p, n) => p + n.cargo / n.capacity, 0) / lineDetails.Vehicles.length * 100, unit: Unit.Percentage })}</> },
             { left: translate("lineViewer.dataAverageStopWaiting"), right: <>{LocalizedNumber.renderString(localization, { value: lineDetails.Stops.reduce((p, n) => p + n.cargo / lineDetails.StopCapacity, 0) / lineDetails.Stops.length * 100, unit: Unit.Percentage })}</> },
 
-        ]);
+        ])}
+            <Portal>
+                {weWindowShow && <LineDetail_WriteEverywhere lineId={lineDetails?.LineData.entity} stops={lineDetails.Stops} />}
+            </Portal>
+        </>;
     }
-    const stopData = lineDetails?.Stops.find(x => x.entity.Index == selectedInfo.selectedEntity$.value?.index);
+    const stopData = lineDetails?.Stops.find(x => x.entity.Index == selectedEntity?.index);
     if (stopData) {
         const inverseStop = lineDetails?.Stops.find(x => x.parent.Index == stopData.parent.Index && x.entity.Index != stopData.entity.Index);
         const thisIdx = lineDetails?.Stops.findIndex(x => x.entity.Index == stopData.entity.Index);
@@ -99,10 +116,10 @@ export const XtmInfoSection = () => {
             }
         ]);
     }
-    if (lineDetails?.Stops.some(x => x.parent.Index == selectedInfo.selectedEntity$.value?.index)) {
+    if (lineDetails?.Stops.some(x => x.parent.Index == selectedEntity?.index)) {
         return <></>;
     }
-    const vehicleData = lineDetails?.Vehicles.find(x => x.entity.Index == selectedInfo.selectedEntity$.value?.index);
+    const vehicleData = lineDetails?.Vehicles.find(x => x.entity.Index == selectedEntity?.index);
     if (vehicleData) {
         return VanillaComponentResolver.CreateInfoSection([
             { left: translate("lineViewer.vehicleData"), uppercase: true, icon: iconWhite },

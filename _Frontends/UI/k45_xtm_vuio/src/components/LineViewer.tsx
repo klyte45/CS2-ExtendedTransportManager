@@ -7,6 +7,7 @@ import { TransportType } from "#enum/TransportType";
 import engine from "cohtml/cohtml";
 import "#styles/TLM_LineDetail.scss";
 import { enrichVehicleInfo, enrichStopInfo } from "#utility/lineViewerUtils";
+import { useValue } from "cs2/api";
 
 type Props = {
     children: React.ReactNode;
@@ -29,7 +30,7 @@ const TypeToIcons = {
 }
 
 export const XtmLineViewer = ({ children, args, isXtm, xtmOptions }: Props) => {
-    const currentLine = toEntityTyped(selectedInfo.selectedRoute$.value);
+    const currentLine = toEntityTyped(useValue(selectedInfo.selectedRoute$));
     const [indexedLineList, setIndexedLineList] = useState<Record<string, LineData>>({});
     const [lineDetails, setLineDetails] = useState<LineDetails>();
     const [isLineSimetric, setIsLineSimetric] = useState(false);
@@ -80,7 +81,7 @@ export const XtmLineViewer = ({ children, args, isXtm, xtmOptions }: Props) => {
         return () => {
             engine.off("k45::xtm.lineViewer.getCityLines->", undefined, "XtmLineViewer");
         }
-    }, [isXtm, selectedInfo.selectedRoute$.value])
+    }, [isXtm, useValue(selectedInfo.selectedRoute$)]);
 
     useEffect(() => {
         if (!isXtm) return;
@@ -93,7 +94,7 @@ export const XtmLineViewer = ({ children, args, isXtm, xtmOptions }: Props) => {
         return () => {
             engine.off("k45::xtm.xtmInfoPanel.lineData->", undefined, "XtmLineViewer");
         }
-    }, [selectedInfo.selectedEntity$.value])
+    }, [useValue(selectedInfo.selectedEntity$), isXtm])
 
     if (!isXtm) {
         return <>{children}</>;

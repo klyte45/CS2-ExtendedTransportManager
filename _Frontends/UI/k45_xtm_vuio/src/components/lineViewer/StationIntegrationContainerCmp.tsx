@@ -4,6 +4,7 @@ import { ColorUtils, Entity, nameToString, toVanillaEntity } from "@klyte45/vuio
 import { CSSProperties } from "react";
 import { TlmLineFormatCmp } from "./TlmLineFormatCmp";
 import { selectedInfo } from "cs2/bindings";
+import { Tooltip } from "cs2/ui";
 
 type Props = {
     station: StationData;
@@ -50,9 +51,11 @@ export function StationIntegrationContainerCmp({ station, getLineById, thisLineI
             <div className="integrationStationBullet" />
             {<div className={`stationIntersectionsContainer ${linesToIntegrate.length > 4 ? "sz1" : ""}`}>
                 {linesToIntegrate.map((lineData, i) => {
-                    return <div className="lineIntersection" key={i} data-tooltip={nameToString(lineData.name)} data-tootip-position="top left" onClick={() => selectedInfo.selectEntity(toVanillaEntity(lineData.entity))}>
-                        <TlmLineFormatCmp {...lineData} text={lineData.xtmData?.Acronym || lineData.routeNumber.toFixed()} />
-                    </div>;
+                    return <Tooltip key={i} tooltip={nameToString(lineData.name)}>
+                        <div className="lineIntersection" onClick={() => selectedInfo.selectEntity(toVanillaEntity(lineData.entity))}>
+                            <TlmLineFormatCmp {...lineData} text={lineData.xtmData?.Acronym || lineData.routeNumber.toFixed()} />
+                        </div>
+                    </Tooltip>;
                 })}
             </div>}
         </div>

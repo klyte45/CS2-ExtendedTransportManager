@@ -7,6 +7,7 @@ import React, { useEffect, useState } from "react";
 import { Tooltip } from "cs2/ui";
 import { Unit } from "#enum/Unit";
 import { camera, selectedInfo } from "cs2/bindings";
+import { useValue } from "cs2/api";
 
 type Props = {
     station: StationData;
@@ -21,6 +22,7 @@ type Props = {
 export function StationContainerCmp({ station, vehicles: _vehicles, keyId, normalizedPosition, totalStationCount, isFaded, direction }: Props) {
     const locale = useLocalization();
     const [measureUnit, setMeasureUnit] = useState<UnitSystem>(locale.unitSettings.unitSystem);
+    const selectedEntity = useValue(selectedInfo.selectedEntity$);
 
     useEffect(() => {
         const measureCallback = () => setMeasureUnit(useLocalization().unitSettings.unitSystem);
@@ -79,7 +81,7 @@ export function StationContainerCmp({ station, vehicles: _vehicles, keyId, norma
     }
 
     return generateTooltip(
-        <div className={["lineStationContainer", [station.parent, station.entity].some(x => x.Index == selectedInfo.selectedEntity$.value.index) ? "selected" : ""].join(" ")} style={{ top: (100 * normalizedPosition) + "%", minHeight: (100 / totalStationCount) + "%" }}>
+        <div className={["lineStationContainer", [station.parent, station.entity].some(x => x.Index == selectedEntity.index) ? "selected" : ""].join(" ")} style={{ top: (100 * normalizedPosition) + "%", minHeight: (100 / totalStationCount) + "%" }}>
             <div className="lineStation row col-12 align-items-center" onClick={handleStopClick} >
                 <div className={["stationName", isFaded && "faded"].join(" ")}>{nameToString(station.name)}</div>
                 <div className={["stationBullet", isFaded && "faded"].join(" ")} id={id} />

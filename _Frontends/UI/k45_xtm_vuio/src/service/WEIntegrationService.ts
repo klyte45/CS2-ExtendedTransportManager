@@ -30,7 +30,7 @@ export class WEIntegrationService {
 
     static async isAvailable(): Promise<boolean> { return await engine.call("k45::xtm.weIntegration.isAvailable") }
     static async getBlindsKeyframes(line: Entity): Promise<WEDynamicBlindItem[]> { return await engine.call("k45::xtm.weIntegration.getBlindsKeyframes", line) }
-    static async setBlindsKeyframes(line: Entity, items: WEDynamicBlindItem[]): Promise<boolean> { return await engine.call("k45::xtm.weIntegration.setBlindsKeyframes", line, items) }
+    static async setBlindsKeyframes(line: Entity, items?: WEDynamicBlindItem[]): Promise<boolean> { return await engine.call("k45::xtm.weIntegration.setBlindsKeyframes", line, items) }
 
     static setClipboard(newData: WEDynamicBlindItem[], stopData: StationData[]) {
         this.clipboard = newData.map(x => {
@@ -41,7 +41,7 @@ export class WEIntegrationService {
 
     static hasClipboard() { return !!this.clipboard }
 
-    static getClipboard(stopData: StationData[]) {
+    static getClipboard(stopData: StationData[]): WEDynamicBlindItem[] | undefined {
         return this.clipboard?.map(x => {
             const result = { ...x };
             result.useUntilStop = x.stopPos == 1
@@ -49,5 +49,34 @@ export class WEIntegrationService {
                 : stopData.map(t => [Math.abs(t.position - x.stopPos!), t] as [number, StationData]).sort((a, b) => a[0] - b[0])[0][1].waypoint
             return result;
         })
+    }
+    static getDefault(stopData: StationData[]): WEDynamicBlindItem[] {
+        return [
+            {
+                keyframes: [{
+                    type: { value__: WEDestinationKeyframeType.EntityNameOrDistrict },
+                    framesLength: 3,
+                }, {
+                    type: { value__: WEDestinationKeyframeType.RouteNumber },
+                    framesLength: 2,
+                }],
+                staticKeyframeIdx: 0,
+                useUntilStop: stopData[Math.floor(stopData.length / 2)].waypoint,
+                stopPos: Math.floor(stopData.length / 2)
+            },
+            {
+                keyframes: [{
+                    type: { value__: WEDestinationKeyframeType.EntityNameOrDistrict },
+                    framesLength: 3,
+                }, {
+                    type: { value__: WEDestinationKeyframeType.RouteNumber },
+                    framesLength: 2,
+                }],
+                staticKeyframeIdx: 0,
+                useUntilStop: { Index: 0, Version: 0, __Type: "Unity.Entities.Entity, Unity.Entities, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null" },
+                stopPos: -1
+            },
+
+        ]
     }
 }

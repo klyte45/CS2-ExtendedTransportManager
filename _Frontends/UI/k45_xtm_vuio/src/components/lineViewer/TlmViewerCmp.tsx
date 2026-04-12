@@ -9,6 +9,7 @@ import { TlmLineFormatCmp } from "./TlmLineFormatCmp";
 import { ColorUtils, Entity, toVanillaEntity } from "@klyte45/vuio-commons";
 import { Scrollable, ScrollController } from "cs2/ui";
 import { selectedInfo } from "cs2/bindings";
+import { useValue } from "cs2/api";
 
 type Props = {
     lineDetails: LineDetails;
@@ -22,7 +23,7 @@ export function TlmViewerCmp({ lineDetails, getLineById, simetricLine, showDistr
     const showSimetricMode = simetricLine && !showVehicles && useHalfTripIfSimetric;
     const targetStops = showSimetricMode ? lineDetails.Stops.slice(0, lineDetails.Stops.length / 2 + 1) : lineDetails.Stops;
     const targetLenght = targetStops.length - (showSimetricMode ? 1 : 0);
-    const selectedEntity = selectedInfo.selectedEntity$.value;
+    const selectedEntity = useValue(selectedInfo.selectedEntity$);
     const currentStopSelected = selectedEntity ? lineDetails.Stops.find(x => x.entity.Index == selectedEntity.index) : undefined;
 
     return <div id="TlmViewer" className={useWhiteBackground ? "mapWhiteBg" : ""}>
@@ -41,7 +42,7 @@ export function TlmViewerCmp({ lineDetails, getLineById, simetricLine, showDistr
                                 <div className="integrationsRailing">
                                     {targetStops.map((station, i) => {
                                         return <StationIntegrationContainerCmp
-                                            isFaded={selectedInfo.selectedEntity$.value.index != lineDetails.LineData.entity.Index && ![station.entity.Index, station.parent.Index].includes(showSimetricMode ? currentStopSelected?.parent.Index! : selectedInfo.selectedEntity$.value.index)}
+                                            isFaded={selectedEntity.index != lineDetails.LineData.entity.Index && ![station.entity.Index, station.parent.Index].includes(showSimetricMode ? currentStopSelected?.parent.Index! : selectedEntity.index)}
                                             getLineById={(x) => getLineById(x)}
                                             station={station}
                                             vehicles={lineDetails.Vehicles}
@@ -53,7 +54,7 @@ export function TlmViewerCmp({ lineDetails, getLineById, simetricLine, showDistr
                                         />;
                                     })}
                                     {!showSimetricMode && <StationIntegrationContainerCmp
-                                        isFaded={![targetStops[0].entity.Index, targetStops[0].parent.Index, lineDetails.LineData.entity.Index].includes(selectedInfo.selectedEntity$.value.index)}
+                                        isFaded={![targetStops[0].entity.Index, targetStops[0].parent.Index, lineDetails.LineData.entity.Index].includes(selectedEntity.index)}
                                         thisLineId={lineDetails.LineData.entity}
                                         getLineById={(x) => getLineById(x)}
                                         station={targetStops[0]}
@@ -66,7 +67,7 @@ export function TlmViewerCmp({ lineDetails, getLineById, simetricLine, showDistr
                             <div className="stationRailing">
                                 {targetStops.map((station, i) => {
                                     return <StationContainerCmp
-                                        isFaded={selectedInfo.selectedEntity$.value.index != lineDetails.LineData.entity.Index && ![station.entity.Index, station.parent.Index].includes(showSimetricMode ? currentStopSelected?.parent.Index! : selectedInfo.selectedEntity$.value.index)}
+                                        isFaded={selectedEntity.index != lineDetails.LineData.entity.Index && ![station.entity.Index, station.parent.Index].includes(showSimetricMode ? currentStopSelected?.parent.Index! : selectedEntity.index)}
                                         station={station}
                                         vehicles={lineDetails.Vehicles}
                                         keyId={i}
@@ -77,7 +78,7 @@ export function TlmViewerCmp({ lineDetails, getLineById, simetricLine, showDistr
                                     />;
                                 })}
                                 {!showSimetricMode && <StationContainerCmp
-                                    isFaded={![targetStops[0].entity.Index, targetStops[0].parent.Index, lineDetails.LineData.entity.Index].includes(selectedInfo.selectedEntity$.value.index)}
+                                    isFaded={![targetStops[0].entity.Index, targetStops[0].parent.Index, lineDetails.LineData.entity.Index].includes(selectedEntity.index)}
                                     station={targetStops[0]}
                                     vehicles={lineDetails.Vehicles}
                                     keyId={-1}
@@ -137,7 +138,7 @@ export function TlmViewerCmp({ lineDetails, getLineById, simetricLine, showDistr
                                 <div className="vehiclesRailing">{lineDetails.Vehicles.map((vehicle, i) => {
                                     return <MapVehicleContainerCmp
                                         key={i} vehicle={vehicle}
-                                        isFaded={![vehicle.entity.Index, lineDetails.LineData.entity.Index].includes(selectedInfo.selectedEntity$.value.index)}
+                                        isFaded={![vehicle.entity.Index, lineDetails.LineData.entity.Index].includes(selectedEntity.index)}
                                     />;
                                 })}
                                 </div>
