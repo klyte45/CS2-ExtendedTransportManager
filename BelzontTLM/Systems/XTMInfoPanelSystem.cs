@@ -37,9 +37,6 @@ namespace BelzontTLM
         private EntityQuery m_DepotQuery;
         private EntityQuery m_TransportVehiclePrefabQuery;
 
-        private int cooldown = 0;
-        private Entity lastSearchedEntity;
-
         protected override string group => "K45.XTM";
 
         protected override void OnCreate()
@@ -65,18 +62,6 @@ namespace BelzontTLM
         protected override void OnUpdate()
         {
             visible = selectedEntity != Entity.Null && m_InfoUISystem.selectedRoute != Entity.Null;
-            if (visible)
-            {
-                if (--cooldown > 0 && lastSearchedEntity == m_InfoUISystem.selectedRoute) return;
-                cooldown = 15;
-                var lineData = RunUpdate(m_InfoUISystem.selectedRoute);
-                lastSearchedEntity = m_InfoUISystem.selectedRoute;
-                emitter("xtmInfoPanel.lineData->", [lineData]);
-            }
-            else
-            {
-                MarkDirty();
-            }
         }
 
         protected override void Reset()
@@ -102,15 +87,10 @@ namespace BelzontTLM
 
         public void SetupCallBinder(Action<string, Delegate> callBinderFn)
         {
+            callBinderFn("xtmInfoPanel.getCurrentLineInfo", () => GetLineView(m_InfoUISystem.selectedRoute));
         }
 
-        public void MarkDirty()
-        {
-            cooldown = 0;
-            lastSearchedEntity = default;
-        }
-
-        protected XTMLineViewerResult RunUpdate(Entity e)
+        protected XTMLineViewerResult GetLineView(Entity e)
         {
             if (e == Entity.Null)
             {

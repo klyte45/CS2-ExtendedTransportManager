@@ -1,69 +1,23 @@
 ﻿using Belzont.Interfaces;
 using Belzont.Utils;
+using Colossal.Entities;
 using Game;
 using Game.Common;
 using Game.Prefabs;
 using Game.Routes;
 using Game.Tools;
+using Game.UI;
+using Game.UI.InGame;
 using System;
 using Unity.Collections;
 using Unity.Entities;
+using static BelzontTLM.XTMLineListingSection;
 
 namespace BelzontTLM
 {
     public partial class XTMLineViewerController : SystemBase, IBelzontBindable
     {
-        //private const string CCTV_GO = "XTM - cctv.xtm.k45";
         public Action<string, object[]> EventCaller { get; set; }
-
-        //public Camera cctvCamera;
-        protected void SendEvent(string eventName, params object[] eventArgs)
-        {
-            EventCaller?.Invoke(eventName, eventArgs);
-        }
-
-        private void GetCityLines(bool force = false)
-        {
-            m_LineListingSection.AddDependency(m_EndFrameBarrier.producerHandle);
-            m_LineListingSection.Enqueue(Entity.Null, (x) =>
-            {
-                if (BasicIMod.TraceMode) LogUtils.DoTraceLog("SENDING OBJ: {0}", x);
-                SendEvent("lineViewer.getCityLines->", x, null);
-            },
-            force);
-        }
-
-        private void SetCctvPosition(float x, float y, float z, float angleX, float angleY, float distanceZ)
-        {
-            //LogUtils.DoLog("Setting CCTV pos");
-            //var targetPoint = new Vector3(x, y, z);
-            //var targetPositionCamera = targetPoint + (Quaternion.AngleAxis(angleX, Vector3.right) * Vector3.forward + Quaternion.AngleAxis(angleY, Vector3.up) * Vector3.forward).normalized * distanceZ;
-            //cctvCamera.transform.position = targetPositionCamera;
-            //cctvCamera.transform.LookAt(targetPoint);
-        }
-
-        protected override void OnUpdate()
-        {
-            if (!m_UnititalizedXTMLineQuery.IsEmptyIgnoreFilter)
-            {
-                NativeArray<Entity> unitializedLines = m_UnititalizedXTMLineQuery.ToEntityArray(Allocator.TempJob);
-                int length = unitializedLines.Length;
-                EntityCommandBuffer entityCommandBuffer = m_EndFrameBarrier.CreateCommandBuffer();
-                for (int i = 0; i < length; i++)
-                {
-                    entityCommandBuffer.AddComponent<XTMRouteExtraData>(unitializedLines[i]);
-                    entityCommandBuffer.AddComponent<Updated>(unitializedLines[i]);
-                    LogUtils.DoInfoLog($"Initialized Line data @ entity id #{unitializedLines[i].Index}");
-                }
-                unitializedLines.Dispose();
-            }
-            if (!m_modifiedLineQuery.IsEmptyIgnoreFilter)
-            {
-                GetCityLines();
-            }
-
-        }
-
         public void SetupEventBinder(Action<string, Delegate> eventCaller)
         {
         }
@@ -71,15 +25,20 @@ namespace BelzontTLM
         public void SetupCallBinder(Action<string, Delegate> eventCaller)
         {
             eventCaller("lineViewer.getCityLines", GetCityLines);
-            eventCaller("lineViewer.setCctvPosition", SetCctvPosition);
+        }
+
+        public void SetupCaller(Action<string, object[]> eventCaller)
+        {
+            EventCaller = eventCaller;
         }
 
         private EntityQuery m_UnititalizedXTMLineQuery;
         private EntityQuery m_modifiedLineQuery;
         private EndFrameBarrier m_EndFrameBarrier;
         private XTMLineListingSection m_LineListingSection;
-
-
+        private EntityQuery m_linesQueue;
+        private PrefabSystem m_PrefabSystem;
+        private NameSystem m_NameSystem;
 
         protected override void OnCreate()
         {
@@ -125,12 +84,85 @@ namespace BelzontTLM
 
             m_EndFrameBarrier = World.GetOrCreateSystemManaged<EndFrameBarrier>();
             m_LineListingSection = World.GetOrCreateSystemManaged<XTMLineListingSection>();
+            m_linesQueue = GetEntityQuery(new EntityQueryDesc[] {
+                new() {
+                    All = new ComponentType[]
+                    {
+                        ComponentType.ReadOnly<Route>(),
+                        ComponentType.ReadWrite<RouteNumber>(),
+                        ComponentType.ReadWrite<TransportLine>(),
+                        ComponentType.ReadOnly<RouteWaypoint>(),
+                        ComponentType.ReadOnly<PrefabRef>()
+                    },
+                    None = new ComponentType[]
+                    {
+                        ComponentType.ReadOnly<Deleted>(),
+                        ComponentType.ReadOnly<Temp>()
+                    }
+                }
+            });
+            m_PrefabSystem = World.GetOrCreateSystemManaged<PrefabSystem>();
+            m_NameSystem = World.GetOrCreateSystemManaged<NameSystem>();
         }
 
 
-        public void SetupCaller(Action<string, object[]> eventCaller)
+        protected override void OnUpdate()
         {
-            EventCaller = eventCaller;
+            if (!m_UnititalizedXTMLineQuery.IsEmptyIgnoreFilter)
+            {
+                NativeArray<Entity> unitializedLines = m_UnititalizedXTMLineQuery.ToEntityArray(Allocator.TempJob);
+                int length = unitializedLines.Length;
+                EntityCommandBuffer entityCommandBuffer = m_EndFrameBarrier.CreateCommandBuffer();
+                for (int i = 0; i < length; i++)
+                {
+                    entityCommandBuffer.AddComponent<XTMRouteExtraData>(unitializedLines[i]);
+                    entityCommandBuffer.AddComponent<Updated>(unitializedLines[i]);
+                    LogUtils.DoInfoLog($"Initialized Line data @ entity id #{unitializedLines[i].Index}");
+                }
+                unitializedLines.Dispose();
+            }
+            if (!m_modifiedLineQuery.IsEmptyIgnoreFilter)
+            {
+                GetCityLines();
+            }
+
         }
+        protected void SendEvent(string eventName, params object[] eventArgs)
+        {
+            EventCaller?.Invoke(eventName, eventArgs);
+        }
+
+        private LineItemStruct[] GetCityLines()
+        {
+            return ListLines();
+        }
+
+
+        private LineItemStruct[] ListLines()
+        {
+            NativeArray<UITransportLineData> sortedLines = TransportUIUtils.GetSortedLines(m_linesQueue, EntityManager, m_PrefabSystem);
+            var output = new LineItemStruct[sortedLines.Length];
+            for (int i = 0; i < sortedLines.Length; i++)
+            {
+                Entity entity = sortedLines[i].entity;
+                var item = new LineItemStruct
+                {
+                    name = m_NameSystem.GetName(entity).ToValueableName(),
+                    vkName = m_NameSystem.GetNameForVirtualKeyboard(entity).ToValueableName(),
+                };
+                item.FillFromUITransportLine(sortedLines[i]);
+                if (EntityManager.TryGetComponent<XTMRouteExtraData>(entity, out var componentData))
+                {
+                    item.xtmData = componentData;
+                }
+                if (EntityManager.TryGetComponent<RouteNumber>(entity, out var number))
+                {
+                    item.routeNumber = number.m_Number;
+                }
+                output[i] = item;
+            }
+            return output;
+        }
+
     }
 }

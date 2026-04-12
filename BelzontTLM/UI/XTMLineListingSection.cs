@@ -13,49 +13,14 @@ using static Belzont.Utils.NameSystemExtensions;
 
 namespace BelzontTLM
 {
-    public partial class XTMLineListingSection : BelzontQueueSystem<XTMLineListingSection.LineItemStruct[]>
+    public partial class XTMLineListingSection : SystemBase
     {
         private EntityQuery m_linesQueue;
         private PrefabSystem m_PrefabSystem;
         private NameSystem m_NameSystem;
+        
+        protected override void OnUpdate() { }
 
-        protected override ComponentType[] ComponentsToCheck => new ComponentType[]
-        {
-            typeof(Created),
-            typeof(Deleted),
-            typeof(Updated),
-            typeof(BatchesUpdated),
-            typeof(XTMPaletteRequireUpdate)
-        };
-
-        protected override LineItemStruct[] OnProcess(Entity e)
-        {
-            NativeArray<UITransportLineData> sortedLines = TransportUIUtils.GetSortedLines(this.m_linesQueue, base.EntityManager, this.m_PrefabSystem);
-            var output = new LineItemStruct[sortedLines.Length];
-            for (int i = 0; i < sortedLines.Length; i++)
-            {
-                Entity entity = sortedLines[i].entity;
-                var item = new LineItemStruct
-                {
-                    name = m_NameSystem.GetName(entity).ToValueableName(),
-                    vkName = m_NameSystem.GetNameForVirtualKeyboard(entity).ToValueableName(),
-                };
-                item.FillFromUITransportLine(sortedLines[i]);
-                if (EntityManager.TryGetComponent<XTMRouteExtraData>(entity, out var componentData))
-                {
-                    item.xtmData = componentData;
-                }
-                if (EntityManager.TryGetComponent<RouteNumber>(entity, out var number))
-                {
-                    item.routeNumber = number.m_Number;
-                }
-                output[i] = item;
-            }
-            return output;
-        }
-
-        protected override void Reset() { }
-        protected override void RunUpdate(Entity e) { }
 
         protected override void OnCreate()
         {
@@ -160,6 +125,5 @@ namespace BelzontTLM
                 usage = data.usage;
             }
         }
-
     }
 }

@@ -2,9 +2,9 @@ import { LineDetails, LineManagementService } from "#service/LineManagementServi
 import translate from "#utility/translate";
 import { durationToGameMinutes, Entity, nameToString, replaceArgs, toVanillaEntity, VanillaComponentResolver } from "@klyte45/vuio-commons";
 import engine from "cohtml/cohtml";
-import { camera, selectedInfo } from "cs2/bindings";
+import { camera, selectedInfo, time } from "cs2/bindings";
 import { useValue } from "cs2/api";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import iconWhite from "#images/iconWhite.svg"
 import icon1 from "#images/icon1.svg"
 import { FocusDisabled } from "cs2/input";
@@ -18,43 +18,39 @@ export const XtmInfoSection = () => {
     const [lineDetails, setLineDetails] = useState<LineDetails>();
     const [weAvailable, setWeAvailable] = useState(false);
     const [weWindowShow, setWeWindowShow] = useState(false);
+    const lastDataKeyRef = useRef("");
     const localization = useLocalization();
     const selectedEntity = useValue(selectedInfo.selectedEntity$);
     const selectedRoute = useValue(selectedInfo.selectedRoute$);
 
     useEffect(() => {
-        engine.whenReady.then(async () => {
-            WEIntegrationService.isAvailable().then(setWeAvailable);
-            engine.on("k45::xtm.xtmInfoPanel.lineData->", async (x) => {
-                reloadData(x);
-            }, "XtmInfoSection");
-        });
-        return () => {
-            engine.off("k45::xtm.xtmInfoPanel.lineData->", undefined, "XtmInfoSection");
-        };
-    }, []);
+        LineManagementService.getCurrentLineInfo().then(reloadData);
+    }, [selectedEntity, useValue(time.ticks$)]);
 
     async function reloadData(details: LineDetails) {
-        if (details) {
-            details.Vehicles = details.Vehicles.map(x => {
-                return {
-                    ...x,
-                    ...enrichVehicleInfo(x, details.Stops, details.LineData.length)
-                }
-            })
-            details.Stops = details.Stops.map((x, i, arr) => {
-                return {
-                    ...x,
-                    ...enrichStopInfo(i, x, arr, details.Vehicles, details.LineData)
-                }
-            })
-        }
-        setLineDetails(details);
+        const key = `${details.LineData.entity.Index}|${details.Vehicles.length}|${details.Stops.length}|${details.Vehicles.reduce((p, n) => p + n.odometer + n.cargo + n.position * 100, 0).toFixed(1)}|${details.Stops.reduce((p, n) => p + n.cargo, 0)}`;
+        if (key === lastDataKeyRef.current) return;
+        lastDataKeyRef.current = key;
+        details.Vehicles = details.Vehicles.map(x => {
+            return {
+                ...x,
+                ...enrichVehicleInfo(x, details.Stops, details.LineData.length)
+            }
+        })
+        details.Stops = details.Stops.map((x, i, arr) => {
+            return {
+                ...x,
+                ...enrichStopInfo(i, x, arr, details.Vehicles, details.LineData)
+            }
+        })
+        setLineDetails(details)
+
     }
+
     if (!lineDetails) return <></>;
     if (selectedEntity?.index == selectedRoute?.index) {
 
-        const nextVehicleToMaintain = lineDetails.Vehicles.filter(x => x.maintenanceRange > 0).sort((a, b) => (a.odometer - a.maintenanceRange) - (b.odometer - b.maintenanceRange))[0];
+        const nextVehicleToMaintain = lineDetails.Vehicles.filter(x => x.maintenanceRange > 0).sort((b, a) => (a.odometer - a.maintenanceRange) - (b.odometer - b.maintenanceRange))[0];
 
         const maintenanceData = nextVehicleToMaintain ? <div style={{ width: "100%" }}>
             <VanillaComponentResolver.instance.InfoLink onSelect={() => focusAndSelect(nextVehicleToMaintain.entity)} >{nameToString(nextVehicleToMaintain.name)}</VanillaComponentResolver.instance.InfoLink>

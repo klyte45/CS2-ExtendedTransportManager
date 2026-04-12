@@ -96,12 +96,15 @@ export type MapViewerOptions = {
 }
 
 export class LineManagementService {
+    static async listLines(): Promise<LineData[]> { return await engine.call("k45::xtm.lineViewer.getCityLines"); }
+    static async getCurrentLineInfo(): Promise<LineDetails> { return await engine.call("k45::xtm.xtmInfoPanel.getCurrentLineInfo"); }
+
     static async setLineFixedColor(entity: Entity, x: string): Promise<`#${string}`> { return await engine.call("k45::xtm.lineManagement.setRouteFixedColor", entity, x); }
     static async setIgnorePalette(entity: Entity, x: boolean): Promise<boolean> { return await engine.call("k45::xtm.lineManagement.setIgnorePalette", entity, x); }
     static async setLineAcronym(entity: Entity, x: string): Promise<string> { return await engine.call("k45::xtm.lineManagement.setRouteAcronym", entity, x); }
     static async setLineNumber(entity: Entity, x: number): Promise<string> { return await engine.call("k45::xtm.lineManagement.setRouteNumber", entity, x); }
     static async setFirstStop(route: Entity, stop: number): Promise<NameFormatted | NameCustom> { return await engine.call("k45::xtm.lineManagement.setFirstStop", route, stop); }
-    
+
     static async getRouteAcronym(entity: Entity): Promise<`#${string}`> { return await engine.call("k45::xtm.lineManagement.getRouteAcronym", entity); }
     static async getRouteNumber(entity: Entity): Promise<string> { return await engine.call("k45::xtm.lineManagement.getRouteNumber", entity); }
     static async getIgnorePalette(entity: Entity): Promise<boolean> { return await engine.call("k45::xtm.lineManagement.getIgnorePalette", entity); }
@@ -116,5 +119,5 @@ export class LineManagementService {
             if (!stops[i].parent.Index || stops[i].parent.Index != stops[length - i].parent.Index) return false;
         }
         return true;
-    }    
+    }
 }

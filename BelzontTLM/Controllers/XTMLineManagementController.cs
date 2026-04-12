@@ -6,13 +6,10 @@ using Colossal.OdinSerializer.Utilities;
 using Game;
 using Game.Common;
 using Game.Routes;
-using Game.UI;
-using Game.UI.InGame;
 using System;
 using Unity.Collections;
 using Unity.Entities;
 using UnityEngine;
-using static Belzont.Utils.NameSystemExtensions;
 using Color = Game.Routes.Color;
 
 namespace BelzontTLM
@@ -56,7 +53,6 @@ namespace BelzontTLM
                 entityCommandBuffer.AddComponent(targetEntity, component);
             }
             entityCommandBuffer.AddComponent<Updated>(targetEntity);
-            m_xtmPanel.MarkDirty();
             return acronym;
         }
         private bool SetRouteIgnorePalette(Entity targetEntity, bool ignore)
@@ -73,7 +69,6 @@ namespace BelzontTLM
                 entityCommandBuffer.AddComponent<XTMPaletteLockedColor>(targetEntity);
             }
             entityCommandBuffer.AddComponent<XTMPaletteRequireUpdate>(targetEntity);
-            m_xtmPanel.MarkDirty();
             return ignore;
         }
 
@@ -84,7 +79,6 @@ namespace BelzontTLM
             component.m_Number = routeNum;
             entityCommandBuffer.SetComponent(entity, component);
             entityCommandBuffer.AddComponent<XTMPaletteRequireUpdate>(entity);
-            m_xtmPanel.MarkDirty();
             return routeNum;
         }
         private string SetRouteFixedColor(Entity entity, string color)
@@ -103,7 +97,6 @@ namespace BelzontTLM
             component.m_Color = colorObj;
             entityCommandBuffer.SetComponent(entity, component);
             entityCommandBuffer.AddComponent<XTMPaletteRequireUpdate>(entity);
-            m_xtmPanel.MarkDirty();
             return color;
         }
 
@@ -128,10 +121,9 @@ namespace BelzontTLM
             entityCommandBuffer.AddComponent<Updated>(route);
             targetNativeArray.Dispose();
             originalAsNativeArray.Dispose();
-            m_xtmPanel.MarkDirty();
             return true;
         }
-      
+
         protected override void OnCreate()
         {
             m_EndFrameBarrier = World.GetOrCreateSystemManaged<EndFrameBarrier>();
@@ -148,12 +140,12 @@ namespace BelzontTLM
                 : EntityManager.GetComponentData<RouteNumber>(route).m_Number.ToString();
 
 
-      
+
         private string GetRouteAcronym(Entity entity)
             => EntityManager.TryGetComponent<XTMRouteExtraData>(entity, out var extraData)
                 ? extraData.Acronym
                 : string.Empty;
-    
+
 
         private int GetRouteNumber(Entity entity)
             => EntityManager.TryGetComponent<RouteNumber>(entity, out var routeNumber)

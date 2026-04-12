@@ -1,6 +1,6 @@
 import { toEntityTyped, toVanillaEntity, VanillaComponentResolver } from "@klyte45/vuio-commons";
-import { Entity, Name, selectedInfo } from "cs2/bindings"
-import { useEffect, useState } from "react";
+import { Entity, Name, selectedInfo, time } from "cs2/bindings"
+import { useEffect, useRef, useState } from "react";
 import { TlmViewerCmp } from "./lineViewer/TlmViewerCmp";
 import { LineData, LineDetails, LineManagementService, MapViewerOptions, StationData, VehicleData } from "#service/LineManagementService";
 import { TransportType } from "#enum/TransportType";
@@ -29,11 +29,12 @@ const TypeToIcons = {
     [`${TransportType.Airplane}.true`]: "assetdb://gameui/Media/Game/Icons/CargoAirplaneLine.svg",
 }
 
+
 export const XtmLineViewer = ({ children, args, isXtm, xtmOptions }: Props) => {
-    const currentLine = toEntityTyped(useValue(selectedInfo.selectedRoute$));
     const [indexedLineList, setIndexedLineList] = useState<Record<string, LineData>>({});
     const [lineDetails, setLineDetails] = useState<LineDetails>();
     const [isLineSimetric, setIsLineSimetric] = useState(false);
+    const lastDataKeyRef = useRef("");
 
     const reloadLines = async (res: LineData[]) => {
         const refOrder = Object.keys(TypeToIcons);
@@ -51,7 +52,9 @@ export const XtmLineViewer = ({ children, args, isXtm, xtmOptions }: Props) => {
     }
 
     async function reloadData(details: LineDetails) {
-        if (details.LineData.entity.Index != currentLine.Index) return;
+        const key = `${details.LineData.entity.Index}|${details.Stops.length}|${xtmOptions.showVehicles ? `${details.Vehicles.length}|${details.Vehicles.reduce((p, n) => p + n.odometer + n.cargo + n.position * 100, 0).toFixed(1)}` : ""}|${details.Stops.reduce((p, n) => p + n.cargo, 0)}`;
+        if (key === lastDataKeyRef.current) return;
+        lastDataKeyRef.current = key;
         details.Vehicles = details.Vehicles.map(x => {
             return {
                 ...x,
@@ -65,36 +68,20 @@ export const XtmLineViewer = ({ children, args, isXtm, xtmOptions }: Props) => {
             }
         })
         setLineDetails(details)
-
         setIsLineSimetric(LineManagementService.checkSimetry(details.Stops))
+
     }
 
     useEffect(() => {
         if (!isXtm) return;
-
-        engine.whenReady.then(async () => {
-            engine.on("k45::xtm.lineViewer.getCityLines->", async (x) => {
-                reloadLines(x);
-            }, "XtmLineViewer");
-        })
-        engine.call("k45::xtm.lineViewer.getCityLines", true)
-        return () => {
-            engine.off("k45::xtm.lineViewer.getCityLines->", undefined, "XtmLineViewer");
-        }
-    }, [isXtm, useValue(selectedInfo.selectedRoute$)]);
+        LineManagementService.listLines().then(reloadLines);
+    }, [isXtm, useValue(selectedInfo.selectedRoute$).index]);
 
     useEffect(() => {
         if (!isXtm) return;
-
-        engine.whenReady.then(async () => {
-            engine.on("k45::xtm.xtmInfoPanel.lineData->", async (x) => {
-                reloadData(x);
-            }, "XtmLineViewer");
-        })
-        return () => {
-            engine.off("k45::xtm.xtmInfoPanel.lineData->", undefined, "XtmLineViewer");
-        }
-    }, [useValue(selectedInfo.selectedEntity$), isXtm])
+        LineManagementService.getCurrentLineInfo().then(reloadData);
+        return () => { };
+    }, [useValue(selectedInfo.selectedEntity$).index, useValue(time.ticks$), isXtm])
 
     if (!isXtm) {
         return <>{children}</>;
