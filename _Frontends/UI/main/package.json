@@ -1,5 +1,5 @@
 {
-  "name": "@k45/xtm-main",
+  "name": "@k45/xtm-vuio",
   "scripts": {
     "start": "webpack serve --port 8501 --env isLocal",
     "start:standalone": "webpack serve --env standalone",

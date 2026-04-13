@@ -2,8 +2,44 @@ import { PaletteData, PaletteService } from "#service/PaletteService";
 import translate from "#utility/translate";
 import { ListWithPreviewTab, ColorUtils } from "@klyte45/vuio-commons";
 import engine from "cohtml/cohtml";
-import { useState, useEffect, CSSProperties } from "react";
-import { Mutable } from "./XtmMainPanel";
+import { useState, useEffect, useRef, CSSProperties } from "react";
+import "./CityPaletteEditor.scss";
+
+// Constants mirrored from CityPaletteEditor.scss (keep in sync manually):
+//   lineIconContainer  width/height = 4rem * M,  margin = 0.25rem * M each side
+//   => total cell footprint = (4 + 0.25 + 0.25) = 4.5rem  per multiplier unit, both axes
+const CELL_BASE_REM = 4.55;
+const MAX_MULTIPLIER = 30;
+const MIN_MULTIPLIER = 1;
+const DEFAULT_MULTIPLIER = 3;
+
+/**
+ * Computes the largest integer multiplier so that every colour swatch fits
+ * inside the preview area without overflow (flex-wrap row layout).
+ * @param availWidth  Content-box width of the preview container (px)
+ * @param availHeight Content-box height of the preview container (px)
+ * @param itemCount   Number of colour swatches to display
+ * @param remPx       Current root font-size in px
+ */
+function calcLineIconMultiplier(availWidth: number, availHeight: number, itemCount: number, remPx: number): number {
+    const itemAreaBase = CELL_BASE_REM * CELL_BASE_REM * itemCount * remPx * remPx;
+    const totalArea = availWidth * availHeight;
+    console.log(`Calculating line icon multiplier: availWidth=${availWidth}px, availHeight=${availHeight}px, itemCount=${itemCount}, remPx=${remPx}px, itemAreaBase=${itemAreaBase}px², totalArea=${totalArea}px²`);
+
+    const maxMultiplierByArea = Math.floor(Math.sqrt(totalArea / itemAreaBase));
+    console.log(`Max multiplier by area: ${maxMultiplierByArea}`);
+
+    if (itemCount === 0 || availWidth <= 0 || availHeight <= 0) return DEFAULT_MULTIPLIER;
+    for (let m = Math.min(maxMultiplierByArea, MAX_MULTIPLIER); m >= MIN_MULTIPLIER; m--) {
+        const cell = CELL_BASE_REM * m * remPx;
+        const cols = Math.floor(availWidth / cell);
+        console.log(`Trying multiplier ${m}: cell=${cell}px, cols=${cols}, rowsNeeded=${Math.ceil(itemCount / cols)},availWidth=${availWidth}px, availHeight=${availHeight}px (i=${itemCount}, remPx=${remPx})`);
+        if (cols === 0) continue;
+        const rowsNeeded = Math.ceil(itemCount / cols);
+        if (rowsNeeded <= Math.floor(availHeight / cell)) return m;
+    }
+    return MIN_MULTIPLIER;
+}
 
 export function CityPaletteEditor(args: any) {
     //list states
@@ -14,6 +50,31 @@ export function CityPaletteEditor(args: any) {
     const [currentPaletteData, setCurrentPaletteData] = useState<PaletteData>();
     const [editingIndex, setEditingIndex] = useState<number>();
     const [contentChanged, setContentChanged] = useState(false);
+
+    // Auto-sizing for colour swatches
+    const previewRef = useRef<HTMLDivElement>(null);
+    const [lineIconMultiplier, setLineIconMultiplier] = useState(DEFAULT_MULTIPLIER);
+
+    useEffect(() => {
+        ;
+        const observer = new ResizeObserver(([entry]) => {
+            if (!entry) return;
+            // contentRect already excludes the element's padding
+            const { width, height } = entry.contentRect;
+            redrawIcons();
+        });
+        previewRef.current && observer.observe(previewRef.current);
+        return () => observer.disconnect();
+    }, [currentPaletteData?.ColorsRGB?.length]);
+
+    function redrawIcons() {
+        const el = previewRef.current;
+        if (!el) return;
+        const itemCount = currentPaletteData?.ColorsRGB?.length ?? 0
+        const fontsize = getComputedStyle(document.documentElement).fontSize;
+        const remPx = parseFloat(fontsize) * (fontsize.endsWith("vh") ? document.documentElement.clientHeight / 100 : 1);
+        setLineIconMultiplier(calcLineIconMultiplier(el.clientWidth, el.clientHeight, itemCount, remPx));
+    }
 
     async function updatePalettes() {
 
@@ -50,6 +111,7 @@ export function CityPaletteEditor(args: any) {
         editingPaletteData.ColorsRGB!.splice(j, 1);
         setCurrentPaletteData(editingPaletteData);
         setContentChanged(true);
+        redrawIcons();
     }
     function onMoveColor(j: number, delta: number): void {
         let editingPaletteData = { ...currentPaletteData } as PaletteData;
@@ -63,10 +125,11 @@ export function CityPaletteEditor(args: any) {
         editingPaletteData.ColorsRGB!.push("#FFFFFF");
         setCurrentPaletteData(editingPaletteData);
         setContentChanged(true);
+        redrawIcons();
     }
     async function savePalette() {
-        if (currentPaletteData === undefined) return;
         setContentChanged(false);
+        if (currentPaletteData === undefined) return;
         await PaletteService.updatePalette(currentPaletteData.GuidString, currentPaletteData.Name, currentPaletteData.ColorsRGB);
     }
     async function doDeletePalette(x: PaletteData) {
@@ -82,21 +145,21 @@ export function CityPaletteEditor(args: any) {
         onChangeSelection={setSelectedPaletteGuid}
         detailsFields={[
             { key: "GUID", value: currentPaletteData?.GuidString },
-            { key: "Source", value: currentPaletteData?.Name },
         ]}
         itemActions={[
-            { className: "positiveBtn", text: "Delete Palette", action: () => doDeletePalette(currentPaletteData!), disabled: currentPaletteData === undefined },
-            null,
-            { className: "negativeBtn", text: "Add Color", action: addNewColor },
             { className: "positiveBtn", text: "Save Changes", action: savePalette, disabled: currentPaletteData === undefined || !contentChanged },
+            { className: "positiveBtn", text: "Add Color", action: addNewColor },
+            null,
+            { className: "negativeBtn", text: "Delete Palette", action: () => doDeletePalette(currentPaletteData!), disabled: currentPaletteData === undefined },
         ]}
         listActions={[
             { isContext: false, src: "coui://uil/Standard/Plus.svg", onSelect: doImportPalette }
         ]}
         emptyListMsg={translate("paletteEditor.noPalettes")}
         noneSelectedMsg={translate("paletteEditor.noPaletteSelected")}
+        previewRef={previewRef}
 
-    >{currentPaletteData && currentPaletteData.ColorsRGB.map((clr, j) => <div className={"lineIconContainer " + (j == editingIndex ? "currentSelected" : "")} key={j}>
+    ><div style={{ "--lineIconSizeMultiplier": lineIconMultiplier, display: "flex", flexWrap: "wrap", flexDirection: "row", maxHeight: "100%" } as CSSProperties}>{currentPaletteData && currentPaletteData.ColorsRGB.map((clr, j) => <div className={"lineIconContainer " + (j == editingIndex ? "currentSelected" : "")} key={j}>
         <div className="lineIcon" style={{ "--lineColor": clr, "--contrastColor": ColorUtils.toRGBA(ColorUtils.getContrastColorFor(ColorUtils.toColor01(clr))) } as CSSProperties} onClick={() => setEditingIndex(j)}>
             <div className={`routeNum singleLine chars${(j + 1)?.toString().length}`}> {j + 1}</div>
         </div>
@@ -104,5 +167,6 @@ export function CityPaletteEditor(args: any) {
         {j > 0 && <div className="moveMinus" onClick={(x) => onMoveColor(j, x.shiftKey ? -Infinity : -1)}>⇚</div>}
         {j < currentPaletteData.ColorsRGB.length - 1 && <div className="movePlus" onClick={(x) => onMoveColor(j, x.shiftKey ? Infinity : 1)}>⇛</div>}
     </div>
-    )}</ListWithPreviewTab>;
+    )}
+        </div></ListWithPreviewTab>;
 }
