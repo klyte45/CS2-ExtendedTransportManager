@@ -54,9 +54,9 @@ export default class Root extends Component<any, State> {
         <MainSideTabMenuComponent
           items={menus}
           mainIconUrl="coui://xtm.k45/UI/images/XTM.svg"
-          modTitle="Extended Transport"
+          modTitle="eXtended Transport"
           subtitle="Manager"
-          tooltip="Extended Transport Manager"
+          tooltip="eXtended Transport Manager"
         />
       </ErrorBoundary>
     </>;

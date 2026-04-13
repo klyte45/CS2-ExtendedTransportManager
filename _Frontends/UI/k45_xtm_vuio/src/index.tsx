@@ -3,15 +3,17 @@ import { XtmLineViewer } from "components/LineViewer";
 import { photo, selectedInfo, ValueBinding } from "cs2/bindings";
 import { FocusDisabled } from "cs2/input";
 import { ModRegistrar } from "cs2/modding";
-import { ReactNode, useState } from "react";
+import { ReactNode, useEffect, useState } from "react";
 import "#styles/lineViewer.scss";
 import iconWhite from "#images/iconWhite.svg";
 import { LineManagementService, MapViewerOptions } from "#service/LineManagementService";
 import translate from "#utility/translate";
-import { InfoRow, InfoSection } from "cs2/ui";
+import { InfoRow, InfoSection, Portal } from "cs2/ui";
 import { ColorEditorXtm } from "#components/ColorEditorXtm";
 import { XtmInfoSection } from "#components/XtmInfoSection";
-import { useValue } from "cs2/api";
+import { bindValue, useValue } from "cs2/api";
+import { engine } from "cohtml/cohtml";
+import { XtmMainPanel, XtmButton, XtmMainPanelId } from "#components/mainUI/WEMainUI";
 
 let IsXtm = true;
 let xtmOptions: MapViewerOptions = {
@@ -27,7 +29,13 @@ const register: ModRegistrar = (moduleRegistry) => {
     moduleRegistry.extend("game-ui/game/components/selected-info-panel/selected-info-sections/route-sections/line-visualizer-section/line-visualizer-canvas.tsx", 'LineVisualizerCanvas', XtmLineViewerRegister)
     moduleRegistry.extend("game-ui/game/components/selected-info-panel/selected-info-sections/route-sections/line-visualizer-section/line-visualizer-section.tsx", 'LineVisualizerSection', XtmLineSectionButtonRegister)
 
-    moduleRegistry.extend("game-ui/game/components/selected-info-panel/selected-info-sections/selected-info-sections.tsx", 'selectedInfoSectionComponents', XtmLayoutOverrideRegistering(() => { }))
+    moduleRegistry.extend("game-ui/game/components/selected-info-panel/selected-info-sections/selected-info-sections.tsx", 'selectedInfoSectionComponents', XtmLayoutOverrideRegistering(() => { }));
+
+
+    moduleRegistry.extend("game-ui/game/data-binding/game-bindings.ts", 'GamePanelType', RegisterXtmPanelType);
+    moduleRegistry.extend("game-ui/game/components/game-panel-renderer.tsx", 'gamePanelComponents', RegisterXtmPanel);
+    moduleRegistry.extend("game-ui/editor/components/toolbar/toolbar.tsx", 'Toolbar', XtmPanelEditor);
+    moduleRegistry.append('GameTopLeft', XtmButton);
 }
 
 export default register;
@@ -91,3 +99,31 @@ const XtmLayoutOverrideRegistering = (onChange?: () => any) => (componentList: a
 };
 
 
+const RegisterXtmPanelType = (input: any) => {
+    input["K45_XTM"] = XtmMainPanelId
+    return input;
+}
+
+const RegisterXtmPanel = (input: any) => {
+    input[XtmMainPanelId] = XtmMainPanel
+    return input;
+}
+
+const XtmPanelEditor = (input: any) => {
+    const editorGroup = "editorTool"
+    const editorSelection = "activeTool"
+    return (args: any) => {
+        const bindResult = bindValue(editorGroup, editorSelection);
+
+        const [tabActive, setTabActive] = useState(0)
+        engine.on("k45::xtm.main.setTabActive", setTabActive)
+
+        useEffect(() => () => engine.off("k45::xtm.main.setTabActive", setTabActive))
+        return <>
+            {input(args)}
+            {bindResult.value === "k45__xtm_MainWindow" && <Portal>
+                <XtmMainPanel selectedTab={tabActive} noClose moveable />
+            </Portal>}
+        </>
+    }
+}

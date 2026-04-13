@@ -1,4 +1,4 @@
-# Extended Transport Manager
+# eXtended Transport Manager
 ## _A better view of public transport_
 
 This is successor from both Transport Lines Manager (TLM) and Improved Transport Manager (ITM) from CS1. 
@@ -18,7 +18,7 @@ Now you can edit dynamic blinds for each line:
 	- Select one of the keyframes to be used when a static destination blind is used (may be useful in future for classic custom vehicles)
 	- Add multiple steps! Each step will be used until before the selected stop (or end of the line). Each step may have one or more keyframes.
 
-By default, XTM creates two steps each line with two keyframes: Line number and the selected stop for that step end. The steps will target the stop at middle of the line *(n ÷ 2)* and the end of the line.
+By default, XTM creates two steps each line with two keyframes: Line number and the selected stop for that step end. The steps will target the stop at middle of the line *(n ï¿½ 2)* and the end of the line.
 
 [See the video showing the feature](https://youtu.be/pZarWDrBHZQ)
 

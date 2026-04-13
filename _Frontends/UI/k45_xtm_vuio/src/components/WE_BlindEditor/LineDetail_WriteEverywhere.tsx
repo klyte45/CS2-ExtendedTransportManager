@@ -114,7 +114,7 @@ export const LineDetail_WriteEverywhere = memo(({ lineId, stops }: Props) => {
         setEditingData(undefined);
     }
 
-    return <Panel draggable header={translate("weIntegrationBlinds.title")} style={{ width: "600rem", maxHeight: "80vh" }} initialPosition={{ x: 1 - 180 / window.innerWidth, y: 180 / window.innerHeight }} footer={actionButtons}>
+    return <Panel draggable header={translate("weIntegrationBlinds.title")} style={{ width: "600rem", maxHeight: "80vh" }} className="xtm_we_integration_window" initialPosition={{ x: 1 - 180 / window.innerWidth, y: 180 / window.innerHeight }} footer={actionButtons}>
         {subpage}
     </Panel>
 }, (prev, next) => prev.lineId.Index === next.lineId.Index);
