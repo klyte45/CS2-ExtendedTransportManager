@@ -7,7 +7,6 @@ using Game.Routes;
 using Game.Tools;
 using Game.UI;
 using Game.UI.InGame;
-using Unity.Collections;
 using Unity.Entities;
 using static Belzont.Utils.NameSystemExtensions;
 
@@ -18,7 +17,7 @@ namespace BelzontTLM
         private EntityQuery m_linesQueue;
         private PrefabSystem m_PrefabSystem;
         private NameSystem m_NameSystem;
-        
+
         protected override void OnUpdate() { }
 
 

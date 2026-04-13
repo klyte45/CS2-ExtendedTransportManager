@@ -47,7 +47,6 @@ export const XtmInfoSection = () => {
         setLineDetails(details)
 
     }
-    console.log(editorModule)
     if (!lineDetails) return <></>;
     if (selectedEntity?.index == selectedRoute?.index) {
 

@@ -13,7 +13,7 @@ import { ColorEditorXtm } from "#components/ColorEditorXtm";
 import { XtmInfoSection } from "#components/XtmInfoSection";
 import { bindValue, useValue } from "cs2/api";
 import { engine } from "cohtml/cohtml";
-import { XtmMainPanel, XtmButton, XtmMainPanelId } from "#components/mainUI/WEMainUI";
+import { XtmMainPanel, XtmButton, XtmMainPanelId } from "#components/mainUI/XtmMainPanel";
 
 let IsXtm = true;
 let xtmOptions: MapViewerOptions = {
@@ -88,7 +88,7 @@ const XtmLayoutOverrideRegistering = (onChange?: () => any) => (componentList: a
     const _originalColor = componentList["Game.UI.InGame.ColorSection"]
     componentList["Game.UI.InGame.ColorSection"] = (args: any) => {
         const selectedEntity = useValue(selectedInfo.selectedEntity$);
-        const selectedRoute = useValue(selectedInfo.selectedRoute$);
+        const selectedRoute = useValue(selectedInfo.selectedRoute$)
         if (selectedEntity?.index != selectedRoute?.index) {
             return <_originalColor {...args} />;
         }
@@ -101,10 +101,12 @@ const XtmLayoutOverrideRegistering = (onChange?: () => any) => (componentList: a
 
 const RegisterXtmPanelType = (input: any) => {
     input["K45_XTM"] = XtmMainPanelId
+    console.log("Registered XTM Panel Type", input)
     return input;
 }
 
 const RegisterXtmPanel = (input: any) => {
+    console.log("Registering XTM Panel", input)
     input[XtmMainPanelId] = XtmMainPanel
     return input;
 }
