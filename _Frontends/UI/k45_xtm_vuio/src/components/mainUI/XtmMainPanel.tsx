@@ -1,12 +1,16 @@
 
 import icon from "images/iconWhite.svg"
 import { Button, Panel, Tooltip } from "cs2/ui";
-import { VanillaComponentResolver } from "@klyte45/vuio-commons";
+import { LocElementType, VanillaComponentResolver } from "@klyte45/vuio-commons";
 import classNames from "classnames";
 import "./mainUi.scss"
 import engine from "cohtml/cohtml";
 import translate from "#utility/translate";
 import { CityPaletteSettings } from "./CityPaletteSettings";
+import { AutoColorService } from "#service/AutoColorService";
+import { FOCUS_DISABLED, FocusDisabled } from "cs2/input";
+import { ObjectTyped } from "object-typed";
+import { CityPaletteEditor } from "./CityPaletteEditor";
 
 export const XtmMainPanelId = "BelzontTLM.UI.XTMMainPanel";
 
@@ -62,8 +66,8 @@ export const XtmMainPanel = ({ selectedTab = 0, noClose, moveable }: MainPanelPr
     </div>;
 }
 
+export type Mutable<Type> = {
+    -readonly [Key in keyof Type]: Type[Key];
+};
 
-function CityPaletteEditor(args: any) {
-    return <div>City Palette Editor</div>
-}
 
