@@ -4,6 +4,8 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Text;
+using System.Text.RegularExpressions;
 using System.Xml.Serialization;
 using UnityEngine;
 
@@ -63,7 +65,16 @@ namespace BelzontTLM.Palettes
             }
         }
 
-        public string ToFileContent() => string.Join(ENTRY_SEPARATOR.ToString(), Colors.Select(x => x.ToRGB()).ToArray());
+        public string ToFileContent() => string.Join(ENTRY_SEPARATOR.ToString(), [.. Colors.Select(x => x.ToRGB())]);
+
+        public static XTMPaletteFile FromFileContent(string filename)
+        {
+            var fileContents = File.ReadAllLines(filename, Encoding.UTF8);
+            var name = filename.Replace(ExtendedTransportManagerMod.Instance.PalettesFolder + Path.DirectorySeparatorChar, "")[..^XTMPaletteFile.EXT_PALETTE.Length].Replace(Path.DirectorySeparatorChar, '/');
+            var value = XTMPaletteFile.FromFileContent(name, [.. fileContents.Select(x => x?.Trim()).Where(x => Regex.IsMatch(x, "^#?[a-f0-9]{6}$", RegexOptions.IgnoreCase))]);
+
+            return value;
+        }
 
         public static XTMPaletteFile FromFileContent(string name, string[] fileContentLines)
         {

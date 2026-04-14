@@ -15,9 +15,9 @@ export class PaletteService {
     static undoOnCityPalettesUpdated() { engine.off("k45::xtm.palettes.onCityPalettesChanged") }
     static async sendPaletteForCity(name: string, colors: `#${string}`[]) { await engine.call("k45::xtm.palettes.addPaletteToCity", name, colors) }
     static async listCityPalettes(): Promise<PaletteData[]> { return await engine.call("k45::xtm.palettes.listCityPalettes") }
-    static async listLibraryPalettes(): Promise<PaletteData[]> { return await engine.call("k45::xtm.palettes.listLibraryPalettes") }
+    static async listDefaultPalettes(): Promise<PaletteData[]> { return await engine.call("k45::xtm.palettes.listDefaultPalettes") }
     static async openPalettesFolder(): Promise<void> { return await engine.call("k45::xtm.palettes.openPalettesFolder") }
-    static async exportToLibrary(palette: PaletteData): Promise<any> { return engine.call("k45::xtm.palettes.exportToLibrary", palette.Name, palette.ColorsRGB).then(x => palette.__exported = true) }
-    static async reloadPalettes(): Promise<void> { return await engine.call("k45::xtm.palettes.reloadPalettes") }
+    static async getPalettesFolderPath(): Promise<string> { return await engine.call("k45::xtm.palettes.getPalettesFolderPath") }
+    static async addPaletteFromFile(file: string): Promise<PaletteData> { return await engine.call("k45::xtm.palettes.addPaletteFromFile", file) }
 }
 

@@ -20,13 +20,13 @@ namespace BelzontTLM.Palettes
         public void SetupCallBinder(Action<string, Delegate> eventCaller)
         {
             eventCaller.Invoke("palettes.listCityPalettes", ListCityPalettes);
-            eventCaller.Invoke("palettes.listLibraryPalettes", ListLibraryPalettes);
+            eventCaller.Invoke("palettes.listDefaultPalettes", ListDefaultPalettes);
             eventCaller.Invoke("palettes.addPaletteToCity", AddCityPalette);
             eventCaller.Invoke("palettes.deleteFromCity", DeleteCityPalette);
             eventCaller.Invoke("palettes.updateForCity", UpdateCityPalette);
             eventCaller.Invoke("palettes.openPalettesFolder", OpenPalettesFolder);
-            eventCaller.Invoke("palettes.exportToLibrary", ExportToLibrary);
-            eventCaller.Invoke("palettes.reloadPalettes", ReloadPalettes);
+            eventCaller.Invoke("palettes.getPalettesFolderPath", GetPalettesFolderPath);
+            eventCaller.Invoke("palettes.addPaletteFromFile", AddPaletteFromFile);
         }
 
         private Action<string, object[]> eventCaller;
@@ -52,14 +52,26 @@ namespace BelzontTLM.Palettes
             isDirty = true;
         }
 
-        private List<XTMPaletteFile> ListCityPalettes() => CityPalettes.Values.ToList();
-        private List<XTMPaletteFile> ListLibraryPalettes() => [.. XTMPaletteManager.Instance.FullLibrary];
+        private List<XTMPaletteFile> ListCityPalettes() => [.. CityPalettes.Values];
+        private List<XTMPaletteFile> ListDefaultPalettes() => [.. XTMPaletteManager.defaultPaletteArray];
 
         private void AddCityPalette(string name, string[] colors)
         {
             var effectiveNewPalette = new XTMPaletteFile(name, colors.Select(x => ColorExtensions.FromRGB(x, true)));
             CityPalettes[effectiveNewPalette.Guid] = effectiveNewPalette;
             OnCityPalettesChanged();
+        }
+
+        private XTMPaletteFile AddPaletteFromFile(string path)
+        {
+            var palette = XTMPaletteFile.FromFileContent(path);
+            if (palette != null)
+            {
+                CityPalettes[palette.Guid] = palette;
+                OnCityPalettesChanged();
+                return palette;
+            }
+            return null;
         }
 
         private void DeleteCityPalette(string guid)
@@ -91,16 +103,11 @@ namespace BelzontTLM.Palettes
         {
             RemoteProcess.OpenFolder(ExtendedTransportManagerMod.Instance.PalettesFolder);
         }
+        private string GetPalettesFolderPath()
+        {
+            return ExtendedTransportManagerMod.Instance.PalettesFolder;
+        }
 
-        private void ExportToLibrary(string name, string[] colors)
-        {
-            new XTMPaletteFile($"Exported/{name}", colors.Select(x => ColorExtensions.FromRGB(x, x.StartsWith("#")))).Save();
-            XTMPaletteManager.Instance.Reload();
-        }
-        private void ReloadPalettes()
-        {
-            XTMPaletteManager.Instance.Reload();
-        }
         #region Serialization
 
         private XTMPaletteSystemXML ToXml()

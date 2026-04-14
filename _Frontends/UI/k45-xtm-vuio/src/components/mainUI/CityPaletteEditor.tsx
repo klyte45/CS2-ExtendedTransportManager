@@ -103,7 +103,9 @@ export function CityPaletteEditor(args: any) {
         //only accept .hex files, shall validate pattern /#?[A-Fa-f0-9]{6}/ each line
         //on confirm, add palette with name from file (without extension) and colors from file, then select it for edition
         //NAVIGATION: shall have a special "drive" (XTM:) that will show the palettes library items. In this case, it will not navigate through system, but
-        //will do it inside the data returned from `PaletteService.listLibraryPalettes` after parsing the result into a PaletteStructureTreeNode (see on older main project for reference on how to parse it and reuse the PaletteCategoryCmp for navigation)
+        //will do it inside the data returned from `PaletteService.listDefaultPalettes` after parsing the result into a PaletteStructureTreeNode (see on older main project for reference on how to parse it and reuse the PaletteCategoryCmp for navigation)
+        //This special "drive" shall be available at bookmark
+        //The default folder is the mod palette folder that can be get from `PaletteService.getPalettesFolderPath`
     }
 
     async function doAddNewPalette() {
