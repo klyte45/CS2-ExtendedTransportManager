@@ -70,7 +70,7 @@ namespace BelzontTLM.Palettes
         public static XTMPaletteFile FromFileContent(string filename)
         {
             var fileContents = File.ReadAllLines(filename, Encoding.UTF8);
-            var name = filename.Replace(ExtendedTransportManagerMod.Instance.PalettesFolder + Path.DirectorySeparatorChar, "")[..^XTMPaletteFile.EXT_PALETTE.Length].Replace(Path.DirectorySeparatorChar, '/');
+            var name = Path.GetFileNameWithoutExtension(filename);
             var value = XTMPaletteFile.FromFileContent(name, [.. fileContents.Select(x => x?.Trim()).Where(x => Regex.IsMatch(x, "^#?[a-f0-9]{6}$", RegexOptions.IgnoreCase))]);
 
             return value;

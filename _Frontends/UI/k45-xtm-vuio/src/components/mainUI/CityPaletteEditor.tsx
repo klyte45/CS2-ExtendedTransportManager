@@ -1,10 +1,15 @@
 import { PaletteData, PaletteService } from "#service/PaletteService";
 import translate from "#utility/translate";
-import { ListWithPreviewTab, ColorUtils, VanillaComponentResolver, VanillaFnResolver, Color01, calculateElementPosition, onRecalculateContextMenuPosition, isOnArea, BaseFileService } from "@klyte45/vuio-commons";
+import { ListWithPreviewTab, ColorUtils, VanillaComponentResolver, VanillaFnResolver, Color01, calculateElementPosition, onRecalculateContextMenuPosition, isOnArea, BaseFileService, StringInputDialog, FilePickerDialog, DataProvider, replaceArgs } from "@klyte45/vuio-commons";
 import engine from "cohtml/cohtml";
 import { useState, useEffect, useRef, CSSProperties } from "react";
 import "./CityPaletteEditor.scss";
-import { Portal } from "cs2/ui";
+import { Portal, ConfirmationDialog } from "cs2/ui";
+import { Mutable } from "./XtmMainPanel";
+
+type ImportPending =
+    | { type: 'file'; path: string }
+    | { type: 'lib'; palette: PaletteData };
 
 // Constants mirrored from CityPaletteEditor.scss (keep in sync manually):
 //   lineIconContainer  width/height = 4rem * M,  margin = 0.25rem * M each side
@@ -17,24 +22,22 @@ const DEFAULT_MULTIPLIER = 3;
 /**
  * Computes the largest integer multiplier so that every colour swatch fits
  * inside the preview area without overflow (flex-wrap row layout).
- * @param availWidth  Content-box width of the preview container (px)
- * @param availHeight Content-box height of the preview container (px)
+ * @param origWidth  Content-box width of the preview container (px)
+ * @param origHeight Content-box height of the preview container (px)
  * @param itemCount   Number of colour swatches to display
  * @param remPx       Current root font-size in px
  */
-function calcLineIconMultiplier(availWidth: number, availHeight: number, itemCount: number, remPx: number): number {
-    const itemAreaBase = CELL_BASE_REM * CELL_BASE_REM * itemCount * remPx * remPx;
+function calcLineIconMultiplier(origWidth: number, origHeight: number, itemCount: number, remPx: number): number {
+    const availWidth = origWidth / remPx;
+    const availHeight = origHeight / remPx;
+    const itemAreaBase = CELL_BASE_REM * CELL_BASE_REM * itemCount;
     const totalArea = availWidth * availHeight;
-    console.log(`Calculating line icon multiplier: availWidth=${availWidth}px, availHeight=${availHeight}px, itemCount=${itemCount}, remPx=${remPx}px, itemAreaBase=${itemAreaBase}px², totalArea=${totalArea}px²`);
 
     const maxMultiplierByArea = Math.floor(Math.sqrt(totalArea / itemAreaBase));
-    console.log(`Max multiplier by area: ${maxMultiplierByArea}`);
-
     if (itemCount === 0 || availWidth <= 0 || availHeight <= 0) return DEFAULT_MULTIPLIER;
     for (let m = Math.min(maxMultiplierByArea, MAX_MULTIPLIER); m >= MIN_MULTIPLIER; m--) {
-        const cell = CELL_BASE_REM * m * remPx;
+        const cell = CELL_BASE_REM * m;
         const cols = Math.floor(availWidth / cell);
-        console.log(`Trying multiplier ${m}: cell=${cell}px, cols=${cols}, rowsNeeded=${Math.ceil(itemCount / cols)},availWidth=${availWidth}px, availHeight=${availHeight}px (i=${itemCount}, remPx=${remPx})`);
         if (cols === 0) continue;
         const rowsNeeded = Math.ceil(itemCount / cols);
         if (rowsNeeded <= Math.floor(availHeight / cell)) return m;
@@ -56,7 +59,22 @@ export function CityPaletteEditor(args: any) {
     const previewRef = useRef<HTMLDivElement>(null);
     const [lineIconMultiplier, setLineIconMultiplier] = useState(DEFAULT_MULTIPLIER);
 
+    // Dialog states
+    const [isAddingPalette, setIsAddingPalette] = useState(false);
+    const [isRenamingPalette, setIsRenamingPalette] = useState(false);
+    const [isDeletingPalette, setIsDeletingPalette] = useState(false);
+    const [isPickingImportFile, setIsPickingImportFile] = useState(false);
+    const [palettesFolderPath, setPalettesFolderPath] = useState("");
+
+    // Refs for internal state management
+    const skipNextPaletteReset = useRef(false);
+    const libraryPalettesCache = useRef<PaletteData[]>([]);
+
     const generateDataContainer = (folder: string, allowedExtension: string) => BaseFileService.generateDataProvider("k45::xtm", folder, allowedExtension);
+
+    useEffect(() => {
+        PaletteService.getPalettesFolderPath().then(setPalettesFolderPath);
+    }, []);
 
     useEffect(() => {
         ;
@@ -75,7 +93,11 @@ export function CityPaletteEditor(args: any) {
         if (!el) return;
         const itemCount = currentPaletteData?.ColorsRGB?.length ?? 0
         const fontsize = getComputedStyle(document.documentElement).fontSize;
-        const remPx = parseFloat(fontsize) * (fontsize.endsWith("vh") ? document.documentElement.clientHeight / 100 : 1);
+        const remPx = parseFloat(fontsize) * (
+            fontsize.endsWith("vw") ? document.documentElement.clientWidth / 100 :
+                fontsize.endsWith("vh") ? document.documentElement.clientHeight / 100 :
+                    1
+        );
         setLineIconMultiplier(calcLineIconMultiplier(el.clientWidth, el.clientHeight, itemCount, remPx));
     }
 
@@ -92,52 +114,121 @@ export function CityPaletteEditor(args: any) {
     }, []);
 
     useEffect(() => {
+        if (skipNextPaletteReset.current) {
+            skipNextPaletteReset.current = false;
+            return;
+        }
         setCurrentPaletteData(availablePalettes?.find(x => x.GuidString === selectedPaletteGuid) ?? void 0);
         setContentChanged(false)
     }, [selectedPaletteGuid, availablePalettes]);
 
 
     //list functions
+    async function generateDataProviderWithLibrary(folder: string, allowedExtension: string): Promise<DataProvider> {
+        if (folder.startsWith("XTM:/")) {
+            if (!libraryPalettesCache.current.length) {
+                libraryPalettesCache.current = await PaletteService.listDefaultPalettes();
+            }
+            const subPath = folder.slice("XTM:/".length).replace(/\/$/, "");
+            const seen = new Set<string>();
+            const items: DataProvider = [];
+            for (const palette of libraryPalettesCache.current) {
+                const parts = palette.Name.split("/");
+                if (subPath === "") {
+                    if (parts.length === 1) {
+                        items.push({ displayName: parts[0], directory: false, fullPath: "XTM:/" + parts[0] });
+                    } else if (!seen.has(parts[0])) {
+                        seen.add(parts[0]);
+                        items.push({ displayName: parts[0], directory: true, fullPath: "XTM:/" + parts[0] + "/" });
+                    }
+                } else if (parts[0] === subPath && parts.length === 2) {
+                    items.push({ displayName: parts[1] + '.hex', directory: false, fullPath: "XTM:/" + palette.Name + '.hex' });
+                }
+            }
+            return items;
+        }
+        return generateDataContainer(folder, allowedExtension);
+    }
+
     async function doImportPalette() {
-        //need file picker and modal for confirmation showing the palette being imported
-        //only accept .hex files, shall validate pattern /#?[A-Fa-f0-9]{6}/ each line
-        //on confirm, add palette with name from file (without extension) and colors from file, then select it for edition
-        //NAVIGATION: shall have a special "drive" (XTM:) that will show the palettes library items. In this case, it will not navigate through system, but
-        //will do it inside the data returned from `PaletteService.listDefaultPalettes` after parsing the result into a PaletteStructureTreeNode (see on older main project for reference on how to parse it and reuse the PaletteCategoryCmp for navigation)
-        //This special "drive" shall be available at bookmark
-        //The default folder is the mod palette folder that can be get from `PaletteService.getPalettesFolderPath`
+        libraryPalettesCache.current = [];
+        setIsPickingImportFile(true);
+    }
+
+    async function onImportFileSelected(path?: string) {
+        setIsPickingImportFile(false);
+        if (!path) return;
+        let data: PaletteData | undefined = undefined;
+        if (path.startsWith("XTM:/")) {
+            const paletteName = path.slice("XTM:/".length).replace(/\.hex$/, "");
+            const palette = libraryPalettesCache.current.find(x => x.Name === paletteName);
+            if (!palette) return;
+            let paletteToSave = { ...palette }
+            paletteToSave.Name = paletteToSave.Name.split("/").slice(-1)[0]; // remove any folder structure from the name when importing
+            await PaletteService.sendPaletteForCity(paletteToSave.Name, paletteToSave.ColorsRGB);
+            data = paletteToSave;
+        } else {
+            data = await PaletteService.addPaletteFromFile(path);
+        }
+        if (!data) return;
+        const palettes = await PaletteService.listCityPalettes();
+        setAvailablePalettes(palettes);
+        setSelectedPaletteGuid(data!.GuidString);
     }
 
     async function doAddNewPalette() {
-        //need modal for entering name and showing the new palette being edited
-        //the default palette contains one color (white)
+        setIsAddingPalette(true);
+    }
+
+    async function confirmAddNewPalette(name?: string) {
+        if (!name?.trim()) return;
+        await PaletteService.sendPaletteForCity(name.trim(), ["#FFFFFF"]);
+        const palettes = await PaletteService.listCityPalettes();
+        setAvailablePalettes(palettes);
+        const newPalette = palettes.find(x => x.Name === name.trim());
+        if (newPalette) setSelectedPaletteGuid(newPalette.GuidString);
     }
 
     //palette editing functions
     function onExcludeColor(j: number): void {
         if (j === undefined) return;
-        let editingPaletteData = { ...currentPaletteData } as PaletteData;
+        let editingPaletteData = { ...currentPaletteData } as Mutable<PaletteData>;
+        editingPaletteData.ColorsRGB = [...(editingPaletteData.ColorsRGB ?? [])];
         editingPaletteData.ColorsRGB!.splice(j, 1);
         setCurrentPaletteData(editingPaletteData);
         setContentChanged(true);
         redrawIcons();
     }
     function onMoveColor(j: number, delta: number): void {
-        let editingPaletteData = { ...currentPaletteData } as PaletteData;
+        let editingPaletteData = { ...currentPaletteData } as Mutable<PaletteData>;
+        editingPaletteData.ColorsRGB = [...(editingPaletteData.ColorsRGB ?? [])];
         var color = editingPaletteData.ColorsRGB!.splice(j, 1);
         editingPaletteData.ColorsRGB!.splice(Math.min(Math.max(j + delta, 0), editingPaletteData.ColorsRGB!.length), 0, ...color);
         setCurrentPaletteData(editingPaletteData);
         setContentChanged(true);
     }
+    function shuffleColors() {
+        let editingPaletteData = { ...currentPaletteData } as Mutable<PaletteData>;
+        let colorRGB = [...(editingPaletteData.ColorsRGB ?? [])];
+        for (let i = colorRGB.length - 1; i > 0; i--) {
+            const j = Math.floor(Math.random() * (i + 1));
+            [colorRGB[i], colorRGB[j]] = [colorRGB[j], colorRGB[i]];
+        }
+        editingPaletteData.ColorsRGB = colorRGB;
+        setCurrentPaletteData(editingPaletteData);
+        setContentChanged(true);
+        redrawIcons();
+    }
     function addNewColor() {
-        let editingPaletteData = { ...currentPaletteData } as PaletteData;
-        editingPaletteData.ColorsRGB!.push("#FFFFFF");
+        let editingPaletteData = { ...currentPaletteData } as Mutable<PaletteData>;
+        editingPaletteData.ColorsRGB = [...(editingPaletteData.ColorsRGB ?? []), "#FFFFFF"];
         setCurrentPaletteData(editingPaletteData);
         setContentChanged(true);
         redrawIcons();
     }
     function onSetColor(j: number, newColor: `#${string}`): void {
-        let editingPaletteData = { ...currentPaletteData } as PaletteData;
+        let editingPaletteData = { ...currentPaletteData } as Mutable<PaletteData>;
+        editingPaletteData.ColorsRGB = [...(editingPaletteData.ColorsRGB ?? [])];
         editingPaletteData.ColorsRGB![j] = newColor;
         setCurrentPaletteData(editingPaletteData);
         setContentChanged(true);
@@ -148,22 +239,49 @@ export function CityPaletteEditor(args: any) {
         await PaletteService.updatePalette(currentPaletteData.GuidString, currentPaletteData.Name, currentPaletteData.ColorsRGB);
     }
     async function doDeletePalette() {
-        //need modal for confirmation
-        //after confirmation, delete palette and select no palette for edition
-        //use the serice call that deletes the palette from the city, not the one that deletes from library (if exported)
+        if (!currentPaletteData) return;
+        setIsDeletingPalette(true);
     }
+
+    async function confirmDeletePalette(confirmed: boolean) {
+        setIsDeletingPalette(false);
+        if (!confirmed || !currentPaletteData) return;
+        const guid = currentPaletteData.GuidString;
+        setSelectedPaletteGuid(undefined);
+        await PaletteService.deletePaletteFromCity(guid);
+    }
+
     async function doRenamePalette() {
-        //need modal for input new name
-        //after confirmation, update palette with new name and keep it selected for edition
-        //shall not apply unapplied color changes, so it will create a copy from the current palette (from the retrieved data) with the new name only then saving
-        //after saving, shall select the palette again for edition, restoring the unsaved color changes
+        if (!currentPaletteData) return;
+        setIsRenamingPalette(true);
+    }
+
+    async function confirmRenamePalette(newName?: string) {
+        setIsRenamingPalette(false);
+        if (!newName?.trim() || !currentPaletteData) return;
+        const originalPalette = availablePalettes?.find(x => x.GuidString === currentPaletteData.GuidString);
+        if (!originalPalette) return;
+        const unsavedColors = [...currentPaletteData.ColorsRGB];
+        const unsavedChanged = contentChanged;
+        const guid = currentPaletteData.GuidString;
+        await PaletteService.updatePalette(guid, newName.trim(), originalPalette.ColorsRGB);
+        const palettes = await PaletteService.listCityPalettes();
+        skipNextPaletteReset.current = true;
+        setAvailablePalettes(palettes);
+        const renamedPalette = palettes.find(x => x.GuidString === guid);
+        if (renamedPalette) {
+            setCurrentPaletteData({ ...renamedPalette, ColorsRGB: unsavedColors });
+            setContentChanged(unsavedChanged);
+        }
     }
 
 
-    return <ListWithPreviewTab className="k45_xtm_paletteEditor" listItems={availablePalettes?.sort((a, b) => a.Name.localeCompare(b.Name)).map(x => ({
+    const Dialog = VanillaComponentResolver.instance.Dialog;
+
+    return <><ListWithPreviewTab className="k45_xtm_paletteEditor" listItems={(availablePalettes ? [...availablePalettes].sort((a, b) => a.Name.localeCompare(b.Name)) : []).map(x => ({
         value: x.GuidString,
         displayName: x.Name,
-    })) ?? []}
+    }))}
         selectedKey={selectedPaletteGuid ?? null}
         onChangeSelection={setSelectedPaletteGuid}
         detailsFields={[
@@ -171,10 +289,12 @@ export function CityPaletteEditor(args: any) {
         ]}
         itemActions={[
             { className: "positiveBtn", text: translate("paletteEditor.saveChanges"), action: savePalette, disabled: currentPaletteData === undefined || !contentChanged },
-            { className: "positiveBtn", text: translate("paletteEditor.addColor"), action: addNewColor },
-            { className: "positiveBtn", text: translate("paletteEditor.renamePalette"), action: () => doRenamePalette, disabled: currentPaletteData === undefined },
             null,
-            { className: "negativeBtn", text: translate("paletteEditor.deletePalette"), action: () => doDeletePalette, disabled: currentPaletteData === undefined },
+            { className: "neutralBtn", text: translate("paletteEditor.addColor"), action: addNewColor },
+            { className: "neutralBtn", text: translate("paletteEditor.shuffleColors", "Shuffle colors"), action: shuffleColors, disabled: currentPaletteData === undefined || (currentPaletteData.ColorsRGB?.length ?? 0) < 2 },
+            { className: "neutralBtn", text: translate("paletteEditor.renamePalette"), action: doRenamePalette, disabled: currentPaletteData === undefined },
+            null,
+            { className: "negativeBtn", text: translate("paletteEditor.deletePalette"), action: doDeletePalette, disabled: currentPaletteData === undefined },
         ]}
         listActions={[
             { isContext: false, src: "coui://uil/Standard/Plus.svg", onSelect: doAddNewPalette, tooltip: translate("paletteEditor.addNewPalette") },
@@ -192,7 +312,46 @@ export function CityPaletteEditor(args: any) {
                 totalLength={currentPaletteData.ColorsRGB.length}
             />)}
         </div>
-    </ListWithPreviewTab>;
+    </ListWithPreviewTab>
+        <StringInputDialog
+            isActive={isAddingPalette}
+            setIsActive={setIsAddingPalette}
+            dialogTitle={translate("paletteEditor.addPalette.title", "New Palette")}
+            dialogPromptText={translate("paletteEditor.addPalette.prompt", "Enter a name for the new palette:")}
+            actionOnSuccess={confirmAddNewPalette}
+            translate={translate}
+        />
+        <StringInputDialog
+            isActive={isRenamingPalette}
+            setIsActive={setIsRenamingPalette}
+            dialogTitle={translate("paletteEditor.rename.title", "Rename Palette")}
+            dialogPromptText={translate("paletteEditor.rename.prompt", "Enter the new name for the palette:")}
+            initialValue={currentPaletteData?.Name}
+            actionOnSuccess={confirmRenamePalette}
+            translate={translate}
+        />
+        {isDeletingPalette && <Portal>
+            <ConfirmationDialog
+                title={translate("paletteEditor.delete.title", "Delete Palette")}
+                message={replaceArgs(translate("paletteEditor.delete.message", "Are you sure you want to delete the palette \"{palette}\"? This action cannot be undone."), { palette: currentPaletteData?.Name })}
+                onConfirm={() => confirmDeletePalette(true)}
+                onCancel={() => confirmDeletePalette(false)}
+            />
+        </Portal>}
+        <FilePickerDialog
+            isActive={isPickingImportFile}
+            setIsActive={setIsPickingImportFile}
+            dialogTitle={translate("paletteEditor.import.title", "Import Palette")}
+            dialogPromptText={translate("paletteEditor.import.prompt", "Select a .hex palette file to import:")}
+            allowedExtensions="*.hex"
+            initialFolder={palettesFolderPath}
+            generateDataProvider={generateDataProviderWithLibrary}
+            bookmarks={[{ name: translate("paletteEditor.import.libraryBookmark", "XTM: Library"), targetPath: "XTM:/" }]}
+            bookmarksTitle={translate("paletteEditor.import.bookmarksTitle", "Library")}
+            actionOnSuccess={onImportFileSelected}
+            translate={translate}
+        />
+    </>;
 }
 
 
@@ -219,37 +378,36 @@ const LineIconWithEditor = ({ clr, idx, editingIndex, onExcludeColor, onMoveColo
     const noFocus = VanillaComponentResolver.instance.FOCUS_DISABLED;
     const VanillaColorUtils = VanillaFnResolver.instance.color;
 
-    const iconPosition = calculateElementPosition(iconRef.current);
-
-
-    useEffect(() => {
-        setMenuCss(onRecalculateContextMenuPosition(iconRef, iconPosition));
-    }, [editingIndex === idx])
-
-    const handleClickOutside = (event: MouseEvent) => {
-        if (!iconRef.current) return;
-        if (isOnArea(event, iconRef)) return;
-        if (!pickerRef.current) return;
-        if (isOnArea(event, pickerRef)) return;
-        setEditingIndex(undefined!);
-    };
-
+    const isOpen = editingIndex === idx;
 
     useEffect(() => {
+        if (!isOpen) return;
+        setMenuCss(onRecalculateContextMenuPosition(iconRef, calculateElementPosition(iconRef.current)));
+    }, [isOpen]);
+
+    useEffect(() => {
+        if (!isOpen) return;
+        const handleClickOutside = (event: MouseEvent) => {
+            if (!iconRef.current) return;
+            if (isOnArea(event, iconRef)) return;
+            if (!pickerRef.current) return;
+            if (isOnArea(event, pickerRef)) return;
+            setEditingIndex(undefined!);
+        };
         document.addEventListener('mousedown', handleClickOutside, true);
         return () => {
             document.removeEventListener('mousedown', handleClickOutside, true);
         };
-    }, []);
+    }, [isOpen]);
 
-    return <div className={"lineIconContainer " + (idx == editingIndex ? "currentSelected" : "")} key={idx} ref={iconRef}>
+    return <div className={"lineIconContainer" + (isOpen ? " currentSelected" : "")} key={idx} ref={iconRef}>
         <div className="lineIcon" style={{ "--lineColor": clr, "--contrastColor": ColorUtils.toRGBA(ColorUtils.getContrastColorFor(ColorUtils.toColor01(clr))) } as CSSProperties} onClick={() => setEditingIndex(idx)}>
             <div className={`routeNum singleLine chars${(idx + 1)?.toString().length}`}> {idx + 1}</div>
         </div>
         <div className="excludeBtn" onClick={() => onExcludeColor(idx)}>X</div>
         {idx > 0 && <div className="moveMinus" onClick={(x) => onMoveColor(idx, x.shiftKey ? -Infinity : -1)}>⇚</div>}
         {idx < totalLength - 1 && <div className="movePlus" onClick={(x) => onMoveColor(idx, x.shiftKey ? Infinity : 1)}>⇛</div>}
-        {editingIndex === idx &&
+        {isOpen &&
             <Portal>
                 <div ref={pickerRef} style={menuCss} className="k45_comm_contextMenu k45_xtm_colorPickerOverlay">
                     <ColorPicker alpha={false} focusKey={noFocus} preview="None"
