@@ -1,9 +1,10 @@
 import { PaletteData, PaletteService } from "#service/PaletteService";
 import translate from "#utility/translate";
-import { ListWithPreviewTab, ColorUtils } from "@klyte45/vuio-commons";
+import { ListWithPreviewTab, ColorUtils, VanillaComponentResolver, VanillaFnResolver, Color01, calculateElementPosition, onRecalculateContextMenuPosition, isOnArea } from "@klyte45/vuio-commons";
 import engine from "cohtml/cohtml";
 import { useState, useEffect, useRef, CSSProperties } from "react";
 import "./CityPaletteEditor.scss";
+import { Portal } from "cs2/ui";
 
 // Constants mirrored from CityPaletteEditor.scss (keep in sync manually):
 //   lineIconContainer  width/height = 4rem * M,  margin = 0.25rem * M each side
@@ -127,6 +128,12 @@ export function CityPaletteEditor(args: any) {
         setContentChanged(true);
         redrawIcons();
     }
+    function onSetColor(j: number, newColor: `#${string}`): void {
+        let editingPaletteData = { ...currentPaletteData } as PaletteData;
+        editingPaletteData.ColorsRGB![j] = newColor;
+        setCurrentPaletteData(editingPaletteData);
+        setContentChanged(true);
+    }
     async function savePalette() {
         setContentChanged(false);
         if (currentPaletteData === undefined) return;
@@ -134,6 +141,9 @@ export function CityPaletteEditor(args: any) {
     }
     async function doDeletePalette(x: PaletteData) {
         //need modal for confirmation
+    }
+    async function doRenamePalette(x: PaletteData) {
+        //need modal for input new name
     }
 
 
@@ -147,26 +157,93 @@ export function CityPaletteEditor(args: any) {
             { key: "GUID", value: currentPaletteData?.GuidString },
         ]}
         itemActions={[
-            { className: "positiveBtn", text: "Save Changes", action: savePalette, disabled: currentPaletteData === undefined || !contentChanged },
-            { className: "positiveBtn", text: "Add Color", action: addNewColor },
+            { className: "positiveBtn", text: translate("paletteEditor.saveChanges"), action: savePalette, disabled: currentPaletteData === undefined || !contentChanged },
+            { className: "positiveBtn", text: translate("paletteEditor.addColor"), action: addNewColor },
             null,
-            { className: "negativeBtn", text: "Delete Palette", action: () => doDeletePalette(currentPaletteData!), disabled: currentPaletteData === undefined },
+            { className: "negativeBtn", text: translate("paletteEditor.deletePalette"), action: () => doDeletePalette(currentPaletteData!), disabled: currentPaletteData === undefined },
         ]}
         listActions={[
-            { isContext: false, src: "coui://uil/Standard/Plus.svg", onSelect: doImportPalette }
+            { isContext: false, src: "coui://uil/Standard/Plus.svg", onSelect: doAddNewPalette, tooltip: translate("paletteEditor.addNewPalette") },
+            { isContext: false, src: "coui://uil/Standard/Folder.svg", onSelect: doImportPalette, tooltip: translate("paletteEditor.importPalette") },
         ]}
         emptyListMsg={translate("paletteEditor.noPalettes")}
         noneSelectedMsg={translate("paletteEditor.noPaletteSelected")}
         previewRef={previewRef}
 
-    ><div style={{ "--lineIconSizeMultiplier": lineIconMultiplier, display: "flex", flexWrap: "wrap", flexDirection: "row", maxHeight: "100%" } as CSSProperties}>{currentPaletteData && currentPaletteData.ColorsRGB.map((clr, j) => <div className={"lineIconContainer " + (j == editingIndex ? "currentSelected" : "")} key={j}>
-        <div className="lineIcon" style={{ "--lineColor": clr, "--contrastColor": ColorUtils.toRGBA(ColorUtils.getContrastColorFor(ColorUtils.toColor01(clr))) } as CSSProperties} onClick={() => setEditingIndex(j)}>
-            <div className={`routeNum singleLine chars${(j + 1)?.toString().length}`}> {j + 1}</div>
+    >
+        <div style={{ "--lineIconSizeMultiplier": lineIconMultiplier, display: "flex", flexWrap: "wrap", flexDirection: "row", maxHeight: "100%" } as CSSProperties}>
+            {currentPaletteData && currentPaletteData.ColorsRGB.map((clr, idx) => <LineIconWithEditor
+                key={idx} clr={clr} idx={idx} editingIndex={editingIndex} onExcludeColor={onExcludeColor}
+                onMoveColor={onMoveColor} onSetColor={onSetColor} setEditingIndex={setEditingIndex}
+                totalLength={currentPaletteData.ColorsRGB.length}
+            />)}
         </div>
-        <div className="excludeBtn" onClick={() => onExcludeColor(j)}>X</div>
-        {j > 0 && <div className="moveMinus" onClick={(x) => onMoveColor(j, x.shiftKey ? -Infinity : -1)}>⇚</div>}
-        {j < currentPaletteData.ColorsRGB.length - 1 && <div className="movePlus" onClick={(x) => onMoveColor(j, x.shiftKey ? Infinity : 1)}>⇛</div>}
+    </ListWithPreviewTab>;
+}
+
+
+
+
+type PropsIcon = {
+    clr: `#${string}`;
+    idx: number;
+    editingIndex?: number;
+    totalLength: number;
+    onExcludeColor: (index: number) => void;
+    onMoveColor: (index: number, direction: number) => void;
+    onSetColor: (index: number, color: `#${string}`) => void;
+    setEditingIndex: (index: number) => void;
+};
+
+const LineIconWithEditor = ({ clr, idx, editingIndex, onExcludeColor, onMoveColor, onSetColor, setEditingIndex, totalLength }: PropsIcon) => {
+
+    const iconRef = useRef(null as any as HTMLDivElement);
+    const pickerRef = useRef(null as any as HTMLDivElement);
+    const [menuCss, setMenuCss] = useState({} as CSSProperties)
+
+    const ColorPicker = VanillaComponentResolver.instance.ColorPicker;
+    const noFocus = VanillaComponentResolver.instance.FOCUS_DISABLED;
+    const VanillaColorUtils = VanillaFnResolver.instance.color;
+
+    const iconPosition = calculateElementPosition(iconRef.current);
+
+
+    useEffect(() => {
+        setMenuCss(onRecalculateContextMenuPosition(iconRef, iconPosition));
+    }, [editingIndex === idx])
+
+    const handleClickOutside = (event: MouseEvent) => {
+        if (!iconRef.current) return;
+        if (isOnArea(event, iconRef)) return;
+        if (!pickerRef.current) return;
+        if (isOnArea(event, pickerRef)) return;
+        setEditingIndex(undefined!);
+    };
+
+
+    useEffect(() => {
+        document.addEventListener('mousedown', handleClickOutside, true);
+        return () => {
+            document.removeEventListener('mousedown', handleClickOutside, true);
+        };
+    }, []);
+
+    return <div className={"lineIconContainer " + (idx == editingIndex ? "currentSelected" : "")} key={idx} ref={iconRef}>
+        <div className="lineIcon" style={{ "--lineColor": clr, "--contrastColor": ColorUtils.toRGBA(ColorUtils.getContrastColorFor(ColorUtils.toColor01(clr))) } as CSSProperties} onClick={() => setEditingIndex(idx)}>
+            <div className={`routeNum singleLine chars${(idx + 1)?.toString().length}`}> {idx + 1}</div>
+        </div>
+        <div className="excludeBtn" onClick={() => onExcludeColor(idx)}>X</div>
+        {idx > 0 && <div className="moveMinus" onClick={(x) => onMoveColor(idx, x.shiftKey ? -Infinity : -1)}>⇚</div>}
+        {idx < totalLength - 1 && <div className="movePlus" onClick={(x) => onMoveColor(idx, x.shiftKey ? Infinity : 1)}>⇛</div>}
+        {editingIndex === idx &&
+            <Portal>
+                <div ref={pickerRef} style={menuCss} className="k45_comm_contextMenu k45_xtm_colorPickerOverlay">
+                    <ColorPicker alpha={false} focusKey={noFocus} preview="None"
+                        color={VanillaColorUtils.rgbaToHsva(ColorUtils.toColor01(clr))}
+                        onChange={x => onSetColor(idx, ColorUtils.toRGBHex(VanillaColorUtils.hsvaToRgba(x)))}
+                        hexInput colorWheel sliderTextInput />
+                </div>
+            </Portal>
+        }
     </div>
-    )}
-        </div></ListWithPreviewTab>;
 }

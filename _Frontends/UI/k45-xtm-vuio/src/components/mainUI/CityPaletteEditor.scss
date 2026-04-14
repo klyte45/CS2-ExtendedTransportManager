@@ -12,10 +12,11 @@
 
         &.currentSelected {
             border-style: solid;
-            border-left-color: var(--positiveColor);
-            border-right-color: var(--positiveColor);
-            border-top-color: var(--positiveColor);
-            border-bottom-color: var(--positiveColor);
+            border-left-color: var(--accentColorDarker);
+            border-right-color: var(--accentColorDarker);
+            border-top-color: var(--accentColorDarker);
+            border-bottom-color: var(--accentColorDarker);
+            background-color: var(--accentColorLight);
 
             border-left-width: calc(.25rem * var(--lineIconSizeMultiplier));
             border-right-width: calc(.25rem * var(--lineIconSizeMultiplier));
@@ -173,4 +174,22 @@
             }
         }
     }
+
+
+}
+
+.k45_xtm_colorPickerOverlay {
+    width: 300rem;
+    padding-top: 10rem;
+    padding-left: 10rem;
+    padding-right: 10rem;
+    padding-bottom: 10rem;
+
+    [class^=preview_] {
+        display: none;
+    }
+}
+
+[class^=dropdown-popup_] {
+    z-index: 999999 !important;
 }
