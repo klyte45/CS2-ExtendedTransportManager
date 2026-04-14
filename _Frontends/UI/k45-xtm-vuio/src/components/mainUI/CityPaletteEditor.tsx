@@ -1,6 +1,6 @@
 import { PaletteData, PaletteService } from "#service/PaletteService";
 import translate from "#utility/translate";
-import { ListWithPreviewTab, ColorUtils, VanillaComponentResolver, VanillaFnResolver, Color01, calculateElementPosition, onRecalculateContextMenuPosition, isOnArea } from "@klyte45/vuio-commons";
+import { ListWithPreviewTab, ColorUtils, VanillaComponentResolver, VanillaFnResolver, Color01, calculateElementPosition, onRecalculateContextMenuPosition, isOnArea, BaseFileService } from "@klyte45/vuio-commons";
 import engine from "cohtml/cohtml";
 import { useState, useEffect, useRef, CSSProperties } from "react";
 import "./CityPaletteEditor.scss";
@@ -56,6 +56,8 @@ export function CityPaletteEditor(args: any) {
     const previewRef = useRef<HTMLDivElement>(null);
     const [lineIconMultiplier, setLineIconMultiplier] = useState(DEFAULT_MULTIPLIER);
 
+    const generateDataContainer = (folder: string, allowedExtension: string) => BaseFileService.generateDataProvider("k45::xtm", folder, allowedExtension);
+
     useEffect(() => {
         ;
         const observer = new ResizeObserver(([entry]) => {
@@ -78,7 +80,6 @@ export function CityPaletteEditor(args: any) {
     }
 
     async function updatePalettes() {
-
         const palettesSaved = await PaletteService.listCityPalettes();
         setAvailablePalettes(palettesSaved);
     }
@@ -99,10 +100,15 @@ export function CityPaletteEditor(args: any) {
     //list functions
     async function doImportPalette() {
         //need file picker and modal for confirmation showing the palette being imported
+        //only accept .hex files, shall validate pattern /#?[A-Fa-f0-9]{6}/ each line
+        //on confirm, add palette with name from file (without extension) and colors from file, then select it for edition
+        //NAVIGATION: shall have a special "drive" (XTM:) that will show the palettes library items. In this case, it will not navigate through system, but
+        //will do it inside the data returned from `PaletteService.listLibraryPalettes` after parsing the result into a PaletteStructureTreeNode (see on older main project for reference on how to parse it and reuse the PaletteCategoryCmp for navigation)
     }
 
     async function doAddNewPalette() {
         //need modal for entering name and showing the new palette being edited
+        //the default palette contains one color (white)
     }
 
     //palette editing functions
@@ -139,11 +145,16 @@ export function CityPaletteEditor(args: any) {
         if (currentPaletteData === undefined) return;
         await PaletteService.updatePalette(currentPaletteData.GuidString, currentPaletteData.Name, currentPaletteData.ColorsRGB);
     }
-    async function doDeletePalette(x: PaletteData) {
+    async function doDeletePalette() {
         //need modal for confirmation
+        //after confirmation, delete palette and select no palette for edition
+        //use the serice call that deletes the palette from the city, not the one that deletes from library (if exported)
     }
-    async function doRenamePalette(x: PaletteData) {
+    async function doRenamePalette() {
         //need modal for input new name
+        //after confirmation, update palette with new name and keep it selected for edition
+        //shall not apply unapplied color changes, so it will create a copy from the current palette (from the retrieved data) with the new name only then saving
+        //after saving, shall select the palette again for edition, restoring the unsaved color changes
     }
 
 
@@ -159,8 +170,9 @@ export function CityPaletteEditor(args: any) {
         itemActions={[
             { className: "positiveBtn", text: translate("paletteEditor.saveChanges"), action: savePalette, disabled: currentPaletteData === undefined || !contentChanged },
             { className: "positiveBtn", text: translate("paletteEditor.addColor"), action: addNewColor },
+            { className: "positiveBtn", text: translate("paletteEditor.renamePalette"), action: () => doRenamePalette, disabled: currentPaletteData === undefined },
             null,
-            { className: "negativeBtn", text: translate("paletteEditor.deletePalette"), action: () => doDeletePalette(currentPaletteData!), disabled: currentPaletteData === undefined },
+            { className: "negativeBtn", text: translate("paletteEditor.deletePalette"), action: () => doDeletePalette, disabled: currentPaletteData === undefined },
         ]}
         listActions={[
             { isContext: false, src: "coui://uil/Standard/Plus.svg", onSelect: doAddNewPalette, tooltip: translate("paletteEditor.addNewPalette") },

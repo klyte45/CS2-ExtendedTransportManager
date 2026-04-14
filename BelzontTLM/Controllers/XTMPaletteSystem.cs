@@ -53,7 +53,7 @@ namespace BelzontTLM.Palettes
         }
 
         private List<XTMPaletteFile> ListCityPalettes() => CityPalettes.Values.ToList();
-        private List<XTMPaletteFile> ListLibraryPalettes() => XTMPaletteManager.Instance.FullLibrary.ToList();
+        private List<XTMPaletteFile> ListLibraryPalettes() => [.. XTMPaletteManager.Instance.FullLibrary];
 
         private void AddCityPalette(string name, string[] colors)
         {
