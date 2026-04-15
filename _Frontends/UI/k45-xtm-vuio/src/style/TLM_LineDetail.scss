@@ -171,6 +171,8 @@
         }
 
         .vehicle {
+            color: white;
+            background-color: black;
             position: relative;
             left: 0.000000rem;
             display: flex;
@@ -203,8 +205,8 @@
             top: -8rem;
             background-color: rgba(0, 0, 0, 1);
             clip-path: border-box polygon(nonzero, 100% 0rem, 0rem 50%, 100% 100%);
-            height: 16rem;
-            width: 16rem;
+            height: 19rem;
+            width: 22rem;
             left: -16rem;
             margin-top: -1.5rem;
             position: absolute;

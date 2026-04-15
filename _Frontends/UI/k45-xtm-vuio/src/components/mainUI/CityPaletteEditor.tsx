@@ -2,10 +2,9 @@ import { PaletteData, PaletteService } from "#service/PaletteService";
 import translate from "#utility/translate";
 import { ListWithPreviewTab, ColorUtils, VanillaComponentResolver, VanillaFnResolver, Color01, calculateElementPosition, onRecalculateContextMenuPosition, isOnArea, BaseFileService, StringInputDialog, FilePickerDialog, DataProvider, replaceArgs } from "@klyte45/vuio-commons";
 import engine from "cohtml/cohtml";
-import { useState, useEffect, useRef, CSSProperties } from "react";
+import { useState, useEffect, useRef, useCallback, useMemo, memo, CSSProperties } from "react";
 import "./CityPaletteEditor.scss";
 import { Portal, ConfirmationDialog } from "cs2/ui";
-import { Mutable } from "./XtmMainPanel";
 
 type ImportPending =
     | { type: 'file'; path: string }
@@ -69,6 +68,9 @@ export function CityPaletteEditor(args: any) {
     // Refs for internal state management
     const skipNextPaletteReset = useRef(false);
     const libraryPalettesCache = useRef<PaletteData[]>([]);
+    // Always-current ref so callbacks and effects never capture stale state
+    const currentPaletteDataRef = useRef(currentPaletteData);
+    currentPaletteDataRef.current = currentPaletteData;
 
     const generateDataContainer = (folder: string, allowedExtension: string) => BaseFileService.generateDataProvider("k45::xtm", folder, allowedExtension);
 
@@ -77,21 +79,24 @@ export function CityPaletteEditor(args: any) {
     }, []);
 
     useEffect(() => {
-        ;
         const observer = new ResizeObserver(([entry]) => {
             if (!entry) return;
             // contentRect already excludes the element's padding
-            const { width, height } = entry.contentRect;
             redrawIcons();
         });
-        previewRef.current && observer.observe(previewRef.current);
+        if (previewRef.current) observer.observe(previewRef.current);
         return () => observer.disconnect();
+    }, []); // observe once — redrawIcons reads current data via ref
+
+    // Recalculate multiplier whenever the number of swatches changes (add/remove color)
+    useEffect(() => {
+        redrawIcons();
     }, [currentPaletteData?.ColorsRGB?.length]);
 
     function redrawIcons() {
         const el = previewRef.current;
         if (!el) return;
-        const itemCount = currentPaletteData?.ColorsRGB?.length ?? 0
+        const itemCount = currentPaletteDataRef.current?.ColorsRGB?.length ?? 0;
         const fontsize = getComputedStyle(document.documentElement).fontSize;
         const remPx = parseFloat(fontsize) * (
             fontsize.endsWith("vw") ? document.documentElement.clientWidth / 100 :
@@ -190,49 +195,55 @@ export function CityPaletteEditor(args: any) {
     }
 
     //palette editing functions
-    function onExcludeColor(j: number): void {
-        if (j === undefined) return;
-        let editingPaletteData = { ...currentPaletteData } as Mutable<PaletteData>;
-        editingPaletteData.ColorsRGB = [...(editingPaletteData.ColorsRGB ?? [])];
-        editingPaletteData.ColorsRGB!.splice(j, 1);
-        setCurrentPaletteData(editingPaletteData);
+    const onExcludeColor = useCallback((j: number) => {
+        setCurrentPaletteData(prev => {
+            if (!prev) return prev;
+            const newColors = [...prev.ColorsRGB];
+            newColors.splice(j, 1);
+            return { ...prev, ColorsRGB: newColors } as PaletteData;
+        });
         setContentChanged(true);
-        redrawIcons();
-    }
-    function onMoveColor(j: number, delta: number): void {
-        let editingPaletteData = { ...currentPaletteData } as Mutable<PaletteData>;
-        editingPaletteData.ColorsRGB = [...(editingPaletteData.ColorsRGB ?? [])];
-        var color = editingPaletteData.ColorsRGB!.splice(j, 1);
-        editingPaletteData.ColorsRGB!.splice(Math.min(Math.max(j + delta, 0), editingPaletteData.ColorsRGB!.length), 0, ...color);
-        setCurrentPaletteData(editingPaletteData);
+        // redrawIcons() not needed: the count-change useEffect handles it
+    }, []);
+    const onMoveColor = useCallback((j: number, delta: number) => {
+        setCurrentPaletteData(prev => {
+            if (!prev) return prev;
+            const newColors = [...prev.ColorsRGB];
+            const color = newColors.splice(j, 1);
+            newColors.splice(Math.min(Math.max(j + delta, 0), newColors.length), 0, ...color);
+            return { ...prev, ColorsRGB: newColors } as PaletteData;
+        });
         setContentChanged(true);
-    }
+    }, []);
     function shuffleColors() {
-        let editingPaletteData = { ...currentPaletteData } as Mutable<PaletteData>;
-        let colorRGB = [...(editingPaletteData.ColorsRGB ?? [])];
-        for (let i = colorRGB.length - 1; i > 0; i--) {
-            const j = Math.floor(Math.random() * (i + 1));
-            [colorRGB[i], colorRGB[j]] = [colorRGB[j], colorRGB[i]];
-        }
-        editingPaletteData.ColorsRGB = colorRGB;
-        setCurrentPaletteData(editingPaletteData);
+        setCurrentPaletteData(prev => {
+            if (!prev) return prev;
+            const newColors = [...prev.ColorsRGB];
+            for (let i = newColors.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [newColors[i], newColors[j]] = [newColors[j], newColors[i]];
+            }
+            return { ...prev, ColorsRGB: newColors } as PaletteData;
+        });
         setContentChanged(true);
-        redrawIcons();
     }
     function addNewColor() {
-        let editingPaletteData = { ...currentPaletteData } as Mutable<PaletteData>;
-        editingPaletteData.ColorsRGB = [...(editingPaletteData.ColorsRGB ?? []), "#FFFFFF"];
-        setCurrentPaletteData(editingPaletteData);
+        setCurrentPaletteData(prev => {
+            if (!prev) return prev;
+            return { ...prev, ColorsRGB: [...prev.ColorsRGB, "#FFFFFF"] } as PaletteData;
+        });
         setContentChanged(true);
-        redrawIcons();
+        // redrawIcons() not needed: the count-change useEffect handles it
     }
-    function onSetColor(j: number, newColor: `#${string}`): void {
-        let editingPaletteData = { ...currentPaletteData } as Mutable<PaletteData>;
-        editingPaletteData.ColorsRGB = [...(editingPaletteData.ColorsRGB ?? [])];
-        editingPaletteData.ColorsRGB![j] = newColor;
-        setCurrentPaletteData(editingPaletteData);
+    const onSetColor = useCallback((j: number, newColor: `#${string}`) => {
+        setCurrentPaletteData(prev => {
+            if (!prev) return prev;
+            const newColors = [...prev.ColorsRGB];
+            newColors[j] = newColor;
+            return { ...prev, ColorsRGB: newColors } as PaletteData;
+        });
         setContentChanged(true);
-    }
+    }, []);
     async function savePalette() {
         setContentChanged(false);
         if (currentPaletteData === undefined) return;
@@ -278,10 +289,12 @@ export function CityPaletteEditor(args: any) {
 
     const Dialog = VanillaComponentResolver.instance.Dialog;
 
-    return <><ListWithPreviewTab className="k45_xtm_paletteEditor" listItems={(availablePalettes ? [...availablePalettes].sort((a, b) => a.Name.localeCompare(b.Name)) : []).map(x => ({
-        value: x.GuidString,
-        displayName: x.Name,
-    }))}
+    const sortedPaletteItems = useMemo(() =>
+        (availablePalettes ? [...availablePalettes].sort((a, b) => a.Name.localeCompare(b.Name)) : [])
+            .map(x => ({ value: x.GuidString, displayName: x.Name })),
+        [availablePalettes]);
+
+    return <><ListWithPreviewTab className="k45_xtm_paletteEditor" listItems={sortedPaletteItems}
         selectedKey={selectedPaletteGuid ?? null}
         onChangeSelection={setSelectedPaletteGuid}
         detailsFields={[
@@ -307,7 +320,7 @@ export function CityPaletteEditor(args: any) {
     >
         <div style={{ "--lineIconSizeMultiplier": lineIconMultiplier, display: "flex", flexWrap: "wrap", flexDirection: "row", maxHeight: "100%" } as CSSProperties}>
             {currentPaletteData && currentPaletteData.ColorsRGB.map((clr, idx) => <LineIconWithEditor
-                key={idx} clr={clr} idx={idx} editingIndex={editingIndex} onExcludeColor={onExcludeColor}
+                key={idx} clr={clr} idx={idx} isOpen={editingIndex === idx} onExcludeColor={onExcludeColor}
                 onMoveColor={onMoveColor} onSetColor={onSetColor} setEditingIndex={setEditingIndex}
                 totalLength={currentPaletteData.ColorsRGB.length}
             />)}
@@ -360,7 +373,7 @@ export function CityPaletteEditor(args: any) {
 type PropsIcon = {
     clr: `#${string}`;
     idx: number;
-    editingIndex?: number;
+    isOpen: boolean;
     totalLength: number;
     onExcludeColor: (index: number) => void;
     onMoveColor: (index: number, direction: number) => void;
@@ -368,7 +381,7 @@ type PropsIcon = {
     setEditingIndex: (index: number) => void;
 };
 
-const LineIconWithEditor = ({ clr, idx, editingIndex, onExcludeColor, onMoveColor, onSetColor, setEditingIndex, totalLength }: PropsIcon) => {
+const LineIconWithEditor = memo(({ clr, idx, isOpen, onExcludeColor, onMoveColor, onSetColor, setEditingIndex, totalLength }: PropsIcon) => {
 
     const iconRef = useRef(null as any as HTMLDivElement);
     const pickerRef = useRef(null as any as HTMLDivElement);
@@ -377,8 +390,6 @@ const LineIconWithEditor = ({ clr, idx, editingIndex, onExcludeColor, onMoveColo
     const ColorPicker = VanillaComponentResolver.instance.ColorPicker;
     const noFocus = VanillaComponentResolver.instance.FOCUS_DISABLED;
     const VanillaColorUtils = VanillaFnResolver.instance.color;
-
-    const isOpen = editingIndex === idx;
 
     useEffect(() => {
         if (!isOpen) return;
@@ -418,4 +429,4 @@ const LineIconWithEditor = ({ clr, idx, editingIndex, onExcludeColor, onMoveColo
             </Portal>
         }
     </div>
-}
+});
