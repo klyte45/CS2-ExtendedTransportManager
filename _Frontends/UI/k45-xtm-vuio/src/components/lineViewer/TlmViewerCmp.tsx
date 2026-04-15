@@ -42,7 +42,7 @@ export function TlmViewerCmp({ lineDetails, getLineById, simetricLine, showDistr
                                 <div className="integrationsRailing">
                                     {targetStops.map((station, i) => {
                                         return <StationIntegrationContainerCmp
-                                            isFaded={selectedEntity.index != lineDetails.LineData.entity.Index && ![station.entity.Index, station.parent.Index].includes(showSimetricMode ? currentStopSelected?.parent.Index! : selectedEntity.index)}
+                                            isFaded={selectedEntity.index != lineDetails.LineData.entity.Index && ![station.entity.Index, station.parent.Index].includes(showSimetricMode ? (currentStopSelected?.parent.Index ?? selectedEntity.index) : selectedEntity.index)}
                                             getLineById={(x) => getLineById(x)}
                                             station={station}
                                             vehicles={lineDetails.Vehicles}
@@ -67,7 +67,7 @@ export function TlmViewerCmp({ lineDetails, getLineById, simetricLine, showDistr
                             <div className="stationRailing">
                                 {targetStops.map((station, i) => {
                                     return <StationContainerCmp
-                                        isFaded={selectedEntity.index != lineDetails.LineData.entity.Index && ![station.entity.Index, station.parent.Index].includes(showSimetricMode ? currentStopSelected?.parent.Index! : selectedEntity.index)}
+                                        isFaded={selectedEntity.index != lineDetails.LineData.entity.Index && ![station.entity.Index, station.parent.Index].includes(showSimetricMode ? (currentStopSelected?.parent.Index ?? selectedEntity.index) : selectedEntity.index)}
                                         station={station}
                                         vehicles={lineDetails.Vehicles}
                                         keyId={i}

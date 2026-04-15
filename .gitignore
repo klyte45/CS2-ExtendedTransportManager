@@ -351,3 +351,4 @@ MigrationBackup/
 
 *.pid
 /BelzontTLM/Properties/PublishConfiguration.xml
+.vsCode

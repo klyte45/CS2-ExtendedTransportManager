@@ -1,4 +1,10 @@
-# v0.1.5r1 (04-DEC-25)
+# v1.0.0r0 (15-APR-26)
 
-- Added support to vehicle selection for each line (including deselect assets not available anymore)
-- Fixes for 1.5 game update
+- Removed all EUIS-related content and dependencies for a cleaner install and improved compatibility.
+- Overhauled palette management: removed internal palette library concept, now using a unified city palette editor.
+- Major new palette editor UI, including color picker, editing actions, and performance improvements.
+- Added city palette selector and improved palette management workflow.
+- Added editors for line internal numbers and acronyms.
+- WE (Write Everywhere) integration window content on vanilla UI.
+- Added details for all XTM-supported entities in the UI.
+- XTM line viewer fully implemented, with map controls and improved navigation.

@@ -86,11 +86,8 @@ export function CityPaletteEditor(args: any) {
         });
         if (previewRef.current) observer.observe(previewRef.current);
         return () => observer.disconnect();
-    }, []); // observe once — redrawIcons reads current data via ref
-
-    // Recalculate multiplier whenever the number of swatches changes (add/remove color)
-    useEffect(() => {
-        redrawIcons();
+        // Re-attach on count change: ResizeObserver fires its initial callback after layout
+        // is fully settled, which is the correct moment to read clientWidth/clientHeight.
     }, [currentPaletteData?.ColorsRGB?.length]);
 
     function redrawIcons() {

@@ -61,13 +61,13 @@ export function StationContainerCmp({ station, vehicles: _vehicles, keyId, norma
                 : translate("lineStationDetail.nextVehicleIncoming")
             : "";
 
-        return <Tooltip alignment="end" direction="right" tooltip={
+        return <Tooltip alignment="end" direction="up" tooltip={
             <div style={{ display: "block" }}>
                 {station.parent.Index ? <div>{replaceArgs(translate("lineStationDetail.buildingLbl"), { building: nameToString(station.parentName) })}</div> : ""}
                 <div style={{ display: "block" }}>{replaceArgs(translate(`lineStationDetail.waiting.${station.isCargo ? "cargo" : "passengers"}`), { quantity: passengerValueFmt })}</div>
                 {station.arrivingVehicle
                     ? <><div style={{ whiteSpace: "nowrap", overflowX: "hidden", overflowY: "hidden", display: "block", height: "20rem", textOverflow: "ellipsis", }}>{
-                        translate(`lineStationDetail.nextVehicleData`) + nameToString(station.arrivingVehicle.name) + " - " + station.arrivingVehicle.entity.Index
+                        translate(`lineStationDetail.nextVehicleData`).trim() + " " + nameToString(station.arrivingVehicle.name)
                     }</div>
                         <div style={{ display: "inline", fontSize: "var(--fontSizeXS)" }}>{"↳ " + nextVehicleDistanceFmt + " - " + stopsYetToPassText}</div></>
                     : <div className="lineView-warning">{translate(`lineStationDetail.noNextVehicleData`)}</div>}
@@ -80,13 +80,11 @@ export function StationContainerCmp({ station, vehicles: _vehicles, keyId, norma
         camera.focusEntity(toVanillaEntity(station.entity))
     }
 
-    return generateTooltip(
-        <div className={["lineStationContainer", [station.parent, station.entity].some(x => x.Index == selectedEntity.index) ? "selected" : ""].join(" ")} style={{ top: (100 * normalizedPosition) + "%", minHeight: (100 / totalStationCount) + "%" }}>
-            <div className="lineStation row col-12 align-items-center" onClick={handleStopClick} >
-                <div className={["stationName", isFaded && "faded"].join(" ")}>{nameToString(station.name)}</div>
-                <div className={["stationBullet", isFaded && "faded"].join(" ")} id={id} />
-                {!isFaded && !!direction && <div className={["stationDirection", direction > 0 ? "down" : "up"].join(" ")} />}
-            </div>
+    return <div className={["lineStationContainer", [station.parent, station.entity].some(x => x.Index == selectedEntity.index) ? "selected" : ""].join(" ")} style={{ top: (100 * normalizedPosition) + "%", minHeight: (100 / totalStationCount) + "%" }}>
+        <div className="lineStation row col-12 align-items-center" onClick={handleStopClick} >
+            <div className={["stationName", isFaded && "faded"].join(" ")}>{nameToString(station.name)}</div>
+            {generateTooltip(<div className={["stationBullet", isFaded && "faded"].join(" ")} id={id} />)}
+            {!isFaded && !!direction && <div className={["stationDirection", direction > 0 ? "down" : "up"].join(" ")} />}
         </div>
-    );
+    </div>
 }
