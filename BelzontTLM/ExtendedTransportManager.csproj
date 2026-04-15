@@ -5,7 +5,7 @@
     <Configurations>Debug;Release</Configurations>
     <Bursted Condition="'$(Configuration)'=='Release'">true</Bursted>
     <Bursted Condition="'$(Configuration)'=='Debug'">true</Bursted>
-    <RootNamespace>BelzontTLM</RootNamespace>
+    <RootNamespace>ExtendedTransportManager</RootNamespace>
     <!--The file where mod information which is required for publishing mod on PDX mods are stored-->
     <PublishConfigurationPath>Properties\PublishConfiguration.xml</PublishConfigurationPath>
   </PropertyGroup>
@@ -19,7 +19,7 @@
   <!--Mod  data-->
   <PropertyGroup>        
     <ModId>74238</ModId>
-    <Version>0.1.5.1</Version>
+    <Version>1.0.0.0</Version>
     <Version Condition="'$(Configuration)'=='Debug'">65534.$([System.DateTime]::Now.ToString("yyyy.Mdd.HHmm"))</Version>
     <GameVersion>1.5.*</GameVersion>
     <ThumbnailPath>Properties/Thumbnail.png</ThumbnailPath>
@@ -34,10 +34,6 @@
   <ItemGroup>
     <ModTag Include="Code Mod" />
     <Screenshots Include="Screenshots/*.jpg" />
-    <Dependency Include="EUIS">
-      <ModId>74151</ModId>
-      <DisplayName>Extra UI Screens</DisplayName>
-    </Dependency>
     <Dependency Include="UnifiedIconLibrary">
       <ModId>74417</ModId>
       <DisplayName>Unified Icon Library</DisplayName>

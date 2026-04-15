@@ -1,8 +1,8 @@
 import engine from "cohtml/cohtml";
 
 export default function (key: string, fallback?: string) {
-    const fullKey = `K45::XTM.main[${key}]`;
-    const tr = engine.translate(`K45::XTM.main[${key}]`);
+    const fullKey = `K45::XTM.vuio[${key}]`;
+    const tr = engine.translate(`K45::XTM.vuio[${key}]`);
     if (tr === fullKey) {
         if (fallback !== undefined) {
             return fallback;

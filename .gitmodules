@@ -1,9 +1,6 @@
 [submodule "BelzontTLM/BelzontCommons"]
 	path = BelzontTLM/BelzontCommons
 	url = https://github.com/klyte45/CS2-BelzontCommons
-[submodule "_Frontends/UI/_replacements"]
-	path = _Frontends/UI/_replacements
-	url = https://github.com/klyte45/CS2-EuisToolkit
 [submodule "_Build"]
 	path = _Build
 	url = https://github.com/klyte45/CS2-BuildFiles
