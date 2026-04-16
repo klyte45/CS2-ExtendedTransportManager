@@ -1,4 +1,8 @@
-# v1.0.0r0 (15-APR-26)
+# v1.0.0r1 (17-APR-26)
+
+- Fixed small weak points that could cause crashes in some edge cases, such as missing line data or null references in the line viewer.
+
+## FROM v1.0.0r0 (15-APR-26)
 
 - Removed all EUIS-related content and dependencies for a cleaner install and improved compatibility.
 - Overhauled palette management: removed internal palette library concept, now using a unified city palette editor.

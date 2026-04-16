@@ -20,6 +20,7 @@ type Props = {
 export function TlmViewerCmp({ lineDetails, getLineById, simetricLine, showDistricts, showDistances, showVehicles, showIntegrations, useWhiteBackground, useHalfTripIfSimetric }: Props) {
 
     const lineCommonData: LineData = lineDetails.LineData;
+    if(!lineCommonData) return <></>;
     const showSimetricMode = simetricLine && !showVehicles && useHalfTripIfSimetric;
     const targetStops = showSimetricMode ? lineDetails.Stops.slice(0, lineDetails.Stops.length / 2 + 1) : lineDetails.Stops;
     const targetLenght = targetStops.length - (showSimetricMode ? 1 : 0);

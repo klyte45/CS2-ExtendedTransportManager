@@ -54,16 +54,40 @@ namespace BelzontTLM
 
             public LineDetailData ConvertAndDispose(NativeArray<Entity> availablePrimaryVehicles, NativeArray<Entity> availableSecondaryVehicles)
             {
-                var segResultArray = m_SegmentsResult.ToArray(Allocator.Temp);
-                var stopsResult = m_StopsResult.ToArray(Allocator.Temp);
-                var vehiclesResult = m_VehiclesResult.ToArray(Allocator.Temp);
+                LineSegment[] segResultArray = [];
+                LineStop[] stopsResult = [];
+                LineVehicle[] vehiclesResult = [];
+                if (m_SegmentsResult.IsCreated && !m_SegmentsResult.IsEmpty)
+                {
+                    segResultArray = new LineSegment[m_SegmentsResult.Length];
+                    for (int i = 0; i < m_SegmentsResult.Length; i++)
+                    {
+                        segResultArray[i] = m_SegmentsResult[i];
+                    }
+                }
+                if (m_StopsResult.IsCreated && !m_StopsResult.IsEmpty)
+                {
+                    stopsResult = new LineStop[m_StopsResult.Length];
+                    for (int i = 0; i < m_StopsResult.Length; i++)
+                    {
+                        stopsResult[i] = m_StopsResult[i];
+                    }
+                }
+                if (m_VehiclesResult.IsCreated && !m_VehiclesResult.IsEmpty)
+                {
+                    vehiclesResult = new LineVehicle[m_VehiclesResult.Length];
+                    for (int i = 0; i < m_VehiclesResult.Length; i++)
+                    {
+                        vehiclesResult[i] = m_VehiclesResult[i];
+                    }
+                }
                 try
                 {
                     return new LineDetailData()
                     {
-                        m_SegmentsResult = [.. segResultArray],
-                        m_StopsResult = [.. stopsResult],
-                        m_VehiclesResult = [.. vehiclesResult],
+                        m_SegmentsResult = segResultArray,
+                        m_StopsResult = stopsResult,
+                        m_VehiclesResult = vehiclesResult,
                         m_availableVehicles =
                         [
                             .. availablePrimaryVehicles.ToArray().Select(e => new AvailableVehicle(e, false)),
@@ -75,9 +99,6 @@ namespace BelzontTLM
                 }
                 finally
                 {
-                    segResultArray.Dispose();
-                    stopsResult.Dispose();
-                    vehiclesResult.Dispose();
                     availablePrimaryVehicles.Dispose();
                     availableSecondaryVehicles.Dispose();
                     Dispose();

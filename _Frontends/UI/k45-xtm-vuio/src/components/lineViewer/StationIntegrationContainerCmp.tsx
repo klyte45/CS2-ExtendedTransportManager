@@ -25,7 +25,7 @@ export function StationIntegrationContainerCmp({ station, getLineById, thisLineI
         .sort((a, b) => (getPriority(a.type) - getPriority(b.type)) || (a.routeNumber - b.routeNumber));
     if (linesToIntegrate.length == 0) return null;
     const colors = [...linesToIntegrate.reduce((p, n) => {
-        p.add(n.color);
+        if (n) p.add(n.color);
         return p;
     }, new Set<string>())];
     const stepEachColor = 100 / colors.length;
