@@ -110,6 +110,7 @@ namespace BelzontTLM.Palettes
             var paletteJob = default(XTMUpdatePalleteJob);
             paletteJob.m_CommandBuffer = m_EndFrameBarrier.CreateCommandBuffer().AsParallelWriter();
             paletteJob.m_TypeHandle = typeHandle;
+            paletteJob.m_ColorUpdateArchetype = m_ColorUpdateArchetype;
             XTMUpdatePalleteJob jobData = paletteJob;
             JobHandle jobHandle = jobData.ScheduleParallel(query, Dependency);
             m_EndFrameBarrier.AddJobHandleForProducer(jobHandle);
@@ -132,6 +133,7 @@ namespace BelzontTLM.Palettes
         private IconCommandSystem m_IconCommandSystem;
         private TypeHandle typeHandle;
         private XTMPaletteSystem paletteSystem;
+        private EntityArchetype m_ColorUpdateArchetype;
         private bool m_setupIsDirty;
 
         protected override void OnCreate()
@@ -203,7 +205,11 @@ namespace BelzontTLM.Palettes
 
             paletteSystem = World.GetOrCreateSystemManaged<XTMPaletteSystem>();
 
-
+            m_ColorUpdateArchetype = EntityManager.CreateArchetype(
+            [
+                ComponentType.ReadWrite<Game.Common.Event>(),
+                ComponentType.ReadWrite<ColorUpdated>()
+            ]);
         }
 
         private static XTMPaletteSystem PaletteSystem => Instance.paletteSystem;
@@ -317,6 +323,7 @@ namespace BelzontTLM.Palettes
             [ReadOnly]
             public TypeHandle m_TypeHandle;
             public EntityCommandBuffer.ParallelWriter m_CommandBuffer;
+            public EntityArchetype m_ColorUpdateArchetype;
             public void Execute(in ArchetypeChunk chunk, int unfilteredChunkIndex, bool useEnabledMask, in v128 chunkEnabledMask)
             {
                 NativeArray<Entity> unitializedLines = chunk.GetNativeArray(m_TypeHandle.m_EntityTypeHandle);
@@ -357,6 +364,8 @@ namespace BelzontTLM.Palettes
                     m_CommandBuffer.SetComponent(unfilteredChunkIndex, unitializedLines[i], xtmInfo);
                     m_CommandBuffer.AddComponent<Updated>(unfilteredChunkIndex, unitializedLines[i]);
                     m_CommandBuffer.RemoveComponent<XTMPaletteRequireUpdate>(unfilteredChunkIndex, unitializedLines[i]);
+                    Entity e = m_CommandBuffer.CreateEntity(unfilteredChunkIndex, m_ColorUpdateArchetype);
+                    m_CommandBuffer.AddComponent(unfilteredChunkIndex, e, new ColorUpdated(unitializedLines[i]));
                     if (ExtendedTransportManagerMod.DebugMode) LogUtils.DoLog($"Updated palette data @ entity id #{unitializedLines[i].Index}");
                 }
                 if (ExtendedTransportManagerMod.DebugMode) LogUtils.DoLog("XTMUpdatePalleteJob JobComplete");

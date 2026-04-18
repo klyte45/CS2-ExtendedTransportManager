@@ -1,4 +1,9 @@
-# v1.0.0r1 (17-APR-26)
+# v1.0.0r2 (18-APR-26)
+
+- Fixed UI being broken when entering in Editor
+- Fixed auto color not affecting vehicles of a line immediately
+
+## FROM v1.0.0r1 (17-APR-26)
 
 - Fixed small weak points that could cause crashes in some edge cases, such as missing line data or null references in the line viewer.
 

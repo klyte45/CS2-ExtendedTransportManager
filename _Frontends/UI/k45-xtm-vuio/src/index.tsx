@@ -12,7 +12,6 @@ import { InfoRow, InfoSection, Portal } from "cs2/ui";
 import { ColorEditorXtm } from "#components/ColorEditorXtm";
 import { XtmInfoSection } from "#components/XtmInfoSection";
 import { bindValue, useValue } from "cs2/api";
-import { engine } from "cohtml/cohtml";
 import { XtmMainPanel, XtmButton, XtmMainPanelId } from "#components/mainUI/XtmMainPanel";
 
 let IsXtm = true;
@@ -114,13 +113,18 @@ const RegisterXtmPanel = (input: any) => {
 const XtmPanelEditor = (input: any) => {
     const editorGroup = "editorTool"
     const editorSelection = "activeTool"
+    const engine = (window as any).engine;
     return (args: any) => {
         const bindResult = bindValue(editorGroup, editorSelection);
-
         const [tabActive, setTabActive] = useState(0)
-        engine.on("k45::xtm.main.setTabActive", setTabActive)
+        useEffect(() => {
 
-        useEffect(() => () => engine.off("k45::xtm.main.setTabActive", setTabActive))
+            engine.whenReady.then(() => {
+                engine.on("k45::xtm.main.setTabActive", setTabActive)
+            })
+
+            return () => engine.off("k45::xtm.main.setTabActive", setTabActive)
+        }, [])
         return <>
             {input(args)}
             {bindResult.value === "k45__xtm_MainWindow" && <Portal>
