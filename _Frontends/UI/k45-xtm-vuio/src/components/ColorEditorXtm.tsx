@@ -32,7 +32,7 @@ export const ColorEditorXtm = ({ group, tooltipTags, tooltipKeys }: Props) => {
     return VanillaComponentResolver.CreateInfoSection([
         { left: engine.translate("SelectedInfoPanel.COLOR"), uppercase: true },
         { left: translate("lineViewerEditor.ignorePalette"), right: <VanillaComponentResolver.instance.ToggleField value={isIgnorePalette} onChange={() => onChangeIsIgnorePalette(!isIgnorePalette)} /> },
-        ...(isIgnorePalette ? [{ left: translate("lineViewerEditor.lineFixedColor"), right: <VanillaComponentResolver.instance.ColorField value={ColorUtils.toColor01(fixedColor)} onChange={e => onChangeFixedColor(ColorUtils.toRGBHex(e))} /> }] : [])
+        ...(isIgnorePalette ? [{ left: translate("lineViewerEditor.lineFixedColor"), right: <VanillaComponentResolver.instance.ColorField hexInput value={ColorUtils.toColor01(fixedColor)} onChange={e => onChangeFixedColor(ColorUtils.toRGBHex(e))} /> }] : [])
     ], selectedInfo.useGeneratedTooltipParagraphs(group, tooltipTags, tooltipKeys));
 }
 

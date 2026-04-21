@@ -132,19 +132,29 @@ export function CityPaletteEditor(args: any) {
                 libraryPalettesCache.current = await PaletteService.listDefaultPalettes();
             }
             const subPath = folder.slice("XTM:/".length).replace(/\/$/, "");
+            const subParts = subPath === "" ? [] : subPath.split("/");
+            const depth = subParts.length;
             const seen = new Set<string>();
             const items: DataProvider = [];
             for (const palette of libraryPalettesCache.current) {
                 const parts = palette.Name.split("/");
-                if (subPath === "") {
-                    if (parts.length === 1) {
-                        items.push({ displayName: parts[0], directory: false, fullPath: "XTM:/" + parts[0] });
-                    } else if (!seen.has(parts[0])) {
-                        seen.add(parts[0]);
-                        items.push({ displayName: parts[0], directory: true, fullPath: "XTM:/" + parts[0] + "/" });
+                if (parts.length <= depth) continue;
+                let matches = true;
+                for (let i = 0; i < depth; i++) {
+                    if (parts[i] !== subParts[i]) { matches = false; break; }
+                }
+                if (!matches) continue;
+                const remaining = parts.slice(depth);
+                if (remaining.length === 1) {
+                    const fileName = remaining[0] + '.hex';
+                    items.push({ displayName: fileName, directory: false, fullPath: "XTM:/" + palette.Name + '.hex' });
+                } else {
+                    const dirName = remaining[0];
+                    if (!seen.has(dirName)) {
+                        seen.add(dirName);
+                        const dirFullPath = subPath === "" ? "XTM:/" + dirName + "/" : "XTM:/" + subPath + "/" + dirName + "/";
+                        items.push({ displayName: dirName, directory: true, fullPath: dirFullPath });
                     }
-                } else if (parts[0] === subPath && parts.length === 2) {
-                    items.push({ displayName: parts[1] + '.hex', directory: false, fullPath: "XTM:/" + palette.Name + '.hex' });
                 }
             }
             return items;
