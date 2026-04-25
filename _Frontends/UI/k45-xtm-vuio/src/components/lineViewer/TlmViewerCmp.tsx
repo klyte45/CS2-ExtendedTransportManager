@@ -28,7 +28,7 @@ export function TlmViewerCmp({ lineDetails, getLineById, simetricLine, showDistr
     const currentStopSelected = selectedEntity ? lineDetails.Stops.find(x => x.entity.Index == selectedEntity.index) : undefined;
 
     return <div id="TlmViewer" className={useWhiteBackground ? "mapWhiteBg" : ""}>
-        {!lineDetails ? <></> :
+        {!lineDetails ? <>Unsupported line type... Under development!</> :
             <>
                 <div>
                     <div className="titleRow" >

@@ -32,6 +32,7 @@ export const XtmInfoSection = () => {
     }, [selectedEntity, useValue(time.ticks$)]);
 
     async function reloadData(details: LineDetails) {
+        if(details == null) return;
         details.Vehicles = details.Vehicles.map(x => {
             return {
                 ...x,
@@ -47,7 +48,7 @@ export const XtmInfoSection = () => {
         setLineDetails(details)
 
     }
-    if (!lineDetails) return <></>;
+    if (!lineDetails) return <>Unsupported line type... Under development!</>;
     if (selectedEntity?.index == selectedRoute?.index) {
 
         const nextVehicleToMaintain = lineDetails.Vehicles.filter(x => x.maintenanceRange > 0).sort((b, a) => (a.odometer - a.maintenanceRange) - (b.odometer - b.maintenanceRange))[0];

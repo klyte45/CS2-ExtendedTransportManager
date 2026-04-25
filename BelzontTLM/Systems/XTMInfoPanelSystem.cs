@@ -190,7 +190,20 @@ namespace BelzontTLM
         }
         protected XTMLineViewerResult OnProcess(Entity e, LineDetailData lineDetail)
         {
-            var models = EntityManager.TryGetBuffer<VehicleModel>(e, true, out var buff) ? buff.ToNativeArray(Allocator.Temp) : default;
+            AvailableVehicle[] selectedVehiclesArr = Array.Empty<AvailableVehicle>();
+            if (EntityManager.TryGetBuffer<VehicleModel>(e, true, out var buff))
+            {
+                int cap = Math.Max(0, buff.Length * 2);
+                var list = new System.Collections.Generic.List<AvailableVehicle>(cap);
+                for (int i = 0; i < buff.Length; i++)
+                {
+                    var m = buff[i];
+                    if (m.m_PrimaryPrefab != Entity.Null) list.Add(new AvailableVehicle(m.m_PrimaryPrefab, false));
+                    if (m.m_SecondaryPrefab != Entity.Null) list.Add(new AvailableVehicle(m.m_SecondaryPrefab, true));
+                }
+                selectedVehiclesArr = list.ToArray();
+            }
+
             var result = new XTMLineViewerResult
             {
                 StopCapacity = lineDetail.stopCapacity,
@@ -198,10 +211,10 @@ namespace BelzontTLM
                 Stops = new LineStopNamed[lineDetail.m_StopsResult?.Length ?? 0],
                 Vehicles = new LineVehicleNamed[lineDetail.m_VehiclesResult?.Length ?? 0],
                 LineData = LineItemStruct.ForEntity(e, EntityManager, m_PrefabSystem, m_NameSystem),
-                SelectedVehicleModels = [.. models.ToArray().SelectMany(x => new AvailableVehicle[] { new(x.m_PrimaryPrefab, false), new(x.m_SecondaryPrefab, true) }).Where(x => x.entity != Entity.Null)],
+                SelectedVehicleModels = selectedVehiclesArr,
                 AvailableVehicleModels = lineDetail.m_availableVehicles,
             };
-            models.Dispose();
+
             for (int i = 0; i < result.Segments.Length; i++)
             {
                 result.Segments[i] = lineDetail.m_SegmentsResult[i];

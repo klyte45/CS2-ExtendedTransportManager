@@ -51,6 +51,7 @@ export const XtmLineViewer = ({ children, args, isXtm, xtmOptions }: Props) => {
     }
 
     async function reloadData(details: LineDetails) {
+        if(details == null) return;
         details.Vehicles = details.Vehicles.map(x => {
             return {
                 ...x,
@@ -97,7 +98,7 @@ export const XtmLineViewer = ({ children, args, isXtm, xtmOptions }: Props) => {
         />
     }
 
-    return <></>
+    return <>Unsupported line type... Under development!</>
 }
 
 
