@@ -1,4 +1,11 @@
-# v1.0.0r2 (18-APR-26)
+# v1.0.0r3 (29-APR-26)
+
+- Fixed errors when opening unsupported transport lines in the line viewer.
+- Fixed hex color input support for custom colors outside palette entries.
+- Fixed default palette import to show files inside second-level subfolders.
+- Updated Korean translation.
+
+## FROM v1.0.0r2 (18-APR-26)
 
 - Fixed UI being broken when entering in Editor
 - Fixed auto color not affecting vehicles of a line immediately
