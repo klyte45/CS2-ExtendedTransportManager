@@ -18,7 +18,6 @@ using Game.Tools;
 using Game.UI.InGame;
 using Game.Vehicles;
 using System;
-using System.Linq;
 using Unity.Burst;
 using Unity.Burst.Intrinsics;
 using Unity.Collections;
@@ -120,6 +119,7 @@ namespace BelzontTLM
                 m_ConnectedRouteBuffers = GetBufferLookup<ConnectedRoute>(),
                 m_SubObjectBuffers = GetBufferLookup<Game.Objects.SubObject>(),
                 m_InstalledUpgradeBuffers = GetBufferLookup<InstalledUpgrade>(),
+                m_WorkRoute = GetComponentLookup<WorkRoute>(),
                 output = reqCheckOutput
             };
             requirementsCheckJob.Schedule(Dependency).Complete();
@@ -263,6 +263,7 @@ namespace BelzontTLM
                 m_Odometers = GetComponentLookup<Odometer>(),
                 m_Attacheds = GetComponentLookup<Attached>(),
                 m_Edges = GetComponentLookup<Game.Net.Edge>(),
+                m_WorkRoute = GetComponentLookup<WorkRoute>(),
                 m_CullingInfos = GetComponentLookup<CullingInfo>(),
                 m_Transforms = GetComponentLookup<Game.Objects.Transform>(),
                 m_TransportStops = GetComponentLookup<Game.Routes.TransportStop>(),

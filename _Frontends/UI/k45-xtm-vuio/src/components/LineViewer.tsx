@@ -51,7 +51,7 @@ export const XtmLineViewer = ({ children, args, isXtm, xtmOptions }: Props) => {
     }
 
     async function reloadData(details: LineDetails) {
-        if(details == null) return;
+        if (details == null) return;
         details.Vehicles = details.Vehicles.map(x => {
             return {
                 ...x,
@@ -80,7 +80,7 @@ export const XtmLineViewer = ({ children, args, isXtm, xtmOptions }: Props) => {
         return () => { };
     }, [useValue(selectedInfo.selectedEntity$), useValue(time.ticks$), isXtm])
 
-    if (!isXtm) {
+    if (!isXtm || !lineDetails) {
         return <>{children}</>;
     }
 

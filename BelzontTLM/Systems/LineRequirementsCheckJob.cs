@@ -2,6 +2,7 @@
 using Game.Common;
 using Game.Routes;
 using Game.Vehicles;
+using System.Runtime.Remoting.Metadata.W3cXsd2001;
 using Unity.Burst;
 using Unity.Collections;
 using Unity.Entities;
@@ -96,7 +97,7 @@ namespace BelzontTLM
 
             private bool IsLine(Entity entity)
             {
-                return m_Routes.HasComponent(entity) && m_TransportLines.HasComponent(entity) && m_RouteWaypointBuffers.HasBuffer(entity) && m_RouteSegmentBuffers.HasBuffer(entity) && m_RouteVehicleBuffers.HasBuffer(entity);
+                return m_Routes.HasComponent(entity) && m_TransportLines.HasComponent(entity) && m_RouteWaypointBuffers.HasBuffer(entity) && m_RouteSegmentBuffers.HasBuffer(entity) && m_RouteVehicleBuffers.HasBuffer(entity) && !m_WorkRoute.HasComponent(entity);
             }
 
             private bool TryGetStationRoutes(Entity entity, NativeList<ConnectedRoute> connectedRoutes)
@@ -151,6 +152,9 @@ namespace BelzontTLM
 
             [ReadOnly]
             public ComponentLookup<Route> m_Routes;
+
+            [ReadOnly]
+            public ComponentLookup<WorkRoute> m_WorkRoute;
 
             [ReadOnly]
             public ComponentLookup<TransportLine> m_TransportLines;

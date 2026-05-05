@@ -51,7 +51,7 @@ export function StationIntegrationContainerCmp({ station, getLineById, thisLineI
             <div className="integrationStationBullet" />
             {<div className={`stationIntersectionsContainer ${linesToIntegrate.length > 4 ? "sz1" : ""}`}>
                 {linesToIntegrate.map((lineData, i) => {
-                    return <Tooltip key={i} tooltip={nameToString(lineData.name)}>
+                    return lineData && <Tooltip key={i} tooltip={nameToString(lineData.name)}>
                         <div className="lineIntersection" onClick={() => selectedInfo.selectEntity(toVanillaEntity(lineData.entity))}>
                             <TlmLineFormatCmp {...lineData} text={lineData.xtmData?.Acronym || lineData.routeNumber.toFixed()} />
                         </div>

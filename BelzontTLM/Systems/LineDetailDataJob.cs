@@ -339,6 +339,7 @@ namespace BelzontTLM
                             {
                                 if (m_Owners.TryGetComponent(connectedRoutes[k].m_Waypoint, out var stopEntity)
                                     && m_Connected.TryGetComponent(connectedRoutes[k].m_Waypoint, out var connection)
+                                    && !m_WorkRoute.HasComponent(stopEntity.m_Owner)
                                     && (stopEntity.m_Owner != routeEntity || srcConnected != connection.m_Connected))
                                 {
                                     linesConnected.Add(new(stopEntity.m_Owner, connection.m_Connected));
@@ -677,6 +678,9 @@ namespace BelzontTLM
 
             [ReadOnly]
             public ComponentLookup<Owner> m_Owners;
+
+            [ReadOnly]
+            public ComponentLookup<WorkRoute> m_WorkRoute;
 
             [ReadOnly]
             public ComponentLookup<Waypoint> m_Waypoints;

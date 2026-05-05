@@ -1,4 +1,8 @@
-# v1.0.0r3 (29-APR-26)
+# v1.0.0r4 (05-MAY-26)
+
+- Fixed errors related to work routes being misprocessed by this mod - they are not supported
+
+## FROM v1.0.0r3 (29-APR-26)
 
 - Fixed errors when opening unsupported transport lines in the line viewer.
 - Fixed hex color input support for custom colors outside palette entries.
