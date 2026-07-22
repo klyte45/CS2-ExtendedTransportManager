@@ -90,8 +90,12 @@ namespace BelzontTLM
                         m_VehiclesResult = vehiclesResult,
                         m_availableVehicles =
                         [
-                            .. availablePrimaryVehicles.ToArray().Select(e => new AvailableVehicle(e, false)),
-                            .. availableSecondaryVehicles.ToArray().Select(e => new AvailableVehicle(e, true)),
+                            .. (availablePrimaryVehicles.IsCreated
+                                ? availablePrimaryVehicles.ToArray().Select(e => new AvailableVehicle(e, false))
+                                : []),
+                            .. (availableSecondaryVehicles.IsCreated
+                                ? availableSecondaryVehicles.ToArray().Select(e => new AvailableVehicle(e, true))
+                                : []),
                         ],
                         stopCapacity = stopCapacity,
                         isCargo = isCargo
@@ -99,8 +103,8 @@ namespace BelzontTLM
                 }
                 finally
                 {
-                    availablePrimaryVehicles.Dispose();
-                    availableSecondaryVehicles.Dispose();
+                    if (availablePrimaryVehicles.IsCreated) availablePrimaryVehicles.Dispose();
+                    if (availableSecondaryVehicles.IsCreated) availableSecondaryVehicles.Dispose();
                     Dispose();
                 }
             }
@@ -380,7 +384,7 @@ namespace BelzontTLM
                 radius = 0f;
                 if (!m_Positions.TryGetComponent(waypoint, out Position position2))
                 {
-                    position = default(float3);
+                    position = default;
                     return false;
                 }
                 if (m_RouteLanes.TryGetComponent(waypoint, out RouteLane routeLane) && m_Curves.TryGetComponent(routeLane.m_EndLane, out Curve curve))

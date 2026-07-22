@@ -133,10 +133,13 @@ namespace BelzontTLM
             FillJobParams(output, e).Schedule(Dependency).Complete();
 
 
-            NativeArray<int> results = new NativeArray<int>(2, Allocator.TempJob);
+            NativeArray<int> results = new(2, Allocator.TempJob);
             if (!EntityManager.TryGetComponent<PrefabRef>(e, out var refPrefab) || !EntityManager.TryGetComponent(refPrefab.m_Prefab, out TransportLineData transportLineData))
             {
-                resultData = output[0].ConvertAndDispose(default, default);
+                results.Dispose();
+                resultData = output[0].ConvertAndDispose(
+                    new NativeArray<Entity>(0, Allocator.Temp),
+                    new NativeArray<Entity>(0, Allocator.Temp));
             }
             else
             {
@@ -190,7 +193,7 @@ namespace BelzontTLM
         }
         protected XTMLineViewerResult OnProcess(Entity e, LineDetailData lineDetail)
         {
-            AvailableVehicle[] selectedVehiclesArr = Array.Empty<AvailableVehicle>();
+            AvailableVehicle[] selectedVehiclesArr = [];
             if (EntityManager.TryGetBuffer<VehicleModel>(e, true, out var buff))
             {
                 int cap = Math.Max(0, buff.Length * 2);
@@ -201,7 +204,7 @@ namespace BelzontTLM
                     if (m.m_PrimaryPrefab != Entity.Null) list.Add(new AvailableVehicle(m.m_PrimaryPrefab, false));
                     if (m.m_SecondaryPrefab != Entity.Null) list.Add(new AvailableVehicle(m.m_SecondaryPrefab, true));
                 }
-                selectedVehiclesArr = list.ToArray();
+                selectedVehiclesArr = [.. list];
             }
 
             var result = new XTMLineViewerResult
@@ -319,10 +322,8 @@ namespace BelzontTLM
                 {
                     Entity entity = nativeArray[i];
                     Entity prefab = this.m_PrefabRefFromEntity[entity].m_Prefab;
-                    TransportDepotData transportDepotData;
-                    this.m_TransportDepotDataFromEntity.TryGetComponent(prefab, out transportDepotData);
-                    DynamicBuffer<InstalledUpgrade> upgrades;
-                    if (CollectionUtils.TryGet<InstalledUpgrade>(bufferAccessor, i, out upgrades))
+                    this.m_TransportDepotDataFromEntity.TryGetComponent(prefab, out var transportDepotData);
+                    if (CollectionUtils.TryGet<InstalledUpgrade>(bufferAccessor, i, out var upgrades))
                     {
                         UpgradeUtils.CombineStats<TransportDepotData>(ref transportDepotData, upgrades, ref m_PrefabRefFromEntity, ref m_TransportDepotDataFromEntity);
                     }

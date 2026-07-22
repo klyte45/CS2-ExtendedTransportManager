@@ -6,6 +6,7 @@
     <Bursted Condition="'$(Configuration)'=='Release'">true</Bursted>
     <Bursted Condition="'$(Configuration)'=='Debug'">true</Bursted>
     <RootNamespace>ExtendedTransportManager</RootNamespace>
+    <SolutionDir Condition="'$(SolutionDir)'==''">..\</SolutionDir>
     <!--The file where mod information which is required for publishing mod on PDX mods are stored-->
     <PublishConfigurationPath>Properties\PublishConfiguration.xml</PublishConfigurationPath>
   </PropertyGroup>
@@ -13,15 +14,15 @@
   <!--Imports must be after PropertyGroup block-->
   <Import Project="$([System.Environment]::GetEnvironmentVariable('CSII_TOOLPATH', 'EnvironmentVariableTarget.User'))\Mod.props" />
   <Import Project="$([System.Environment]::GetEnvironmentVariable('CSII_TOOLPATH', 'EnvironmentVariableTarget.User'))\Mod.targets" />
-  <Import Project="$(SolutionDir)\_Build\belzont_public.targets" />
+  <Import Project="$(SolutionDir)\_Build\belzont_public.targets"  />
   <Import Project="$(SolutionDir)\..\_Shared\local_shared.targets" />
   
   <!--Mod  data-->
   <PropertyGroup>        
     <ModId>74238</ModId>
-    <Version>1.0.0.4</Version>
+    <Version>1.0.0.5</Version>
     <Version Condition="'$(Configuration)'=='Debug'">65534.$([System.DateTime]::Now.ToString("yyyy.Mdd.HHmm"))</Version>
-    <GameVersion>1.5.*</GameVersion>
+    <GameVersion>1.6.*</GameVersion>
     <ThumbnailPath>Properties/Thumbnail.png</ThumbnailPath>
     <DisplayName>Xtended Transport Manager</DisplayName>
     <ShortDescription>Expanded tools for public transport management.</ShortDescription>
