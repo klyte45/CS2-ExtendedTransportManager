@@ -227,7 +227,7 @@ export const XtmLineListingPage = () => {
                         <LineItemCard
                             key={`${x.entity.Index}_${i}`}
                             lineData={x}
-                            onClick={() => transport.selectLine(toVanillaEntity(x.entity))}
+                            onOpenDetails={() => transport.selectLine(toVanillaEntity(x.entity))}
                             onActivityChange={(activity) => patchLineActivity(x.entity.Index, activity)}
                         />,
                     ])}

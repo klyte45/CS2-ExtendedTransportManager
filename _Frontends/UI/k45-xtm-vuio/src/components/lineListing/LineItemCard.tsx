@@ -24,7 +24,7 @@ import { FocusDisabled } from "cs2/input";
 
 type LineItemCardProps = {
     lineData: LineData;
-    onClick(): void;
+    onOpenDetails(): void;
     onActivityChange(activity: LineActivityClass): void;
 };
 
@@ -63,7 +63,7 @@ function applyLineActivity(entity: LineData["entity"], activity: LineActivityCla
     }
 }
 
-export const LineItemCard = ({ lineData: x, onClick, onActivityChange }: LineItemCardProps) => {
+export const LineItemCard = ({ lineData: x, onOpenDetails, onActivityChange }: LineItemCardProps) => {
     const localization = useLocalization();
     const typeIndex = `${x.type}.${x.isCargo}`;
     const fontColor = ColorUtils.toRGBA(ColorUtils.getContrastColorFor(ColorUtils.toColor01(x.color)));
@@ -74,6 +74,7 @@ export const LineItemCard = ({ lineData: x, onClick, onActivityChange }: LineIte
     const resolvedName = nameToString(x.name) ?? "";
     const [nameValue, setNameValue] = useState(resolvedName);
     const EllipsisTextInput = VanillaComponentResolver.instance.EllipsisTextInput;
+    const InfoLink = VanillaComponentResolver.instance.InfoLink;
 
     useEffect(() => {
         setNameValue(resolvedName);
@@ -85,10 +86,6 @@ export const LineItemCard = ({ lineData: x, onClick, onActivityChange }: LineIte
         if (activity === activityClass) return;
         applyLineActivity(x.entity, activity);
         onActivityChange(activity);
-    };
-
-    const stopCardSelect = (e: MouseEvent) => {
-        e.stopPropagation();
     };
 
     const onNameChange = (e: any) => {
@@ -108,7 +105,6 @@ export const LineItemCard = ({ lineData: x, onClick, onActivityChange }: LineIte
     return (
         <div
             className={`BgItem ${activityClass}`}
-            onClick={onClick}
             style={{
                 "--xtm-activity-tint": activityColors.tint,
                 "--xtm-name-color": activityColors.nameColor,
@@ -129,11 +125,7 @@ export const LineItemCard = ({ lineData: x, onClick, onActivityChange }: LineIte
                 <div className="text">{effectiveIdentifier}</div>
                 <TlmLineFormatCmp className="icon" {...x} borderWidth="2px" contentOverride={<div className="gameIcon" />} />
             </div>
-            <div
-                className="lineName"
-                onClick={stopCardSelect}
-                onMouseDown={stopCardSelect}
-            >
+            <div className="lineName">
                 <FocusDisabled>
                     <EllipsisTextInput
                         className="nameInput"
@@ -144,7 +136,14 @@ export const LineItemCard = ({ lineData: x, onClick, onActivityChange }: LineIte
                     />
                 </FocusDisabled>
             </div>
-            <div className="lineType">{getNameFor(x.type, x.isCargo)}</div>
+            <div className="lineType">
+                <span className="typeLabel">{getNameFor(x.type, x.isCargo)}</span>
+                <FocusDisabled>
+                    <InfoLink onSelect={onOpenDetails}>
+                        {translate("lineList.openDetails", "Details")}
+                    </InfoLink>
+                </FocusDisabled>
+            </div>
             <div className="lineLength">
                 {activityClass === "activity-disabled"
                     ? LocalizedNumber.renderString(localization, { value: x.length, unit: Unit.Length })
