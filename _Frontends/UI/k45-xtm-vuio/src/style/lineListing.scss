@@ -39,6 +39,10 @@
             display: flex;
             width: 24rem;
             flex-shrink: 0;
+
+            &.modalSplit {
+                width: 40rem;
+            }
         }
 
         .linesCountLabel {
@@ -116,6 +120,18 @@
             width: 100%;
             height: 10rem;
             background-color: var(--menuPanel1);
+        }
+
+        .emptyListMessage {
+            width: 100%;
+            padding-top: 48rem;
+            padding-bottom: 48rem;
+            padding-left: 16rem;
+            padding-right: 16rem;
+            text-align: center;
+            font-size: var(--fontSizeL);
+            color: var(--textColorDim);
+            box-sizing: border-box;
         }
 
         .BgItem {

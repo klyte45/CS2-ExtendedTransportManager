@@ -128,3 +128,5 @@ K45::XTM.vuio[lineList.restorePalette]	Restore palette color	Restaurar cor da pa
 K45::XTM.vuio[lineList.editIdentity]	Edit line acronym / number	Editar sigla / número da linha
 K45::XTM.vuio[lineList.edit.acronym]	Line acronym	Sigla da linha
 K45::XTM.vuio[lineList.edit.internalNumber]	Internal line number	Número interno da linha
+K45::XTM.vuio[lineList.noMatchingLines]	No matching lines	Nenhuma linha correspondente
+K45::XTM.vuio[lineList.noLinesInCity]	No lines in the city	Nenhuma linha na cidade

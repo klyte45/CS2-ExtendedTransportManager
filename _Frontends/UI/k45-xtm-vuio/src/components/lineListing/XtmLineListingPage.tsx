@@ -185,6 +185,29 @@ export const XtmLineListingPage = () => {
         [linesList, filterExclude, activityExclude],
     );
 
+    const presentTypeKeys = useMemo(() => {
+        const keys = new Set<string>();
+        for (const line of linesList) {
+            keys.add(`${line.type}.${line.isCargo}`);
+        }
+        return keys;
+    }, [linesList]);
+
+    const passengerTypeKeys = useMemo(
+        () => TYPE_ORDER.filter((key) => key.endsWith(".false") && presentTypeKeys.has(key)),
+        [presentTypeKeys],
+    );
+
+    const cargoTypeKeys = useMemo(
+        () => TYPE_ORDER.filter((key) => key.endsWith(".true") && presentTypeKeys.has(key)),
+        [presentTypeKeys],
+    );
+
+    const presentTypeOrder = useMemo(
+        () => [...passengerTypeKeys, ...cargoTypeKeys],
+        [passengerTypeKeys, cargoTypeKeys],
+    );
+
     const sortMenuItems = LINE_SORT_KEYS.map((key) => {
         const labelBase = translate(...SORT_LABEL_KEYS[key]);
         const marker = currentSort.key === key ? `${currentSort.descending ? "↓" : "↑"} ` : "";
@@ -194,24 +217,36 @@ export const XtmLineListingPage = () => {
         };
     });
 
+    const renderTypeFilterButton = (key: string) => {
+        const [type, cargoFlag] = key.split(".");
+        const isCargo = cargoFlag === "true";
+        return (
+            <ToolButton
+                key={key}
+                src={TYPE_TO_ICONS[key]}
+                selected={!filterExclude.includes(key)}
+                tooltip={getNameFor(type, isCargo)}
+                onSelect={() => toggleFilterType(key)}
+            />
+        );
+    };
+
+    const emptyListMessage = linesList.length === 0
+        ? translate("lineList.noLinesInCity", "No lines in the city")
+        : translate("lineList.noMatchingLines", "No matching lines");
+
     return (
         <div className="xtm-line-listing">
             <section className="filterRow">
                 <FocusDisabled>
-                    {Object.entries(TYPE_TO_ICONS).map(([key, icon]) => {
-                        const [type, cargoFlag] = key.split(".");
-                        const isCargo = cargoFlag === "true";
-                        return (
-                            <ToolButton
-                                key={key}
-                                src={icon}
-                                selected={!filterExclude.includes(key)}
-                                tooltip={getNameFor(type, isCargo)}
-                                onSelect={() => toggleFilterType(key)}
-                            />
-                        );
-                    })}
-                    <div className="space" />
+                    {passengerTypeKeys.map(renderTypeFilterButton)}
+                    {passengerTypeKeys.length > 0 && cargoTypeKeys.length > 0 && (
+                        <div className="space modalSplit" />
+                    )}
+                    {cargoTypeKeys.map(renderTypeFilterButton)}
+                    {(passengerTypeKeys.length > 0 || cargoTypeKeys.length > 0) && (
+                        <div className="space" />
+                    )}
                     {ACTIVITY_ORDER.map((key) => (
                         <ToolButton
                             key={key}
@@ -232,7 +267,7 @@ export const XtmLineListingPage = () => {
                         type="button"
                         className="neutralBtn txt"
                         onClick={() => {
-                            setFilterExclude(TYPE_ORDER.slice());
+                            setFilterExclude(presentTypeOrder.slice());
                             setActivityExclude(ACTIVITY_ORDER.slice());
                         }}
                     >
@@ -241,14 +276,14 @@ export const XtmLineListingPage = () => {
                     <button
                         type="button"
                         className="neutralBtn txt"
-                        onClick={() => setFilterExclude(TYPE_ORDER.filter((x) => x.endsWith(".true")))}
+                        onClick={() => setFilterExclude(cargoTypeKeys.slice())}
                     >
                         {translate("lineList.passengerLines", "Passenger lines")}
                     </button>
                     <button
                         type="button"
                         className="neutralBtn txt"
-                        onClick={() => setFilterExclude(TYPE_ORDER.filter((x) => x.endsWith(".false")))}
+                        onClick={() => setFilterExclude(passengerTypeKeys.slice())}
                     >
                         {translate("lineList.cargoRoutes", "Cargo routes")}
                     </button>
@@ -273,36 +308,40 @@ export const XtmLineListingPage = () => {
             </section>
             <section className="LineList">
                 <Scrollable className="scrollArea">
-                    {visibleLines.flatMap((x, i, a) => [
-                        i > 0 && (a[i - 1].type !== x.type || a[i - 1].isCargo !== x.isCargo) ? (
-                            <div key={`sep_${i}`} className="typeSeparator" />
-                        ) : null,
-                        <LineItemCard
-                            key={`${x.entity.Index}_${i}`}
-                            lineData={x}
-                            typeUsesPalette={typeUsesPalette(x.type, x.isCargo)}
-                            onOpenDetails={() => transport.selectLine(toVanillaEntity(x.entity))}
-                            onActivityChange={(activity) => patchLineActivity(x.entity.Index, activity)}
-                            onColorChange={(color, isFixedColor) => {
-                                patchLineColor(x.entity.Index, color, isFixedColor);
-                                if (!isFixedColor) {
-                                    // setIgnorePalette uses EndFrameBarrier + palette update; reload after apply
-                                    const reload = () => LineManagementService.listLines().then(reloadLines);
-                                    window.setTimeout(reload, 100);
-                                    window.setTimeout(reload, 400);
-                                }
-                            }}
-                            onIdentityChange={(patch) => {
-                                patchLineIdentity(x.entity.Index, patch);
-                                if (patch.routeNumber !== undefined) {
-                                    // Route number can reassign palette color via EndFrameBarrier
-                                    const reload = () => LineManagementService.listLines().then(reloadLines);
-                                    window.setTimeout(reload, 100);
-                                    window.setTimeout(reload, 400);
-                                }
-                            }}
-                        />,
-                    ])}
+                    {visibleLines.length === 0 ? (
+                        <div className="emptyListMessage">{emptyListMessage}</div>
+                    ) : (
+                        visibleLines.flatMap((x, i, a) => [
+                            i > 0 && (a[i - 1].type !== x.type || a[i - 1].isCargo !== x.isCargo) ? (
+                                <div key={`sep_${i}`} className="typeSeparator" />
+                            ) : null,
+                            <LineItemCard
+                                key={`${x.entity.Index}_${i}`}
+                                lineData={x}
+                                typeUsesPalette={typeUsesPalette(x.type, x.isCargo)}
+                                onOpenDetails={() => transport.selectLine(toVanillaEntity(x.entity))}
+                                onActivityChange={(activity) => patchLineActivity(x.entity.Index, activity)}
+                                onColorChange={(color, isFixedColor) => {
+                                    patchLineColor(x.entity.Index, color, isFixedColor);
+                                    if (!isFixedColor) {
+                                        // setIgnorePalette uses EndFrameBarrier + palette update; reload after apply
+                                        const reload = () => LineManagementService.listLines().then(reloadLines);
+                                        window.setTimeout(reload, 100);
+                                        window.setTimeout(reload, 400);
+                                    }
+                                }}
+                                onIdentityChange={(patch) => {
+                                    patchLineIdentity(x.entity.Index, patch);
+                                    if (patch.routeNumber !== undefined) {
+                                        // Route number can reassign palette color via EndFrameBarrier
+                                        const reload = () => LineManagementService.listLines().then(reloadLines);
+                                        window.setTimeout(reload, 100);
+                                        window.setTimeout(reload, 400);
+                                    }
+                                }}
+                            />,
+                        ])
+                    )}
                 </Scrollable>
             </section>
         </div>
