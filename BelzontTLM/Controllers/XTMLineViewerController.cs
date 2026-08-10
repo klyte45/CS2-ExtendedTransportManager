@@ -125,7 +125,9 @@ namespace BelzontTLM
             }
             if (!m_modifiedLineQuery.IsEmptyIgnoreFilter)
             {
-                SendEvent("lineViewer.getCityLines->", GetCityLines());
+                // Cast to object so the LineItemStruct[] is one TriggerEvent arg
+                // (params object[] would otherwise expand the array via covariance).
+                SendEvent("lineViewer.getCityLines->", (object)GetCityLines());
             }
 
         }

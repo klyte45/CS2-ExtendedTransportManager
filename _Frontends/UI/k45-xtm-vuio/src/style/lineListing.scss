@@ -167,8 +167,11 @@
                 box-sizing: border-box;
                 overflow-x: hidden;
                 overflow-y: hidden;
+                // Let clicks through to the format icon under the left stripe
+                pointer-events: none;
 
                 .nameInput {
+                    pointer-events: auto;
                     width: auto;
                     max-width: 100%;
                     flex: 0 1 auto;
@@ -210,7 +213,7 @@
             }
 
             .lineAcronym {
-                z-index: 1;
+                z-index: 3;
                 width: 90rem;
                 height: 180%;
                 text-align: center;
@@ -226,6 +229,7 @@
                 padding-left: 7px;
                 padding-top: 8px;
                 position: absolute;
+                pointer-events: none;
 
                 .text {
                     coh-font-fit-mode: shrink;
@@ -236,20 +240,33 @@
                     padding-top: 15rem;
                 }
 
-                .icon {
+                .formatIconHost {
                     transform: rotateZ(30deg);
                     width: 35rem;
                     height: 35rem;
                     position: absolute;
-                    background-size: cover;
                     top: 80rem;
                     left: 41rem;
+                    cursor: pointer;
+                    z-index: 2;
+                    pointer-events: auto;
 
-                    .gameIcon {
-                        width: 30rem;
-                        height: 30rem;
-                        background-image: var(--xtm-game-icon);
+                    .icon {
+                        transform: none;
+                        width: 100%;
+                        height: 100%;
+                        position: relative;
+                        top: 0;
+                        left: 0;
                         background-size: cover;
+                        pointer-events: none;
+
+                        .gameIcon {
+                            width: 30rem;
+                            height: 30rem;
+                            background-image: var(--xtm-game-icon);
+                            background-size: cover;
+                        }
                     }
                 }
             }
@@ -265,12 +282,17 @@
                 flex-direction: row;
                 align-items: center;
                 box-sizing: border-box;
+                pointer-events: none;
 
                 .typeLabel {
                     flex: 0 1 auto;
                     min-width: 0;
                     white-space: nowrap;
                     margin-right: 16rem;
+                }
+
+                > * {
+                    pointer-events: auto;
                 }
             }
 
@@ -281,6 +303,7 @@
                 padding-right: 48rem;
                 padding-top: 3rem;
                 font-size: 80%;
+                pointer-events: none;
             }
 
             .lineVehicles {
@@ -290,6 +313,7 @@
                 padding-right: 48rem;
                 padding-top: 3rem;
                 font-size: 80%;
+                pointer-events: none;
             }
 
             .scheduleColumn {
@@ -410,4 +434,25 @@
     position: relative;
     width: 100%;
     height: 100%;
+}
+.xtmLineColorPickerOverlay {
+    @extend %buttonsStyle;
+
+    width: 300rem;
+    padding-top: 10rem;
+    padding-left: 10rem;
+    padding-right: 10rem;
+    padding-bottom: 10rem;
+    z-index: 100000;
+
+    [class^=preview_] {
+        display: none;
+    }
+
+    .restorePaletteInPicker {
+        display: block;
+        width: 100%;
+        margin-top: 8rem;
+        box-sizing: border-box;
+    }
 }

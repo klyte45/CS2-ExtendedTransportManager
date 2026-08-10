@@ -1,4 +1,6 @@
+import { AutoColorService } from "#service/AutoColorService";
 import { LineData, LineManagementService } from "#service/LineManagementService";
+import { TransportType } from "#enum/TransportType";
 import translate from "#utility/translate";
 import {
     ContextMenuButton,
@@ -54,11 +56,17 @@ const SORT_LABEL_KEYS: Record<LineSortKey, [string, string]> = {
 const SORT_MENU_ICON_ASC = "coui://uil/Standard/ArrowSortHighDown.svg";
 const SORT_MENU_ICON_DESC = "coui://uil/Standard/ArrowSortLowDown.svg";
 
+function typeHasPaletteGuid(guid: string | undefined | null): boolean {
+    return !!guid;
+}
+
 export const XtmLineListingPage = () => {
     const [linesList, setLinesList] = useState<LineData[]>([]);
     const [filterExclude, setFilterExclude] = useState<string[]>([]);
     const [activityExclude, setActivityExclude] = useState<LineActivityClass[]>([]);
     const [currentSort, setCurrentSort] = useState<LineSort>(DEFAULT_LINE_SORT);
+    const [passengerPalettes, setPassengerPalettes] = useState<Partial<Record<TransportType, string>>>({});
+    const [cargoPalettes, setCargoPalettes] = useState<Partial<Record<TransportType, string>>>({});
     const ToolButton = VanillaComponentResolver.instance.ToolButton;
 
     const reloadLines = (res: LineData[]) => {
@@ -90,11 +98,36 @@ export const XtmLineListingPage = () => {
         );
     };
 
+    const patchLineColor = (entityIndex: number, color: string, isFixedColor: boolean) => {
+        setLinesList((prev) =>
+            prev.map((line) =>
+                line.entity.Index === entityIndex
+                    ? { ...line, color, isFixedColor }
+                    : line,
+            ),
+        );
+    };
+
+    const typeUsesPalette = (type: TransportType, isCargo: boolean) =>
+        typeHasPaletteGuid(isCargo ? cargoPalettes[type] : passengerPalettes[type]);
+
     useEffect(() => {
         const onLines = (x: LineData[]) => reloadLines(x);
+        const reloadPaletteSettings = async () => {
+            const [passenger, cargo] = await Promise.all([
+                AutoColorService.passengerModalSettings(),
+                AutoColorService.cargoModalSettings(),
+            ]);
+            setPassengerPalettes(passenger ?? {});
+            setCargoPalettes(cargo ?? {});
+        };
         engine.whenReady.then(async () => {
             engine.on("k45::xtm.lineViewer.getCityLines->", onLines);
             LineManagementService.listLines().then(reloadLines);
+            await reloadPaletteSettings();
+            AutoColorService.doOnAutoColorSettingsChanged(() => {
+                reloadPaletteSettings();
+            });
         });
         return () => {
             engine.off("k45::xtm.lineViewer.getCityLines->");
@@ -227,8 +260,18 @@ export const XtmLineListingPage = () => {
                         <LineItemCard
                             key={`${x.entity.Index}_${i}`}
                             lineData={x}
+                            typeUsesPalette={typeUsesPalette(x.type, x.isCargo)}
                             onOpenDetails={() => transport.selectLine(toVanillaEntity(x.entity))}
                             onActivityChange={(activity) => patchLineActivity(x.entity.Index, activity)}
+                            onColorChange={(color, isFixedColor) => {
+                                patchLineColor(x.entity.Index, color, isFixedColor);
+                                if (!isFixedColor) {
+                                    // setIgnorePalette uses EndFrameBarrier + palette update; reload after apply
+                                    const reload = () => LineManagementService.listLines().then(reloadLines);
+                                    window.setTimeout(reload, 100);
+                                    window.setTimeout(reload, 400);
+                                }
+                            }}
                         />,
                     ])}
                 </Scrollable>
