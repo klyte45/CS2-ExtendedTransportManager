@@ -37,6 +37,16 @@ function getNameFor(type: string, isCargo: boolean) {
     return engine.translate(isCargo ? `Transport.ROUTES[${type}]` : `Transport.LINES[${type}]`);
 }
 
+function formatLineLoad(localization: ReturnType<typeof useLocalization>, line: LineData): string {
+    if (line.isCargo) {
+        return LocalizedNumber.renderString(localization, { value: line.cargo, unit: Unit.Weight });
+    }
+    return [
+        LocalizedNumber.renderString(localization, { value: line.cargo, unit: Unit.Integer }),
+        engine.translate(`Transport.LEGEND_PASSENGERS[${line.type}]`),
+    ].join(" ");
+}
+
 function applyLineActivity(entity: LineData["entity"], activity: LineActivityClass): void {
     const vanilla = toVanillaEntity(entity as any);
     const flags = activityToLineFlags(activity);
@@ -92,10 +102,23 @@ export const LineItemCard = ({ lineData: x, onClick, onActivityChange }: LineIte
             </div>
             <div className="lineType">{getNameFor(x.type, x.isCargo)}</div>
             <div className="lineLength">
-                {LocalizedNumber.renderString(localization, { value: x.length, unit: Unit.Length })}
+                {activityClass === "activity-disabled"
+                    ? LocalizedNumber.renderString(localization, { value: x.length, unit: Unit.Length })
+                    : [
+                          LocalizedNumber.renderString(localization, { value: x.length, unit: Unit.Length }),
+                          formatLineLoad(localization, x),
+                      ].join(" • ")}
             </div>
             <div className="lineVehicles">
-                {`${x.vehicles} ${engine.translate(`Transport.LEGEND_VEHICLES[${x.type}]`)}`}
+                {activityClass === "activity-disabled"
+                    ? translate("lineList.lineDisabled", "Line disabled")
+                    : [
+                          `${x.vehicles} ${engine.translate(`Transport.LEGEND_VEHICLES[${x.type}]`)}`,
+                          LocalizedNumber.renderString(localization, {
+                              value: x.usage * 100,
+                              unit: Unit.PercentageSingleFraction,
+                          }),
+                      ].join(" • ")}
             </div>
             <div className="scheduleColumn">
                 {SCHEDULE_COLUMN_ORDER.map((key) => {
