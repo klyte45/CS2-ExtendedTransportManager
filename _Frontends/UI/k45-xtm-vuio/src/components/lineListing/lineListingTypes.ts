@@ -82,3 +82,134 @@ export function activityToLineFlags(activity: LineActivityClass): { active: bool
     if (activity === "activity-night") return { active: true, schedule: LineSchedule.Night };
     return { active: true, schedule: LineSchedule.DayAndNight };
 }
+
+export type LineSortKey =
+    | "routeNumber"
+    | "acronym"
+    | "length"
+    | "usage"
+    | "cargo"
+    | "schedule";
+
+export type LineSort = {
+    key: LineSortKey;
+    descending: boolean;
+};
+
+export const LINE_SORT_KEYS: LineSortKey[] = [
+    "routeNumber",
+    "acronym",
+    "length",
+    "usage",
+    "cargo",
+    "schedule",
+];
+
+export const DEFAULT_LINE_SORT: LineSort = { key: "routeNumber", descending: false };
+
+const SCHEDULE_SORT_RANK: Record<LineActivityClass, number> = {
+    "activity-dayNight": 0,
+    "activity-day": 1,
+    "activity-night": 2,
+    "activity-disabled": 3,
+};
+
+function lineAcronymSortValue(line: { xtmData?: { Acronym?: string }; routeNumber: number }): string {
+    const acronym = line.xtmData?.Acronym?.trim();
+    return acronym && acronym.length > 0 ? acronym : line.routeNumber.toFixed();
+}
+
+function compareLineSortKey(
+    a: {
+        routeNumber: number;
+        length: number;
+        usage: number;
+        cargo: number;
+        active: boolean;
+        schedule: number;
+        xtmData?: { Acronym?: string };
+    },
+    b: typeof a,
+    key: LineSortKey,
+): number {
+    switch (key) {
+        case "routeNumber":
+            return a.routeNumber - b.routeNumber;
+        case "acronym":
+            return lineAcronymSortValue(a).localeCompare(lineAcronymSortValue(b), undefined, {
+                numeric: true,
+                sensitivity: "base",
+            });
+        case "length":
+            return a.length - b.length;
+        case "usage":
+            // Asc = highest usage first
+            return b.usage - a.usage;
+        case "cargo":
+            // Asc = highest passengers/cargo first
+            return b.cargo - a.cargo;
+        case "schedule":
+            return (
+                SCHEDULE_SORT_RANK[getLineActivityClass(a)] - SCHEDULE_SORT_RANK[getLineActivityClass(b)]
+            );
+        default:
+            return 0;
+    }
+}
+
+/** Stable group by transport type (preserves relative order within each type). */
+export function groupLinesByTransportType<T extends { type: string; isCargo: boolean }>(lines: T[]): T[] {
+    return lines.slice().sort((a, b) => {
+        const typeA = `${a.type}.${a.isCargo}`;
+        const typeB = `${b.type}.${b.isCargo}`;
+        return TYPE_ORDER.indexOf(typeA) - TYPE_ORDER.indexOf(typeB);
+    });
+}
+
+/** Sort by one key, then group by transport type. */
+export function sortAndGroupLines<T extends {
+    routeNumber: number;
+    length: number;
+    usage: number;
+    cargo: number;
+    active: boolean;
+    schedule: number;
+    type: string;
+    isCargo: boolean;
+    xtmData?: { Acronym?: string };
+}>(lines: T[], sort: LineSort): T[] {
+    const sorted = lines.slice().sort((a, b) => {
+        const cmp = compareLineSortKey(a, b, sort.key);
+        return sort.descending ? -cmp : cmp;
+    });
+    return groupLinesByTransportType(sorted);
+}
+
+/** Keep previous entity order when refreshing; append unknown lines, then regroup by type. */
+export function mergeLinesPreservingOrder<T extends {
+    entity: { Index: number };
+    type: string;
+    isCargo: boolean;
+}>(previous: T[], incoming: T[]): T[] {
+    if (previous.length === 0) return incoming.slice();
+    const byId = new Map(incoming.map((line) => [line.entity.Index, line]));
+    const ordered: T[] = [];
+    for (const old of previous) {
+        const next = byId.get(old.entity.Index);
+        if (next) {
+            ordered.push(next);
+            byId.delete(old.entity.Index);
+        }
+    }
+    for (const line of byId.values()) {
+        ordered.push(line);
+    }
+    return groupLinesByTransportType(ordered);
+}
+
+export function nextLineSort(current: LineSort, key: LineSortKey): LineSort {
+    if (current.key === key) {
+        return { key, descending: !current.descending };
+    }
+    return { key, descending: false };
+}

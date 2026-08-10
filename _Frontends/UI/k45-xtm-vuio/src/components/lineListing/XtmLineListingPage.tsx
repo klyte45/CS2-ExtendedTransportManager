@@ -1,6 +1,12 @@
 import { LineData, LineManagementService } from "#service/LineManagementService";
 import translate from "#utility/translate";
-import { replaceArgs, toVanillaEntity, VanillaComponentResolver } from "@klyte45/vuio-commons";
+import {
+    ContextMenuButton,
+    ContextMenuExpansion,
+    replaceArgs,
+    toVanillaEntity,
+    VanillaComponentResolver,
+} from "@klyte45/vuio-commons";
 import engine from "cohtml/cohtml";
 import { transport } from "cs2/bindings";
 import { FocusDisabled } from "cs2/input";
@@ -11,8 +17,15 @@ import {
     ACTIVITY_ORDER,
     ACTIVITY_TO_ICONS,
     activityToLineFlags,
+    DEFAULT_LINE_SORT,
     getLineActivityClass,
+    LINE_SORT_KEYS,
     LineActivityClass,
+    LineSort,
+    LineSortKey,
+    mergeLinesPreservingOrder,
+    nextLineSort,
+    sortAndGroupLines,
     TYPE_ORDER,
     TYPE_TO_ICONS,
 } from "./lineListingTypes";
@@ -29,10 +42,23 @@ const ACTIVITY_TOOLTIP_KEYS: Record<LineActivityClass, [string, string]> = {
     "activity-night": ["lineList.filterNight", "Night only"],
 };
 
+const SORT_LABEL_KEYS: Record<LineSortKey, [string, string]> = {
+    routeNumber: ["lineList.sort.routeNumber", "Line number"],
+    acronym: ["lineList.sort.acronym", "Line acronym"],
+    length: ["lineList.sort.length", "Line length"],
+    usage: ["lineList.sort.usage", "Line usage (%)"],
+    cargo: ["lineList.sort.cargo", "Passengers/Cargo per month"],
+    schedule: ["lineList.sort.schedule", "Scheduling state"],
+};
+
+const SORT_MENU_ICON_ASC = "coui://uil/Standard/ArrowSortHighDown.svg";
+const SORT_MENU_ICON_DESC = "coui://uil/Standard/ArrowSortLowDown.svg";
+
 export const XtmLineListingPage = () => {
     const [linesList, setLinesList] = useState<LineData[]>([]);
     const [filterExclude, setFilterExclude] = useState<string[]>([]);
     const [activityExclude, setActivityExclude] = useState<LineActivityClass[]>([]);
+    const [currentSort, setCurrentSort] = useState<LineSort>(DEFAULT_LINE_SORT);
     const ToolButton = VanillaComponentResolver.instance.ToolButton;
 
     const reloadLines = (res: LineData[]) => {
@@ -40,13 +66,12 @@ export const XtmLineListingPage = () => {
             setLinesList([]);
             return;
         }
-        const sorted = [...res].sort((a, b) => {
-            const typeA = `${a.type}.${a.isCargo}`;
-            const typeB = `${b.type}.${b.isCargo}`;
-            if (typeA !== typeB) return TYPE_ORDER.indexOf(typeA) - TYPE_ORDER.indexOf(typeB);
-            return a.routeNumber - b.routeNumber;
+        setLinesList((prev) => {
+            if (prev.length === 0) {
+                return sortAndGroupLines(res, DEFAULT_LINE_SORT);
+            }
+            return mergeLinesPreservingOrder(prev, res);
         });
-        setLinesList(sorted);
     };
 
     const patchLineActivity = (entityIndex: number, activity: LineActivityClass) => {
@@ -55,11 +80,11 @@ export const XtmLineListingPage = () => {
             prev.map((line) =>
                 line.entity.Index === entityIndex
                     ? {
-                          ...line,
-                          active: flags.active,
-                          // Keep prior schedule when disabling so engine value stays until refresh
-                          schedule: flags.active ? flags.schedule : line.schedule,
-                      }
+                        ...line,
+                        active: flags.active,
+                        // Keep prior schedule when disabling so engine value stays until refresh
+                        schedule: flags.active ? flags.schedule : line.schedule,
+                    }
                     : line,
             ),
         );
@@ -90,6 +115,14 @@ export const XtmLineListingPage = () => {
         });
     };
 
+    const onSelectSort = (key: LineSortKey) => {
+        setCurrentSort((prev) => {
+            const next = nextLineSort(prev, key);
+            setLinesList((lines) => sortAndGroupLines(lines, next));
+            return next;
+        });
+    };
+
     const visibleLines = useMemo(
         () =>
             linesList.filter((x) => {
@@ -99,6 +132,15 @@ export const XtmLineListingPage = () => {
             }),
         [linesList, filterExclude, activityExclude],
     );
+
+    const sortMenuItems = LINE_SORT_KEYS.map((key) => {
+        const labelBase = translate(...SORT_LABEL_KEYS[key]);
+        const marker = currentSort.key === key ? `${currentSort.descending ? "↓" : "↑"} ` : "";
+        return {
+            label: `${marker}${labelBase}`,
+            action: () => onSelectSort(key),
+        };
+    });
 
     return (
         <div className="xtm-line-listing">
@@ -158,13 +200,23 @@ export const XtmLineListingPage = () => {
                     >
                         {translate("lineList.cargoRoutes", "Cargo routes")}
                     </button>
+                    <div className="spacegrow" />
+                    <div className="filterRowEnd">
+                        <div className="linesCountLabel">
+                            {replaceArgs(translate("lineList.linesCurrentFilterFormat", "{LINECOUNT} lines"), {
+                                LINECOUNT: `${visibleLines.length}`,
+                            })}
+                        </div>
+                        <ContextMenuButton
+                            src={currentSort.descending ? SORT_MENU_ICON_DESC : SORT_MENU_ICON_ASC}
+                            tooltip={translate("lineList.sort.title", "Sort lines")}
+                            menuTitle={translate("lineList.sort.title", "Sort lines")}
+                            menuDirection={ContextMenuExpansion.BOTTOM_LEFT}
+                            menuItems={sortMenuItems}
+                            focusKey={VanillaComponentResolver.instance.FOCUS_DISABLED}
+                        />
+                    </div>
                 </FocusDisabled>
-                <div className="space" />
-                <div className="linesCountLabel">
-                    {replaceArgs(translate("lineList.linesCurrentFilterFormat", "{LINECOUNT} lines"), {
-                        LINECOUNT: `${visibleLines.length}`,
-                    })}
-                </div>
             </section>
             <section className="LineList">
                 <Scrollable className="scrollArea">

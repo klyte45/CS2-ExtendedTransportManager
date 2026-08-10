@@ -23,6 +23,11 @@
         gap: 4rem;
         padding: 0 8rem;
         box-sizing: border-box;
+        width: 100%;
+
+        * {
+            filter: none !important;
+        }
 
         div.space {
             display: flex;
@@ -31,15 +36,31 @@
         }
 
         .linesCountLabel {
-            margin-left: auto;
-            padding: 0 10rem;
+            padding-top: 0;
+            padding-right: 10rem;
+            padding-bottom: 0;
+            padding-left: 10rem;
             white-space: nowrap;
             flex-shrink: 0;
             font-size: var(--fontSizeM);
             font-weight: normal;
             text-transform: none;
             color: var(--textColor);
-            filter: none;
+        }
+
+        div.spacegrow {
+            display: flex;
+            width: 24rem;
+            flex-grow: 1;
+        }
+
+        .filterRowEnd {
+            margin-left: auto;
+            display: flex;
+            flex-direction: row;
+            align-items: center;
+            gap: 4rem;
+            flex-shrink: 0;
         }
 
         .txt {
@@ -69,7 +90,7 @@
             max-height: 100%;
 
             // Inner scroll content (game class content_*), same pattern as FilePickerDialog
-            > [class^="content_"] {
+            >[class^="content_"] {
                 display: flex;
                 flex-wrap: wrap;
                 align-content: flex-start;
@@ -328,6 +349,7 @@
     right: 6rem;
     z-index: 10000;
     pointer-events: auto;
+
     &.xtm-transport-overview-header-xtm {
         padding-top: 45rem;
     }
