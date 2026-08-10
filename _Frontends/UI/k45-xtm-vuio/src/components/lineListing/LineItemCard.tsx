@@ -2,22 +2,51 @@ import { TlmLineFormatCmp } from "#components/lineViewer/TlmLineFormatCmp";
 import { TransportType } from "#enum/TransportType";
 import { Unit } from "#enum/Unit";
 import { LineData } from "#service/LineManagementService";
-import { ColorUtils, nameToString } from "@klyte45/vuio-commons";
+import translate from "#utility/translate";
+import { ColorUtils, nameToString, toVanillaEntity } from "@klyte45/vuio-commons";
 import engine from "cohtml/cohtml";
+import { transport } from "cs2/bindings";
 import { LocalizedNumber, useLocalization } from "cs2/l10n";
-import { CSSProperties } from "react";
-import { getLineActivityClass, LINE_ACTIVITY_COLORS, TYPE_TO_ICONS } from "./lineListingTypes";
+import { CSSProperties, MouseEvent } from "react";
+import {
+    ACTIVITY_TO_ICONS,
+    activityToLineFlags,
+    getLineActivityClass,
+    LINE_ACTIVITY_COLORS,
+    LineActivityClass,
+    SCHEDULE_BUTTON_ACTIVE_BG,
+    SCHEDULE_BUTTON_IDLE_BG,
+    SCHEDULE_COLUMN_ORDER,
+    TYPE_TO_ICONS,
+} from "./lineListingTypes";
 
 type LineItemCardProps = {
     lineData: LineData;
     onClick(): void;
+    onActivityChange(activity: LineActivityClass): void;
+};
+
+const SCHEDULE_TOOLTIP_KEYS: Record<LineActivityClass, [string, string]> = {
+    "activity-disabled": ["lineList.filterDisabled", "Disabled"],
+    "activity-dayNight": ["lineList.filterDayNight", "Day & night"],
+    "activity-day": ["lineList.filterDay", "Day only"],
+    "activity-night": ["lineList.filterNight", "Night only"],
 };
 
 function getNameFor(type: string, isCargo: boolean) {
     return engine.translate(isCargo ? `Transport.ROUTES[${type}]` : `Transport.LINES[${type}]`);
 }
 
-export const LineItemCard = ({ lineData: x, onClick }: LineItemCardProps) => {
+function applyLineActivity(entity: LineData["entity"], activity: LineActivityClass): void {
+    const vanilla = toVanillaEntity(entity as any);
+    const flags = activityToLineFlags(activity);
+    transport.setLineActive(vanilla, flags.active);
+    if (flags.active) {
+        transport.setLineSchedule(vanilla, flags.schedule);
+    }
+}
+
+export const LineItemCard = ({ lineData: x, onClick, onActivityChange }: LineItemCardProps) => {
     const localization = useLocalization();
     const typeIndex = `${x.type}.${x.isCargo}`;
     const fontColor = ColorUtils.toRGBA(ColorUtils.getContrastColorFor(ColorUtils.toColor01(x.color)));
@@ -25,6 +54,14 @@ export const LineItemCard = ({ lineData: x, onClick }: LineItemCardProps) => {
     const iconUrl = TYPE_TO_ICONS[typeIndex] ?? TYPE_TO_ICONS[`${TransportType.Bus}.false`];
     const activityClass = getLineActivityClass(x);
     const activityColors = LINE_ACTIVITY_COLORS[activityClass];
+
+    const onSchedulePointer = (activity: LineActivityClass, e: MouseEvent) => {
+        e.stopPropagation();
+        e.preventDefault();
+        if (activity === activityClass) return;
+        applyLineActivity(x.entity, activity);
+        onActivityChange(activity);
+    };
 
     return (
         <div
@@ -59,6 +96,36 @@ export const LineItemCard = ({ lineData: x, onClick }: LineItemCardProps) => {
             </div>
             <div className="lineVehicles">
                 {`${x.vehicles} ${engine.translate(`Transport.LEGEND_VEHICLES[${x.type}]`)}`}
+            </div>
+            <div className="scheduleColumn">
+                {SCHEDULE_COLUMN_ORDER.map((key) => {
+                    const isCurrent = key === activityClass;
+                    return (
+                        <div
+                            key={key}
+                            role="button"
+                            className={`scheduleBtn${isCurrent ? " current" : ""}`}
+                            title={translate(...SCHEDULE_TOOLTIP_KEYS[key])}
+                            style={{
+                                backgroundColor: isCurrent
+                                    ? SCHEDULE_BUTTON_ACTIVE_BG[key]
+                                    : SCHEDULE_BUTTON_IDLE_BG,
+                            }}
+                            onMouseDown={(e) => onSchedulePointer(key, e)}
+                            onClick={(e) => {
+                                e.stopPropagation();
+                                e.preventDefault();
+                            }}
+                        >
+                            <div
+                                className="scheduleIcon"
+                                style={{
+                                    backgroundImage: `url(assetdb://gameui/${ACTIVITY_TO_ICONS[key]})`,
+                                }}
+                            />
+                        </div>
+                    );
+                })}
             </div>
         </div>
     );

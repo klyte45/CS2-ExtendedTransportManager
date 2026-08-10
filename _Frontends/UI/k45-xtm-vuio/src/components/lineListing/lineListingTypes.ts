@@ -38,6 +38,24 @@ export const ACTIVITY_TO_ICONS: Record<LineActivityClass, string> = {
 
 export const ACTIVITY_ORDER = Object.keys(ACTIVITY_TO_ICONS) as LineActivityClass[];
 
+/** Card schedule strip: fully enabled (top) → disabled (bottom). */
+export const SCHEDULE_COLUMN_ORDER: LineActivityClass[] = [
+    "activity-dayNight",
+    "activity-day",
+    "activity-night",
+    "activity-disabled",
+];
+
+export const SCHEDULE_BUTTON_IDLE_BG = "rgba(90, 90, 90, 0.75)";
+
+/** Selected strip button matches that status's card tint (stronger for readability). */
+export const SCHEDULE_BUTTON_ACTIVE_BG: Record<LineActivityClass, string> = {
+    "activity-dayNight": "rgba(120, 200, 120, 0.55)",
+    "activity-day": "rgba(252, 243, 125, 0.55)",
+    "activity-night": "rgba(145, 99, 206, 0.55)",
+    "activity-disabled": "rgba(200, 50, 50, 0.55)",
+};
+
 /** Translucent tint over menuPanel1+blur (rgba — Cohtml ignores hsl()). Name ≈ 20% sat / 80% light. */
 export const LINE_ACTIVITY_COLORS: Record<
     LineActivityClass,
@@ -54,4 +72,13 @@ export function getLineActivityClass(line: { active: boolean; schedule: number }
     if (line.schedule === LineSchedule.Day) return "activity-day";
     if (line.schedule === LineSchedule.Night) return "activity-night";
     return "activity-dayNight";
+}
+
+export function activityToLineFlags(activity: LineActivityClass): { active: boolean; schedule: number } {
+    if (activity === "activity-disabled") {
+        return { active: false, schedule: LineSchedule.DayAndNight };
+    }
+    if (activity === "activity-day") return { active: true, schedule: LineSchedule.Day };
+    if (activity === "activity-night") return { active: true, schedule: LineSchedule.Night };
+    return { active: true, schedule: LineSchedule.DayAndNight };
 }

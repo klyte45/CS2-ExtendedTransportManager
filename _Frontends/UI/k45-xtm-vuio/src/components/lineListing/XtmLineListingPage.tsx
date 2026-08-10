@@ -10,6 +10,7 @@ import { LineItemCard } from "./LineItemCard";
 import {
     ACTIVITY_ORDER,
     ACTIVITY_TO_ICONS,
+    activityToLineFlags,
     getLineActivityClass,
     LineActivityClass,
     TYPE_ORDER,
@@ -46,6 +47,22 @@ export const XtmLineListingPage = () => {
             return a.routeNumber - b.routeNumber;
         });
         setLinesList(sorted);
+    };
+
+    const patchLineActivity = (entityIndex: number, activity: LineActivityClass) => {
+        const flags = activityToLineFlags(activity);
+        setLinesList((prev) =>
+            prev.map((line) =>
+                line.entity.Index === entityIndex
+                    ? {
+                          ...line,
+                          active: flags.active,
+                          // Keep prior schedule when disabling so engine value stays until refresh
+                          schedule: flags.active ? flags.schedule : line.schedule,
+                      }
+                    : line,
+            ),
+        );
     };
 
     useEffect(() => {
@@ -159,6 +176,7 @@ export const XtmLineListingPage = () => {
                             key={`${x.entity.Index}_${i}`}
                             lineData={x}
                             onClick={() => transport.selectLine(toVanillaEntity(x.entity))}
+                            onActivityChange={(activity) => patchLineActivity(x.entity.Index, activity)}
                         />,
                     ])}
                 </Scrollable>
