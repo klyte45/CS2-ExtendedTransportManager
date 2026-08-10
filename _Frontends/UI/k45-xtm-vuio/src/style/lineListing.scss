@@ -151,13 +151,42 @@
                 font-weight: bold;
                 font-size: 130%;
                 white-space: nowrap;
-                coh-font-fit-mode: shrink;
-                coh-font-fit-min-size: 5rem;
                 height: 33rem;
                 display: flex;
                 align-items: center;
                 justify-content: flex-start;
                 color: var(--xtm-name-color, var(--textColor));
+                box-sizing: border-box;
+                overflow-x: hidden;
+                overflow-y: hidden;
+
+                .nameInput {
+                    width: auto;
+                    max-width: 100%;
+                    flex: 0 1 auto;
+                    font-weight: bold;
+                    font-size: 100%;
+
+                    input {
+                        position: absolute;
+                        left: 0;
+                        top: 0;
+                        width: 100%;
+                        bottom: 2rem;
+                        font-size: 80%;
+                        text-align: left;
+
+                        +div {
+                            width: auto;
+                            position: inherit;
+                            min-width: 30rem;
+                            color: var(--textColor) !important;
+
+                        }
+                    }
+
+                }
+
             }
 
             &.activity-day {

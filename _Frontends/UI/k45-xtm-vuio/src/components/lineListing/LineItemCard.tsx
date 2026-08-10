@@ -3,11 +3,12 @@ import { TransportType } from "#enum/TransportType";
 import { Unit } from "#enum/Unit";
 import { LineData } from "#service/LineManagementService";
 import translate from "#utility/translate";
-import { ColorUtils, nameToString, toVanillaEntity } from "@klyte45/vuio-commons";
+import { ColorUtils, nameToString, toVanillaEntity, VanillaComponentResolver } from "@klyte45/vuio-commons";
 import engine from "cohtml/cohtml";
 import { transport } from "cs2/bindings";
 import { LocalizedNumber, useLocalization } from "cs2/l10n";
-import { CSSProperties, MouseEvent } from "react";
+import { getModule } from "cs2/modding";
+import { CSSProperties, MouseEvent, useEffect, useState } from "react";
 import {
     ACTIVITY_TO_ICONS,
     activityToLineFlags,
@@ -19,6 +20,7 @@ import {
     SCHEDULE_COLUMN_ORDER,
     TYPE_TO_ICONS,
 } from "./lineListingTypes";
+import { FocusDisabled } from "cs2/input";
 
 type LineItemCardProps = {
     lineData: LineData;
@@ -32,6 +34,11 @@ const SCHEDULE_TOOLTIP_KEYS: Record<LineActivityClass, [string, string]> = {
     "activity-day": ["lineList.filterDay", "Day only"],
     "activity-night": ["lineList.filterNight", "Night only"],
 };
+
+const titleTextInputTheme = getModule(
+    "game-ui/game/components/selected-info-panel/shared-components/text-input/text-input.module.scss",
+    "classes",
+);
 
 function getNameFor(type: string, isCargo: boolean) {
     return engine.translate(isCargo ? `Transport.ROUTES[${type}]` : `Transport.LINES[${type}]`);
@@ -64,6 +71,13 @@ export const LineItemCard = ({ lineData: x, onClick, onActivityChange }: LineIte
     const iconUrl = TYPE_TO_ICONS[typeIndex] ?? TYPE_TO_ICONS[`${TransportType.Bus}.false`];
     const activityClass = getLineActivityClass(x);
     const activityColors = LINE_ACTIVITY_COLORS[activityClass];
+    const resolvedName = nameToString(x.name) ?? "";
+    const [nameValue, setNameValue] = useState(resolvedName);
+    const EllipsisTextInput = VanillaComponentResolver.instance.EllipsisTextInput;
+
+    useEffect(() => {
+        setNameValue(resolvedName);
+    }, [resolvedName, x.entity.Index]);
 
     const onSchedulePointer = (activity: LineActivityClass, e: MouseEvent) => {
         e.stopPropagation();
@@ -71,6 +85,24 @@ export const LineItemCard = ({ lineData: x, onClick, onActivityChange }: LineIte
         if (activity === activityClass) return;
         applyLineActivity(x.entity, activity);
         onActivityChange(activity);
+    };
+
+    const stopCardSelect = (e: MouseEvent) => {
+        e.stopPropagation();
+    };
+
+    const onNameChange = (e: any) => {
+        setNameValue(e?.target?.value ?? e ?? "");
+    };
+
+    const onNameBlur = () => {
+        const trimmed = (nameValue ?? "").trim();
+        if (!trimmed) {
+            setNameValue(resolvedName);
+            return;
+        }
+        if (trimmed === resolvedName) return;
+        transport.renameLine(toVanillaEntity(x.entity as any), trimmed);
     };
 
     return (
@@ -97,28 +129,40 @@ export const LineItemCard = ({ lineData: x, onClick, onActivityChange }: LineIte
                 <div className="text">{effectiveIdentifier}</div>
                 <TlmLineFormatCmp className="icon" {...x} borderWidth="2px" contentOverride={<div className="gameIcon" />} />
             </div>
-            <div className="lineName" style={{ color: activityColors.nameColor }}>
-                {nameToString(x.name)}
+            <div
+                className="lineName"
+                onClick={stopCardSelect}
+                onMouseDown={stopCardSelect}
+            >
+                <FocusDisabled>
+                    <EllipsisTextInput
+                        className="nameInput"
+                        theme={titleTextInputTheme}
+                        value={nameValue}
+                        onChange={onNameChange}
+                        onBlur={onNameBlur}
+                    />
+                </FocusDisabled>
             </div>
             <div className="lineType">{getNameFor(x.type, x.isCargo)}</div>
             <div className="lineLength">
                 {activityClass === "activity-disabled"
                     ? LocalizedNumber.renderString(localization, { value: x.length, unit: Unit.Length })
                     : [
-                          LocalizedNumber.renderString(localization, { value: x.length, unit: Unit.Length }),
-                          formatLineLoad(localization, x),
-                      ].join(" • ")}
+                        LocalizedNumber.renderString(localization, { value: x.length, unit: Unit.Length }),
+                        formatLineLoad(localization, x),
+                    ].join(" • ")}
             </div>
             <div className="lineVehicles">
                 {activityClass === "activity-disabled"
                     ? translate("lineList.lineDisabled", "Line disabled")
                     : [
-                          `${x.vehicles} ${engine.translate(`Transport.LEGEND_VEHICLES[${x.type}]`)}`,
-                          LocalizedNumber.renderString(localization, {
-                              value: x.usage * 100,
-                              unit: Unit.PercentageSingleFraction,
-                          }),
-                      ].join(" • ")}
+                        `${x.vehicles} ${engine.translate(`Transport.LEGEND_VEHICLES[${x.type}]`)}`,
+                        LocalizedNumber.renderString(localization, {
+                            value: x.usage * 100,
+                            unit: Unit.PercentageSingleFraction,
+                        }),
+                    ].join(" • ")}
             </div>
             <div className="scheduleColumn">
                 {SCHEDULE_COLUMN_ORDER.map((key) => {
