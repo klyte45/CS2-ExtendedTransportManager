@@ -14,13 +14,13 @@
   <!--Imports must be after PropertyGroup block-->
   <Import Project="$([System.Environment]::GetEnvironmentVariable('CSII_TOOLPATH', 'EnvironmentVariableTarget.User'))\Mod.props" />
   <Import Project="$([System.Environment]::GetEnvironmentVariable('CSII_TOOLPATH', 'EnvironmentVariableTarget.User'))\Mod.targets" />
-  <Import Project="$(SolutionDir)\_Build\belzont_public.targets"  />
+  <Import Project="$(SolutionDir)\_Build\belzont_public.targets" />
   <Import Project="$(SolutionDir)\..\_Shared\local_shared.targets" />
   
   <!--Mod  data-->
   <PropertyGroup>        
     <ModId>74238</ModId>
-    <Version>1.0.0.5</Version>
+    <Version>1.0.1.0</Version>
     <Version Condition="'$(Configuration)'=='Debug'">65534.$([System.DateTime]::Now.ToString("yyyy.Mdd.HHmm"))</Version>
     <GameVersion>1.6.*</GameVersion>
     <ThumbnailPath>Properties/Thumbnail.png</ThumbnailPath>
@@ -110,6 +110,10 @@
       <HintPath>$(CSII_MANAGEDPATH)\Colossal.AssetPipeline.dll</HintPath>
       <Private>False</Private>
     </Reference>
+    <Reference Include="Colossal.AssetPipeline.Native">
+      <HintPath>$(CSII_MANAGEDPATH)\Colossal.AssetPipeline.Native.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
     <Reference Include="UnityEngine.InputLegacyModule">
       <HintPath>$(CSII_MANAGEDPATH)\UnityEngine.InputLegacyModule.dll</HintPath>
       <Private>False</Private>
@@ -176,7 +180,7 @@
       <CopyToOutputDirectory>Always</CopyToOutputDirectory> 
     </Content>
     <None Remove="README.md" />
-    <None Update="i18n\i18n.csv">
+    <None Update="i18n\*.csv">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
     <Resource Include="*.md" />      

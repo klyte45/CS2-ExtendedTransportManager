@@ -1,0 +1,236 @@
+@import "@klyte45/vuio-commons/src/styles/buttonsStyles";
+
+.xtm-line-listing {
+    @extend %buttonsStyle;
+
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    height: 100%;
+    max-height: 100%;
+    min-height: 0;
+    overflow: hidden;
+    flex: 1 1 auto;
+    box-sizing: border-box;
+
+    .filterRow {
+        flex: 0 0 50rem;
+        height: 50rem;
+        overflow: hidden;
+        display: flex;
+        flex-direction: row;
+        align-items: center;
+        gap: 4rem;
+        padding: 0 8rem;
+        box-sizing: border-box;
+
+        div.space {
+            display: flex;
+            width: 24rem;
+            flex-shrink: 0;
+        }
+
+        .linesCountLabel {
+            margin-left: auto;
+            padding: 0 10rem;
+            white-space: nowrap;
+            flex-shrink: 0;
+            font-size: var(--fontSizeM);
+            font-weight: normal;
+            text-transform: none;
+            color: var(--textColor);
+        }
+
+        .txt {
+            width: auto;
+            height: auto;
+            flex-shrink: 0;
+            white-space: nowrap;
+        }
+    }
+
+    .LineList {
+        position: relative;
+        flex: 1 1 auto;
+        min-height: 0;
+        max-height: 100%;
+        overflow: hidden;
+        background-color: transparent;
+
+        // Constrained viewport — Scrollable scrolls its inner content_gqa child
+        .scrollArea {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            height: 100%;
+            max-height: 100%;
+
+            // Inner scroll content (game class content_*), same pattern as FilePickerDialog
+            > [class^="content_"] {
+                display: flex;
+                flex-wrap: wrap;
+                align-content: flex-start;
+                align-items: center;
+                justify-content: center;
+                width: 100%;
+                box-sizing: border-box;
+                padding-top: 4rem;
+                padding-bottom: 16rem;
+            }
+        }
+
+        .typeSeparator {
+            width: 100%;
+            height: 10rem;
+            background-color: var(--menuPanel1);
+        }
+
+        .BgItem {
+            border-radius: 30rem;
+            background-color: var(--menuPanel1);
+            max-width: 450rem;
+            min-width: 250rem;
+            height: 100rem;
+            z-index: 1;
+            margin: 3rem;
+            overflow-x: hidden;
+            overflow-y: hidden;
+            position: relative;
+            cursor: pointer;
+
+            .lineAcronym {
+                width: 90rem;
+                height: 180%;
+                text-align: center;
+                line-height: 90rem;
+                font-size: 50rem;
+                overflow-x: hidden;
+                overflow-y: hidden;
+                background-color: var(--xtm-line-color);
+                color: var(--xtm-font-color);
+                transform: rotateZ(-30deg);
+                margin-top: -8rem;
+                margin-left: 7px;
+                padding-left: 7px;
+                padding-top: 8px;
+                position: absolute;
+
+                .text {
+                    coh-font-fit-mode: shrink;
+                    coh-font-fit-min-size: 5rem;
+                    padding-left: 5rem;
+                    padding-right: 0;
+                    height: 70rem;
+                    padding-top: 15rem;
+                }
+
+                .icon {
+                    transform: rotateZ(30deg);
+                    width: 35rem;
+                    height: 35rem;
+                    position: absolute;
+                    background-size: cover;
+                    top: 80rem;
+                    left: 41rem;
+
+                    .gameIcon {
+                        width: 30rem;
+                        height: 30rem;
+                        background-image: var(--xtm-game-icon);
+                        background-size: cover;
+                    }
+                }
+            }
+
+            .lineName {
+                padding-left: 82rem;
+                padding-right: 15rem;
+                padding-top: 5rem;
+                font-weight: bold;
+                font-size: 130%;
+                white-space: nowrap;
+                coh-font-fit-mode: shrink;
+                coh-font-fit-min-size: 5rem;
+                height: 33rem;
+                display: flex;
+                align-items: center;
+                justify-content: flex-start;
+            }
+
+            .lineType {
+                padding-left: 100rem;
+                padding-right: 15rem;
+                padding-top: 3rem;
+                font-size: 80%;
+            }
+
+            .lineLength {
+                padding-left: 118rem;
+                padding-right: 15rem;
+                padding-top: 3rem;
+                font-size: 80%;
+            }
+
+            .lineVehicles {
+                padding-left: 136rem;
+                padding-right: 15rem;
+                padding-top: 3rem;
+                font-size: 80%;
+            }
+        }
+    }
+}
+
+.xtm-transport-overview-shell {
+    width: 100%;
+    height: 100%;
+    max-height: 100%;
+    min-width: 900rem;
+    min-height: 600rem;
+    padding-top: 45rem;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    box-sizing: border-box;
+}
+
+// Panel body only (via contentClassName) — never target Scrollable's content_gqa
+.xtm-transport-overview-content {
+    display: flex !important;
+    flex-direction: column;
+    flex: 1 1 auto;
+    min-height: 0;
+    max-height: 100%;
+    height: 100%;
+    overflow: hidden !important;
+    box-sizing: border-box;
+
+    .xtm-line-listing {
+        flex: 1 1 auto;
+        min-height: 0;
+        max-height: 100%;
+    }
+}
+
+.xtm-transport-overview-header-tools {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 8rem;
+    position: absolute;
+    top: 12rem;
+    right: 6rem;
+    z-index: 10000;
+    pointer-events: auto;
+    &.xtm-transport-overview-header-xtm {
+        padding-top: 45rem;
+    }
+}
+
+.xtm-vanilla-overview-host {
+    position: relative;
+    width: 100%;
+    height: 100%;
+}

@@ -13,6 +13,7 @@ import { ColorEditorXtm } from "#components/ColorEditorXtm";
 import { XtmInfoSection } from "#components/XtmInfoSection";
 import { bindValue, useValue } from "cs2/api";
 import { XtmMainPanel, XtmButton, XtmMainPanelId } from "#components/mainUI/XtmMainPanel";
+import { XtmTransportationOverviewRegister } from "#components/lineListing/XtmTransportationOverviewRegister";
 
 let IsXtm = true;
 let xtmOptions: MapViewerOptions = {
@@ -34,6 +35,11 @@ const register: ModRegistrar = (moduleRegistry) => {
     moduleRegistry.extend("game-ui/game/data-binding/game-bindings.ts", 'GamePanelType', RegisterXtmPanelType);
     moduleRegistry.extend("game-ui/game/components/game-panel-renderer.tsx", 'gamePanelComponents', RegisterXtmPanel);
     moduleRegistry.extend("game-ui/editor/components/toolbar/toolbar.tsx", 'Toolbar', XtmPanelEditor);
+    moduleRegistry.extend(
+        "game-ui/game/components/transportation-overview-panel/transportation-overview-panel.tsx",
+        "TransportationOverviewPanel",
+        XtmTransportationOverviewRegister,
+    );
     moduleRegistry.append('GameTopLeft', XtmButton);
 }
 

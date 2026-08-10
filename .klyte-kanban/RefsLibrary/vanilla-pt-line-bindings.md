@@ -184,3 +184,42 @@ Calls are registered as `k45::xtm.{address}` (`BasicIMod.cs`). Frontend wrapper:
 ### Gaps
 
 BelzontTLM re-exposes **listing + read of line stats/name/color/schedule/active**, and a **custom set-color** path. It does **not** re-expose vanilla **rename**, **setSchedule**, **setActive**, or **delete**. Tourists remain city-aggregate-only in vanilla and are not exposed by the mod.
+
+---
+
+## XTM Transportation Overview listing injection
+
+XTM can replace the Transportation Overview **body** (not the engine bindings) via:
+
+```ts
+moduleRegistry.extend(
+  "game-ui/game/components/transportation-overview-panel/transportation-overview-panel.tsx",
+  "TransportationOverviewPanel",
+  XtmTransportationOverviewRegister
+);
+```
+
+| Concern | Behavior |
+|---|---|
+| Session toggle | Header `ToolButton` switches XTM card listing vs vanilla table for the current session only |
+| Default | `XTMModData.UseXtmLineListingDefault` (Options → UI → Line listing), default `true` |
+| Read from UI | `k45::xtm.settings.getUseXtmLineListingDefault` |
+| Card click | Vanilla `transport.selectLine(entity)` |
+| List data | Existing `k45::xtm.lineViewer.getCityLines` (+ `getCityLines->` push on route updates) |
+
+### Why toggling must not remount a second `Panel`
+
+`GameMainScreen` only mounts the overview while `activeGamePanel` (`Nv`) is set:
+
+```ts
+f && jsx(FocusGate, { focusKey: f.__Type, children: jsx(GamePanelRenderer, { panel: f }) }, f.__Type)
+```
+
+`GamePanelRenderer` wires Transportation Overview as:
+
+- `onClose: () => closePanel(panel.__Type)`
+- vanilla `$je` → `Panel` (`xE`) with `onClose`, `transitionSounds: panelTransitionSounds`, `CloseConsumer` (`Jg`), and usually `FocusRoot` (`Gp`)
+
+If the extender **conditionally mounts its own `Panel`** (or any tree that unmounts the vanilla `Panel` / overview component on toggle), the game treats that as panel teardown: `activePanel` clears and the entire slot — including a wrapper `div` — disappears. That matches “toggle unloads everything.”
+
+**Required pattern:** always call `Component(props)` every render (hooks + shell lifetime), then rewrite the returned `Panel`’s `header` / `children` in place. Do not swap between a custom shell and the vanilla shell.

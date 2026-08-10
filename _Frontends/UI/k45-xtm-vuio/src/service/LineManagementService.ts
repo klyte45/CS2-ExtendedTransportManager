@@ -97,6 +97,13 @@ export type MapViewerOptions = {
 
 export class LineManagementService {
     static async listLines(): Promise<LineData[]> { return await engine.call("k45::xtm.lineViewer.getCityLines"); }
+    static async getUseXtmLineListingDefault(): Promise<boolean> {
+        try {
+            return !!(await engine.call("k45::xtm.settings.getUseXtmLineListingDefault"));
+        } catch {
+            return true;
+        }
+    }
     static async getCurrentLineInfo(): Promise<LineDetails> { return await engine.call("k45::xtm.xtmInfoPanel.getCurrentLineInfo"); }
 
     static async setRouteFixedColor(entity: Entity, x: string): Promise<`#${string}`> { return await engine.call("k45::xtm.lineManagement.setRouteFixedColor", entity, x); }

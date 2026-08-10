@@ -25,6 +25,8 @@ namespace BelzontTLM
         public void SetupCallBinder(Action<string, Delegate> eventCaller)
         {
             eventCaller("lineViewer.getCityLines", GetCityLines);
+            eventCaller("settings.getUseXtmLineListingDefault", () =>
+                (BasicIMod.ModData as XTMModData)?.UseXtmLineListingDefault ?? true);
         }
 
         public void SetupCaller(Action<string, object[]> eventCaller)
@@ -123,7 +125,7 @@ namespace BelzontTLM
             }
             if (!m_modifiedLineQuery.IsEmptyIgnoreFilter)
             {
-                GetCityLines();
+                SendEvent("lineViewer.getCityLines->", GetCityLines());
             }
 
         }
