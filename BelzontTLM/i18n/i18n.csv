@@ -123,3 +123,6 @@ K45::XTM.vuio[lineList.sort.schedule]	Scheduling state	Estado de agendamento
 K45::XTM.vuio[lineList.openDetails]	Details	Detalhes
 K45::XTM.vuio[lineList.editColor]	Change line color	Alterar cor da linha
 K45::XTM.vuio[lineList.restorePalette]	Restore palette color	Restaurar cor da paleta
+K45::XTM.vuio[lineList.editIdentity]	Edit line acronym / number	Editar sigla / número da linha
+K45::XTM.vuio[lineList.edit.acronym]	Line acronym	Sigla da linha
+K45::XTM.vuio[lineList.edit.internalNumber]	Internal line number	Número interno da linha

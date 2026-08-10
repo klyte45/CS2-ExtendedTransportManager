@@ -10,6 +10,7 @@ import {
     toVanillaEntity,
     VanillaComponentResolver,
     VanillaFnResolver,
+    VanillaWidgets,
 } from "@klyte45/vuio-commons";
 import engine from "cohtml/cohtml";
 import { transport } from "cs2/bindings";
@@ -36,6 +37,7 @@ type LineItemCardProps = {
     onOpenDetails(): void;
     onActivityChange(activity: LineActivityClass): void;
     onColorChange(color: string, isFixedColor: boolean): void;
+    onIdentityChange(patch: { acronym?: string; routeNumber?: number }): void;
 };
 
 const SCHEDULE_TOOLTIP_KEYS: Record<LineActivityClass, [string, string]> = {
@@ -96,6 +98,7 @@ export const LineItemCard = ({
     onOpenDetails,
     onActivityChange,
     onColorChange,
+    onIdentityChange,
 }: LineItemCardProps) => {
     const localization = useLocalization();
     const typeIndex = `${x.type}.${x.isCargo}`;
@@ -108,14 +111,24 @@ export const LineItemCard = ({
     const resolvedName = nameToString(x.name) ?? "";
     const [nameValue, setNameValue] = useState(resolvedName);
     const [pickerOpen, setPickerOpen] = useState(false);
-    const [menuCss, setMenuCss] = useState({} as CSSProperties);
+    const [identityOpen, setIdentityOpen] = useState(false);
+    const [acronymDraft, setAcronymDraft] = useState(x.xtmData?.Acronym ?? "");
+    const [numberDraft, setNumberDraft] = useState(x.routeNumber);
+    const [colorMenuCss, setColorMenuCss] = useState({} as CSSProperties);
+    const [identityMenuCss, setIdentityMenuCss] = useState({} as CSSProperties);
     const iconRef = useRef<HTMLDivElement>(null!);
     const pickerRef = useRef<HTMLDivElement>(null!);
+    const identityTextRef = useRef<HTMLDivElement>(null!);
+    const identityMenuRef = useRef<HTMLDivElement>(null!);
     const EllipsisTextInput = VanillaComponentResolver.instance.EllipsisTextInput;
     const InfoLink = VanillaComponentResolver.instance.InfoLink;
     const ColorPicker = VanillaComponentResolver.instance.ColorPicker;
+    const IntInput = VanillaComponentResolver.instance.IntInput;
     const noFocus = VanillaComponentResolver.instance.FOCUS_DISABLED;
     const VanillaColorUtils = VanillaFnResolver.instance.color;
+    const StringInputField = VanillaWidgets.instance.StringInputField;
+    const EditorItemRowNoFocus = VanillaWidgets.instance.EditorItemRowNoFocus;
+    const editorModule = VanillaWidgets.instance.editorItemModule;
     const canRestorePalette = typeUsesPalette && x.isFixedColor;
 
     useEffect(() => {
@@ -123,9 +136,20 @@ export const LineItemCard = ({
     }, [resolvedName, x.entity.Index]);
 
     useEffect(() => {
+        if (identityOpen) return;
+        setAcronymDraft(x.xtmData?.Acronym ?? "");
+        setNumberDraft(x.routeNumber);
+    }, [x.xtmData?.Acronym, x.routeNumber, x.entity.Index, identityOpen]);
+
+    useEffect(() => {
         if (!pickerOpen || !iconRef.current) return;
-        setMenuCss(onRecalculateContextMenuPosition(iconRef, getViewportPosition(iconRef.current)));
+        setColorMenuCss(onRecalculateContextMenuPosition(iconRef, getViewportPosition(iconRef.current)));
     }, [pickerOpen]);
+
+    useEffect(() => {
+        if (!identityOpen || !identityTextRef.current) return;
+        setIdentityMenuCss(onRecalculateContextMenuPosition(identityTextRef, getViewportPosition(identityTextRef.current)));
+    }, [identityOpen]);
 
     useEffect(() => {
         if (!pickerOpen) return;
@@ -137,6 +161,17 @@ export const LineItemCard = ({
         document.addEventListener("mousedown", handleClickOutside, true);
         return () => document.removeEventListener("mousedown", handleClickOutside, true);
     }, [pickerOpen]);
+
+    useEffect(() => {
+        if (!identityOpen) return;
+        const handleClickOutside = (event: globalThis.MouseEvent) => {
+            if (isEventOnElement(event, identityTextRef.current)) return;
+            if (isEventOnElement(event, identityMenuRef.current)) return;
+            setIdentityOpen(false);
+        };
+        document.addEventListener("mousedown", handleClickOutside, true);
+        return () => document.removeEventListener("mousedown", handleClickOutside, true);
+    }, [identityOpen]);
 
     const onSchedulePointer = (activity: LineActivityClass, e: MouseEvent) => {
         e.stopPropagation();
@@ -163,10 +198,28 @@ export const LineItemCard = ({
     const onFormatIconPointer = (e: MouseEvent) => {
         e.stopPropagation();
         e.preventDefault();
+        setIdentityOpen(false);
         setPickerOpen((open) => {
             const next = !open;
             if (next && iconRef.current) {
-                setMenuCss(onRecalculateContextMenuPosition(iconRef, getViewportPosition(iconRef.current)));
+                setColorMenuCss(onRecalculateContextMenuPosition(iconRef, getViewportPosition(iconRef.current)));
+            }
+            return next;
+        });
+    };
+
+    const onIdentityTextPointer = (e: MouseEvent) => {
+        e.stopPropagation();
+        e.preventDefault();
+        setPickerOpen(false);
+        setIdentityOpen((open) => {
+            const next = !open;
+            if (next) {
+                setAcronymDraft(x.xtmData?.Acronym ?? "");
+                setNumberDraft(x.routeNumber);
+                if (identityTextRef.current) {
+                    setIdentityMenuCss(onRecalculateContextMenuPosition(identityTextRef, getViewportPosition(identityTextRef.current)));
+                }
             }
             return next;
         });
@@ -189,6 +242,22 @@ export const LineItemCard = ({
         onColorChange(displayColor, false);
     };
 
+    const saveAcronym = async () => {
+        const next = (acronymDraft ?? "").trim();
+        const current = (x.xtmData?.Acronym ?? "").trim();
+        if (next === current) return;
+        await LineManagementService.setRouteAcronym(x.entity, next);
+        onIdentityChange({ acronym: next });
+    };
+
+    const saveRouteNumber = async () => {
+        const next = Number.isFinite(numberDraft) ? Math.trunc(numberDraft) : x.routeNumber;
+        if (next === x.routeNumber) return;
+        setNumberDraft(next);
+        await LineManagementService.setRouteNumber(x.entity, next);
+        onIdentityChange({ routeNumber: next });
+    };
+
     return (
         <div
             className={`BgItem ${activityClass}`}
@@ -209,7 +278,19 @@ export const LineItemCard = ({
                     "--xtm-game-icon": `url(${iconUrl})`,
                 } as CSSProperties}
             >
-                <div className="text">{effectiveIdentifier}</div>
+                <div
+                    className="text"
+                    ref={identityTextRef}
+                    role="button"
+                    title={translate("lineList.editIdentity", "Edit line acronym / number")}
+                    onMouseDown={onIdentityTextPointer}
+                    onClick={(e) => {
+                        e.stopPropagation();
+                        e.preventDefault();
+                    }}
+                >
+                    {effectiveIdentifier}
+                </div>
                 <div
                     className="formatIconHost"
                     ref={iconRef}
@@ -233,7 +314,7 @@ export const LineItemCard = ({
                     <Portal>
                         <div
                             ref={pickerRef}
-                            style={menuCss}
+                            style={colorMenuCss}
                             className="k45_comm_contextMenu xtmLineColorPickerOverlay"
                             onMouseDown={(e) => e.stopPropagation()}
                         >
@@ -263,6 +344,36 @@ export const LineItemCard = ({
                                     {translate("lineList.restorePalette", "Restore palette color")}
                                 </button>
                             )}
+                        </div>
+                    </Portal>
+                )}
+                {identityOpen && (
+                    <Portal>
+                        <div
+                            ref={identityMenuRef}
+                            style={identityMenuCss}
+                            className="k45_comm_contextMenu xtmLineIdentityPopup"
+                            onMouseDown={(e) => e.stopPropagation()}
+                        >
+                            <FocusDisabled>
+                                <EditorItemRowNoFocus label={translate("lineList.edit.acronym", "Line acronym")}>
+                                    <StringInputField
+                                        className={editorModule.input}
+                                        value={acronymDraft}
+                                        onChange={setAcronymDraft}
+                                        onChangeEnd={() => { void saveAcronym(); }}
+                                    />
+                                </EditorItemRowNoFocus>
+                                <EditorItemRowNoFocus label={translate("lineList.edit.internalNumber", "Internal line number")}>
+                                    <IntInput
+                                        focusKey={noFocus}
+                                        className={editorModule.input}
+                                        value={numberDraft}
+                                        onChange={setNumberDraft}
+                                        onBlur={() => { void saveRouteNumber(); }}
+                                    />
+                                </EditorItemRowNoFocus>
+                            </FocusDisabled>
                         </div>
                     </Portal>
                 )}

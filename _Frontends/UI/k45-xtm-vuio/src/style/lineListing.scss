@@ -238,6 +238,8 @@
                     padding-right: 0;
                     height: 70rem;
                     padding-top: 15rem;
+                    pointer-events: auto;
+                    cursor: pointer;
                 }
 
                 .formatIconHost {
@@ -454,5 +456,19 @@
         width: 100%;
         margin-top: 8rem;
         box-sizing: border-box;
+    }
+}
+
+.xtmLineIdentityPopup {
+    width: 340rem;
+    padding-top: 10rem;
+    padding-left: 10rem;
+    padding-right: 10rem;
+    padding-bottom: 10rem;
+    z-index: 100000;
+
+    [class^=row_] + [class^=row_],
+    [class^=editor-item_] + [class^=editor-item_] {
+        margin-top: 8rem;
     }
 }

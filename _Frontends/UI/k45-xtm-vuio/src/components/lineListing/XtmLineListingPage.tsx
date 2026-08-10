@@ -108,6 +108,25 @@ export const XtmLineListingPage = () => {
         );
     };
 
+    const patchLineIdentity = (
+        entityIndex: number,
+        patch: { acronym?: string; routeNumber?: number },
+    ) => {
+        setLinesList((prev) =>
+            prev.map((line) => {
+                if (line.entity.Index !== entityIndex) return line;
+                const next = { ...line };
+                if (patch.routeNumber !== undefined) {
+                    next.routeNumber = patch.routeNumber;
+                }
+                if (patch.acronym !== undefined) {
+                    next.xtmData = { ...(line.xtmData ?? { Acronym: "" }), Acronym: patch.acronym };
+                }
+                return next;
+            }),
+        );
+    };
+
     const typeUsesPalette = (type: TransportType, isCargo: boolean) =>
         typeHasPaletteGuid(isCargo ? cargoPalettes[type] : passengerPalettes[type]);
 
@@ -267,6 +286,15 @@ export const XtmLineListingPage = () => {
                                 patchLineColor(x.entity.Index, color, isFixedColor);
                                 if (!isFixedColor) {
                                     // setIgnorePalette uses EndFrameBarrier + palette update; reload after apply
+                                    const reload = () => LineManagementService.listLines().then(reloadLines);
+                                    window.setTimeout(reload, 100);
+                                    window.setTimeout(reload, 400);
+                                }
+                            }}
+                            onIdentityChange={(patch) => {
+                                patchLineIdentity(x.entity.Index, patch);
+                                if (patch.routeNumber !== undefined) {
+                                    // Route number can reassign palette color via EndFrameBarrier
                                     const reload = () => LineManagementService.listLines().then(reloadLines);
                                     window.setTimeout(reload, 100);
                                     window.setTimeout(reload, 400);
