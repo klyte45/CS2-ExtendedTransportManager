@@ -27,6 +27,7 @@ K45::XTM.vuio[lineViewer.showDistancesLbl]	Show distances between stations	Mostr
 K45::XTM.vuio[lineViewer.showDistrictsLbl]	Show district borders	Mostrar limites entre distritos
 K45::XTM.vuio[lineViewer.showHalfTripIfSimmetric]	Show half trip if line is simetric (disabled if vehicles are shown)	Mostrar meia viagem se a linha for simétrica (desabilitado se mostrando veículos)
 K45::XTM.vuio[lineViewer.showIntegrationsLbl]	Show line integrations	Mostrar integrações com outras linhas
+K45::XTM.vuio[lineViewer.showPlatformCrowdnessLbl]	Show platforms crowdness	Mostrar lotação das plataformas
 K45::XTM.vuio[lineViewer.showVehiclesLbl]	Show vehicles	Mostrar veículos
 K45::XTM.vuio[lineViewer.stopData]	Stop Info	Info Parada
 K45::XTM.vuio[lineViewer.useWhiteBackgroundLbl]	Display over white background	Usar fundo branco
@@ -97,6 +98,7 @@ K45::XTM.vuio[weIntegrationBlinds.keyframeType.RouteName]	Route name	Nome da rot
 K45::XTM.vuio[weIntegrationBlinds.keyframeType.RouteNumber]	Route number	Número da rota/linha
 K45::XTM.vuio[lineStationDetail.waiting.cargo]	Cargo stored waiting: {quantity}	Carga estocada aguardando: {quantity}
 K45::XTM.vuio[lineStationDetail.waiting.passengers]	Passengers waiting: {quantity}	Passageiros aguardando: {quantity}
+K45::XTM.vuio[lineStationDetail.crowdness]	{waiting} / {capacity} ({percent})	{waiting} / {capacity} ({percent})
 ::TUI	UI	UI
 ::GLineListing	Line listing	Listagem de linhas
 ::LUseXtmLineListingDefault	Use XTM line listing by default	Usar listagem XTM por padrão

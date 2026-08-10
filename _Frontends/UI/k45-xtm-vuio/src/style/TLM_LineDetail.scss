@@ -271,9 +271,129 @@
                 display: block;
                 border-radius: 9999rem;
                 pointer-events: auto;
+                box-sizing: border-box;
 
                 &.faded {
                     opacity: 0.5;
+                }
+
+                &.crowdness {
+                    background-color: transparent;
+                    border-width: 0rem;
+                    border-style: none;
+                    overflow: visible;
+
+                    .stationBulletFill {
+                        position: absolute;
+                        top: 0rem;
+                        left: 0rem;
+                        right: 0rem;
+                        bottom: 0rem;
+                        border-radius: 9999rem;
+                        box-sizing: border-box;
+                        background-color: black;
+                        background-image: linear-gradient(0deg, gray 0%, gray var(--stopFill), #000000 var(--stopFill), #000000 100%);
+                        background-clip: padding-box;
+                    }
+
+                    .stationBulletRing {
+                        position: absolute;
+                        top: 0rem;
+                        left: 0rem;
+                        right: 0rem;
+                        bottom: 0rem;
+                        border-radius: 9999rem;
+                        box-sizing: border-box;
+                        pointer-events: none;
+
+                        &.crowdnessPulse {
+                            animation-name: crowdnessBorderPulse;
+                            animation-duration: 2s;
+                            animation-timing-function: ease-in-out;
+                            animation-iteration-count: infinite;
+                        }
+                    }
+                }
+            }
+
+            .stationBulletSplit {
+                position: absolute;
+                right: -20rem;
+                top: 50%;
+                margin-top: -8rem;
+                height: 16rem;
+                width: 16rem;
+                display: flex;
+                flex-direction: row;
+                pointer-events: auto;
+                overflow: visible;
+
+                &.faded {
+                    opacity: 0.5;
+                }
+
+                .stationBulletHalfWrap {
+                    position: relative;
+                    height: 16rem;
+                    width: 9rem;
+                    overflow: visible;
+
+                    &.left {
+                        margin-right: -1rem;
+
+                        .stationBulletHalfFill {
+                            border-top-left-radius: 9999rem;
+                            border-bottom-left-radius: 9999rem;
+                        }
+
+                        .stationBulletHalfRing {
+                            border-top-left-radius: 9999rem;
+                            border-bottom-left-radius: 9999rem;
+                        }
+                    }
+
+                    &.right {
+                        margin-left: -1rem;
+
+                        .stationBulletHalfFill {
+                            border-top-right-radius: 9999rem;
+                            border-bottom-right-radius: 9999rem;
+                        }
+
+                        .stationBulletHalfRing {
+                            border-top-right-radius: 9999rem;
+                            border-bottom-right-radius: 9999rem;
+                        }
+                    }
+
+                    .stationBulletHalfFill {
+                        position: absolute;
+                        top: 0rem;
+                        left: 0rem;
+                        right: 0rem;
+                        bottom: 0rem;
+                        box-sizing: border-box;
+                        background-color: black;
+                        background-image: linear-gradient(0deg, gray 0%, gray var(--stopFill), #000000 var(--stopFill), #000000 100%);
+                        background-clip: padding-box;
+                    }
+
+                    .stationBulletHalfRing {
+                        position: absolute;
+                        top: 0rem;
+                        left: 0rem;
+                        right: 0rem;
+                        bottom: 0rem;
+                        box-sizing: border-box;
+                        pointer-events: none;
+
+                        &.crowdnessPulse {
+                            animation-name: crowdnessBorderPulse;
+                            animation-duration: 2s;
+                            animation-timing-function: ease-in-out;
+                            animation-iteration-count: infinite;
+                        }
+                    }
                 }
             }
 
@@ -493,6 +613,20 @@
         }
     }
 
+}
+
+@keyframes crowdnessBorderPulse {
+    0% {
+        filter: brightness(70%);
+    }
+
+    50% {
+        filter: brightness(130%);
+    }
+
+    100% {
+        filter: brightness(70%);
+    }
 }
 
 // .tlm-station-tooltip {

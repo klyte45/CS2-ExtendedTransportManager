@@ -92,7 +92,8 @@ export type MapViewerOptions = {
     showVehicles: boolean,
     showIntegrations: boolean,
     useWhiteBackground: boolean,
-    useHalfTripIfSimetric: boolean
+    useHalfTripIfSimetric: boolean,
+    showPlatformCrowdness: boolean
 }
 
 export class LineManagementService {

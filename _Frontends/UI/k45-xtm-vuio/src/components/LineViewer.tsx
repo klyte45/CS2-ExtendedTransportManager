@@ -93,6 +93,7 @@ export const XtmLineViewer = ({ children, args, isXtm, xtmOptions }: Props) => {
             showDistricts={xtmOptions.showDistricts}
             showVehicles={xtmOptions.showVehicles}
             useWhiteBackground={xtmOptions.useWhiteBackground}
+            showPlatformCrowdness={xtmOptions.showPlatformCrowdness}
             getLineById={(x) => indexedLineList[x]}
             simetricLine={isLineSimetric}
         />

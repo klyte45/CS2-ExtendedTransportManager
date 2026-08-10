@@ -6,6 +6,7 @@ import { ModRegistrar } from "cs2/modding";
 import { ReactNode, useEffect, useState } from "react";
 import "#styles/lineViewer.scss";
 import iconWhite from "#images/iconWhite.svg";
+import i_platformCrowdness from "#images/i_platformCrowdness.svg";
 import { LineManagementService, MapViewerOptions } from "#service/LineManagementService";
 import translate from "#utility/translate";
 import { InfoRow, InfoSection, Portal } from "cs2/ui";
@@ -22,7 +23,8 @@ let xtmOptions: MapViewerOptions = {
     showDistances: true,
     showIntegrations: true,
     useWhiteBackground: false,
-    useHalfTripIfSimetric: true
+    useHalfTripIfSimetric: true,
+    showPlatformCrowdness: true
 }
 
 const register: ModRegistrar = (moduleRegistry) => {
@@ -76,6 +78,7 @@ const XtmLineSectionButtonRegister = (Component: any): any => {
                     <ToolButton tooltip={translate("lineViewer.showDistrictsLbl")} onSelect={() => setXtmOptionsState(x => xtmOptions = ({ ...x, showDistricts: !x.showDistricts }))} src={i_districts} selected={xtmOptionsState.showDistricts} />
                     <ToolButton tooltip={translate("lineViewer.showVehiclesLbl")} onSelect={() => setXtmOptionsState(x => xtmOptions = ({ ...x, showVehicles: !x.showVehicles, showIntegrations: false }))} src={i_vehicles} selected={xtmOptionsState.showVehicles} />
                     <ToolButton tooltip={translate("lineViewer.showIntegrationsLbl")} onSelect={() => setXtmOptionsState(x => xtmOptions = ({ ...x, showIntegrations: !x.showIntegrations, showVehicles: false }))} src={i_integrations} selected={xtmOptionsState.showIntegrations} />
+                    <ToolButton tooltip={translate("lineViewer.showPlatformCrowdnessLbl")} onSelect={() => setXtmOptionsState(x => xtmOptions = ({ ...x, showPlatformCrowdness: !x.showPlatformCrowdness }))} src={i_platformCrowdness} selected={xtmOptionsState.showPlatformCrowdness} />
                     <ToolButton tooltip={translate("lineViewer.useWhiteBackgroundLbl")} onSelect={() => setXtmOptionsState(x => xtmOptions = ({ ...x, useWhiteBackground: !x.useWhiteBackground }))} src={i_whiteBackground} selected={xtmOptionsState.useWhiteBackground} />
                     <ToolButton tooltip={translate("lineViewer.showHalfTripIfSimmetric")} onSelect={() => setXtmOptionsState(x => xtmOptions = ({ ...x, useHalfTripIfSimetric: !x.useHalfTripIfSimetric }))} src={i_halfTrip} selected={xtmOptionsState.useHalfTripIfSimetric} />
                 </>}

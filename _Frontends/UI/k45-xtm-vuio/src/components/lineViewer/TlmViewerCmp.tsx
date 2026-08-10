@@ -1,4 +1,4 @@
-import { LineData, LineDetails, MapViewerOptions, StationData } from "#service/LineManagementService";
+import { LineData, LineDetails, MapViewerOptions } from "#service/LineManagementService";
 import { CSSProperties } from "react";
 import { DistrictBorderContainerCmp } from "./DistrictBorderContainerCmp";
 import { MapStationDistanceContainerCmp } from "./MapStationDistanceContainerCmp";
@@ -6,10 +6,11 @@ import { MapVehicleContainerCmp } from "./MapVehicleContainerCmp";
 import { StationContainerCmp } from "./StationContainerCmp";
 import { StationIntegrationContainerCmp } from "./StationIntegrationContainerCmp";
 import { TlmLineFormatCmp } from "./TlmLineFormatCmp";
-import { ColorUtils, Entity, toVanillaEntity } from "@klyte45/vuio-commons";
-import { Scrollable, ScrollController } from "cs2/ui";
+import { ColorUtils, toVanillaEntity } from "@klyte45/vuio-commons";
+import { Scrollable } from "cs2/ui";
 import { selectedInfo } from "cs2/bindings";
 import { useValue } from "cs2/api";
+import { findSymmetricPairStop, getTerminusNames, isSymmetricMiddleStop } from "#utility/lineViewerUtils";
 
 type Props = {
     lineDetails: LineDetails;
@@ -17,15 +18,17 @@ type Props = {
     simetricLine?: boolean;
 } & MapViewerOptions;
 
-export function TlmViewerCmp({ lineDetails, getLineById, simetricLine, showDistricts, showDistances, showVehicles, showIntegrations, useWhiteBackground, useHalfTripIfSimetric }: Props) {
+export function TlmViewerCmp({ lineDetails, getLineById, simetricLine, showDistricts, showDistances, showVehicles, showIntegrations, useWhiteBackground, useHalfTripIfSimetric, showPlatformCrowdness }: Props) {
 
     const lineCommonData: LineData = lineDetails.LineData;
-    if(!lineCommonData) return <></>;
+    if (!lineCommonData) return <></>;
     const showSimetricMode = simetricLine && !showVehicles && useHalfTripIfSimetric;
     const targetStops = showSimetricMode ? lineDetails.Stops.slice(0, lineDetails.Stops.length / 2 + 1) : lineDetails.Stops;
     const targetLenght = targetStops.length - (showSimetricMode ? 1 : 0);
     const selectedEntity = useValue(selectedInfo.selectedEntity$);
     const currentStopSelected = selectedEntity ? lineDetails.Stops.find(x => x.entity.Index == selectedEntity.index) : undefined;
+    const terminusNames = getTerminusNames(lineDetails.Stops);
+    const stopCapacity = lineDetails.StopCapacity;
 
     return <div id="TlmViewer" className={useWhiteBackground ? "mapWhiteBg" : ""}>
         {!lineDetails ? <>Unsupported line type... Under development!</> :
@@ -67,6 +70,8 @@ export function TlmViewerCmp({ lineDetails, getLineById, simetricLine, showDistr
                                 </div>}
                             <div className="stationRailing">
                                 {targetStops.map((station, i) => {
+                                    const isSplitBullet = !!(showSimetricMode && isSymmetricMiddleStop(i, targetStops.length));
+                                    const pairStop = isSplitBullet ? findSymmetricPairStop(lineDetails.Stops, i) : undefined;
                                     return <StationContainerCmp
                                         isFaded={selectedEntity.index != lineDetails.LineData.entity.Index && ![station.entity.Index, station.parent.Index].includes(showSimetricMode ? (currentStopSelected?.parent.Index ?? selectedEntity.index) : selectedEntity.index)}
                                         station={station}
@@ -76,6 +81,12 @@ export function TlmViewerCmp({ lineDetails, getLineById, simetricLine, showDistr
                                         normalizedPosition={i / targetLenght}
                                         totalStationCount={targetLenght}
                                         direction={currentStopSelected && showSimetricMode && !showVehicles && currentStopSelected?.parent.Index == station.parent.Index ? currentStopSelected?.index! < targetLenght ? 1 : -1 : 0}
+                                        showPlatformCrowdness={showPlatformCrowdness}
+                                        stopCapacity={stopCapacity}
+                                        pairStop={pairStop}
+                                        isSplitBullet={isSplitBullet}
+                                        outboundTerminusName={terminusNames?.outbound}
+                                        returnTerminusName={terminusNames?.return}
                                     />;
                                 })}
                                 {!showSimetricMode && <StationContainerCmp
@@ -85,6 +96,10 @@ export function TlmViewerCmp({ lineDetails, getLineById, simetricLine, showDistr
                                     keyId={-1}
                                     normalizedPosition={1}
                                     totalStationCount={targetLenght}
+                                    showPlatformCrowdness={showPlatformCrowdness}
+                                    stopCapacity={stopCapacity}
+                                    outboundTerminusName={terminusNames?.outbound}
+                                    returnTerminusName={terminusNames?.return}
                                 />}
                             </div>
                             {showDistricts &&
@@ -151,4 +166,3 @@ export function TlmViewerCmp({ lineDetails, getLineById, simetricLine, showDistr
         }
     </div>;
 }
-
