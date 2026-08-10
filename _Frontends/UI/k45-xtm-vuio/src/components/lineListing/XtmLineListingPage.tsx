@@ -7,16 +7,31 @@ import { FocusDisabled } from "cs2/input";
 import { Scrollable } from "cs2/ui";
 import { useEffect, useMemo, useState } from "react";
 import { LineItemCard } from "./LineItemCard";
-import { TYPE_ORDER, TYPE_TO_ICONS } from "./lineListingTypes";
+import {
+    ACTIVITY_ORDER,
+    ACTIVITY_TO_ICONS,
+    getLineActivityClass,
+    LineActivityClass,
+    TYPE_ORDER,
+    TYPE_TO_ICONS,
+} from "./lineListingTypes";
 import "#styles/lineListing.scss";
 
 function getNameFor(type: string, isCargo: boolean) {
     return engine.translate(isCargo ? `Transport.ROUTES[${type}]` : `Transport.LINES[${type}]`);
 }
 
+const ACTIVITY_TOOLTIP_KEYS: Record<LineActivityClass, [string, string]> = {
+    "activity-disabled": ["lineList.filterDisabled", "Disabled"],
+    "activity-dayNight": ["lineList.filterDayNight", "Day & night"],
+    "activity-day": ["lineList.filterDay", "Day only"],
+    "activity-night": ["lineList.filterNight", "Night only"],
+};
+
 export const XtmLineListingPage = () => {
     const [linesList, setLinesList] = useState<LineData[]>([]);
     const [filterExclude, setFilterExclude] = useState<string[]>([]);
+    const [activityExclude, setActivityExclude] = useState<LineActivityClass[]>([]);
     const ToolButton = VanillaComponentResolver.instance.ToolButton;
 
     const reloadLines = (res: LineData[]) => {
@@ -51,9 +66,21 @@ export const XtmLineListingPage = () => {
         });
     };
 
+    const toggleActivityFilter = (activity: LineActivityClass) => {
+        setActivityExclude((prev) => {
+            if (prev.includes(activity)) return prev.filter((x) => x !== activity);
+            return [...prev, activity];
+        });
+    };
+
     const visibleLines = useMemo(
-        () => linesList.filter((x) => !filterExclude.includes(`${x.type}.${x.isCargo}`)),
-        [linesList, filterExclude],
+        () =>
+            linesList.filter((x) => {
+                if (filterExclude.includes(`${x.type}.${x.isCargo}`)) return false;
+                if (activityExclude.includes(getLineActivityClass(x))) return false;
+                return true;
+            }),
+        [linesList, filterExclude, activityExclude],
     );
 
     return (
@@ -74,13 +101,29 @@ export const XtmLineListingPage = () => {
                         );
                     })}
                     <div className="space" />
-                    <button type="button" className="neutralBtn txt" onClick={() => setFilterExclude([])}>
+                    {ACTIVITY_ORDER.map((key) => (
+                        <ToolButton
+                            key={key}
+                            src={ACTIVITY_TO_ICONS[key]}
+                            selected={!activityExclude.includes(key)}
+                            tooltip={translate(...ACTIVITY_TOOLTIP_KEYS[key])}
+                            onSelect={() => toggleActivityFilter(key)}
+                        />
+                    ))}
+                    <div className="space" />
+                    <button type="button" className="neutralBtn txt" onClick={() => {
+                        setFilterExclude([]);
+                        setActivityExclude([]);
+                    }}>
                         {translate("lineList.showAll", "Show all")}
                     </button>
                     <button
                         type="button"
                         className="neutralBtn txt"
-                        onClick={() => setFilterExclude(TYPE_ORDER.slice())}
+                        onClick={() => {
+                            setFilterExclude(TYPE_ORDER.slice());
+                            setActivityExclude(ACTIVITY_ORDER.slice());
+                        }}
                     >
                         {translate("lineList.hideAll", "Hide all")}
                     </button>

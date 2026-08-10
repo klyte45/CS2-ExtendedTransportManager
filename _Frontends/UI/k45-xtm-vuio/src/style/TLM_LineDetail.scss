@@ -163,7 +163,7 @@
             opacity: 1 !important;
         }
 
-        &.selected .vehicle {
+        &.xtm-selected .vehicle {
             background-image: linear-gradient(90deg, var(--vehicleColor) 0%, var(--vehicleColor) var(--vehicleFill), #eeeeee var(--vehicleFill), #eeeeee 100%);
             border: 1rem solid #dddddd;
             box-shadow: 0rem 0rem 5rem #dddddd;

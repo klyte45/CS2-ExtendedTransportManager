@@ -39,6 +39,7 @@
             font-weight: normal;
             text-transform: none;
             color: var(--textColor);
+            filter: none;
         }
 
         .txt {
@@ -90,6 +91,7 @@
         .BgItem {
             border-radius: 30rem;
             background-color: var(--menuPanel1);
+            backdrop-filter: var(--panelBlur);
             max-width: 450rem;
             min-width: 250rem;
             height: 100rem;
@@ -100,7 +102,51 @@
             position: relative;
             cursor: pointer;
 
+            // Activity tint over blurred panel glass (real node — Cohtml has no ::before)
+            .activityTint {
+                position: absolute;
+                top: 0;
+                left: 0;
+                right: 0;
+                bottom: 0;
+                border-radius: 30rem;
+                background-color: var(--xtm-activity-tint, rgba(0, 0, 0, 0));
+                pointer-events: none;
+                z-index: 0;
+            }
+
+            .lineName {
+                position: relative;
+                z-index: 1;
+                padding-left: 82rem;
+                padding-right: 15rem;
+                padding-top: 5rem;
+                font-weight: bold;
+                font-size: 130%;
+                white-space: nowrap;
+                coh-font-fit-mode: shrink;
+                coh-font-fit-min-size: 5rem;
+                height: 33rem;
+                display: flex;
+                align-items: center;
+                justify-content: flex-start;
+                color: var(--xtm-name-color, var(--textColor));
+            }
+
+            &.activity-day {
+                --xtm-activity-tint: rgba(214, 180, 40, 0.28);
+            }
+
+            &.activity-night {
+                --xtm-activity-tint: rgba(140, 80, 180, 0.28);
+            }
+
+            &.activity-disabled {
+                --xtm-activity-tint: rgba(200, 50, 50, 0.28);
+            }
+
             .lineAcronym {
+                z-index: 1;
                 width: 90rem;
                 height: 180%;
                 text-align: center;
@@ -144,22 +190,9 @@
                 }
             }
 
-            .lineName {
-                padding-left: 82rem;
-                padding-right: 15rem;
-                padding-top: 5rem;
-                font-weight: bold;
-                font-size: 130%;
-                white-space: nowrap;
-                coh-font-fit-mode: shrink;
-                coh-font-fit-min-size: 5rem;
-                height: 33rem;
-                display: flex;
-                align-items: center;
-                justify-content: flex-start;
-            }
-
             .lineType {
+                position: relative;
+                z-index: 1;
                 padding-left: 100rem;
                 padding-right: 15rem;
                 padding-top: 3rem;
@@ -167,6 +200,8 @@
             }
 
             .lineLength {
+                position: relative;
+                z-index: 1;
                 padding-left: 118rem;
                 padding-right: 15rem;
                 padding-top: 3rem;
@@ -174,6 +209,8 @@
             }
 
             .lineVehicles {
+                position: relative;
+                z-index: 1;
                 padding-left: 136rem;
                 padding-right: 15rem;
                 padding-top: 3rem;

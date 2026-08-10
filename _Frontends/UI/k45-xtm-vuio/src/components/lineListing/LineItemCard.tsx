@@ -6,7 +6,7 @@ import { ColorUtils, nameToString } from "@klyte45/vuio-commons";
 import engine from "cohtml/cohtml";
 import { LocalizedNumber, useLocalization } from "cs2/l10n";
 import { CSSProperties } from "react";
-import { TYPE_TO_ICONS } from "./lineListingTypes";
+import { getLineActivityClass, LINE_ACTIVITY_COLORS, TYPE_TO_ICONS } from "./lineListingTypes";
 
 type LineItemCardProps = {
     lineData: LineData;
@@ -23,9 +23,22 @@ export const LineItemCard = ({ lineData: x, onClick }: LineItemCardProps) => {
     const fontColor = ColorUtils.toRGBA(ColorUtils.getContrastColorFor(ColorUtils.toColor01(x.color)));
     const effectiveIdentifier = x.xtmData?.Acronym || x.routeNumber.toFixed();
     const iconUrl = TYPE_TO_ICONS[typeIndex] ?? TYPE_TO_ICONS[`${TransportType.Bus}.false`];
+    const activityClass = getLineActivityClass(x);
+    const activityColors = LINE_ACTIVITY_COLORS[activityClass];
 
     return (
-        <div className="BgItem" onClick={onClick}>
+        <div
+            className={`BgItem ${activityClass}`}
+            onClick={onClick}
+            style={{
+                "--xtm-activity-tint": activityColors.tint,
+                "--xtm-name-color": activityColors.nameColor,
+            } as CSSProperties}
+        >
+            <div
+                className="activityTint"
+                style={{ backgroundColor: activityColors.tint }}
+            />
             <div
                 className="lineAcronym"
                 style={{
@@ -37,7 +50,9 @@ export const LineItemCard = ({ lineData: x, onClick }: LineItemCardProps) => {
                 <div className="text">{effectiveIdentifier}</div>
                 <TlmLineFormatCmp className="icon" {...x} borderWidth="2px" contentOverride={<div className="gameIcon" />} />
             </div>
-            <div className="lineName">{nameToString(x.name)}</div>
+            <div className="lineName" style={{ color: activityColors.nameColor }}>
+                {nameToString(x.name)}
+            </div>
             <div className="lineType">{getNameFor(x.type, x.isCargo)}</div>
             <div className="lineLength">
                 {LocalizedNumber.renderString(localization, { value: x.length, unit: Unit.Length })}

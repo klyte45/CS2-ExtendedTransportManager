@@ -80,7 +80,7 @@ export function StationContainerCmp({ station, vehicles: _vehicles, keyId, norma
         camera.focusEntity(toVanillaEntity(station.entity))
     }
 
-    return <div className={["lineStationContainer", [station.parent, station.entity].some(x => x.Index == selectedEntity.index) ? "selected" : ""].join(" ")} style={{ top: (100 * normalizedPosition) + "%", minHeight: (100 / totalStationCount) + "%" }}>
+    return <div className={["lineStationContainer", [station.parent, station.entity].some(x => x.Index == selectedEntity.index) ? "xtm-selected" : ""].join(" ")} style={{ top: (100 * normalizedPosition) + "%", minHeight: (100 / totalStationCount) + "%" }}>
         <div className="lineStation row col-12 align-items-center" onClick={handleStopClick} >
             <div className={["stationName", isFaded && "faded"].join(" ")}>{nameToString(station.name)}</div>
             {generateTooltip(<div className={["stationBullet", isFaded && "faded"].join(" ")} id={id} />)}

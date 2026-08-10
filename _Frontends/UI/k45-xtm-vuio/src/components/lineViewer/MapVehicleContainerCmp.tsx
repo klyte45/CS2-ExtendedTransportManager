@@ -18,7 +18,7 @@ export function MapVehicleContainerCmp({ vehicle, isFaded }: Props) {
         value: vehicle.cargo / vehicle.capacity * 100,
         unit: Unit.PercentageSingleFraction
     })})`}>
-        <div className={["vehicleContainer", [vehicle.entity].some(x => x.Index == selectedEntity.index) ? "selected" : ""].join(" ")} style={{ top: (vehicle.normalizedPosition * 100) + "%", "--vehicleColor": "gray", "--vehicleFill": (vehicle.cargo / vehicle.capacity * 100) + "%", opacity: isFaded ? 0.5 : 1 } as CSSProperties}
+        <div className={["vehicleContainer", [vehicle.entity].some(x => x.Index == selectedEntity.index) ? "xtm-selected" : ""].join(" ")} style={{ top: (vehicle.normalizedPosition * 100) + "%", "--vehicleColor": "gray", "--vehicleFill": (vehicle.cargo / vehicle.capacity * 100) + "%", opacity: isFaded ? 0.5 : 1 } as CSSProperties}
             onClick={() => {
                 selectedInfo.selectEntity(toVanillaEntity(vehicle.entity))
                 camera.focusEntity(toVanillaEntity(vehicle.entity))
