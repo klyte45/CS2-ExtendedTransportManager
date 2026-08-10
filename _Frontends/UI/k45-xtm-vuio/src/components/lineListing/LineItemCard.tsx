@@ -23,7 +23,6 @@ import {
     ACTIVITY_TO_ICONS,
     activityToLineFlags,
     getLineActivityClass,
-    LINE_ACTIVITY_COLORS,
     LineActivityClass,
     SCHEDULE_BUTTON_ACTIVE_BG,
     SCHEDULE_BUTTON_IDLE_BG,
@@ -107,7 +106,6 @@ export const LineItemCard = ({
     const effectiveIdentifier = x.xtmData?.Acronym || x.routeNumber.toFixed();
     const iconUrl = TYPE_TO_ICONS[typeIndex] ?? TYPE_TO_ICONS[`${TransportType.Bus}.false`];
     const activityClass = getLineActivityClass(x);
-    const activityColors = LINE_ACTIVITY_COLORS[activityClass];
     const resolvedName = nameToString(x.name) ?? "";
     const [nameValue, setNameValue] = useState(resolvedName);
     const [pickerOpen, setPickerOpen] = useState(false);
@@ -259,17 +257,7 @@ export const LineItemCard = ({
     };
 
     return (
-        <div
-            className={`BgItem ${activityClass}`}
-            style={{
-                "--xtm-activity-tint": activityColors.tint,
-                "--xtm-name-color": activityColors.nameColor,
-            } as CSSProperties}
-        >
-            <div
-                className="activityTint"
-                style={{ backgroundColor: activityColors.tint }}
-            />
+        <div className={`BgItem ${activityClass}`}>
             <div
                 className="lineAcronym"
                 style={{
@@ -315,7 +303,7 @@ export const LineItemCard = ({
                         <div
                             ref={pickerRef}
                             style={colorMenuCss}
-                            className="k45_comm_contextMenu xtmLineColorPickerOverlay"
+                            className="k45_comm_contextMenu xtm-popup-solid xtmLineColorPickerOverlay"
                             onMouseDown={(e) => e.stopPropagation()}
                         >
                             <ColorPicker
@@ -352,7 +340,7 @@ export const LineItemCard = ({
                         <div
                             ref={identityMenuRef}
                             style={identityMenuCss}
-                            className="k45_comm_contextMenu xtmLineIdentityPopup"
+                            className="k45_comm_contextMenu xtm-popup-solid xtmLineIdentityPopup"
                             onMouseDown={(e) => e.stopPropagation()}
                         >
                             <FocusDisabled>

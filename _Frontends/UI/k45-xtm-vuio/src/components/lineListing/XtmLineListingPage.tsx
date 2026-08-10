@@ -264,6 +264,7 @@ export const XtmLineListingPage = () => {
                             tooltip={translate("lineList.sort.title", "Sort lines")}
                             menuTitle={translate("lineList.sort.title", "Sort lines")}
                             menuDirection={ContextMenuExpansion.BOTTOM_LEFT}
+                            menuClassName="xtm-popup-solid"
                             menuItems={sortMenuItems}
                             focusKey={VanillaComponentResolver.instance.FOCUS_DISABLED}
                         />

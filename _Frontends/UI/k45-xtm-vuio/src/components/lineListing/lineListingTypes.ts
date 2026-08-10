@@ -56,16 +56,10 @@ export const SCHEDULE_BUTTON_ACTIVE_BG: Record<LineActivityClass, string> = {
     "activity-disabled": "rgba(200, 50, 50, 0.55)",
 };
 
-/** Translucent tint over menuPanel1+blur (rgba — Cohtml ignores hsl()). Name ≈ 20% sat / 80% light. */
-export const LINE_ACTIVITY_COLORS: Record<
-    LineActivityClass,
-    { tint: string; nameColor: string }
-> = {
-    "activity-dayNight": { tint: "rgba(0, 0, 0, 0)", nameColor: "var(--textColor)" },
-    "activity-day": { tint: "rgba(252, 243, 125, 0.28)", nameColor: "#d6d2c2" },
-    "activity-night": { tint: "rgba(145, 99, 206, 0.28)", nameColor: "#cfc2d6" },
-    "activity-disabled": { tint: "rgba(200, 50, 50, 0.28)", nameColor: "#d6c2c2" },
-};
+/**
+ * Info-area text colors live in lineListing.scss under `.BgItem.activity-*`
+ * (Cohtml: prefer classes over custom properties for text color).
+ */
 
 export function getLineActivityClass(line: { active: boolean; schedule: number }): LineActivityClass {
     if (!line.active) return "activity-disabled";

@@ -127,34 +127,26 @@
             backdrop-filter: var(--panelBlur);
             max-width: 450rem;
             min-width: 250rem;
-            height: 100rem;
+            height: 115rem;
             z-index: 1;
             margin: 3rem;
             overflow-x: hidden;
             overflow-y: hidden;
             position: relative;
 
-            // Activity tint over blurred panel glass (real node — Cohtml has no ::before)
-            .activityTint {
-                position: absolute;
-                top: 0;
-                left: 0;
-                right: 0;
-                bottom: 0;
-                border-top-left-radius: 30rem;
-                border-top-right-radius: 0;
-                border-bottom-right-radius: 0;
-                border-bottom-left-radius: 30rem;
-                background-color: var(--xtm-activity-tint, rgba(0, 0, 0, 0));
-                pointer-events: none;
-                z-index: 0;
+            // Schedule status colors the info rows (not the card glass background).
+            .lineName,
+            .lineType,
+            .lineLength,
+            .lineVehicles {
+                color: #ffffff;
             }
 
             .lineName {
                 position: relative;
                 z-index: 1;
                 padding-left: 82rem;
-                padding-right: 48rem;
+                padding-right: 8rem;
                 padding-top: 5rem;
                 font-weight: bold;
                 font-size: 130%;
@@ -163,7 +155,6 @@
                 display: flex;
                 align-items: center;
                 justify-content: flex-start;
-                color: var(--xtm-name-color, var(--textColor));
                 box-sizing: border-box;
                 overflow-x: hidden;
                 overflow-y: hidden;
@@ -191,8 +182,7 @@
                             width: auto;
                             position: inherit;
                             min-width: 30rem;
-                            color: var(--textColor) !important;
-
+                            color: #ffffff !important;
                         }
                     }
 
@@ -201,15 +191,42 @@
             }
 
             &.activity-day {
-                --xtm-activity-tint: rgba(214, 180, 40, 0.28);
+                .lineName,
+                .lineType,
+                .lineLength,
+                .lineVehicles {
+                    color: #f0e6a0;
+                }
+
+                .lineName .nameInput input + div {
+                    color: #f0e6a0 !important;
+                }
             }
 
             &.activity-night {
-                --xtm-activity-tint: rgba(140, 80, 180, 0.28);
+                .lineName,
+                .lineType,
+                .lineLength,
+                .lineVehicles {
+                    color: #d2b8f0;
+                }
+
+                .lineName .nameInput input + div {
+                    color: #d2b8f0 !important;
+                }
             }
 
             &.activity-disabled {
-                --xtm-activity-tint: rgba(200, 50, 50, 0.28);
+                .lineName,
+                .lineType,
+                .lineLength,
+                .lineVehicles {
+                    color: #8a8a8a;
+                }
+
+                .lineName .nameInput input + div {
+                    color: #8a8a8a !important;
+                }
             }
 
             .lineAcronym {
@@ -230,6 +247,14 @@
                 padding-top: 8px;
                 position: absolute;
                 pointer-events: none;
+                box-sizing: border-box;
+                // Black edge between diagonal number stripe and card body
+                border-top-width: 0;
+                border-left-width: 0;
+                border-bottom-width: 0;
+                border-right-width: 3rem;
+                border-right-style: solid;
+                border-right-color: #000000;
 
                 .text {
                     coh-font-fit-mode: shrink;
@@ -277,7 +302,7 @@
                 position: relative;
                 z-index: 1;
                 padding-left: 100rem;
-                padding-right: 48rem;
+                padding-right: 8rem;
                 padding-top: 3rem;
                 font-size: 80%;
                 display: flex;
@@ -302,7 +327,7 @@
                 position: relative;
                 z-index: 1;
                 padding-left: 118rem;
-                padding-right: 48rem;
+                padding-right: 8rem;
                 padding-top: 3rem;
                 font-size: 80%;
                 pointer-events: none;
@@ -312,7 +337,7 @@
                 position: relative;
                 z-index: 1;
                 padding-left: 136rem;
-                padding-right: 48rem;
+                padding-right: 8rem;
                 padding-top: 3rem;
                 font-size: 80%;
                 pointer-events: none;
@@ -320,25 +345,25 @@
 
             .scheduleColumn {
                 position: absolute;
-                top: 0;
+                left: 100rem;
                 right: 0;
                 bottom: 0;
-                width: 30rem;
+                height: 15rem;
                 z-index: 2;
                 display: flex;
-                flex-direction: column;
-                border-left-width: 2px;
-                border-left-style: solid;
-                border-left-color: rgba(0, 0, 0, 0.45);
-                border-top-right-radius: 0;
-                border-bottom-right-radius: 0;
+                flex-direction: row;
+                border-top-width: 2px;
+                border-top-style: solid;
+                border-top-color: rgba(0, 0, 0, 0.45);
                 overflow: hidden;
                 box-sizing: border-box;
+                padding-left: 14rem;
+                background-color: black;
 
                 .scheduleBtn {
                     flex: 1 1 0;
-                    min-height: 0;
-                    width: 100%;
+                    min-width: 0;
+                    height: 100%;
                     margin-top: 0;
                     margin-right: 0;
                     margin-bottom: 0;
@@ -349,9 +374,9 @@
                     padding-left: 2rem;
                     border-width: 0;
                     border-style: none;
-                    border-bottom-width: 2px;
-                    border-bottom-style: solid;
-                    border-bottom-color: rgba(0, 0, 0, 0.45);
+                    border-right-width: 2px;
+                    border-right-style: solid;
+                    border-right-color: rgba(0, 0, 0, 0.45);
                     border-radius: 0;
                     cursor: pointer;
                     display: flex;
@@ -361,8 +386,8 @@
                     pointer-events: auto;
 
                     &:last-child {
-                        border-bottom-width: 0;
-                        border-bottom-style: none;
+                        border-right-width: 0;
+                        border-right-style: none;
                     }
 
                     .scheduleIcon {
@@ -437,6 +462,20 @@
     width: 100%;
     height: 100%;
 }
+
+/* Solid fill for portaled menus/pickers on this screen (panel tokens are translucent + blur). */
+.k45_comm_contextMenu.xtm-popup-solid,
+.xtmLineColorPickerOverlay,
+.xtmLineIdentityPopup {
+    background-color: #1c2126;
+    backdrop-filter: none;
+}
+
+.k45_comm_contextMenu.xtm-popup-solid .k45_comm_contextMenu_title {
+    background-color: #282e34;
+    backdrop-filter: none;
+}
+
 .xtmLineColorPickerOverlay {
     @extend %buttonsStyle;
 
