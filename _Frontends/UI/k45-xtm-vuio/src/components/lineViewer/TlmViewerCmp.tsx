@@ -20,15 +20,22 @@ type Props = {
     simetricLine?: boolean;
 } & MapViewerOptions;
 
-export function TlmViewerCmp({ lineDetails, getLineById, simetricLine, showDistricts, showDistances, showVehicles, showIntegrations, useWhiteBackground, useHalfTripIfSimetric, showPlatformCrowdness }: Props) {
+export function TlmViewerCmp({ lineDetails, getLineById, simetricLine, showDistricts, showDistances, showVehicles, showIntegrations, useWhiteBackground, useHalfTripIfSimetric, showPlatformCrowdness, segmentOccupancyDisplay }: Props) {
 
     const lineCommonData: LineData = lineDetails.LineData;
     const [occupancySegment, setOccupancySegment] = useState<SegmentOccupancySelection | null>(null);
     const selectedEntity = useValue(selectedInfo.selectedEntity$);
+    const showSegmentOccupancy = segmentOccupancyDisplay !== "none";
 
     useEffect(() => {
         setOccupancySegment(null);
     }, [lineCommonData?.entity?.Index]);
+
+    useEffect(() => {
+        if (segmentOccupancyDisplay === "none") {
+            setOccupancySegment(null);
+        }
+    }, [segmentOccupancyDisplay]);
 
     const resolvedOccupancySegment = occupancySegment
         ? {
@@ -176,18 +183,22 @@ export function TlmViewerCmp({ lineDetails, getLineById, simetricLine, showDistr
                                                     segments={lineDetails.Segments}
                                                 />
                                             )}
-                                            <MapStationOccupancyContainerCmp
-                                                stop={station}
-                                                nextStop={nextStop}
-                                                directionArrow={showSimetricMode ? "down" : undefined}
-                                                onSelectSegment={(from, to) => setOccupancySegment({ fromStop: from, toStop: to })}
-                                            />
+                                            {showSegmentOccupancy && (
+                                                <MapStationOccupancyContainerCmp
+                                                    stop={station}
+                                                    nextStop={nextStop}
+                                                    mode={segmentOccupancyDisplay}
+                                                    directionArrow={showSimetricMode ? "down" : undefined}
+                                                    onSelectSegment={(from, to) => setOccupancySegment({ fromStop: from, toStop: to })}
+                                                />
+                                            )}
                                         </div>
-                                        {showSimetricMode && returnPrev && returnNext && (
+                                        {showSimetricMode && returnPrev && returnNext && showSegmentOccupancy && (
                                             <div className="segmentInfoRight">
                                                 <MapStationOccupancyContainerCmp
                                                     stop={returnPrev}
                                                     nextStop={returnNext}
+                                                    mode={segmentOccupancyDisplay}
                                                     directionArrow="up"
                                                     onSelectSegment={(from, to) => setOccupancySegment({ fromStop: from, toStop: to })}
                                                 />

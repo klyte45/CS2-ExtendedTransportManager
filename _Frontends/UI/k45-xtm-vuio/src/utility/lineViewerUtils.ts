@@ -1,4 +1,4 @@
-import { StationData, VehicleData, LineData } from "#service/LineManagementService";
+import { StationData, VehicleData, LineData, SegmentOccupancyDisplayMode } from "#service/LineManagementService";
 import { NameCustom, NameFormatted } from "@klyte45/vuio-commons";
 
 export function enrichStopInfo(index: number, station: StationData, allStations: StationData[], vehicles: VehicleData[], lineData: LineData): Partial<StationData> {
@@ -66,6 +66,33 @@ export function getCrowdnessBorderStyle(ratio: number): CrowdnessBorderStyle {
         pulse: shouldCrowdnessPulse(ratio),
         fillPercent
     };
+}
+
+/** Inclusive start / exclusive-style end hour (0–24) for a fixed 4h occupancy bucket mode. */
+export function getSegmentOccupancyModeHourRange(
+    mode: SegmentOccupancyDisplayMode,
+): { startHour: number; endHour: number } | null {
+    switch (mode) {
+        case "00_04": return { startHour: 0, endHour: 4 };
+        case "04_08": return { startHour: 4, endHour: 8 };
+        case "08_12": return { startHour: 8, endHour: 12 };
+        case "12_16": return { startHour: 12, endHour: 16 };
+        case "16_20": return { startHour: 16, endHour: 20 };
+        case "20_00": return { startHour: 20, endHour: 24 };
+        default: return null;
+    }
+}
+
+/** Occupancy ratio (0–1) for the selected map display mode. */
+export function getStopOccupancyForDisplayMode(
+    stop: StationData,
+    mode: Exclude<SegmentOccupancyDisplayMode, "none">,
+    currentHour: number,
+): number {
+    if (mode === "dayAverage") return getStopHistoricalUsageDayAverage(stop);
+    if (mode === "currentHour") return getStopHistoricalUsageForHour(stop, currentHour);
+    const range = getSegmentOccupancyModeHourRange(mode);
+    return range ? getStopHistoricalUsageForHour(stop, range.startHour) : 0;
 }
 
 /** Effective historical occupancy (0–1) for the 4h bucket containing `hour` (0–23). */

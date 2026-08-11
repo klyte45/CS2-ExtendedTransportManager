@@ -104,6 +104,29 @@ export type LineDetails = {
     AvailableVehicleModels: VehicleModel[]
 }
 
+export type SegmentOccupancyDisplayMode =
+    | "none"
+    | "currentHour"
+    | "dayAverage"
+    | "00_04"
+    | "04_08"
+    | "08_12"
+    | "12_16"
+    | "16_20"
+    | "20_00";
+
+export const SEGMENT_OCCUPANCY_DISPLAY_MODES: SegmentOccupancyDisplayMode[] = [
+    "none",
+    "currentHour",
+    "dayAverage",
+    "00_04",
+    "04_08",
+    "08_12",
+    "12_16",
+    "16_20",
+    "20_00",
+];
+
 export type MapViewerOptions = {
     showDistricts: boolean,
     showDistances: boolean,
@@ -111,7 +134,9 @@ export type MapViewerOptions = {
     showIntegrations: boolean,
     useWhiteBackground: boolean,
     useHalfTripIfSimetric: boolean,
-    showPlatformCrowdness: boolean
+    showPlatformCrowdness: boolean,
+    /** Which segment occupancy value is shown on the linear map. */
+    segmentOccupancyDisplay: SegmentOccupancyDisplayMode,
 }
 
 export class LineManagementService {

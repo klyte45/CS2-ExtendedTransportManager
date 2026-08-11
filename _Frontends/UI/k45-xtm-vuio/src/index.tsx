@@ -1,4 +1,4 @@
-import { VanillaComponentResolver } from "@klyte45/vuio-commons";
+import { VanillaComponentResolver, ContextMenuButton, ContextMenuExpansion, replaceArgs } from "@klyte45/vuio-commons";
 import { XtmLineViewer } from "components/LineViewer";
 import { photo, selectedInfo, ValueBinding } from "cs2/bindings";
 import { FocusDisabled } from "cs2/input";
@@ -7,7 +7,21 @@ import { ReactNode, useEffect, useState } from "react";
 import "#styles/lineViewer.scss";
 import iconWhite from "#images/iconWhite.svg";
 import i_platformCrowdness from "#images/i_platformCrowdness.svg";
-import { LineManagementService, MapViewerOptions } from "#service/LineManagementService";
+import i_occupancyNone from "#images/i_occupancyNone.svg";
+import i_occupancyCurrentHour from "#images/i_occupancyCurrentHour.svg";
+import i_occupancyDayAverage from "#images/i_occupancyDayAverage.svg";
+import i_occupancy00_04 from "#images/i_occupancy00_04.svg";
+import i_occupancy04_08 from "#images/i_occupancy04_08.svg";
+import i_occupancy08_12 from "#images/i_occupancy08_12.svg";
+import i_occupancy12_16 from "#images/i_occupancy12_16.svg";
+import i_occupancy16_20 from "#images/i_occupancy16_20.svg";
+import i_occupancy20_00 from "#images/i_occupancy20_00.svg";
+import {
+    LineManagementService,
+    MapViewerOptions,
+    SEGMENT_OCCUPANCY_DISPLAY_MODES,
+    SegmentOccupancyDisplayMode,
+} from "#service/LineManagementService";
 import translate from "#utility/translate";
 import { InfoRow, InfoSection, Portal } from "cs2/ui";
 import { ColorEditorXtm } from "#components/ColorEditorXtm";
@@ -24,8 +38,33 @@ let xtmOptions: MapViewerOptions = {
     showIntegrations: true,
     useWhiteBackground: false,
     useHalfTripIfSimetric: true,
-    showPlatformCrowdness: true
-}
+    showPlatformCrowdness: true,
+    segmentOccupancyDisplay: "currentHour",
+};
+
+const SEGMENT_OCCUPANCY_MODE_ICONS: Record<SegmentOccupancyDisplayMode, string> = {
+    none: i_occupancyNone,
+    currentHour: i_occupancyCurrentHour,
+    dayAverage: i_occupancyDayAverage,
+    "00_04": i_occupancy00_04,
+    "04_08": i_occupancy04_08,
+    "08_12": i_occupancy08_12,
+    "12_16": i_occupancy12_16,
+    "16_20": i_occupancy16_20,
+    "20_00": i_occupancy20_00,
+};
+
+const SEGMENT_OCCUPANCY_MODE_LABEL_KEYS: Record<SegmentOccupancyDisplayMode, [string, string]> = {
+    none: ["lineViewer.segmentOccupancyMode.none", "None"],
+    currentHour: ["lineViewer.segmentOccupancyMode.currentHour", "Current hour"],
+    dayAverage: ["lineViewer.segmentOccupancyMode.dayAverage", "Daily average"],
+    "00_04": ["lineViewer.segmentOccupancyMode.00_04", "00:00–04:00"],
+    "04_08": ["lineViewer.segmentOccupancyMode.04_08", "04:00–08:00"],
+    "08_12": ["lineViewer.segmentOccupancyMode.08_12", "08:00–12:00"],
+    "12_16": ["lineViewer.segmentOccupancyMode.12_16", "12:00–16:00"],
+    "16_20": ["lineViewer.segmentOccupancyMode.16_20", "16:00–20:00"],
+    "20_00": ["lineViewer.segmentOccupancyMode.20_00", "20:00–00:00"],
+};
 
 const register: ModRegistrar = (moduleRegistry) => {
     moduleRegistry.extend("game-ui/game/components/selected-info-panel/selected-info-sections/route-sections/line-visualizer-section/line-visualizer-canvas.tsx", 'LineVisualizerCanvas', XtmLineViewerRegister)
@@ -79,6 +118,28 @@ const XtmLineSectionButtonRegister = (Component: any): any => {
                     <ToolButton tooltip={translate("lineViewer.showVehiclesLbl")} onSelect={() => setXtmOptionsState(x => xtmOptions = ({ ...x, showVehicles: !x.showVehicles, showIntegrations: false }))} src={i_vehicles} selected={xtmOptionsState.showVehicles} />
                     <ToolButton tooltip={translate("lineViewer.showIntegrationsLbl")} onSelect={() => setXtmOptionsState(x => xtmOptions = ({ ...x, showIntegrations: !x.showIntegrations, showVehicles: false }))} src={i_integrations} selected={xtmOptionsState.showIntegrations} />
                     <ToolButton tooltip={translate("lineViewer.showPlatformCrowdnessLbl")} onSelect={() => setXtmOptionsState(x => xtmOptions = ({ ...x, showPlatformCrowdness: !x.showPlatformCrowdness }))} src={i_platformCrowdness} selected={xtmOptionsState.showPlatformCrowdness} />
+                    <ContextMenuButton
+                        src={SEGMENT_OCCUPANCY_MODE_ICONS[xtmOptionsState.segmentOccupancyDisplay]}
+                        tooltip={replaceArgs(
+                            translate("lineViewer.segmentOccupancyDisplayed", "Segment occupancy displayed: {mode}"),
+                            {
+                                mode: translate(...SEGMENT_OCCUPANCY_MODE_LABEL_KEYS[xtmOptionsState.segmentOccupancyDisplay]),
+                            },
+                        )}
+                        menuTitle={translate("lineViewer.segmentOccupancyMenuTitle", "Segment occupancy")}
+                        menuDirection={ContextMenuExpansion.BOTTOM_LEFT}
+                        menuClassName="xtm-popup-solid"
+                        focusKey={VanillaComponentResolver.instance.FOCUS_DISABLED}
+                        menuItems={SEGMENT_OCCUPANCY_DISPLAY_MODES.map((mode) => {
+                            const marker = xtmOptionsState.segmentOccupancyDisplay === mode ? "✓ " : "";
+                            return {
+                                label: `${marker}${translate(...SEGMENT_OCCUPANCY_MODE_LABEL_KEYS[mode])}`,
+                                action: () => setXtmOptionsState((x) => (
+                                    xtmOptions = { ...x, segmentOccupancyDisplay: mode }
+                                )),
+                            };
+                        })}
+                    />
                     <ToolButton tooltip={translate("lineViewer.useWhiteBackgroundLbl")} onSelect={() => setXtmOptionsState(x => xtmOptions = ({ ...x, useWhiteBackground: !x.useWhiteBackground }))} src={i_whiteBackground} selected={xtmOptionsState.useWhiteBackground} />
                     <ToolButton tooltip={translate("lineViewer.showHalfTripIfSimmetric")} onSelect={() => setXtmOptionsState(x => xtmOptions = ({ ...x, useHalfTripIfSimetric: !x.useHalfTripIfSimetric }))} src={i_halfTrip} selected={xtmOptionsState.useHalfTripIfSimetric} />
                 </>}

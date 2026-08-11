@@ -1,0 +1,7 @@
+<svg width="512" height="512" version="1.1" xmlns="http://www.w3.org/2000/svg">
+ <!-- Placeholder: segment occupancy mode  daily average (sun / moon) -->
+ <circle cx="170" cy="220" r="90" fill="none" stroke="#ffffff" stroke-width="28"/>
+ <circle cx="150" cy="200" r="28" fill="#ffffff" opacity="0.35"/>
+ <path d="M340 140 a100 100 0 1 0 40 180 a70 70 0 1 1 -40 -180" fill="none" stroke="#ffffff" stroke-width="28" stroke-linejoin="round"/>
+ <line x1="90" y1="420" x2="422" y2="92" stroke="#ffffff" stroke-width="32" stroke-linecap="round"/>
+</svg>

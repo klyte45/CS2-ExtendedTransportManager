@@ -1,0 +1,5 @@
+<svg width="512" height="512" version="1.1" xmlns="http://www.w3.org/2000/svg">
+ <!-- Placeholder: segment occupancy mode  none (slashed percent) -->
+ <text x="256" y="310" text-anchor="middle" font-family="sans-serif" font-size="280" font-weight="700" fill="#ffffff">%</text>
+ <line x1="100" y1="420" x2="412" y2="92" stroke="#ffffff" stroke-width="36" stroke-linecap="round"/>
+</svg>

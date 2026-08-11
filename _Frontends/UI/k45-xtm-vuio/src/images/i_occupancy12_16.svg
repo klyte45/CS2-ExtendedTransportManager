@@ -1,0 +1,6 @@
+<svg width="512" height="512" version="1.1" xmlns="http://www.w3.org/2000/svg">
+ <!-- Placeholder: segment occupancy mode — 12h~16h vulgar fraction -->
+ <text x="120" y="210" text-anchor="middle" font-family="sans-serif" font-size="160" font-weight="700" fill="#ffffff">12</text>
+ <line x1="90" y1="420" x2="422" y2="92" stroke="#ffffff" stroke-width="32" stroke-linecap="round"/>
+ <text x="390" y="430" text-anchor="middle" font-family="sans-serif" font-size="160" font-weight="700" fill="#ffffff">16</text>
+</svg>

@@ -94,6 +94,7 @@ export const XtmLineViewer = ({ children, args, isXtm, xtmOptions }: Props) => {
             showVehicles={xtmOptions.showVehicles}
             useWhiteBackground={xtmOptions.useWhiteBackground}
             showPlatformCrowdness={xtmOptions.showPlatformCrowdness}
+            segmentOccupancyDisplay={xtmOptions.segmentOccupancyDisplay}
             getLineById={(x) => indexedLineList[x]}
             simetricLine={isLineSimetric}
         />
