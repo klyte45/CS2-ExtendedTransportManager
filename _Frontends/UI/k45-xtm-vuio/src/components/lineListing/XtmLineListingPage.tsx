@@ -56,15 +56,20 @@ const SORT_LABEL_KEYS: Record<LineSortKey, [string, string]> = {
 const SORT_MENU_ICON_ASC = "coui://uil/Standard/ArrowSortHighDown.svg";
 const SORT_MENU_ICON_DESC = "coui://uil/Standard/ArrowSortLowDown.svg";
 
+/** Survives Transportation Overview remounts / navigation within the session. */
+let persistedFilterExclude: string[] = [];
+let persistedActivityExclude: LineActivityClass[] = [];
+let persistedSort: LineSort = DEFAULT_LINE_SORT;
+
 function typeHasPaletteGuid(guid: string | undefined | null): boolean {
     return !!guid;
 }
 
 export const XtmLineListingPage = () => {
     const [linesList, setLinesList] = useState<LineData[]>([]);
-    const [filterExclude, setFilterExclude] = useState<string[]>([]);
-    const [activityExclude, setActivityExclude] = useState<LineActivityClass[]>([]);
-    const [currentSort, setCurrentSort] = useState<LineSort>(DEFAULT_LINE_SORT);
+    const [filterExclude, setFilterExclude] = useState(persistedFilterExclude);
+    const [activityExclude, setActivityExclude] = useState(persistedActivityExclude);
+    const [currentSort, setCurrentSort] = useState(persistedSort);
     const [passengerPalettes, setPassengerPalettes] = useState<Partial<Record<TransportType, string>>>({});
     const [cargoPalettes, setCargoPalettes] = useState<Partial<Record<TransportType, string>>>({});
     const ToolButton = VanillaComponentResolver.instance.ToolButton;
@@ -76,7 +81,7 @@ export const XtmLineListingPage = () => {
         }
         setLinesList((prev) => {
             if (prev.length === 0) {
-                return sortAndGroupLines(res, DEFAULT_LINE_SORT);
+                return sortAndGroupLines(res, persistedSort);
             }
             return mergeLinesPreservingOrder(prev, res);
         });
@@ -155,21 +160,31 @@ export const XtmLineListingPage = () => {
 
     const toggleFilterType = (type: string) => {
         setFilterExclude((prev) => {
-            if (prev.includes(type)) return prev.filter((x) => x !== type);
-            return [...prev, type];
+            const next = prev.includes(type) ? prev.filter((x) => x !== type) : [...prev, type];
+            persistedFilterExclude = next;
+            return next;
         });
     };
 
     const toggleActivityFilter = (activity: LineActivityClass) => {
         setActivityExclude((prev) => {
-            if (prev.includes(activity)) return prev.filter((x) => x !== activity);
-            return [...prev, activity];
+            const next = prev.includes(activity) ? prev.filter((x) => x !== activity) : [...prev, activity];
+            persistedActivityExclude = next;
+            return next;
         });
+    };
+
+    const setFilters = (types: string[], activities: LineActivityClass[]) => {
+        persistedFilterExclude = types;
+        persistedActivityExclude = activities;
+        setFilterExclude(types);
+        setActivityExclude(activities);
     };
 
     const onSelectSort = (key: LineSortKey) => {
         setCurrentSort((prev) => {
             const next = nextLineSort(prev, key);
+            persistedSort = next;
             setLinesList((lines) => sortAndGroupLines(lines, next));
             return next;
         });
@@ -258,8 +273,7 @@ export const XtmLineListingPage = () => {
                     ))}
                     <div className="space" />
                     <button type="button" className="neutralBtn txt" onClick={() => {
-                        setFilterExclude([]);
-                        setActivityExclude([]);
+                        setFilters([], []);
                     }}>
                         {translate("lineList.showAll", "Show all")}
                     </button>
@@ -267,8 +281,7 @@ export const XtmLineListingPage = () => {
                         type="button"
                         className="neutralBtn txt"
                         onClick={() => {
-                            setFilterExclude(presentTypeOrder.slice());
-                            setActivityExclude(ACTIVITY_ORDER.slice());
+                            setFilters(presentTypeOrder.slice(), ACTIVITY_ORDER.slice());
                         }}
                     >
                         {translate("lineList.hideAll", "Hide all")}
@@ -276,14 +289,14 @@ export const XtmLineListingPage = () => {
                     <button
                         type="button"
                         className="neutralBtn txt"
-                        onClick={() => setFilterExclude(cargoTypeKeys.slice())}
+                        onClick={() => setFilters(cargoTypeKeys.slice(), activityExclude)}
                     >
                         {translate("lineList.passengerLines", "Passenger lines")}
                     </button>
                     <button
                         type="button"
                         className="neutralBtn txt"
-                        onClick={() => setFilterExclude(passengerTypeKeys.slice())}
+                        onClick={() => setFilters(passengerTypeKeys.slice(), activityExclude)}
                     >
                         {translate("lineList.cargoRoutes", "Cargo routes")}
                     </button>
