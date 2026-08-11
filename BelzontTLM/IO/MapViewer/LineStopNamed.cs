@@ -32,6 +32,12 @@ namespace BelzontTLM
         public float usage12_16 { get; }
         public float usage16_20 { get; }
         public float usage20_00 { get; }
+        public bool usage00_04_stale { get; }
+        public bool usage04_08_stale { get; }
+        public bool usage08_12_stale { get; }
+        public bool usage12_16_stale { get; }
+        public bool usage16_20_stale { get; }
+        public bool usage20_00_stale { get; }
 
         public LineStopNamed(LineStop src, NameSystem nameSystem, EntityManager em)
         {
@@ -71,6 +77,12 @@ namespace BelzontTLM
             usage12_16 = src.usage12_16;
             usage16_20 = src.usage16_20;
             usage20_00 = src.usage20_00;
+            usage00_04_stale = src.usage00_04_stale;
+            usage04_08_stale = src.usage04_08_stale;
+            usage08_12_stale = src.usage08_12_stale;
+            usage12_16_stale = src.usage12_16_stale;
+            usage16_20_stale = src.usage16_20_stale;
+            usage20_00_stale = src.usage20_00_stale;
 
             static Entity TryGetByBorderDistrict(EntityManager em, Entity attachParent) => em.TryGetComponent<BorderDistrict>(attachParent, out var borders)
                                         ? borders.m_Left != Entity.Null

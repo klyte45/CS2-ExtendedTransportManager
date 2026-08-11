@@ -50,6 +50,13 @@ export type StationData = {
     readonly usage12_16: number,
     readonly usage16_20: number,
     readonly usage20_00: number,
+    /** True when last sample for the bucket is older than yesterday (set in LineDetailDataJob). */
+    readonly usage00_04_stale: boolean,
+    readonly usage04_08_stale: boolean,
+    readonly usage08_12_stale: boolean,
+    readonly usage12_16_stale: boolean,
+    readonly usage16_20_stale: boolean,
+    readonly usage20_00_stale: boolean,
     arrivingVehicle?: VehicleData,
     arrivingVehicleDistance?: number,
     arrivingVehicleStops?: number,

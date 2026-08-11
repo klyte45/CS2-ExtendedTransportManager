@@ -153,9 +153,25 @@ namespace BelzontTLM
             u20 = Effective(ema_20_00, cap_20_00, lastDay_20_00, currentDay);
         }
 
+        /// <summary>
+        /// Per-bucket stale flags for UI (true when last sample is older than yesterday).
+        /// Same day-gap rule as <see cref="Effective"/>; order matches GetEffectiveUsages.
+        /// </summary>
+        public void GetStaleFlags(int currentDay, out bool s00, out bool s04, out bool s08, out bool s12, out bool s16, out bool s20)
+        {
+            s00 = IsStale(lastDay_00_04, currentDay);
+            s04 = IsStale(lastDay_04_08, currentDay);
+            s08 = IsStale(lastDay_08_12, currentDay);
+            s12 = IsStale(lastDay_12_16, currentDay);
+            s16 = IsStale(lastDay_16_20, currentDay);
+            s20 = IsStale(lastDay_20_00, currentDay);
+        }
+
+        private static bool IsStale(int lastDay, int currentDay) => currentDay > lastDay + 1;
+
         private static float Effective(float ema, float cap, int lastDay, int currentDay)
         {
-            if (currentDay > lastDay + 1 || cap <= 0f)
+            if (IsStale(lastDay, currentDay) || cap <= 0f)
             {
                 return 0f;
             }

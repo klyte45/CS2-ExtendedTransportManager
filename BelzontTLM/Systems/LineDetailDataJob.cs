@@ -304,13 +304,16 @@ namespace BelzontTLM
                         var transformData = m_Transforms[stopPoint];
 
                         float usage00 = 0f, usage04 = 0f, usage08 = 0f, usage12 = 0f, usage16 = 0f, usage20 = 0f;
+                        bool stale00 = true, stale04 = true, stale08 = true, stale12 = true, stale16 = true, stale20 = true;
                         if (m_HistoricalOccupancy.TryGetComponent(stations[l].m_Waypoint, out LineSegmentHistoricalOccupancy occupancy))
                         {
                             occupancy.GetEffectiveUsages(m_CurrentDay, out usage00, out usage04, out usage08, out usage12, out usage16, out usage20);
+                            occupancy.GetStaleFlags(m_CurrentDay, out stale00, out stale04, out stale08, out stale12, out stale16, out stale20);
                         }
 
                         LineStop lineStop = new LineStop(stations[l].m_Waypoint, stopPoint, position, waiting, isCargo, m_OutsideConnections.HasComponent(stopPoint), linesConnected, transformData.m_Position, transformData.m_Rotation,
-                            usage00, usage04, usage08, usage12, usage16, usage20);
+                            usage00, usage04, usage08, usage12, usage16, usage20,
+                            stale00, stale04, stale08, stale12, stale16, stale20);
                         output.m_StopsResult.Add(lineStop);
                     }
                 }

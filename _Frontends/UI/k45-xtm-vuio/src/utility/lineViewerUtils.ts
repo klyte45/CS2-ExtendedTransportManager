@@ -81,6 +81,55 @@ export function getHistoricalUsageHourRange(hour: number): { startHour: number; 
     return { startHour, endHour: startHour + 4 };
 }
 
+/** Six 4h usage ratios (0–1) in day order. */
+export function getStopHistoricalUsageBuckets(stop: StationData): number[] {
+    return [
+        stop.usage00_04 ?? 0,
+        stop.usage04_08 ?? 0,
+        stop.usage08_12 ?? 0,
+        stop.usage12_16 ?? 0,
+        stop.usage16_20 ?? 0,
+        stop.usage20_00 ?? 0,
+    ];
+}
+
+/** Six stale flags matching getStopHistoricalUsageBuckets order. */
+export function getStopHistoricalUsageStaleFlags(stop: StationData): boolean[] {
+    return [
+        !!stop.usage00_04_stale,
+        !!stop.usage04_08_stale,
+        !!stop.usage08_12_stale,
+        !!stop.usage12_16_stale,
+        !!stop.usage16_20_stale,
+        !!stop.usage20_00_stale,
+    ];
+}
+
+/**
+ * Chart series for a full day: 6 points (one per 4h bucket).
+ * Stale buckets become null so the line gaps.
+ */
+export function getStopHistoricalUsageSeries(stop: StationData): (number | null)[] {
+    const values = getStopHistoricalUsageBuckets(stop);
+    const stale = getStopHistoricalUsageStaleFlags(stop);
+    return values.map((v, i) => (stale[i] ? null : v));
+}
+
+/** Mean of non-stale buckets (0–1). Returns 0 when no recorded buckets. */
+export function getStopHistoricalUsageDayAverage(stop: StationData): number {
+    const values = getStopHistoricalUsageBuckets(stop);
+    const stale = getStopHistoricalUsageStaleFlags(stop);
+    let sum = 0;
+    let count = 0;
+    for (let i = 0; i < values.length; i++) {
+        if (!stale[i]) {
+            sum += values[i];
+            count++;
+        }
+    }
+    return count > 0 ? sum / count : 0;
+}
+
 /** Return-direction stop mirrored around the half-trip midpoint; undefined for termini. */
 export function findSymmetricPairStop(allStops: StationData[], halfTripIndex: number): StationData | undefined {
     const length = allStops.length;

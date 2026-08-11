@@ -1,5 +1,5 @@
 import { LineData, LineDetails, MapViewerOptions } from "#service/LineManagementService";
-import { CSSProperties } from "react";
+import { CSSProperties, useEffect, useState } from "react";
 import { DistrictBorderContainerCmp } from "./DistrictBorderContainerCmp";
 import { MapStationDistanceContainerCmp } from "./MapStationDistanceContainerCmp";
 import { MapVehicleContainerCmp } from "./MapVehicleContainerCmp";
@@ -12,6 +12,7 @@ import { selectedInfo } from "cs2/bindings";
 import { useValue } from "cs2/api";
 import { findSymmetricPairStop, findSymmetricReturnPreviousStop, getTerminusNames, isSymmetricMiddleStop } from "#utility/lineViewerUtils";
 import { MapStationOccupancyContainerCmp } from "./MapStationOccupancyContainerCmp";
+import { SegmentOccupancyPanelCmp, SegmentOccupancySelection } from "./SegmentOccupancyPanelCmp";
 
 type Props = {
     lineDetails: LineDetails;
@@ -22,11 +23,24 @@ type Props = {
 export function TlmViewerCmp({ lineDetails, getLineById, simetricLine, showDistricts, showDistances, showVehicles, showIntegrations, useWhiteBackground, useHalfTripIfSimetric, showPlatformCrowdness }: Props) {
 
     const lineCommonData: LineData = lineDetails.LineData;
+    const [occupancySegment, setOccupancySegment] = useState<SegmentOccupancySelection | null>(null);
+    const selectedEntity = useValue(selectedInfo.selectedEntity$);
+
+    useEffect(() => {
+        setOccupancySegment(null);
+    }, [lineCommonData?.entity?.Index]);
+
+    const resolvedOccupancySegment = occupancySegment
+        ? {
+            fromStop: lineDetails.Stops.find((s) => s.waypoint.Index === occupancySegment.fromStop.waypoint.Index) ?? occupancySegment.fromStop,
+            toStop: lineDetails.Stops.find((s) => s.waypoint.Index === occupancySegment.toStop.waypoint.Index) ?? occupancySegment.toStop,
+        }
+        : null;
+
     if (!lineCommonData) return <></>;
     const showSimetricMode = simetricLine && !showVehicles && useHalfTripIfSimetric;
     const targetStops = showSimetricMode ? lineDetails.Stops.slice(0, lineDetails.Stops.length / 2 + 1) : lineDetails.Stops;
     const targetLenght = targetStops.length - (showSimetricMode ? 1 : 0);
-    const selectedEntity = useValue(selectedInfo.selectedEntity$);
     const currentStopSelected = selectedEntity ? lineDetails.Stops.find(x => x.entity.Index == selectedEntity.index) : undefined;
     const terminusNames = getTerminusNames(lineDetails.Stops);
     const stopCapacity = lineDetails.StopCapacity;
@@ -145,6 +159,9 @@ export function TlmViewerCmp({ lineDetails, getLineById, simetricLine, showDistr
                                 const returnPrev = showSimetricMode
                                     ? findSymmetricReturnPreviousStop(lineDetails.Stops, nextIdx, nextStop)
                                     : undefined;
+                                const returnNext = showSimetricMode
+                                    ? (findSymmetricPairStop(lineDetails.Stops, i) ?? station)
+                                    : undefined;
                                 return (
                                     <div
                                         key={i}
@@ -161,14 +178,18 @@ export function TlmViewerCmp({ lineDetails, getLineById, simetricLine, showDistr
                                             )}
                                             <MapStationOccupancyContainerCmp
                                                 stop={station}
+                                                nextStop={nextStop}
                                                 directionArrow={showSimetricMode ? "down" : undefined}
+                                                onSelectSegment={(from, to) => setOccupancySegment({ fromStop: from, toStop: to })}
                                             />
                                         </div>
-                                        {showSimetricMode && returnPrev && (
+                                        {showSimetricMode && returnPrev && returnNext && (
                                             <div className="segmentInfoRight">
                                                 <MapStationOccupancyContainerCmp
                                                     stop={returnPrev}
+                                                    nextStop={returnNext}
                                                     directionArrow="up"
+                                                    onSelectSegment={(from, to) => setOccupancySegment({ fromStop: from, toStop: to })}
                                                 />
                                             </div>
                                         )}
@@ -188,6 +209,14 @@ export function TlmViewerCmp({ lineDetails, getLineById, simetricLine, showDistr
                         </div>
                     </div>
                 </Scrollable>
+                {resolvedOccupancySegment && (
+                    <SegmentOccupancyPanelCmp
+                        line={lineCommonData}
+                        fromStop={resolvedOccupancySegment.fromStop}
+                        toStop={resolvedOccupancySegment.toStop}
+                        onClose={() => setOccupancySegment(null)}
+                    />
+                )}
             </>
         }
     </div>;

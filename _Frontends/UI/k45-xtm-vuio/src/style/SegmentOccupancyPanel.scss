@@ -1,0 +1,56 @@
+.k45_xtm_segmentOccupancyPanel_anchor {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    z-index: 10000;
+
+    .k45_xtm_segmentOccupancyPanel {
+        pointer-events: auto;
+        width: 340rem;
+        min-width: 300rem;
+    }
+}
+
+.k45_xtm_segmentOccupancyPanel_title {
+    width: 100%;
+}
+
+.k45_xtm_segmentOccupancyPanel_headerRow {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 8rem;
+    min-width: 0;
+    padding-right: 8rem;
+
+    .formatContainer {
+        transform: scale(0.75);
+        transform-origin: left center;
+        flex-shrink: 0;
+    }
+}
+
+.k45_xtm_segmentOccupancyPanel_fromStop {
+    flex: 1;
+    min-width: 0;
+    font-size: var(--fontSizeS);
+    white-space: normal;
+    overflow: hidden;
+}
+
+.k45_xtm_segmentOccupancyPanel_body {
+    display: flex;
+    flex-direction: column;
+    gap: 8rem;
+    padding: 8rem 12rem 12rem;
+}
+
+.k45_xtm_segmentOccupancyPanel_headline {
+    font-size: var(--fontSizeS);
+    font-weight: bold;
+}
+
+.k45_xtm_segmentOccupancyPanel_footer {
+    font-size: var(--fontSizeS);
+    opacity: 0.9;
+}
