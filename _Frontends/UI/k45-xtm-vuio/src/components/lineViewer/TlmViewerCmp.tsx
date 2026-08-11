@@ -10,7 +10,8 @@ import { ColorUtils, toVanillaEntity } from "@klyte45/vuio-commons";
 import { Scrollable } from "cs2/ui";
 import { selectedInfo } from "cs2/bindings";
 import { useValue } from "cs2/api";
-import { findSymmetricPairStop, getTerminusNames, isSymmetricMiddleStop } from "#utility/lineViewerUtils";
+import { findSymmetricPairStop, findSymmetricReturnPreviousStop, getTerminusNames, isSymmetricMiddleStop } from "#utility/lineViewerUtils";
+import { MapStationOccupancyContainerCmp } from "./MapStationOccupancyContainerCmp";
 
 type Props = {
     lineDetails: LineDetails;
@@ -136,20 +137,45 @@ export function TlmViewerCmp({ lineDetails, getLineById, simetricLine, showDistr
                                             }
                                         }))}
                                 </div>}
-                            {showDistances &&
-                                <div className="distanceRailing">{targetStops.map((station, i, arr) => {
-                                    const nextIdx = (i + 1) % arr.length;
-                                    if (showSimetricMode && nextIdx == 0) return;
-                                    const nextStop = arr[nextIdx];
-                                    return <MapStationDistanceContainerCmp key={i}
-                                        stop={station}
-                                        nextStop={nextStop}
-                                        segments={lineDetails.Segments}
-                                        normalizedPosition={(i + .5) / targetLenght}
-                                    />;
-                                })}
-                                </div>
-                            }
+                            <div className="segmentInfoRailing">{targetStops.map((station, i, arr) => {
+                                const nextIdx = (i + 1) % arr.length;
+                                if (showSimetricMode && nextIdx == 0) return;
+                                const nextStop = arr[nextIdx];
+                                const pos = (i + .5) / targetLenght;
+                                const returnPrev = showSimetricMode
+                                    ? findSymmetricReturnPreviousStop(lineDetails.Stops, nextIdx, nextStop)
+                                    : undefined;
+                                return (
+                                    <div
+                                        key={i}
+                                        className="stationSegmentInfoContainer"
+                                        style={{ top: `${100 * pos}%` } as CSSProperties}
+                                    >
+                                        <div className="segmentInfoLeft">
+                                            {showDistances && (
+                                                <MapStationDistanceContainerCmp
+                                                    stop={station}
+                                                    nextStop={nextStop}
+                                                    segments={lineDetails.Segments}
+                                                />
+                                            )}
+                                            <MapStationOccupancyContainerCmp
+                                                stop={station}
+                                                directionArrow={showSimetricMode ? "down" : undefined}
+                                            />
+                                        </div>
+                                        {showSimetricMode && returnPrev && (
+                                            <div className="segmentInfoRight">
+                                                <MapStationOccupancyContainerCmp
+                                                    stop={returnPrev}
+                                                    directionArrow="up"
+                                                />
+                                            </div>
+                                        )}
+                                    </div>
+                                );
+                            })}
+                            </div>
                             {showVehicles &&
                                 <div className="vehiclesRailing">{lineDetails.Vehicles.map((vehicle, i) => {
                                     return <MapVehicleContainerCmp

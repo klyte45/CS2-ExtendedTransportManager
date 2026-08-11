@@ -61,6 +61,18 @@ export function getCrowdnessBorderStyle(ratio: number): CrowdnessBorderStyle {
     };
 }
 
+/** Peak effective historical occupancy across all 4h buckets (0–1). */
+export function getStopPeakHistoricalUsage(stop: StationData): number {
+    return Math.max(
+        stop.usage00_04 ?? 0,
+        stop.usage04_08 ?? 0,
+        stop.usage08_12 ?? 0,
+        stop.usage12_16 ?? 0,
+        stop.usage16_20 ?? 0,
+        stop.usage20_00 ?? 0,
+    );
+}
+
 /** Return-direction stop mirrored around the half-trip midpoint; undefined for termini. */
 export function findSymmetricPairStop(allStops: StationData[], halfTripIndex: number): StationData | undefined {
     const length = allStops.length;
@@ -68,6 +80,18 @@ export function findSymmetricPairStop(allStops: StationData[], halfTripIndex: nu
     const mid = length / 2;
     if (halfTripIndex <= 0 || halfTripIndex >= mid) return undefined;
     return allStops[length - halfTripIndex];
+}
+
+/**
+ * Return-direction "previous" stop for the corridor segment ending at half-trip index `nextHalfIndex`.
+ * At the outbound terminus, the terminus itself is the return departure.
+ */
+export function findSymmetricReturnPreviousStop(
+    allStops: StationData[],
+    nextHalfIndex: number,
+    nextStop: StationData,
+): StationData {
+    return findSymmetricPairStop(allStops, nextHalfIndex) ?? nextStop;
 }
 
 export function isSymmetricMiddleStop(halfTripIndex: number, halfTripStopCount: number): boolean {

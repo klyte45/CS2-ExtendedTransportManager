@@ -1,18 +1,20 @@
 import { Unit } from "#enum/Unit";
 import { SegmentData, StationData } from "#service/LineManagementService";
-import { replaceArgs } from "@klyte45/vuio-commons";
 import engine from "cohtml/cohtml";
 import { LocalizedNumber, UnitSystem, useLocalization } from "cs2/l10n";
-import { CSSProperties, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 
 type Props = {
     segments: SegmentData[];
     stop: StationData;
     nextStop: StationData;
-    normalizedPosition: number;
 };
 
-export function MapStationDistanceContainerCmp({ segments, stop, nextStop, normalizedPosition }: Props) {
+/**
+ * Distance / waypoint label between two stops.
+ * Positioning is owned by the parent segment-info row; this only renders the label.
+ */
+export function MapStationDistanceContainerCmp({ segments, stop, nextStop }: Props) {
     const locale = useLocalization();
     const [measureUnit, setMeasureUnit] = useState<UnitSystem>(locale.unitSettings.unitSystem);
 
@@ -30,13 +32,10 @@ export function MapStationDistanceContainerCmp({ segments, stop, nextStop, norma
         unit: Unit.Length,
         signed: false
     });
-    const topOffset: CSSProperties = { top: (100 * normalizedPosition) + "%" };
     let waypointsText = "";
     if (totalDistanceSegments.length > 1) {
         waypointsText = `(${totalDistanceSegments.length - 1}wp) - `;
     }
 
-    return <div className="stationDistanceContainer" style={topOffset}>
-        <div className="distanceLbl">{waypointsText + nextVehicleDistanceFmt}</div>
-    </div>;
+    return <div className="distanceLbl">{waypointsText + nextVehicleDistanceFmt}</div>;
 }

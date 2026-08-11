@@ -43,6 +43,13 @@ export type StationData = {
     }[],
     readonly worldPosition: { x: number, y: number, z: number },
     readonly azimuth: number,
+    /** Effective historical usage ratios (0–1) per 4h bucket; stale buckets are 0. */
+    readonly usage00_04: number,
+    readonly usage04_08: number,
+    readonly usage08_12: number,
+    readonly usage12_16: number,
+    readonly usage16_20: number,
+    readonly usage20_00: number,
     arrivingVehicle?: VehicleData,
     arrivingVehicleDistance?: number,
     arrivingVehicleStops?: number,

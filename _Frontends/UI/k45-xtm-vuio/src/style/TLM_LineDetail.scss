@@ -118,14 +118,14 @@
                 }
             }
 
-            .distanceRailing {
+            .segmentInfoRailing {
                 @extend %commonRailing;
                 right: 0%;
                 left: 0%;
                 pointer-events: none;
 
-                .stationDistanceContainer {
-                    @extend %distanceContainer;
+                .stationSegmentInfoContainer {
+                    @extend %segmentInfoContainer;
                 }
             }
 
@@ -622,21 +622,45 @@
         }
     }
 
-    %distanceContainer {
+    %segmentInfoContainer {
         width: 100%;
         position: absolute;
         transform: translateY(-50%);
 
-        .distanceLbl {
-            background-color: black;
+        .segmentInfoLeft,
+        .segmentInfoRight {
             position: absolute;
-            color: white;
-            font-size: calc(var(--fontSizeS) * 0.75);
+            display: flex;
+            flex-direction: row;
+            align-items: center;
+            transform: translateY(-50%);
+        }
+
+        .segmentInfoLeft {
             right: 50%;
             margin-right: 5rem;
-            transform: translateY(-50%);
+            flex-direction: row-reverse;
+        }
+
+        .segmentInfoRight {
+            left: 50%;
+            margin-left: 30rem;
+        }
+
+        .distanceLbl,
+        .occupancyLbl {
+            background-color: black;
+            color: white;
+            font-size: calc(var(--fontSizeS) * 0.75);
             padding-left: 3rem;
             padding-right: 3rem;
+            white-space: nowrap;
+        }
+
+        .segmentInfoLeft {
+            .distanceLbl + .occupancyLbl {
+                margin-right: 4rem;
+            }
         }
     }
 
