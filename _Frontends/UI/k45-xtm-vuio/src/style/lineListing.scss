@@ -117,6 +117,15 @@
             }
         }
 
+        // Report overview: pin content to top so tall pages stay scrollable (centering clips the top).
+        &.LineList--report .scrollArea >[class^="content_"] {
+            flex-wrap: nowrap;
+            flex-direction: column;
+            align-content: flex-start;
+            align-items: stretch;
+            justify-content: flex-start;
+        }
+
         .typeSeparator {
             width: 100%;
             height: 10rem;

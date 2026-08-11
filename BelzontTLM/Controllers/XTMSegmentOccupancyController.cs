@@ -12,6 +12,7 @@ using Game.Routes;
 using Game.Simulation;
 using Game.Tools;
 using Game.UI;
+using Game.UI.InGame;
 using System;
 using System.Collections.Generic;
 using Unity.Burst;
@@ -157,6 +158,10 @@ namespace BelzontTLM
                 Color color = EntityManager.GetComponentData<Color>(lineEntity);
                 PrefabRef prefabRef = EntityManager.GetComponentData<PrefabRef>(lineEntity);
                 TransportLineData lineData = EntityManager.GetComponentData<TransportLineData>(prefabRef.m_Prefab);
+                Route route = EntityManager.GetComponentData<Route>(lineEntity);
+                RouteSchedule schedule = RouteUtils.CheckOption(route, RouteOption.Day)
+                    ? RouteSchedule.Day
+                    : (RouteUtils.CheckOption(route, RouteOption.Night) ? RouteSchedule.Night : RouteSchedule.DayAndNight);
 
                 lines[i] = new LineShieldInfo
                 {
@@ -167,7 +172,8 @@ namespace BelzontTLM
                     color = color.m_Color.ToRGB(true),
                     type = lineData.m_TransportType.ToString(),
                     isCargo = lineData.m_CargoTransport,
-                    isFixedColor = EntityManager.HasComponent<XTMPaletteLockedColor>(lineEntity)
+                    isFixedColor = EntityManager.HasComponent<XTMPaletteLockedColor>(lineEntity),
+                    schedule = (int)schedule
                 };
             }
             return lines;

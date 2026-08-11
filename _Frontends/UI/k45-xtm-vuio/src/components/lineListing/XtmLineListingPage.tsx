@@ -1,19 +1,31 @@
 import { AutoColorService } from "#service/AutoColorService";
 import { LineData, LineManagementService } from "#service/LineManagementService";
+import {
+    SegmentOccupancyReport,
+    SegmentOccupancyService,
+    SimulationDateTimeJson,
+} from "#service/SegmentOccupancyService";
 import { TransportType } from "#enum/TransportType";
 import translate from "#utility/translate";
 import {
     ContextMenuButton,
     ContextMenuExpansion,
+    calculateElementPosition,
+    isOnArea,
+    onRecalculateContextMenuPosition,
     replaceArgs,
     toVanillaEntity,
     VanillaComponentResolver,
+    VanillaWidgets,
 } from "@klyte45/vuio-commons";
 import engine from "cohtml/cohtml";
 import { transport } from "cs2/bindings";
 import { FocusDisabled } from "cs2/input";
-import { Scrollable } from "cs2/ui";
-import { useEffect, useMemo, useState } from "react";
+import { useLocalization } from "cs2/l10n";
+import { getModule } from "cs2/modding";
+import { Portal, Scrollable } from "cs2/ui";
+import classNames from "classnames";
+import { CSSProperties, useEffect, useMemo, useRef, useState } from "react";
 import { LineItemCard } from "./LineItemCard";
 import {
     ACTIVITY_ORDER,
@@ -31,7 +43,9 @@ import {
     TYPE_ORDER,
     TYPE_TO_ICONS,
 } from "./lineListingTypes";
+import { XtmOccupancyReportPage } from "./occupancyReport/XtmOccupancyReportPage";
 import "#styles/lineListing.scss";
+import "#styles/occupancyReport.scss";
 
 function getNameFor(type: string, isCargo: boolean) {
     return engine.translate(isCargo ? `Transport.ROUTES[${type}]` : `Transport.LINES[${type}]`);
@@ -56,13 +70,134 @@ const SORT_LABEL_KEYS: Record<LineSortKey, [string, string]> = {
 const SORT_MENU_ICON_ASC = "coui://uil/Standard/ArrowSortHighDown.svg";
 const SORT_MENU_ICON_DESC = "coui://uil/Standard/ArrowSortLowDown.svg";
 
+export type OverviewScreenMode = "listing" | "occupancyPassengers" | "occupancyCargo";
+
+const REPORT_ACTIVITY_ORDER: LineActivityClass[] = [
+    "activity-dayNight",
+    "activity-day",
+    "activity-night",
+];
+
+const MODE_MENU_ITEMS: { mode: OverviewScreenMode; labelKey: string; fallback: string }[] = [
+    { mode: "listing", labelKey: "occupancyReport.mode.listing", fallback: "Line listing" },
+    {
+        mode: "occupancyPassengers",
+        labelKey: "occupancyReport.mode.occupancyPassengers",
+        fallback: "Occupancy Report: Passengers",
+    },
+    {
+        mode: "occupancyCargo",
+        labelKey: "occupancyReport.mode.occupancyCargo",
+        fallback: "Occupancy Report: Cargo",
+    },
+];
+
 /** Survives Transportation Overview remounts / navigation within the session. */
 let persistedFilterExclude: string[] = [];
 let persistedActivityExclude: LineActivityClass[] = [];
 let persistedSort: LineSort = DEFAULT_LINE_SORT;
+let persistedOverviewMode: OverviewScreenMode = "listing";
 
 function typeHasPaletteGuid(guid: string | undefined | null): boolean {
     return !!guid;
+}
+
+function isReportMode(mode: OverviewScreenMode): boolean {
+    return mode === "occupancyPassengers" || mode === "occupancyCargo";
+}
+
+function formatReportDateTime(
+    localization: ReturnType<typeof useLocalization>,
+    value: SimulationDateTimeJson | undefined,
+): string {
+    if (!value) return "—";
+    try {
+        const formatDateTime = getModule(
+            "game-ui/common/localization/localized-date.tsx",
+            "formatDateTime",
+        ) as (loc: typeof localization, dt: SimulationDateTimeJson) => string;
+        return formatDateTime(localization, value);
+    } catch {
+        const pad = (n: number) => (n < 10 ? `0${n}` : `${n}`);
+        return `${value.year}-${pad(value.month)} ${pad(value.hour)}:${pad(value.minute)}`;
+    }
+}
+
+function ModeChangeButton({
+    currentMode,
+    onSelectMode,
+}: {
+    currentMode: OverviewScreenMode;
+    onSelectMode: (mode: OverviewScreenMode) => void;
+}) {
+    const btnRef = useRef<HTMLDivElement>(null!);
+    const menuRef = useRef<HTMLDivElement>(null!);
+    const [menuOpen, setMenuOpen] = useState(false);
+    const [menuCss, setMenuCss] = useState({} as CSSProperties);
+    const EditorScrollable = VanillaWidgets.instance.EditorScrollable;
+
+    useEffect(() => {
+        if (!menuOpen || !btnRef.current) return;
+        setMenuCss(
+            onRecalculateContextMenuPosition(
+                btnRef,
+                calculateElementPosition(btnRef.current),
+                ContextMenuExpansion.BOTTOM_LEFT,
+            ),
+        );
+    }, [menuOpen]);
+
+    useEffect(() => {
+        if (!menuOpen) return;
+        const handleClickOutside = (event: MouseEvent) => {
+            if (isOnArea(event, btnRef)) return;
+            if (isOnArea(event, menuRef)) return;
+            setMenuOpen(false);
+        };
+        document.addEventListener("mousedown", handleClickOutside, true);
+        return () => document.removeEventListener("mousedown", handleClickOutside, true);
+    }, [menuOpen]);
+
+    return (
+        <div className="modeChangeBtn" ref={btnRef}>
+            <button
+                type="button"
+                className="positiveBtn txt"
+                onClick={() => setMenuOpen((v) => !v)}
+            >
+                {translate("occupancyReport.changeMode", "Change mode")}
+            </button>
+            {menuOpen && (
+                <Portal>
+                    <div className={classNames("k45_comm_contextMenu", "xtm-popup-solid")} style={menuCss} ref={menuRef}>
+                        <div className="k45_comm_contextMenu_title">
+                            {translate("occupancyReport.changeMode", "Change mode")}
+                        </div>
+                        <EditorScrollable style={{ maxHeight: "300rem" }}>
+                            {MODE_MENU_ITEMS.map(({ mode, labelKey, fallback }) => {
+                                const selected = mode === currentMode;
+                                const label = translate(labelKey, fallback);
+                                return (
+                                    <button
+                                        key={mode}
+                                        type="button"
+                                        className={classNames("k45_comm_contextMenu_item", selected && "disabled")}
+                                        disabled={selected}
+                                        onClick={() => {
+                                            setMenuOpen(false);
+                                            if (!selected) onSelectMode(mode);
+                                        }}
+                                    >
+                                        {`${selected ? "✓ " : ""}${label}`}
+                                    </button>
+                                );
+                            })}
+                        </EditorScrollable>
+                    </div>
+                </Portal>
+            )}
+        </div>
+    );
 }
 
 export const XtmLineListingPage = () => {
@@ -70,9 +205,14 @@ export const XtmLineListingPage = () => {
     const [filterExclude, setFilterExclude] = useState(persistedFilterExclude);
     const [activityExclude, setActivityExclude] = useState(persistedActivityExclude);
     const [currentSort, setCurrentSort] = useState(persistedSort);
+    const [overviewMode, setOverviewMode] = useState(persistedOverviewMode);
     const [passengerPalettes, setPassengerPalettes] = useState<Partial<Record<TransportType, string>>>({});
     const [cargoPalettes, setCargoPalettes] = useState<Partial<Record<TransportType, string>>>({});
+    const [report, setReport] = useState<SegmentOccupancyReport | null>(null);
+    const [reportLoading, setReportLoading] = useState(false);
+    const localization = useLocalization();
     const ToolButton = VanillaComponentResolver.instance.ToolButton;
+    const reportMode = isReportMode(overviewMode);
 
     const reloadLines = (res: LineData[]) => {
         if (!Array.isArray(res)) {
@@ -95,7 +235,6 @@ export const XtmLineListingPage = () => {
                     ? {
                         ...line,
                         active: flags.active,
-                        // Keep prior schedule when disabling so engine value stays until refresh
                         schedule: flags.active ? flags.schedule : line.schedule,
                     }
                     : line,
@@ -135,6 +274,19 @@ export const XtmLineListingPage = () => {
     const typeUsesPalette = (type: TransportType, isCargo: boolean) =>
         typeHasPaletteGuid(isCargo ? cargoPalettes[type] : passengerPalettes[type]);
 
+    const fetchReport = async (mode: OverviewScreenMode) => {
+        if (!isReportMode(mode)) return;
+        setReportLoading(true);
+        try {
+            const data = await SegmentOccupancyService.getCityReport(mode === "occupancyCargo");
+            setReport(data ?? null);
+        } catch {
+            setReport(null);
+        } finally {
+            setReportLoading(false);
+        }
+    };
+
     useEffect(() => {
         const onLines = (x: LineData[]) => reloadLines(x);
         const reloadPaletteSettings = async () => {
@@ -152,6 +304,9 @@ export const XtmLineListingPage = () => {
             AutoColorService.doOnAutoColorSettingsChanged(() => {
                 reloadPaletteSettings();
             });
+            if (isReportMode(persistedOverviewMode)) {
+                fetchReport(persistedOverviewMode);
+            }
         });
         return () => {
             engine.off("k45::xtm.lineViewer.getCityLines->");
@@ -190,6 +345,17 @@ export const XtmLineListingPage = () => {
         });
     };
 
+    const onSelectMode = (mode: OverviewScreenMode) => {
+        persistedOverviewMode = mode;
+        setOverviewMode(mode);
+        setFilters([], []);
+        if (isReportMode(mode)) {
+            fetchReport(mode);
+        } else {
+            setReport(null);
+        }
+    };
+
     const visibleLines = useMemo(
         () =>
             linesList.filter((x) => {
@@ -223,6 +389,14 @@ export const XtmLineListingPage = () => {
         [passengerTypeKeys, cargoTypeKeys],
     );
 
+    const visibleTypeKeys = useMemo(() => {
+        if (overviewMode === "occupancyPassengers") return passengerTypeKeys;
+        if (overviewMode === "occupancyCargo") return cargoTypeKeys;
+        return presentTypeOrder;
+    }, [overviewMode, passengerTypeKeys, cargoTypeKeys, presentTypeOrder]);
+
+    const visibleActivityOrder = reportMode ? REPORT_ACTIVITY_ORDER : ACTIVITY_ORDER;
+
     const sortMenuItems = LINE_SORT_KEYS.map((key) => {
         const labelBase = translate(...SORT_LABEL_KEYS[key]);
         const marker = currentSort.key === key ? `${currentSort.descending ? "↓" : "↑"} ` : "";
@@ -250,19 +424,25 @@ export const XtmLineListingPage = () => {
         ? translate("lineList.noLinesInCity", "No lines in the city")
         : translate("lineList.noMatchingLines", "No matching lines");
 
+    const reportDateTimeText = replaceArgs(
+        translate("occupancyReport.dataAsOf", "Data as of {datetime}"),
+        { datetime: formatReportDateTime(localization, report?.cityDateTime) },
+    );
+
+    const showPassengerTypes = overviewMode === "listing" || overviewMode === "occupancyPassengers";
+    const showCargoTypes = overviewMode === "listing" || overviewMode === "occupancyCargo";
+
     return (
         <div className="xtm-line-listing">
             <section className="filterRow">
                 <FocusDisabled>
-                    {passengerTypeKeys.map(renderTypeFilterButton)}
-                    {passengerTypeKeys.length > 0 && cargoTypeKeys.length > 0 && (
+                    {showPassengerTypes && passengerTypeKeys.map(renderTypeFilterButton)}
+                    {overviewMode === "listing" && passengerTypeKeys.length > 0 && cargoTypeKeys.length > 0 && (
                         <div className="space modalSplit" />
                     )}
-                    {cargoTypeKeys.map(renderTypeFilterButton)}
-                    {(passengerTypeKeys.length > 0 || cargoTypeKeys.length > 0) && (
-                        <div className="space" />
-                    )}
-                    {ACTIVITY_ORDER.map((key) => (
+                    {showCargoTypes && cargoTypeKeys.map(renderTypeFilterButton)}
+                    {visibleTypeKeys.length > 0 && <div className="space" />}
+                    {visibleActivityOrder.map((key) => (
                         <ToolButton
                             key={key}
                             src={ACTIVITY_TO_ICONS[key]}
@@ -281,82 +461,118 @@ export const XtmLineListingPage = () => {
                         type="button"
                         className="neutralBtn txt"
                         onClick={() => {
-                            setFilters(presentTypeOrder.slice(), ACTIVITY_ORDER.slice());
+                            setFilters(visibleTypeKeys.slice(), visibleActivityOrder.slice());
                         }}
                     >
                         {translate("lineList.hideAll", "Hide all")}
                     </button>
-                    <button
-                        type="button"
-                        className="neutralBtn txt"
-                        onClick={() => setFilters(cargoTypeKeys.slice(), activityExclude)}
-                    >
-                        {translate("lineList.passengerLines", "Passenger lines")}
-                    </button>
-                    <button
-                        type="button"
-                        className="neutralBtn txt"
-                        onClick={() => setFilters(passengerTypeKeys.slice(), activityExclude)}
-                    >
-                        {translate("lineList.cargoRoutes", "Cargo routes")}
-                    </button>
+                    {overviewMode === "listing" && (
+                        <>
+                            <button
+                                type="button"
+                                className="neutralBtn txt"
+                                onClick={() => setFilters(cargoTypeKeys.slice(), activityExclude)}
+                            >
+                                {translate("lineList.passengerLines", "Passenger lines")}
+                            </button>
+                            <button
+                                type="button"
+                                className="neutralBtn txt"
+                                onClick={() => setFilters(passengerTypeKeys.slice(), activityExclude)}
+                            >
+                                {translate("lineList.cargoRoutes", "Cargo routes")}
+                            </button>
+                        </>
+                    )}
+                    {reportMode && (
+                        <>
+                            <div className="space" />
+                            <button
+                                type="button"
+                                className="neutralBtn txt"
+                                disabled={reportLoading}
+                                onClick={() => fetchReport(overviewMode)}
+                            >
+                                {translate("occupancyReport.refreshData", "Refresh data")}
+                            </button>
+                        </>
+                    )}
                     <div className="spacegrow" />
                     <div className="filterRowEnd">
-                        <div className="linesCountLabel">
-                            {replaceArgs(translate("lineList.linesCurrentFilterFormat", "{LINECOUNT} lines"), {
-                                LINECOUNT: `${visibleLines.length}`,
-                            })}
-                        </div>
-                        <ContextMenuButton
-                            src={currentSort.descending ? SORT_MENU_ICON_DESC : SORT_MENU_ICON_ASC}
-                            tooltip={translate("lineList.sort.title", "Sort lines")}
-                            menuTitle={translate("lineList.sort.title", "Sort lines")}
-                            menuDirection={ContextMenuExpansion.BOTTOM_LEFT}
-                            menuClassName="xtm-popup-solid"
-                            menuItems={sortMenuItems}
-                            focusKey={VanillaComponentResolver.instance.FOCUS_DISABLED}
-                        />
+                        {reportMode ? (
+                            <div className="reportDateTimeLabel">{reportDateTimeText}</div>
+                        ) : (
+                            <>
+                                <div className="linesCountLabel">
+                                    {replaceArgs(translate("lineList.linesCurrentFilterFormat", "{LINECOUNT} lines"), {
+                                        LINECOUNT: `${visibleLines.length}`,
+                                    })}
+                                </div>
+                                <ContextMenuButton
+                                    src={currentSort.descending ? SORT_MENU_ICON_DESC : SORT_MENU_ICON_ASC}
+                                    tooltip={translate("lineList.sort.title", "Sort lines")}
+                                    menuTitle={translate("lineList.sort.title", "Sort lines")}
+                                    menuDirection={ContextMenuExpansion.BOTTOM_LEFT}
+                                    menuClassName="xtm-popup-solid"
+                                    menuItems={sortMenuItems}
+                                    focusKey={VanillaComponentResolver.instance.FOCUS_DISABLED}
+                                />
+                            </>
+                        )}
+                        <div className="modeChangeSpacer" />
+                        <ModeChangeButton currentMode={overviewMode} onSelectMode={onSelectMode} />
                     </div>
                 </FocusDisabled>
             </section>
-            <section className="LineList">
-                <Scrollable className="scrollArea">
-                    {visibleLines.length === 0 ? (
-                        <div className="emptyListMessage">{emptyListMessage}</div>
-                    ) : (
-                        visibleLines.flatMap((x, i, a) => [
-                            i > 0 && (a[i - 1].type !== x.type || a[i - 1].isCargo !== x.isCargo) ? (
-                                <div key={`sep_${i}`} className="typeSeparator" />
-                            ) : null,
-                            <LineItemCard
-                                key={`${x.entity.Index}_${i}`}
-                                lineData={x}
-                                typeUsesPalette={typeUsesPalette(x.type, x.isCargo)}
-                                onOpenDetails={() => transport.selectLine(toVanillaEntity(x.entity))}
-                                onActivityChange={(activity) => patchLineActivity(x.entity.Index, activity)}
-                                onColorChange={(color, isFixedColor) => {
-                                    patchLineColor(x.entity.Index, color, isFixedColor);
-                                    if (!isFixedColor) {
-                                        // setIgnorePalette uses EndFrameBarrier + palette update; reload after apply
-                                        const reload = () => LineManagementService.listLines().then(reloadLines);
-                                        window.setTimeout(reload, 100);
-                                        window.setTimeout(reload, 400);
-                                    }
-                                }}
-                                onIdentityChange={(patch) => {
-                                    patchLineIdentity(x.entity.Index, patch);
-                                    if (patch.routeNumber !== undefined) {
-                                        // Route number can reassign palette color via EndFrameBarrier
-                                        const reload = () => LineManagementService.listLines().then(reloadLines);
-                                        window.setTimeout(reload, 100);
-                                        window.setTimeout(reload, 400);
-                                    }
-                                }}
-                            />,
-                        ])
-                    )}
-                </Scrollable>
-            </section>
+            {reportMode ? (
+                <section className="LineList LineList--report">
+                    <Scrollable className="scrollArea">
+                        <XtmOccupancyReportPage
+                            report={report}
+                            loading={reportLoading}
+                            filterExclude={filterExclude}
+                            activityExclude={activityExclude}
+                        />
+                    </Scrollable>
+                </section>
+            ) : (
+                <section className="LineList">
+                    <Scrollable className="scrollArea">
+                        {visibleLines.length === 0 ? (
+                            <div className="emptyListMessage">{emptyListMessage}</div>
+                        ) : (
+                            visibleLines.flatMap((x, i, a) => [
+                                i > 0 && (a[i - 1].type !== x.type || a[i - 1].isCargo !== x.isCargo) ? (
+                                    <div key={`sep_${i}`} className="typeSeparator" />
+                                ) : null,
+                                <LineItemCard
+                                    key={`${x.entity.Index}_${i}`}
+                                    lineData={x}
+                                    typeUsesPalette={typeUsesPalette(x.type, x.isCargo)}
+                                    onOpenDetails={() => transport.selectLine(toVanillaEntity(x.entity))}
+                                    onActivityChange={(activity) => patchLineActivity(x.entity.Index, activity)}
+                                    onColorChange={(color, isFixedColor) => {
+                                        patchLineColor(x.entity.Index, color, isFixedColor);
+                                        if (!isFixedColor) {
+                                            const reload = () => LineManagementService.listLines().then(reloadLines);
+                                            window.setTimeout(reload, 100);
+                                            window.setTimeout(reload, 400);
+                                        }
+                                    }}
+                                    onIdentityChange={(patch) => {
+                                        patchLineIdentity(x.entity.Index, patch);
+                                        if (patch.routeNumber !== undefined) {
+                                            const reload = () => LineManagementService.listLines().then(reloadLines);
+                                            window.setTimeout(reload, 100);
+                                            window.setTimeout(reload, 400);
+                                        }
+                                    }}
+                                />,
+                            ])
+                        )}
+                    </Scrollable>
+                </section>
+            )}
         </div>
     );
 };

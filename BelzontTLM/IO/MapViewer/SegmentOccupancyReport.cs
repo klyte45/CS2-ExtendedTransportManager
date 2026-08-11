@@ -43,6 +43,8 @@ namespace BelzontTLM
         public string type { get; set; }
         public bool isCargo { get; set; }
         public bool isFixedColor { get; set; }
+        /// <summary>RouteSchedule: Day = 0, Night = 1, DayAndNight = 2.</summary>
+        public int schedule { get; set; }
     }
 
     public class SegmentOccupancyStop

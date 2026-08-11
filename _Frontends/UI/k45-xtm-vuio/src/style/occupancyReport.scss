@@ -1,0 +1,235 @@
+@import "./crowdness.scss";
+
+.xtm-line-listing {
+    .xtm-occupancyReportPage {
+        display: flex;
+        flex-direction: column;
+        width: 100%;
+        align-self: flex-start;
+        box-sizing: border-box;
+        padding-top: 8rem;
+        padding-right: 12rem;
+        padding-bottom: 24rem;
+        padding-left: 12rem;
+
+        &.xtm-occupancyReportPage_status {
+            align-items: center;
+            justify-content: center;
+            min-height: 120rem;
+            color: var(--textColorDim);
+            font-size: var(--fontSizeL);
+        }
+    }
+
+    .xtm-occupancyReportSection {
+        display: flex;
+        flex-direction: column;
+        width: 100%;
+        box-sizing: border-box;
+        margin-bottom: 20rem;
+
+        &_title {
+            font-size: var(--fontSizeL);
+            font-weight: bold;
+            color: var(--textColor);
+            margin-bottom: 8rem;
+            white-space: nowrap;
+            overflow: hidden;
+        }
+
+        &_grid {
+            display: flex;
+            flex-direction: row;
+            width: 100%;
+            box-sizing: border-box;
+            align-items: flex-start;
+
+            >*+* {
+                margin-left: 10rem;
+            }
+        }
+
+        &_column {
+            flex: 1 1 0;
+            min-width: 0;
+            display: flex;
+            flex-direction: column;
+            box-sizing: border-box;
+        }
+
+        &_columnHeader {
+            font-size: var(--fontSizeS);
+            font-weight: bold;
+            color: var(--textColorDim);
+            text-align: center;
+            margin-bottom: 6rem;
+            white-space: nowrap;
+            overflow: hidden;
+        }
+
+        &_columnBody {
+            display: flex;
+            flex-direction: column;
+            width: 100%;
+
+            >*+* {
+                margin-top: 6rem;
+            }
+        }
+
+        &_empty {
+            min-height: 80rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--textColorDim);
+            font-size: var(--fontSizeM);
+            background-color: var(--menuPanel1);
+            border-radius: 8rem;
+            padding: 8rem;
+            box-sizing: border-box;
+            text-align: center;
+        }
+    }
+
+    .xtm-occupancyReportItem {
+        display: flex;
+        flex-direction: row;
+        align-items: stretch;
+        width: 100%;
+        box-sizing: border-box;
+        background-color: var(--menuPanel1);
+        backdrop-filter: var(--panelBlur);
+        border-top-left-radius: 20rem;
+        border-bottom-left-radius: 20rem;
+        overflow: hidden;
+        padding-top: 6rem;
+        padding-right: 6rem;
+        padding-bottom: 6rem;
+        padding-left: 6rem;
+
+        &_shield {
+            flex: 0 0 52rem;
+            width: 52rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: visible;
+            position: relative;
+        }
+
+        &_rank {
+            position: absolute;
+            top: 0;
+            left: 0;
+            z-index: 2;
+            font-size: 10rem;
+            font-weight: bold;
+            line-height: 1;
+            color: var(--textColor);
+            text-shadow: 0 0 3rem #000000, 0 1rem 2rem #000000;
+            pointer-events: none;
+        }
+
+        &_format {
+            transform: scale(0.65);
+            transform-origin: center center;
+        }
+
+        &_body {
+            flex: 1 1 0;
+            min-width: 0;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            padding-left: 4rem;
+            box-sizing: border-box;
+            overflow: hidden;
+        }
+
+        &_name {
+            font-weight: bold;
+            font-size: var(--fontSizeM);
+            color: var(--textColor);
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            max-height: 36rem;
+            coh-font-fit-mode: shrink;
+            coh-font-fit-min-size: 5rem;
+        }
+
+        &_stops {
+            display: flex;
+            flex-direction: column;
+            min-width: 0;
+            overflow: hidden;
+            flex: 1 1 auto;
+        }
+
+        &_stop {
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            font-size: var(--fontSizeS);
+            color: var(--textColor);
+            line-height: 1.2;
+            coh-font-fit-mode: shrink;
+            coh-font-fit-min-size: 5rem;
+            height: 15rem;
+            width: 100%;
+            text-align: center;
+        }
+
+        &_arrow {
+            font-size: var(--fontSizeS);
+            color: var(--textColorDim);
+            line-height: 1;
+            margin-top: 1rem;
+            margin-bottom: 1rem;
+            width: 100%;
+            text-align: center;
+        }
+
+        &_occupancy {
+            align-self: flex-start;
+            margin-top: 4rem;
+            padding-top: 2rem;
+            padding-right: 6rem;
+            padding-bottom: 2rem;
+            padding-left: 6rem;
+            border-radius: 4rem;
+            color: #ffffff;
+            font-weight: bold;
+            font-size: var(--fontSizeS);
+            white-space: nowrap;
+            width: 100%;
+            text-align: center;
+        }
+    }
+
+    .filterRowEnd {
+        .modeChangeSpacer {
+            width: 12rem;
+            flex-shrink: 0;
+        }
+
+        .modeChangeBtn {
+            position: relative;
+            flex-shrink: 0;
+        }
+    }
+
+    .reportDateTimeLabel {
+        padding-top: 0;
+        padding-right: 10rem;
+        padding-bottom: 0;
+        padding-left: 10rem;
+        white-space: nowrap;
+        flex-shrink: 0;
+        font-size: var(--fontSizeM);
+        font-weight: normal;
+        text-transform: none;
+        color: var(--textColor);
+    }
+}
