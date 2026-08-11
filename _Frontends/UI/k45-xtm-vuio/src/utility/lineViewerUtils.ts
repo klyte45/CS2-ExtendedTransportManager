@@ -78,7 +78,7 @@ export function getSegmentOccupancyModeHourRange(
         case "08_12": return { startHour: 8, endHour: 12 };
         case "12_16": return { startHour: 12, endHour: 16 };
         case "16_20": return { startHour: 16, endHour: 20 };
-        case "20_00": return { startHour: 20, endHour: 24 };
+        case "20_24": return { startHour: 20, endHour: 24 };
         default: return null;
     }
 }

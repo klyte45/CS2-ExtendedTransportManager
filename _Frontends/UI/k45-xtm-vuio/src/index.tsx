@@ -15,7 +15,7 @@ import i_occupancy04_08 from "#images/i_occupancy04_08.svg";
 import i_occupancy08_12 from "#images/i_occupancy08_12.svg";
 import i_occupancy12_16 from "#images/i_occupancy12_16.svg";
 import i_occupancy16_20 from "#images/i_occupancy16_20.svg";
-import i_occupancy20_00 from "#images/i_occupancy20_00.svg";
+import i_occupancy20_24 from "#images/i_occupancy20_24.svg";
 import {
     LineManagementService,
     MapViewerOptions,
@@ -51,7 +51,7 @@ const SEGMENT_OCCUPANCY_MODE_ICONS: Record<SegmentOccupancyDisplayMode, string> 
     "08_12": i_occupancy08_12,
     "12_16": i_occupancy12_16,
     "16_20": i_occupancy16_20,
-    "20_00": i_occupancy20_00,
+    "20_24": i_occupancy20_24,
 };
 
 const SEGMENT_OCCUPANCY_MODE_LABEL_KEYS: Record<SegmentOccupancyDisplayMode, [string, string]> = {
@@ -63,7 +63,7 @@ const SEGMENT_OCCUPANCY_MODE_LABEL_KEYS: Record<SegmentOccupancyDisplayMode, [st
     "08_12": ["lineViewer.segmentOccupancyMode.08_12", "08:00–12:00"],
     "12_16": ["lineViewer.segmentOccupancyMode.12_16", "12:00–16:00"],
     "16_20": ["lineViewer.segmentOccupancyMode.16_20", "16:00–20:00"],
-    "20_00": ["lineViewer.segmentOccupancyMode.20_00", "20:00–00:00"],
+    "20_24": ["lineViewer.segmentOccupancyMode.20_24", "20:00–24:00"],
 };
 
 const register: ModRegistrar = (moduleRegistry) => {

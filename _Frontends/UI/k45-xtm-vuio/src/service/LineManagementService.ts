@@ -113,7 +113,7 @@ export type SegmentOccupancyDisplayMode =
     | "08_12"
     | "12_16"
     | "16_20"
-    | "20_00";
+    | "20_24";
 
 export const SEGMENT_OCCUPANCY_DISPLAY_MODES: SegmentOccupancyDisplayMode[] = [
     "none",
@@ -124,7 +124,7 @@ export const SEGMENT_OCCUPANCY_DISPLAY_MODES: SegmentOccupancyDisplayMode[] = [
     "08_12",
     "12_16",
     "16_20",
-    "20_00",
+    "20_24",
 ];
 
 export type MapViewerOptions = {

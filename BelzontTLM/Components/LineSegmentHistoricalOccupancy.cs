@@ -141,7 +141,7 @@ namespace BelzontTLM
 
         /// <summary>
         /// Effective usage ratios (ema/cap) for UI; stale buckets (day-gap) expose 0.
-        /// Order: 00–04, 04–08, 08–12, 12–16, 16–20, 20–00.
+        /// Order: 00–04, 04–08, 08–12, 12–16, 16–20, 20–24.
         /// </summary>
         public void GetEffectiveUsages(int currentDay, out float u00, out float u04, out float u08, out float u12, out float u16, out float u20)
         {

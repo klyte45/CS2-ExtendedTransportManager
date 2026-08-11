@@ -1,7 +1,6 @@
 <svg width="512" height="512" version="1.1" xmlns="http://www.w3.org/2000/svg">
- <!-- Placeholder: segment occupancy mode  current hour (clock) -->
- <circle cx="256" cy="256" r="190" fill="none" stroke="#ffffff" stroke-width="28"/>
+ <path d="m256 106a14 14 0 0 0-14 14v136a14 14 0 0 0 14 14 14 14 0 0 0 14-14v-136a14 14 0 0 0-14-14z" color="#000000" fill="#ffffff" stroke-linecap="round" style="-inkscape-stroke:none"/>
+ <path d="m256 48.5c-114 0-208 93.1-208 208s93.1 208 208 208 208-93.1 208-208-93.1-208-208-208zm0 35c95.5 0 172 77 172 172s-77 172-172 172-172-77-172-172 77-172 172-172z" color="#000000" fill="#ffffff" style="-inkscape-stroke:none"/>
+ <path d="m256 242a14 14 0 0 0-14 14 14 14 0 0 0 14 14h104a14 14 0 0 0 14-14 14 14 0 0 0-14-14z" color="#000000" fill="#ffffff" stroke-linecap="round" style="-inkscape-stroke:none"/>
  <circle cx="256" cy="256" r="18" fill="#ffffff"/>
- <line x1="256" y1="256" x2="256" y2="120" stroke="#ffffff" stroke-width="28" stroke-linecap="round"/>
- <line x1="256" y1="256" x2="360" y2="256" stroke="#ffffff" stroke-width="28" stroke-linecap="round"/>
 </svg>

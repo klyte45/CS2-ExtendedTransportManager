@@ -13,8 +13,7 @@ type Props = {
 };
 
 function formatHourRangeLabel(startHour: number, endHour: number): string {
-    const end = endHour === 24 ? 0 : endHour;
-    return `${startHour}h~${end}h`;
+    return `${startHour}h~${endHour}h`;
 }
 
 const HOUR_RANGE_LABELS = [

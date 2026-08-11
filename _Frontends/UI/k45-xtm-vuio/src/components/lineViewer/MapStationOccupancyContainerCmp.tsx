@@ -25,8 +25,7 @@ type Props = {
 };
 
 function formatHourLabel(hour: number): string {
-    const h = hour === 24 ? 0 : hour;
-    return h.toFixed(0).padStart(2, "0") + ":00";
+    return hour.toFixed(0).padStart(2, "0") + ":00";
 }
 
 /**
