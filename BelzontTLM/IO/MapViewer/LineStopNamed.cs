@@ -26,6 +26,12 @@ namespace BelzontTLM
         public LineStopConnnection[] connectedLines { get; }
         public Vector3Json worldPosition { get; }
         public float azimuth { get; }
+        public float usage00_04 { get; }
+        public float usage04_08 { get; }
+        public float usage08_12 { get; }
+        public float usage12_16 { get; }
+        public float usage16_20 { get; }
+        public float usage20_00 { get; }
 
         public LineStopNamed(LineStop src, NameSystem nameSystem, EntityManager em)
         {
@@ -59,6 +65,12 @@ namespace BelzontTLM
             }
             worldPosition = new(src.worldPosition);
             azimuth = src.rotation.eulerAngles.y;
+            usage00_04 = src.usage00_04;
+            usage04_08 = src.usage04_08;
+            usage08_12 = src.usage08_12;
+            usage12_16 = src.usage12_16;
+            usage16_20 = src.usage16_20;
+            usage20_00 = src.usage20_00;
 
             static Entity TryGetByBorderDistrict(EntityManager em, Entity attachParent) => em.TryGetComponent<BorderDistrict>(attachParent, out var borders)
                                         ? borders.m_Left != Entity.Null

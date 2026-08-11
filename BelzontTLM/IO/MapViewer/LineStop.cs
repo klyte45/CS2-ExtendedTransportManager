@@ -24,8 +24,21 @@ namespace BelzontTLM
 
         public Quaternion rotation { get; }
 
+        /// <summary>Effective historical usage (ema/cap) for 00:00–04:00; 0 if stale.</summary>
+        public float usage00_04 { get; }
+        /// <summary>Effective historical usage for 04:00–08:00.</summary>
+        public float usage04_08 { get; }
+        /// <summary>Effective historical usage for 08:00–12:00.</summary>
+        public float usage08_12 { get; }
+        /// <summary>Effective historical usage for 12:00–16:00.</summary>
+        public float usage12_16 { get; }
+        /// <summary>Effective historical usage for 16:00–20:00.</summary>
+        public float usage16_20 { get; }
+        /// <summary>Effective historical usage for 20:00–24:00.</summary>
+        public float usage20_00 { get; }
 
-        public LineStop(Entity waypoint, Entity entity, float position, int cargo, bool isCargo, bool isOutsideConnection, NativeHashSet<LineStopConnnection> linesConnected, Vector3 worldPosition, Quaternion rotation)
+        public LineStop(Entity waypoint, Entity entity, float position, int cargo, bool isCargo, bool isOutsideConnection, NativeHashSet<LineStopConnnection> linesConnected, Vector3 worldPosition, Quaternion rotation,
+            float usage00_04 = 0f, float usage04_08 = 0f, float usage08_12 = 0f, float usage12_16 = 0f, float usage16_20 = 0f, float usage20_00 = 0f)
         {
             this.waypoint = waypoint;
             this.entity = entity;
@@ -36,6 +49,12 @@ namespace BelzontTLM
             this.linesConnected = linesConnected;
             this.worldPosition = worldPosition;
             this.rotation = rotation;
+            this.usage00_04 = usage00_04;
+            this.usage04_08 = usage04_08;
+            this.usage08_12 = usage08_12;
+            this.usage12_16 = usage12_16;
+            this.usage16_20 = usage16_20;
+            this.usage20_00 = usage20_00;
         }
     }
 }

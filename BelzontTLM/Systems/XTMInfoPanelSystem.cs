@@ -235,6 +235,10 @@ namespace BelzontTLM
         }
         private LineDetailDataJob FillJobParams(NativeList<LineDetailDataUnsafe> output, Entity e = default)
         {
+            var simulationSystem = World.GetOrCreateSystemManaged<Game.Simulation.SimulationSystem>();
+            var timeData = TimeData.GetSingleton(GetEntityQuery(ComponentType.ReadOnly<TimeData>()));
+            int currentDay = Game.Simulation.TimeSystem.GetDay(simulationSystem.frameIndex, timeData);
+
             return new LineDetailDataJob
             {
                 m_Colors = GetComponentLookup<Game.Routes.Color>(),
@@ -271,6 +275,8 @@ namespace BelzontTLM
                 m_Transforms = GetComponentLookup<Game.Objects.Transform>(),
                 m_TransportStops = GetComponentLookup<Game.Routes.TransportStop>(),
                 m_OutsideConnections = GetComponentLookup<Game.Objects.OutsideConnection>(),
+                m_HistoricalOccupancy = GetComponentLookup<LineSegmentHistoricalOccupancy>(true),
+                m_CurrentDay = currentDay,
                 m_EconomyResourcesBuffers = GetBufferLookup<Game.Economy.Resources>(),
                 m_RouteWaypointBuffers = GetBufferLookup<RouteWaypoint>(),
                 m_RouteSegmentBuffers = GetBufferLookup<RouteSegment>(),

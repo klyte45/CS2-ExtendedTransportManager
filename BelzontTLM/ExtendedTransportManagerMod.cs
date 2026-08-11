@@ -27,6 +27,7 @@ namespace BelzontTLM
 
             updateSystem.UpdateAfter<XTMLineListingSection>(SystemUpdatePhase.UIUpdate);
 
+            updateSystem.UpdateAt<XTMSegmentOccupancyHistorySystem>(SystemUpdatePhase.GameSimulation);
             updateSystem.UpdateAt<XTM_WEIntegrationController>(SystemUpdatePhase.ModificationEnd);
             updateSystem.UpdateAt<XTMInfoPanelSystem>(SystemUpdatePhase.UIUpdate);
 

@@ -303,7 +303,14 @@ namespace BelzontTLM
 
                         var transformData = m_Transforms[stopPoint];
 
-                        LineStop lineStop = new LineStop(stations[l].m_Waypoint, stopPoint, position, waiting, isCargo, m_OutsideConnections.HasComponent(stopPoint), linesConnected, transformData.m_Position, transformData.m_Rotation);
+                        float usage00 = 0f, usage04 = 0f, usage08 = 0f, usage12 = 0f, usage16 = 0f, usage20 = 0f;
+                        if (m_HistoricalOccupancy.TryGetComponent(stations[l].m_Waypoint, out LineSegmentHistoricalOccupancy occupancy))
+                        {
+                            occupancy.GetEffectiveUsages(m_CurrentDay, out usage00, out usage04, out usage08, out usage12, out usage16, out usage20);
+                        }
+
+                        LineStop lineStop = new LineStop(stations[l].m_Waypoint, stopPoint, position, waiting, isCargo, m_OutsideConnections.HasComponent(stopPoint), linesConnected, transformData.m_Position, transformData.m_Rotation,
+                            usage00, usage04, usage08, usage12, usage16, usage20);
                         output.m_StopsResult.Add(lineStop);
                     }
                 }
@@ -578,77 +585,23 @@ namespace BelzontTLM
 
             private ValueTuple<int, int> GetCargo(Entity entity)
             {
-                int waiting = 0;
-                int capacity = 0;
-                if (m_PrefabRefs.TryGetComponent(entity, out PrefabRef prefabRef))
+                var loadCap = XTMVehicleLoadUtils.GetLoadAndCapacity(entity, new XTMVehicleLoadUtils.Lookups
                 {
-                    if (m_LayoutElementBuffers.TryGetBuffer(entity, out DynamicBuffer<LayoutElement> dynamicBuffer))
-                    {
-                        for (int i = 0; i < dynamicBuffer.Length; i++)
-                        {
-                            Entity vehicle = dynamicBuffer[i].m_Vehicle;
-                            if (m_PassengerBuffers.TryGetBuffer(vehicle, out DynamicBuffer<Passenger> dynamicBuffer2))
-                            {
-                                for (int j = 0; j < dynamicBuffer2.Length; j++)
-                                {
-                                    if (!m_Pets.HasComponent(dynamicBuffer2[j].m_Passenger))
-                                    {
-                                        waiting++;
-                                    }
-                                }
-                            }
-                            else if (m_EconomyResourcesBuffers.TryGetBuffer(vehicle, out DynamicBuffer<Game.Economy.Resources> dynamicBuffer3))
-                            {
-                                for (int k = 0; k < dynamicBuffer3.Length; k++)
-                                {
-                                    waiting += dynamicBuffer3[k].m_Amount;
-                                }
-                            }
-                            if (m_PrefabRefs.TryGetComponent(vehicle, out PrefabRef prefabRef2))
-                            {
-                                Entity prefab = prefabRef2.m_Prefab;
-                                if (m_PublicTransportVehicleDatas.TryGetComponent(prefab, out PublicTransportVehicleData publicTransportVehicleData))
-                                {
-                                    capacity += publicTransportVehicleData.m_PassengerCapacity;
-                                }
-                                else if (m_CargoTransportVehicleDatas.TryGetComponent(prefab, out CargoTransportVehicleData cargoTransportVehicleData))
-                                {
-                                    capacity += cargoTransportVehicleData.m_CargoCapacity;
-                                }
-                            }
-                        }
-                    }
-                    else
-                    {
-                        if (m_PassengerBuffers.TryGetBuffer(entity, out DynamicBuffer<Passenger> dynamicBuffer4))
-                        {
-                            for (int l = 0; l < dynamicBuffer4.Length; l++)
-                            {
-                                if (!m_Pets.HasComponent(dynamicBuffer4[l].m_Passenger))
-                                {
-                                    waiting++;
-                                }
-                            }
-                        }
-                        else if (m_EconomyResourcesBuffers.TryGetBuffer(entity, out DynamicBuffer<Game.Economy.Resources> dynamicBuffer5))
-                        {
-                            for (int m = 0; m < dynamicBuffer5.Length; m++)
-                            {
-                                waiting += dynamicBuffer5[m].m_Amount;
-                            }
-                        }
-                        if (m_PublicTransportVehicleDatas.TryGetComponent(prefabRef.m_Prefab, out PublicTransportVehicleData publicTransportVehicleData2))
-                        {
-                            capacity = publicTransportVehicleData2.m_PassengerCapacity;
-                        }
-                        else if (m_CargoTransportVehicleDatas.TryGetComponent(prefabRef.m_Prefab, out CargoTransportVehicleData cargoTransportVehicleData2))
-                        {
-                            capacity += cargoTransportVehicleData2.m_CargoCapacity;
-                        }
-                    }
-                }
-                return new ValueTuple<int, int>(waiting, capacity);
+                    PrefabRefs = m_PrefabRefs,
+                    Pets = m_Pets,
+                    PublicTransportVehicleDatas = m_PublicTransportVehicleDatas,
+                    CargoTransportVehicleDatas = m_CargoTransportVehicleDatas,
+                    LayoutElements = m_LayoutElementBuffers,
+                    Passengers = m_PassengerBuffers,
+                    Resources = m_EconomyResourcesBuffers
+                });
+                return new ValueTuple<int, int>(loadCap.x, loadCap.y);
             }
+
+            public int m_CurrentDay;
+
+            [ReadOnly]
+            public ComponentLookup<LineSegmentHistoricalOccupancy> m_HistoricalOccupancy;
 
             [ReadOnly]
             public EntityTypeHandle m_EntityType;
