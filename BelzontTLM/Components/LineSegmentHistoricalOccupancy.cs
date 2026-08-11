@@ -168,6 +168,35 @@ namespace BelzontTLM
         }
 
         /// <summary>
+        /// Raw EMA load/capacity for city occupancy reports.
+        /// Stale buckets expose 0,0 (capacity is zeroed even if preserved in storage).
+        /// Order: 00–04, 04–08, 08–12, 12–16, 16–20, 20–24.
+        /// </summary>
+        public void GetRawLoadAndCapacity(int currentDay,
+            out float o00, out float o04, out float o08, out float o12, out float o16, out float o20,
+            out float c00, out float c04, out float c08, out float c12, out float c16, out float c20)
+        {
+            Raw(ema_00_04, cap_00_04, lastDay_00_04, currentDay, out o00, out c00);
+            Raw(ema_04_08, cap_04_08, lastDay_04_08, currentDay, out o04, out c04);
+            Raw(ema_08_12, cap_08_12, lastDay_08_12, currentDay, out o08, out c08);
+            Raw(ema_12_16, cap_12_16, lastDay_12_16, currentDay, out o12, out c12);
+            Raw(ema_16_20, cap_16_20, lastDay_16_20, currentDay, out o16, out c16);
+            Raw(ema_20_00, cap_20_00, lastDay_20_00, currentDay, out o20, out c20);
+        }
+
+        private static void Raw(float ema, float cap, int lastDay, int currentDay, out float occupancy, out float capacity)
+        {
+            if (IsStale(lastDay, currentDay))
+            {
+                occupancy = 0f;
+                capacity = 0f;
+                return;
+            }
+            occupancy = ema;
+            capacity = cap;
+        }
+
+        /// <summary>
         /// Fold non-stale effective usages into running min/max (same rules as the occupancy graph).
         /// </summary>
         public void AccumulateNonStaleMinMax(int currentDay, ref float min, ref float max, ref bool any)
