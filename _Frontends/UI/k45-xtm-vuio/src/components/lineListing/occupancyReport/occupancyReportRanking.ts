@@ -9,6 +9,7 @@ import { LineActivityClass, getLineActivityClass } from "#components/lineListing
 export const OCCUPANCY_BUCKET_COUNT = 6;
 export const TOP_LINES_PER_COLUMN = 3;
 export const TOP_SEGMENTS_PER_COLUMN = 10;
+export const FULL_RANKING_LIMIT = 200;
 
 /** Column indices: 0 = overall, 1..6 = buckets 0..5 */
 export type OccupancyReportColumnId = "overall" | 0 | 1 | 2 | 3 | 4 | 5;
@@ -37,6 +38,10 @@ export type OccupancyReportColumnData = {
     columnId: OccupancyReportColumnId;
     lines: RankedLineItem[];
     segments: RankedSegmentItem[];
+    /** Count before applying lineLimit (for truncation UI). */
+    linesTotal: number;
+    /** Count before applying segmentLimit (for truncation UI). */
+    segmentsTotal: number;
 };
 
 function entityKey(entity: { Index: number; Version?: number } | null | undefined): string {
@@ -80,14 +85,18 @@ function edgeKey(lineIndex: number, sourceWp: string, targetWp: string): EdgeKey
 }
 
 /**
- * Build top-N lines and segments for each of 7 columns from a city report.
+ * Build ranked lines and segments for each of 7 columns from a city report.
  * @param descending true = highest usage first (default); false = lowest usage first
+ * @param lineLimit max lines per column (default overview top-N)
+ * @param segmentLimit max segments per column (default overview top-N)
  */
 export function buildOccupancyReportColumns(
     report: SegmentOccupancyReport,
     filterExclude: string[],
     activityExclude: LineActivityClass[],
     descending: boolean = true,
+    lineLimit: number = TOP_LINES_PER_COLUMN,
+    segmentLimit: number = TOP_SEGMENTS_PER_COLUMN,
 ): OccupancyReportColumnData[] {
     const lines = filterReportLines(report.lines ?? [], filterExclude, activityExclude);
     const lineByKey = new Map(lines.map((l) => [entityKey(l.entity), l]));
@@ -143,10 +152,10 @@ export function buildOccupancyReportColumns(
         edge.buckets[bucket] = ratio;
     }
 
-    const lineScoresByColumn = new Map<OccupancyReportColumnId, RankedLineItem[]>();
-    const segmentScoresByColumn = new Map<OccupancyReportColumnId, RankedSegmentItem[]>();
+    const lineScoresByColumn = new Map<OccupancyReportColumnId, { items: RankedLineItem[]; total: number }>();
+    const segmentScoresByColumn = new Map<OccupancyReportColumnId, { items: RankedSegmentItem[]; total: number }>();
 
-    const rankLines = (scoreOf: (lineKey: string) => number | null): RankedLineItem[] => {
+    const rankLines = (scoreOf: (lineKey: string) => number | null): { items: RankedLineItem[]; total: number } => {
         const ranked: RankedLineItem[] = [];
         for (const line of lines) {
             const key = entityKey(line.entity);
@@ -158,7 +167,7 @@ export function buildOccupancyReportColumns(
             if (a.score !== b.score) return descending ? b.score - a.score : a.score - b.score;
             return a.line.routeNumber - b.line.routeNumber;
         });
-        return ranked.slice(0, TOP_LINES_PER_COLUMN);
+        return { items: ranked.slice(0, lineLimit), total: ranked.length };
     };
 
     const toSegmentItem = (
@@ -181,7 +190,7 @@ export function buildOccupancyReportColumns(
 
     const rankSegments = (
         scoreOf: (edge: EdgeAccum) => { score: number; peakBucket?: number } | null,
-    ): RankedSegmentItem[] => {
+    ): { items: RankedSegmentItem[]; total: number } => {
         const ranked: RankedSegmentItem[] = [];
         for (const edge of edges.values()) {
             const result = scoreOf(edge);
@@ -194,7 +203,7 @@ export function buildOccupancyReportColumns(
             if (a.line.routeNumber !== b.line.routeNumber) return a.line.routeNumber - b.line.routeNumber;
             return a.sourceWaypointIndex - b.sourceWaypointIndex;
         });
-        return ranked.slice(0, TOP_SEGMENTS_PER_COLUMN);
+        return { items: ranked.slice(0, segmentLimit), total: ranked.length };
     };
 
     lineScoresByColumn.set("overall", rankLines((key) => percentile30(lineAllRatios.get(key) ?? [])));
@@ -221,9 +230,15 @@ export function buildOccupancyReportColumns(
         }));
     }
 
-    return OCCUPANCY_REPORT_COLUMNS.map((columnId) => ({
-        columnId,
-        lines: lineScoresByColumn.get(columnId) ?? [],
-        segments: segmentScoresByColumn.get(columnId) ?? [],
-    }));
+    return OCCUPANCY_REPORT_COLUMNS.map((columnId) => {
+        const lineCol = lineScoresByColumn.get(columnId);
+        const segmentCol = segmentScoresByColumn.get(columnId);
+        return {
+            columnId,
+            lines: lineCol?.items ?? [],
+            segments: segmentCol?.items ?? [],
+            linesTotal: lineCol?.total ?? 0,
+            segmentsTotal: segmentCol?.total ?? 0,
+        };
+    });
 }

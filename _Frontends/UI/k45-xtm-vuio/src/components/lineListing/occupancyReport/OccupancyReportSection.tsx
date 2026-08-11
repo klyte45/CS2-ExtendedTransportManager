@@ -8,36 +8,23 @@ import {
     RankedLineItem,
     RankedSegmentItem,
 } from "./occupancyReportRanking";
+import {
+    OccupancyReportSectionKind,
+    occupancyReportColumnLabel,
+} from "./occupancyReportLabels";
 import { OccupancyReportLineItem } from "./OccupancyReportLineItem";
 import { OccupancyReportSegmentItem } from "./OccupancyReportSegmentItem";
-
-const BUCKET_HEADER_KEYS: Record<number, [string, string]> = {
-    0: ["lineViewer.segmentOccupancyMode.00_04", "00:00-04:00"],
-    1: ["lineViewer.segmentOccupancyMode.04_08", "04:00-08:00"],
-    2: ["lineViewer.segmentOccupancyMode.08_12", "08:00-12:00"],
-    3: ["lineViewer.segmentOccupancyMode.12_16", "12:00-16:00"],
-    4: ["lineViewer.segmentOccupancyMode.16_20", "16:00-20:00"],
-    5: ["lineViewer.segmentOccupancyMode.20_24", "20:00-24:00"],
-};
 
 const SORT_ICON_ASC = "coui://uil/Standard/ArrowSortHighDown.svg";
 const SORT_ICON_DESC = "coui://uil/Standard/ArrowSortLowDown.svg";
 
-function columnHeader(columnId: OccupancyReportColumnId): string {
-    if (columnId === "overall") {
-        return translate("occupancyReport.columnOverall", "Overall");
-    }
-    return translate(...BUCKET_HEADER_KEYS[columnId]);
-}
-
-type SectionKind = "lines" | "segments";
-
 type Props = {
     title: string;
-    kind: SectionKind;
+    kind: OccupancyReportSectionKind;
     columns: OccupancyReportColumnData[];
     descending: boolean;
     onToggleDescending: () => void;
+    onOpenColumn: (columnId: OccupancyReportColumnId) => void;
 };
 
 export function OccupancyReportSection({
@@ -46,6 +33,7 @@ export function OccupancyReportSection({
     columns,
     descending,
     onToggleDescending,
+    onOpenColumn,
 }: Props) {
     const ToolButton = VanillaComponentResolver.instance.ToolButton;
     const sectionClass =
@@ -75,9 +63,13 @@ export function OccupancyReportSection({
             <div className="xtm-occupancyReportSection_grid">
                 {columns.map((col) => (
                     <div key={String(col.columnId)} className="xtm-occupancyReportSection_column">
-                        <div className="xtm-occupancyReportSection_columnHeader">
-                            {columnHeader(col.columnId)}
-                        </div>
+                        <button
+                            type="button"
+                            className="xtm-occupancyReportSection_columnHeader"
+                            onClick={() => onOpenColumn(col.columnId)}
+                        >
+                            {occupancyReportColumnLabel(col.columnId)}
+                        </button>
                         {kind === "lines" ? (
                             <div className="xtm-occupancyReportSection_columnBody">
                                 {renderLineColumn(col.lines)}
