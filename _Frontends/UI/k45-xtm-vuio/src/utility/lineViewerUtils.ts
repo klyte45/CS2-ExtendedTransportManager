@@ -164,6 +164,43 @@ export function getStopHistoricalUsageDayAverage(stop: StationData): number {
     return count > 0 ? sum / count : 0;
 }
 
+/**
+ * Line-level chart series: mean of non-stale stop values per 4h bucket.
+ * Buckets with no non-stale stops become null so the line gaps.
+ */
+export function getLineHistoricalUsageSeries(stops: StationData[]): (number | null)[] {
+    const series: (number | null)[] = [];
+    for (let bucket = 0; bucket < 6; bucket++) {
+        let sum = 0;
+        let count = 0;
+        for (const stop of stops) {
+            const stale = getStopHistoricalUsageStaleFlags(stop);
+            if (stale[bucket]) continue;
+            sum += getStopHistoricalUsageBuckets(stop)[bucket];
+            count++;
+        }
+        series.push(count > 0 ? sum / count : null);
+    }
+    return series;
+}
+
+/** Mean of all non-stale bucket values across all stops (0–1). Returns 0 when none. */
+export function getLineHistoricalUsageDayAverage(stops: StationData[]): number {
+    let sum = 0;
+    let count = 0;
+    for (const stop of stops) {
+        const values = getStopHistoricalUsageBuckets(stop);
+        const stale = getStopHistoricalUsageStaleFlags(stop);
+        for (let i = 0; i < values.length; i++) {
+            if (!stale[i]) {
+                sum += values[i];
+                count++;
+            }
+        }
+    }
+    return count > 0 ? sum / count : 0;
+}
+
 /** Return-direction stop mirrored around the half-trip midpoint; undefined for termini. */
 export function findSymmetricPairStop(allStops: StationData[], halfTripIndex: number): StationData | undefined {
     const length = allStops.length;
