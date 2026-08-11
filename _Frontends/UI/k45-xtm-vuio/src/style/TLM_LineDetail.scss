@@ -165,9 +165,14 @@
 
         &.xtm-selected .vehicle {
             background-image: linear-gradient(90deg, var(--vehicleColor) 0%, var(--vehicleColor) var(--vehicleFill), #eeeeee var(--vehicleFill), #eeeeee 100%);
-            border: 1rem solid #dddddd;
             box-shadow: 0rem 0rem 5rem #dddddd;
             color: black;
+        }
+
+        .vehicleShell {
+            position: relative;
+            width: 240rem;
+            height: 2em;
         }
 
         .vehicle {
@@ -179,16 +184,18 @@
             flex-direction: column;
             transform: translateY(-50.000000%);
             background-image: linear-gradient(90deg, var(--vehicleColor) 0%, var(--vehicleColor) var(--vehicleFill), #000000 var(--vehicleFill), #000000 100%);
+            background-clip: padding-box;
             padding-top: 6.000000rem;
             padding-left: 6.000000rem;
             padding-right: 6.000000rem;
             padding-bottom: 6.000000rem;
             border-radius: 60rem;
-            border: 1rem solid black;
+            box-sizing: border-box;
             white-space: pre-wrap;
             height: 2em;
             width: 240rem;
             overflow: hidden;
+            z-index: 0;
 
             &:hover {
                 box-shadow: 0rem 0rem 5rem black;
@@ -199,6 +206,26 @@
                 display: block;
             }
 
+        }
+
+        .vehicleRing {
+            position: absolute;
+            top: 0rem;
+            left: 0rem;
+            width: 240rem;
+            height: 2em;
+            transform: translateY(-50.000000%);
+            border-radius: 60rem;
+            box-sizing: border-box;
+            pointer-events: none;
+            z-index: 1;
+
+            &.crowdnessPulse {
+                animation-name: crowdnessBorderPulse;
+                animation-duration: 2s;
+                animation-timing-function: ease-in-out;
+                animation-iteration-count: infinite;
+            }
         }
 
         .vehicleNeedle {
