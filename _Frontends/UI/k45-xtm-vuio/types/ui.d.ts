@@ -31,11 +31,15 @@ declare module "cs2/ui" {
   export interface TooltipProps extends ClassProps {
   	tooltip: ReactNode;
   	disabled?: boolean;
+  	/** When true (default), tooltip hides on mousedown/interaction until pointer re-enters. */
+  	hideOnInteraction?: boolean;
+  	forceVisible?: boolean;
+  	delayTime?: number;
   	theme?: Partial<BalloonTheme>;
   	direction?: BalloonDirection;
   	alignment?: BalloonAlignment;
   }
-  export export const Tooltip: ({ tooltip, disabled, theme, direction, alignment, className, children }: PropsWithChildren<TooltipProps>) => JSX.Element;
+  export export const Tooltip: ({ tooltip, disabled, hideOnInteraction, forceVisible, delayTime, theme, direction, alignment, className, children }: PropsWithChildren<TooltipProps>) => JSX.Element;
   export interface ConfirmationDialogProps {
   	title?: ReactNode;
   	message: ReactNode;

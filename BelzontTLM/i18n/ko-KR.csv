@@ -130,3 +130,5 @@ K45::XTM.vuio[lineList.edit.acronym]	노선 약어
 K45::XTM.vuio[lineList.edit.internalNumber]	내부 노선 번호
 K45::XTM.vuio[lineList.noMatchingLines]	일치하는 노선 없음
 K45::XTM.vuio[lineList.noLinesInCity]	도시에 노선이 없음
+K45::XTM.vuio[lineViewer.occupancyTooltip]	{startHour}부터 {endHour}까지 평균 차량 점유율입니다.
+K45::XTM.vuio[lineViewer.occupancyTooltipClickHint]	클릭하면 세부 정보를 볼 수 있습니다.

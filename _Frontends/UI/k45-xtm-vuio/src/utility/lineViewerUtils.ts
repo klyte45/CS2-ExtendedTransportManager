@@ -61,16 +61,24 @@ export function getCrowdnessBorderStyle(ratio: number): CrowdnessBorderStyle {
     };
 }
 
-/** Peak effective historical occupancy across all 4h buckets (0–1). */
-export function getStopPeakHistoricalUsage(stop: StationData): number {
-    return Math.max(
-        stop.usage00_04 ?? 0,
-        stop.usage04_08 ?? 0,
-        stop.usage08_12 ?? 0,
-        stop.usage12_16 ?? 0,
-        stop.usage16_20 ?? 0,
-        stop.usage20_00 ?? 0,
-    );
+/** Effective historical occupancy (0–1) for the 4h bucket containing `hour` (0–23). */
+export function getStopHistoricalUsageForHour(stop: StationData, hour: number): number {
+    const h = ((Math.floor(hour) % 24) + 24) % 24;
+    switch (Math.floor(h / 4)) {
+        case 0: return stop.usage00_04 ?? 0;
+        case 1: return stop.usage04_08 ?? 0;
+        case 2: return stop.usage08_12 ?? 0;
+        case 3: return stop.usage12_16 ?? 0;
+        case 4: return stop.usage16_20 ?? 0;
+        default: return stop.usage20_00 ?? 0;
+    }
+}
+
+/** Inclusive start hour and exclusive end hour (0–24) for the 4h bucket containing `hour`. */
+export function getHistoricalUsageHourRange(hour: number): { startHour: number; endHour: number } {
+    const h = ((Math.floor(hour) % 24) + 24) % 24;
+    const startHour = Math.floor(h / 4) * 4;
+    return { startHour, endHour: startHour + 4 };
 }
 
 /** Return-direction stop mirrored around the half-trip midpoint; undefined for termini. */
