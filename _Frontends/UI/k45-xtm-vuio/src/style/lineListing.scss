@@ -1,4 +1,5 @@
 @import "@klyte45/vuio-commons/src/styles/buttonsStyles";
+@import "./crowdness.scss";
 
 .xtm-line-listing {
     @extend %buttonsStyle;
@@ -357,6 +358,16 @@
                 padding-top: 3rem;
                 font-size: 80%;
                 pointer-events: none;
+                display: flex;
+                flex-direction: row;
+
+                .occupancyRange {
+                    padding-left: 4rem;
+                    padding-right: 4rem;
+                    padding-top: 1rem;
+                    padding-bottom: 1rem;
+                    color: #ffffff;
+                }
             }
 
             .scheduleColumn {

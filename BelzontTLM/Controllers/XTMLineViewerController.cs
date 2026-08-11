@@ -145,6 +145,7 @@ namespace BelzontTLM
         private LineItemStruct[] ListLines()
         {
             NativeArray<UITransportLineData> sortedLines = TransportUIUtils.GetSortedLines(m_linesQueue, EntityManager, m_PrefabSystem);
+            var currentDay = m_LineListingSection.GetCurrentDay();
             var output = new LineItemStruct[sortedLines.Length];
             for (int i = 0; i < sortedLines.Length; i++)
             {
@@ -155,6 +156,7 @@ namespace BelzontTLM
                     vkName = m_NameSystem.GetNameForVirtualKeyboard(entity).ToValueableName(),
                 };
                 item.FillFromUITransportLine(sortedLines[i]);
+                item.ApplyOccupancyRange(EntityManager, currentDay);
                 if (EntityManager.TryGetComponent<XTMRouteExtraData>(entity, out var componentData))
                 {
                     item.xtmData = componentData;

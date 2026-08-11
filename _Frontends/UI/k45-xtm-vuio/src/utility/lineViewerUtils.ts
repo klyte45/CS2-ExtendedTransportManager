@@ -30,6 +30,21 @@ export function getCrowdnessRatio(cargo: number, stopCapacity: number): number {
     return cargo / stopCapacity;
 }
 
+/** Shared crowdness color thresholds (station borders, vehicle rings, occupancy labels). */
+export function getCrowdnessColor(ratio: number): string {
+    if (ratio > 1) return "#FF0000";
+    if (ratio >= 0.9) return "#FF0044";
+    if (ratio >= 0.8) return "#FF00CC";
+    if (ratio >= 0.7) return "#8800FF";
+    if (ratio >= 0.6) return "#4400FF";
+    if (ratio >= 0.5) return "#333333";
+    return "black";
+}
+
+export function shouldCrowdnessPulse(ratio: number): boolean {
+    return ratio >= 0.75;
+}
+
 export type CrowdnessBorderStyle = {
     borderWidthRem: number;
     borderColor: string;
@@ -45,18 +60,10 @@ export function getCrowdnessBorderStyle(ratio: number): CrowdnessBorderStyle {
         borderWidthRem = 1 + t * 3;
     }
 
-    let borderColor = "black";
-    if (ratio > 1) borderColor = "#FF0000";
-    else if (ratio >= 0.9) borderColor = "#FF0044";
-    else if (ratio >= 0.8) borderColor = "#FF00CC";
-    else if (ratio >= 0.7) borderColor = "#8800FF";
-    else if (ratio >= 0.6) borderColor = "#4400FF";
-    else if (ratio >= 0.5) borderColor = "#333333";
-
     return {
         borderWidthRem,
-        borderColor,
-        pulse: ratio >= 0.75,
+        borderColor: getCrowdnessColor(ratio),
+        pulse: shouldCrowdnessPulse(ratio),
         fillPercent
     };
 }

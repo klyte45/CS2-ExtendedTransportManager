@@ -167,6 +167,34 @@ namespace BelzontTLM
             s20 = IsStale(lastDay_20_00, currentDay);
         }
 
+        /// <summary>
+        /// Fold non-stale effective usages into running min/max (same rules as the occupancy graph).
+        /// </summary>
+        public void AccumulateNonStaleMinMax(int currentDay, ref float min, ref float max, ref bool any)
+        {
+            GetEffectiveUsages(currentDay, out float u00, out float u04, out float u08, out float u12, out float u16, out float u20);
+            GetStaleFlags(currentDay, out bool s00, out bool s04, out bool s08, out bool s12, out bool s16, out bool s20);
+            Consider(u00, s00, ref min, ref max, ref any);
+            Consider(u04, s04, ref min, ref max, ref any);
+            Consider(u08, s08, ref min, ref max, ref any);
+            Consider(u12, s12, ref min, ref max, ref any);
+            Consider(u16, s16, ref min, ref max, ref any);
+            Consider(u20, s20, ref min, ref max, ref any);
+        }
+
+        private static void Consider(float usage, bool stale, ref float min, ref float max, ref bool any)
+        {
+            if (stale) return;
+            if (!any)
+            {
+                min = max = usage;
+                any = true;
+                return;
+            }
+            if (usage < min) min = usage;
+            if (usage > max) max = usage;
+        }
+
         private static bool IsStale(int lastDay, int currentDay) => currentDay > lastDay + 1;
 
         private static float Effective(float ema, float cap, int lastDay, int currentDay)

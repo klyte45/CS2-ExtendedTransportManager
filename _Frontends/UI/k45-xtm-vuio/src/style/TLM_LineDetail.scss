@@ -1,3 +1,5 @@
+@import "./crowdness.scss";
+
 #TlmViewer {
     height: 100%;
     --districtBorderColor: #eee;
@@ -219,13 +221,6 @@
             box-sizing: border-box;
             pointer-events: none;
             z-index: 1;
-
-            &.crowdnessPulse {
-                animation-name: crowdnessBorderPulse;
-                animation-duration: 2s;
-                animation-timing-function: ease-in-out;
-                animation-iteration-count: infinite;
-            }
         }
 
         .vehicleNeedle {
@@ -332,13 +327,6 @@
                         border-radius: 9999rem;
                         box-sizing: border-box;
                         pointer-events: none;
-
-                        &.crowdnessPulse {
-                            animation-name: crowdnessBorderPulse;
-                            animation-duration: 2s;
-                            animation-timing-function: ease-in-out;
-                            animation-iteration-count: infinite;
-                        }
                     }
                 }
             }
@@ -413,13 +401,6 @@
                         bottom: 0rem;
                         box-sizing: border-box;
                         pointer-events: none;
-
-                        &.crowdnessPulse {
-                            animation-name: crowdnessBorderPulse;
-                            animation-duration: 2s;
-                            animation-timing-function: ease-in-out;
-                            animation-iteration-count: infinite;
-                        }
                     }
                 }
             }
@@ -670,20 +651,6 @@
         }
     }
 
-}
-
-@keyframes crowdnessBorderPulse {
-    0% {
-        filter: brightness(70%);
-    }
-
-    50% {
-        filter: brightness(130%);
-    }
-
-    100% {
-        filter: brightness(70%);
-    }
 }
 
 // .tlm-station-tooltip {

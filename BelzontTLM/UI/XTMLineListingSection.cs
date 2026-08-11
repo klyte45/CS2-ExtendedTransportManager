@@ -4,10 +4,12 @@ using Colossal.Entities;
 using Game.Common;
 using Game.Prefabs;
 using Game.Routes;
+using Game.Simulation;
 using Game.Tools;
 using Game.UI;
 using Game.UI.InGame;
 using Unity.Entities;
+using Unity.Mathematics;
 using static Belzont.Utils.NameSystemExtensions;
 
 namespace BelzontTLM
@@ -17,6 +19,8 @@ namespace BelzontTLM
         private EntityQuery m_linesQueue;
         private PrefabSystem m_PrefabSystem;
         private NameSystem m_NameSystem;
+        private SimulationSystem m_SimulationSystem;
+        private EntityQuery m_TimeDataQuery;
 
         protected override void OnUpdate() { }
 
@@ -43,6 +47,46 @@ namespace BelzontTLM
             });
             m_PrefabSystem = World.GetOrCreateSystemManaged<PrefabSystem>();
             m_NameSystem = World.GetOrCreateSystemManaged<NameSystem>();
+            m_SimulationSystem = World.GetOrCreateSystemManaged<SimulationSystem>();
+            m_TimeDataQuery = GetEntityQuery(ComponentType.ReadOnly<TimeData>());
+        }
+
+        public int GetCurrentDay()
+        {
+            var timeData = TimeData.GetSingleton(m_TimeDataQuery);
+            return TimeSystem.GetDay(m_SimulationSystem.frameIndex, timeData);
+        }
+
+        /// <summary>
+        /// Min/max effective occupancy (0–1) across all stop waypoints and non-stale 4h buckets.
+        /// </summary>
+        public static void ComputeOccupancyRange(EntityManager entityManager, Entity route, int currentDay, out float usageMin, out float usageMax)
+        {
+            usageMin = 0f;
+            usageMax = 0f;
+            bool any = false;
+            if (!entityManager.TryGetBuffer<RouteWaypoint>(route, true, out var waypoints))
+            {
+                return;
+            }
+            for (int i = 0; i < waypoints.Length; i++)
+            {
+                if (!entityManager.TryGetComponent(waypoints[i].m_Waypoint, out LineSegmentHistoricalOccupancy occupancy))
+                {
+                    continue;
+                }
+                occupancy.AccumulateNonStaleMinMax(currentDay, ref usageMin, ref usageMax, ref any);
+            }
+            if (!any)
+            {
+                usageMin = 0f;
+                usageMax = 0f;
+            }
+            else
+            {
+                usageMin = math.saturate(usageMin);
+                usageMax = math.saturate(usageMax);
+            }
         }
 
         public class LineItemStruct
@@ -60,12 +104,17 @@ namespace BelzontTLM
             public int stops;
             public int vehicles;
             public int cargo;
+            /// <summary>Peak non-stale historical occupancy (0–1); used for sort compatibility.</summary>
             public float usage;
+            /// <summary>Min non-stale historical occupancy across stops/buckets (0–1).</summary>
+            public float usageMin;
+            /// <summary>Max non-stale historical occupancy across stops/buckets (0–1).</summary>
+            public float usageMax;
             public XTMRouteExtraData xtmData;
             public int routeNumber;
             public bool isFixedColor;
 
-            internal static LineItemStruct ForEntity(Entity entity, EntityManager entityManager, PrefabSystem m_PrefabSystem, NameSystem nameSystem)
+            internal static LineItemStruct ForEntity(Entity entity, EntityManager entityManager, PrefabSystem m_PrefabSystem, NameSystem nameSystem, int currentDay)
             {
                 Route componentData = entityManager.GetComponentData<Route>(entity);
                 var routeNum = entityManager.GetComponentData<RouteNumber>(entity);
@@ -82,7 +131,7 @@ namespace BelzontTLM
                 int stopCount = TransportUIUtils.GetStopCount(entityManager, entity);
                 int routeVehiclesCount = TransportUIUtils.GetRouteVehiclesCount(entityManager, entity, ref cargo, ref capacity);
                 float routeLength = TransportUIUtils.GetRouteLength(entityManager, entity);
-                float usage = (capacity > 0) ? ((float)cargo / (float)capacity) : 0f;
+                ComputeOccupancyRange(entityManager, entity, currentDay, out float usageMin, out float usageMax);
                 RouteSchedule schedule = RouteUtils.CheckOption(componentData, RouteOption.Day) ? RouteSchedule.Day : (RouteUtils.CheckOption(componentData, RouteOption.Night) ? RouteSchedule.Night : RouteSchedule.DayAndNight);
                 bool active = !RouteUtils.CheckOption(componentData, RouteOption.Inactive);
 
@@ -99,7 +148,9 @@ namespace BelzontTLM
                     stops = stopCount,
                     vehicles = routeVehiclesCount,
                     cargo = cargo,
-                    usage = usage,
+                    usage = usageMax,
+                    usageMin = usageMin,
+                    usageMax = usageMax,
                     name = nameSystem.GetName(entity).ToValueableName(),
                     vkName = nameSystem.GetNameForVirtualKeyboard(entity).ToValueableName(),
                     routeNumber = routeNum.m_Number,
@@ -121,7 +172,13 @@ namespace BelzontTLM
                 stops = data.stops;
                 vehicles = data.vehicles;
                 cargo = data.cargo;
-                usage = data.usage;
+                // usage / usageMin / usageMax filled separately from historical occupancy
+            }
+
+            public void ApplyOccupancyRange(EntityManager entityManager, int currentDay)
+            {
+                ComputeOccupancyRange(entityManager, entity, currentDay, out usageMin, out usageMax);
+                usage = usageMax;
             }
         }
     }

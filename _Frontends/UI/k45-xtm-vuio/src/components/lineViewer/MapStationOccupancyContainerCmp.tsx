@@ -1,7 +1,11 @@
 import { Unit } from "#enum/Unit";
 import { StationData } from "#service/LineManagementService";
 import translate from "#utility/translate";
-import { getHistoricalUsageHourRange, getStopHistoricalUsageForHour } from "#utility/lineViewerUtils";
+import {
+    getCrowdnessBorderStyle,
+    getHistoricalUsageHourRange,
+    getStopHistoricalUsageForHour,
+} from "#utility/lineViewerUtils";
 import { replaceArgs } from "@klyte45/vuio-commons";
 import { useValue } from "cs2/api";
 import { time } from "cs2/bindings";
@@ -35,6 +39,7 @@ export function MapStationOccupancyContainerCmp({ stop, nextStop, directionArrow
     const hour = Math.floor(minutes / 60) % 24;
     const { startHour, endHour } = getHistoricalUsageHourRange(hour);
     const usage = getStopHistoricalUsageForHour(stop, hour);
+    const occupancyCrowd = getCrowdnessBorderStyle(usage);
     const text = LocalizedNumber.renderString(locale, {
         value: usage * 100,
         unit: Unit.PercentageSingleFraction,
@@ -57,7 +62,8 @@ export function MapStationOccupancyContainerCmp({ stop, nextStop, directionArrow
     return (
         <Tooltip tooltip={tooltipText} hideOnInteraction={false}>
             <div
-                className="occupancyLbl"
+                className={["occupancyLbl", occupancyCrowd.pulse && "crowdnessPulse"].filter(Boolean).join(" ")}
+                style={{ backgroundColor: occupancyCrowd.borderColor }}
                 onClick={(e) => {
                     e.stopPropagation();
                     onSelectSegment?.(stop, nextStop);

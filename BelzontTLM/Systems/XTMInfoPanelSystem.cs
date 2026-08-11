@@ -14,6 +14,7 @@ using Game.Pathfind;
 using Game.Prefabs;
 using Game.Rendering;
 using Game.Routes;
+using Game.Simulation;
 using Game.Tools;
 using Game.UI.InGame;
 using Game.Vehicles;
@@ -213,7 +214,9 @@ namespace BelzontTLM
                 Segments = new LineSegment[lineDetail.m_SegmentsResult?.Length ?? 0],
                 Stops = new LineStopNamed[lineDetail.m_StopsResult?.Length ?? 0],
                 Vehicles = new LineVehicleNamed[lineDetail.m_VehiclesResult?.Length ?? 0],
-                LineData = LineItemStruct.ForEntity(e, EntityManager, m_PrefabSystem, m_NameSystem),
+                LineData = LineItemStruct.ForEntity(e, EntityManager, m_PrefabSystem, m_NameSystem, TimeSystem.GetDay(
+                    World.GetOrCreateSystemManaged<Game.Simulation.SimulationSystem>().frameIndex,
+                    TimeData.GetSingleton(GetEntityQuery(ComponentType.ReadOnly<TimeData>())))),
                 SelectedVehicleModels = selectedVehiclesArr,
                 AvailableVehicleModels = lineDetail.m_availableVehicles,
             };

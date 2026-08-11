@@ -17,6 +17,10 @@ export type LineData = {
     stops: number,
     type: TransportType,
     usage: number,
+    /** Min non-stale historical occupancy (0–1) across stops/buckets. */
+    usageMin: number,
+    /** Max non-stale historical occupancy (0–1) across stops/buckets. */
+    usageMax: number,
     vehicles: number,
     xtmData?: {
         Acronym: string

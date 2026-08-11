@@ -2,6 +2,7 @@ import { TlmLineFormatCmp } from "#components/lineViewer/TlmLineFormatCmp";
 import { TransportType } from "#enum/TransportType";
 import { Unit } from "#enum/Unit";
 import { LineData, LineManagementService } from "#service/LineManagementService";
+import { getCrowdnessBorderStyle } from "#utility/lineViewerUtils";
 import translate from "#utility/translate";
 import {
     ColorUtils,
@@ -106,6 +107,7 @@ export const LineItemCard = ({
     const effectiveIdentifier = x.xtmData?.Acronym || x.routeNumber.toFixed();
     const iconUrl = TYPE_TO_ICONS[typeIndex] ?? TYPE_TO_ICONS[`${TransportType.Bus}.false`];
     const activityClass = getLineActivityClass(x);
+    const occupancyCrowd = getCrowdnessBorderStyle(x.usageMax ?? x.usage ?? 0);
     const resolvedName = nameToString(x.name) ?? "";
     const [nameValue, setNameValue] = useState(resolvedName);
     const [pickerOpen, setPickerOpen] = useState(false);
@@ -396,13 +398,26 @@ export const LineItemCard = ({
             <div className="lineVehicles">
                 {activityClass === "activity-disabled"
                     ? translate("lineList.lineDisabled", "Line disabled")
-                    : [
-                        `${x.vehicles} ${engine.translate(`Transport.LEGEND_VEHICLES[${x.type}]`)}`,
-                        LocalizedNumber.renderString(localization, {
-                            value: x.usage * 100,
-                            unit: Unit.PercentageSingleFraction,
-                        }),
-                    ].join(" • ")}
+                    : (
+                        <>
+                            <span>{`${x.vehicles} ${engine.translate(`Transport.LEGEND_VEHICLES[${x.type}]`)} • `}</span>
+                            <span
+                                className={["occupancyRange", occupancyCrowd.pulse && "crowdnessPulse"].filter(Boolean).join(" ")}
+                                style={{ backgroundColor: occupancyCrowd.borderColor }}
+                            >
+                                {[
+                                    LocalizedNumber.renderString(localization, {
+                                        value: (x.usageMin ?? 0) * 100,
+                                        unit: Unit.PercentageSingleFraction,
+                                    }),
+                                    LocalizedNumber.renderString(localization, {
+                                        value: (x.usageMax ?? x.usage ?? 0) * 100,
+                                        unit: Unit.PercentageSingleFraction,
+                                    }),
+                                ].join("~")}
+                            </span>
+                        </>
+                    )}
             </div>
             <div className="scheduleColumn">
                 {SCHEDULE_COLUMN_ORDER.map((key) => {

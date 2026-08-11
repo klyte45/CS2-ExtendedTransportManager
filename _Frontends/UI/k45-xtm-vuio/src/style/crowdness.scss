@@ -1,0 +1,20 @@
+.crowdnessPulse {
+    animation-name: crowdnessBorderPulse;
+    animation-duration: 2s;
+    animation-timing-function: ease-in-out;
+    animation-iteration-count: infinite;
+}
+
+@keyframes crowdnessBorderPulse {
+    0% {
+        filter: brightness(70%);
+    }
+
+    50% {
+        filter: brightness(130%);
+    }
+
+    100% {
+        filter: brightness(70%);
+    }
+}
