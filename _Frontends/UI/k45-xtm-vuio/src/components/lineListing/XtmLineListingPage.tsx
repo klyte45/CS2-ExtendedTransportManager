@@ -526,14 +526,14 @@ export const XtmLineListingPage = () => {
             </section>
             {reportMode ? (
                 <section className="LineList LineList--report">
-                    <Scrollable className="scrollArea">
+                    <div className="reportArea">
                         <XtmOccupancyReportPage
                             report={report}
                             loading={reportLoading}
                             filterExclude={filterExclude}
                             activityExclude={activityExclude}
                         />
-                    </Scrollable>
+                    </div>
                 </section>
             ) : (
                 <section className="LineList">

@@ -3,7 +3,8 @@ import { TransportType } from "#enum/TransportType";
 import { TlmLineFormatCmp } from "#components/lineViewer/TlmLineFormatCmp";
 import { getCrowdnessBorderStyle } from "#utility/lineViewerUtils";
 import translate from "#utility/translate";
-import { nameToString, VanillaComponentResolver } from "@klyte45/vuio-commons";
+import { nameToString, toVanillaEntity, VanillaComponentResolver } from "@klyte45/vuio-commons";
+import { camera, selectedInfo } from "cs2/bindings";
 import { LocalizedNumber, useLocalization } from "cs2/l10n";
 import { RankedSegmentItem } from "./occupancyReportRanking";
 
@@ -42,6 +43,14 @@ export function OccupancyReportSegmentItem({ item, rank }: Props) {
             : null;
     const occupancyText = periodLabel ? `${periodLabel} • ${occupancyPct}` : occupancyPct;
 
+    /** Same as line-map station bullet: select + focus the connected stop entity. */
+    const openSourceStop = () => {
+        if (!sourceStop?.entity) return;
+        const entity = toVanillaEntity(sourceStop.entity);
+        selectedInfo.selectEntity(entity);
+        camera.focusEntity(entity);
+    };
+
     return (
         <div className="xtm-occupancyReportItem">
             <div className="xtm-occupancyReportItem_shield">
@@ -54,6 +63,7 @@ export function OccupancyReportSegmentItem({ item, rank }: Props) {
                             isCargo={line.isCargo}
                             text={shieldText}
                             className="xtm-occupancyReportItem_format"
+                            onClick={openSourceStop}
                         />
                     </div>
                 </Tooltip>

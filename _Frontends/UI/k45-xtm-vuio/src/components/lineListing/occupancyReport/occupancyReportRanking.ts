@@ -8,7 +8,7 @@ import { LineActivityClass, getLineActivityClass } from "#components/lineListing
 
 export const OCCUPANCY_BUCKET_COUNT = 6;
 export const TOP_LINES_PER_COLUMN = 3;
-export const TOP_SEGMENTS_PER_COLUMN = 5;
+export const TOP_SEGMENTS_PER_COLUMN = 10;
 
 /** Column indices: 0 = overall, 1..6 = buckets 0..5 */
 export type OccupancyReportColumnId = "overall" | 0 | 1 | 2 | 3 | 4 | 5;
@@ -80,12 +80,14 @@ function edgeKey(lineIndex: number, sourceWp: string, targetWp: string): EdgeKey
 }
 
 /**
- * Build top-3 lines and top-5 segments for each of 7 columns from a city report.
+ * Build top-N lines and segments for each of 7 columns from a city report.
+ * @param descending true = highest usage first (default); false = lowest usage first
  */
 export function buildOccupancyReportColumns(
     report: SegmentOccupancyReport,
     filterExclude: string[],
     activityExclude: LineActivityClass[],
+    descending: boolean = true,
 ): OccupancyReportColumnData[] {
     const lines = filterReportLines(report.lines ?? [], filterExclude, activityExclude);
     const lineByKey = new Map(lines.map((l) => [entityKey(l.entity), l]));
@@ -153,7 +155,7 @@ export function buildOccupancyReportColumns(
             ranked.push({ line, score });
         }
         ranked.sort((a, b) => {
-            if (b.score !== a.score) return b.score - a.score;
+            if (a.score !== b.score) return descending ? b.score - a.score : a.score - b.score;
             return a.line.routeNumber - b.line.routeNumber;
         });
         return ranked.slice(0, TOP_LINES_PER_COLUMN);
@@ -188,7 +190,7 @@ export function buildOccupancyReportColumns(
             if (item) ranked.push(item);
         }
         ranked.sort((a, b) => {
-            if (b.score !== a.score) return b.score - a.score;
+            if (a.score !== b.score) return descending ? b.score - a.score : a.score - b.score;
             if (a.line.routeNumber !== b.line.routeNumber) return a.line.routeNumber - b.line.routeNumber;
             return a.sourceWaypointIndex - b.sourceWaypointIndex;
         });

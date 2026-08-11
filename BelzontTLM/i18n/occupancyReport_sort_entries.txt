@@ -1,0 +1,2 @@
+K45::XTM	vuio	occupancyReport.sortDescending		K45::XTM.vuio[occupancyReport.sortDescending]	Most usage first	Maior uso primeiro
+K45::XTM	vuio	occupancyReport.sortAscending		K45::XTM.vuio[occupancyReport.sortAscending]	Least usage first	Menor uso primeiro

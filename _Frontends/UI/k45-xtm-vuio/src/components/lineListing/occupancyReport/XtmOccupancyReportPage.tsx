@@ -1,9 +1,13 @@
 import translate from "#utility/translate";
 import { SegmentOccupancyReport } from "#service/SegmentOccupancyService";
 import { LineActivityClass } from "#components/lineListing/lineListingTypes";
-import { useMemo } from "react";
+import { useMemo, useState } from "react";
 import { buildOccupancyReportColumns } from "./occupancyReportRanking";
 import { OccupancyReportSection } from "./OccupancyReportSection";
+
+/** Survives report page remounts within the session. */
+let persistedLinesDescending = true;
+let persistedSegmentsDescending = true;
 
 type Props = {
     report: SegmentOccupancyReport | null;
@@ -18,10 +22,18 @@ export function XtmOccupancyReportPage({
     filterExclude,
     activityExclude,
 }: Props) {
-    const columns = useMemo(() => {
+    const [linesDescending, setLinesDescending] = useState(persistedLinesDescending);
+    const [segmentsDescending, setSegmentsDescending] = useState(persistedSegmentsDescending);
+
+    const lineColumns = useMemo(() => {
         if (!report) return [];
-        return buildOccupancyReportColumns(report, filterExclude, activityExclude);
-    }, [report, filterExclude, activityExclude]);
+        return buildOccupancyReportColumns(report, filterExclude, activityExclude, linesDescending);
+    }, [report, filterExclude, activityExclude, linesDescending]);
+
+    const segmentColumns = useMemo(() => {
+        if (!report) return [];
+        return buildOccupancyReportColumns(report, filterExclude, activityExclude, segmentsDescending);
+    }, [report, filterExclude, activityExclude, segmentsDescending]);
 
     if (loading && !report) {
         return (
@@ -47,7 +59,13 @@ export function XtmOccupancyReportPage({
                     "Top lines by 30th-percentile occupancy",
                 )}
                 kind="lines"
-                columns={columns}
+                columns={lineColumns}
+                descending={linesDescending}
+                onToggleDescending={() => {
+                    const next = !linesDescending;
+                    persistedLinesDescending = next;
+                    setLinesDescending(next);
+                }}
             />
             <OccupancyReportSection
                 title={translate(
@@ -55,7 +73,13 @@ export function XtmOccupancyReportPage({
                     "Top segments by occupancy",
                 )}
                 kind="segments"
-                columns={columns}
+                columns={segmentColumns}
+                descending={segmentsDescending}
+                onToggleDescending={() => {
+                    const next = !segmentsDescending;
+                    persistedSegmentsDescending = next;
+                    setSegmentsDescending(next);
+                }}
             />
         </div>
     );

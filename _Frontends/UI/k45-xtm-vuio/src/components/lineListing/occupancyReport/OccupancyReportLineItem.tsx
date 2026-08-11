@@ -2,7 +2,8 @@ import { Unit } from "#enum/Unit";
 import { TransportType } from "#enum/TransportType";
 import { TlmLineFormatCmp } from "#components/lineViewer/TlmLineFormatCmp";
 import { getCrowdnessBorderStyle } from "#utility/lineViewerUtils";
-import { nameToString } from "@klyte45/vuio-commons";
+import { nameToString, toVanillaEntity } from "@klyte45/vuio-commons";
+import { transport } from "cs2/bindings";
 import { LocalizedNumber, useLocalization } from "cs2/l10n";
 import { RankedLineItem } from "./occupancyReportRanking";
 
@@ -27,6 +28,7 @@ export function OccupancyReportLineItem({ item, rank }: Props) {
                     isCargo={line.isCargo}
                     text={shieldText}
                     className="xtm-occupancyReportItem_format"
+                    onClick={() => transport.selectLine(toVanillaEntity(line.entity))}
                 />
             </div>
             <div className="xtm-occupancyReportItem_body">
