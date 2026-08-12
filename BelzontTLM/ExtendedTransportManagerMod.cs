@@ -26,11 +26,14 @@ namespace BelzontTLM
             updateSystem.UpdateAt<XTMLineViewerController>(SystemUpdatePhase.UIUpdate);
             updateSystem.UpdateAt<XTMLineManagementController>(SystemUpdatePhase.UIUpdate);
             updateSystem.UpdateAt<XTMFareGroupController>(SystemUpdatePhase.UIUpdate);
+            updateSystem.UpdateAt<XTMVehicleModelGroupController>(SystemUpdatePhase.UIUpdate);
 
             updateSystem.UpdateAfter<XTMLineListingSection>(SystemUpdatePhase.UIUpdate);
 
             updateSystem.UpdateAt<XTMSegmentOccupancyHistorySystem>(SystemUpdatePhase.GameSimulation);
             updateSystem.UpdateAfter<XTMFareGroupSystem, ModifiedSystem>(SystemUpdatePhase.Modification4);
+            updateSystem.UpdateAfter<XTMVehicleModelGroupSystem, Game.Routes.InitializeSystem>(SystemUpdatePhase.Modification4);
+            updateSystem.UpdateAfter<XTMVehicleModelGroupApplySystem, XTMVehicleModelGroupSystem>(SystemUpdatePhase.Modification4);
             updateSystem.UpdateAt<XTM_WEIntegrationController>(SystemUpdatePhase.ModificationEnd);
             updateSystem.UpdateAt<XTMInfoPanelSystem>(SystemUpdatePhase.UIUpdate);
 
