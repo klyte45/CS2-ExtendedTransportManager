@@ -25,10 +25,12 @@ import {
 import translate from "#utility/translate";
 import { InfoRow, InfoSection, Portal } from "cs2/ui";
 import { ColorEditorXtm } from "#components/ColorEditorXtm";
+import { TicketPriceSectionXtm } from "#components/TicketPriceSectionXtm";
 import { XtmInfoSection } from "#components/XtmInfoSection";
 import { bindValue, useValue } from "cs2/api";
 import { XtmMainPanel, XtmButton, XtmMainPanelId } from "#components/mainUI/XtmMainPanel";
 import { XtmTransportationOverviewRegister } from "#components/lineListing/XtmTransportationOverviewRegister";
+import "#styles/ticketPriceManaged.scss";
 
 let IsXtm = true;
 let xtmOptions: MapViewerOptions = {
@@ -162,6 +164,15 @@ const XtmLayoutOverrideRegistering = (onChange?: () => any) => (componentList: a
             return <_originalColor {...args} />;
         }
         return <ColorEditorXtm {...args} />;
+    };
+    const _originalTicketPrice = componentList["Game.UI.InGame.TicketPriceSection"];
+    componentList["Game.UI.InGame.TicketPriceSection"] = (args: any) => {
+        const selectedEntity = useValue(selectedInfo.selectedEntity$);
+        const selectedRoute = useValue(selectedInfo.selectedRoute$);
+        if (selectedEntity?.index != selectedRoute?.index) {
+            return <_originalTicketPrice {...args} />;
+        }
+        return <TicketPriceSectionXtm {...args} Original={_originalTicketPrice} />;
     };
     componentList["BelzontTLM.XTMInfoPanelSystem"] = () => <XtmInfoSection />;
     return componentList as any;

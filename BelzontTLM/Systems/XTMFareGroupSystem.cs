@@ -27,7 +27,7 @@ namespace BelzontTLM
         private EntityQuery m_DirtyLinesQuery;
         private EntityQuery m_ModifyEventsQuery;
         private EntityQuery m_UpdatedAssociatedQuery;
-
+        private EntityQuery m_ConflictedElementsQuery;
         private TimeSystem m_TimeSystem;
         private XTMFareGroupEndFrameSystem m_XTMFareGroupEndFrameSystem;
         private PrefabSystem m_PrefabSystem;
@@ -60,6 +60,9 @@ namespace BelzontTLM
                 ComponentType.ReadOnly<XTMFareLineAssociation>(),
                 ComponentType.ReadOnly<Updated>(),
                 ComponentType.Exclude<XTMFarePersistingConflict>());
+            m_ConflictedElementsQuery = GetEntityQuery(
+              ComponentType.ReadOnly<XTMFareConflictCounter>(),
+              ComponentType.Exclude<XTMFarePersistingConflict>());
         }
 
         public override int GetUpdateInterval(SystemUpdatePhase phase)
@@ -378,15 +381,12 @@ namespace BelzontTLM
 
 
         private void ClearConflictCountersExceptPersisting()
-        {
-            using EntityQuery q = GetEntityQuery(
-                ComponentType.ReadOnly<XTMFareConflictCounter>(),
-                ComponentType.Exclude<XTMFarePersistingConflict>());
-            if (q.IsEmptyIgnoreFilter)
+        {          
+            if (m_ConflictedElementsQuery.IsEmptyIgnoreFilter)
             {
                 return;
             }
-            using NativeArray<Entity> lines = q.ToEntityArray(Allocator.Temp);
+            using NativeArray<Entity> lines = m_ConflictedElementsQuery.ToEntityArray(Allocator.Temp);
             for (int i = 0; i < lines.Length; i++)
             {
                 EntityManager.RemoveComponent<XTMFareConflictCounter>(lines[i]);

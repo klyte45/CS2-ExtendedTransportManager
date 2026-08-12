@@ -38,6 +38,7 @@ namespace BelzontTLM
         public void SetupCallBinder(Action<string, Delegate> callBinder)
         {
             callBinder($"{PREFIX}lineBelongsToGroup", LineBelongsToGroup);
+            callBinder($"{PREFIX}lineMembership", LineMembership);
             callBinder($"{PREFIX}list", ListFareGroups);
             callBinder($"{PREFIX}create", CreateFareGroup);
             callBinder($"{PREFIX}delete", DeleteFareGroup);
@@ -106,6 +107,64 @@ namespace BelzontTLM
             }
             XTMFareLineAssociation assoc = EntityManager.GetComponentData<XTMFareLineAssociation>(line);
             return XTMFareGroupUtils.IsValidFareGroup(EntityManager, assoc.m_fareGroup);
+        }
+
+        private FareGroupLineMembership LineMembership(Entity line)
+        {
+            if (line == Entity.Null || !EntityManager.Exists(line)
+                || !EntityManager.HasComponent<XTMFareLineAssociation>(line))
+            {
+                return null;
+            }
+
+            XTMFareLineAssociation assoc = EntityManager.GetComponentData<XTMFareLineAssociation>(line);
+            Entity group = assoc.m_fareGroup;
+            if (!XTMFareGroupUtils.IsValidFareGroup(EntityManager, group))
+            {
+                return null;
+            }
+
+            Entity[] lines = CollectLinesForGroup(group);
+            Array.Sort(lines, (a, b) => a.Index.CompareTo(b.Index));
+
+            const int SoftCapThreshold = 7;
+            const int SoftCapTake = 5;
+            int n = lines.Length;
+            int take = n >= SoftCapThreshold ? SoftCapTake : n;
+            int overflow = n >= SoftCapThreshold ? n - SoftCapTake : 0;
+
+            var labels = new string[take];
+            for (int i = 0; i < take; i++)
+            {
+                labels[i] = FormatLineMembershipLabel(lines[i]);
+            }
+
+            return new FareGroupLineMembership
+            {
+                group = group,
+                groupName = m_NameSystem.GetName(group).Translate(),
+                lineCount = n,
+                lineLabels = labels,
+                overflowCount = overflow
+            };
+        }
+
+        private string FormatLineMembershipLabel(Entity lineEntity)
+        {
+            string code;
+            if (EntityManager.TryGetComponent(lineEntity, out XTMRouteExtraData xtmData)
+                && !string.IsNullOrWhiteSpace(xtmData.Acronym))
+            {
+                code = xtmData.Acronym;
+            }
+            else
+            {
+                EntityManager.TryGetComponent(lineEntity, out RouteNumber routeNumber);
+                code = routeNumber.m_Number.ToString();
+            }
+
+            string name = m_NameSystem.GetName(lineEntity).Translate() ?? string.Empty;
+            return string.IsNullOrWhiteSpace(name) ? code : $"{code} {name}";
         }
 
         private FareGroupListItem[] ListFareGroups()

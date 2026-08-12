@@ -47,4 +47,14 @@ namespace BelzontTLM
         public float step { get; set; }
         public float defaultValue { get; set; }
     }
+
+    [Serializable]
+    public class FareGroupLineMembership
+    {
+        public Entity group { get; set; }
+        public string groupName { get; set; }
+        public int lineCount { get; set; }
+        public string[] lineLabels { get; set; }
+        public int overflowCount { get; set; }
+    }
 }

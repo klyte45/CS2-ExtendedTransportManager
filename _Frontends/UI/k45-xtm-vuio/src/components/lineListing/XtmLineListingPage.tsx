@@ -45,6 +45,13 @@ import {
 } from "./lineListingTypes";
 import { XtmOccupancyReportPage } from "./occupancyReport/XtmOccupancyReportPage";
 import { XtmFareGroupsPage } from "./fareGroups/XtmFareGroupsPage";
+import {
+    getOverviewModeToken,
+    getPersistedOverviewMode,
+    OverviewScreenMode,
+    setPersistedOverviewMode,
+    subscribeOverviewMode,
+} from "./overviewNavigation";
 import "#styles/lineListing.scss";
 import "#styles/occupancyReport.scss";
 import "#styles/fareGroups.scss";
@@ -72,8 +79,6 @@ const SORT_LABEL_KEYS: Record<LineSortKey, [string, string]> = {
 const SORT_MENU_ICON_ASC = "coui://uil/Standard/ArrowSortHighDown.svg";
 const SORT_MENU_ICON_DESC = "coui://uil/Standard/ArrowSortLowDown.svg";
 
-export type OverviewScreenMode = "listing" | "fareGroups" | "occupancyPassengers" | "occupancyCargo";
-
 const REPORT_ACTIVITY_ORDER: LineActivityClass[] = [
     "activity-dayNight",
     "activity-day",
@@ -99,7 +104,6 @@ const MODE_MENU_ITEMS: { mode: OverviewScreenMode; labelKey: string; fallback: s
 let persistedFilterExclude: string[] = [];
 let persistedActivityExclude: LineActivityClass[] = [];
 let persistedSort: LineSort = DEFAULT_LINE_SORT;
-let persistedOverviewMode: OverviewScreenMode = "listing";
 
 function typeHasPaletteGuid(guid: string | undefined | null): boolean {
     return !!guid;
@@ -208,7 +212,7 @@ export const XtmLineListingPage = () => {
     const [filterExclude, setFilterExclude] = useState(persistedFilterExclude);
     const [activityExclude, setActivityExclude] = useState(persistedActivityExclude);
     const [currentSort, setCurrentSort] = useState(persistedSort);
-    const [overviewMode, setOverviewMode] = useState(persistedOverviewMode);
+    const [overviewMode, setOverviewMode] = useState(getPersistedOverviewMode);
     const [passengerPalettes, setPassengerPalettes] = useState<Partial<Record<TransportType, string>>>({});
     const [cargoPalettes, setCargoPalettes] = useState<Partial<Record<TransportType, string>>>({});
     const [report, setReport] = useState<SegmentOccupancyReport | null>(null);
@@ -218,6 +222,11 @@ export const XtmLineListingPage = () => {
     const ToolButton = VanillaComponentResolver.instance.ToolButton;
     const reportMode = isReportMode(overviewMode);
     const fareGroupsMode = overviewMode === "fareGroups";
+
+    useEffect(() => subscribeOverviewMode(() => {
+        setOverviewMode(getPersistedOverviewMode());
+        void getOverviewModeToken();
+    }), []);
 
     const reloadLines = (res: LineData[]) => {
         if (!Array.isArray(res)) {
@@ -309,8 +318,8 @@ export const XtmLineListingPage = () => {
             AutoColorService.doOnAutoColorSettingsChanged(() => {
                 reloadPaletteSettings();
             });
-            if (isReportMode(persistedOverviewMode)) {
-                fetchReport(persistedOverviewMode);
+            if (isReportMode(getPersistedOverviewMode())) {
+                fetchReport(getPersistedOverviewMode());
             }
         });
         return () => {
@@ -351,7 +360,7 @@ export const XtmLineListingPage = () => {
     };
 
     const onSelectMode = (mode: OverviewScreenMode) => {
-        persistedOverviewMode = mode;
+        setPersistedOverviewMode(mode);
         setOverviewMode(mode);
         setFilters([], []);
         if (isReportMode(mode)) {

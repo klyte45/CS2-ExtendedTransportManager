@@ -1,0 +1,26 @@
+@import "@klyte45/vuio-commons/src/styles/buttonsStyles";
+
+.xtm-ticketPriceManaged {
+    @extend %buttonsStyle;
+
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    box-sizing: border-box;
+    padding-top: 4rem;
+    padding-bottom: 4rem;
+
+    &_info {
+        color: var(--textColorDim);
+        font-size: var(--fontSizeS);
+        white-space: normal;
+        margin-bottom: 8rem;
+    }
+
+    &_cta {
+        align-self: flex-start;
+        width: auto;
+        height: auto;
+        white-space: nowrap;
+    }
+}

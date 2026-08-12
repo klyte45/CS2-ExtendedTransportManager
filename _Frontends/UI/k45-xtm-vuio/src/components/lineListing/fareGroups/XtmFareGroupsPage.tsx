@@ -13,6 +13,11 @@ import { useCallback, useEffect, useState } from "react";
 import { FareGroupEditor } from "./FareGroupEditor";
 import { FareGroupListCard } from "./FareGroupListCard";
 import { entitiesEqual, entityKey, findExceptionOverlapError, sortByEntityIndex } from "./fareGroupUtils";
+import {
+    consumePendingFareGroup,
+    getPendingFareGroupToken,
+    subscribePendingFareGroup,
+} from "../overviewNavigation";
 
 const PLUS_ICON = "coui://uil/Standard/Plus.svg";
 
@@ -38,6 +43,7 @@ export function XtmFareGroupsPage({ refreshToken = 0, onGroupsChanged }: Props) 
     const [detail, setDetail] = useState<FareGroupDetail | null>(null);
     const [pendingDelete, setPendingDelete] = useState<FareGroupListItem | null>(null);
     const [loading, setLoading] = useState(true);
+    const [pendingNavToken, setPendingNavToken] = useState(getPendingFareGroupToken);
 
     const refreshList = useCallback(async () => {
         const list = sortByEntityIndex(await FareGroupService.list() ?? []);
@@ -56,6 +62,11 @@ export function XtmFareGroupsPage({ refreshToken = 0, onGroupsChanged }: Props) 
         setDetail(d);
         setSelected(group);
     }, []);
+
+    const selectGroup = useCallback(async (group: Entity) => {
+        await loadDetail(group);
+        await refreshShields();
+    }, [loadDetail, refreshShields]);
 
     useEffect(() => {
         let cancelled = false;
@@ -88,10 +99,16 @@ export function XtmFareGroupsPage({ refreshToken = 0, onGroupsChanged }: Props) 
         refreshShields();
     }, [refreshToken, refreshList, refreshShields]);
 
-    const selectGroup = async (group: Entity) => {
-        await loadDetail(group);
-        await refreshShields();
-    };
+    useEffect(() => subscribePendingFareGroup(() => {
+        setPendingNavToken(getPendingFareGroupToken());
+    }), []);
+
+    useEffect(() => {
+        if (pendingNavToken <= 0) return;
+        const group = consumePendingFareGroup();
+        if (!group) return;
+        void selectGroup(group);
+    }, [pendingNavToken, selectGroup]);
 
     const createGroup = async () => {
         const entity = await FareGroupService.create();

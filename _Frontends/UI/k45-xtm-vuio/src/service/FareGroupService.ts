@@ -36,6 +36,14 @@ export type FareTicketSliderBounds = {
     defaultValue: number;
 };
 
+export type FareGroupLineMembership = {
+    group: Entity;
+    groupName: string;
+    lineCount: number;
+    lineLabels: string[];
+    overflowCount: number;
+};
+
 export class FareGroupService {
     static async list(): Promise<FareGroupListItem[]> {
         return (await engine.call("k45::xtm.fareGroups.list")) ?? [];
@@ -51,6 +59,10 @@ export class FareGroupService {
 
     static async detail(group: Entity): Promise<FareGroupDetail | null> {
         return await engine.call("k45::xtm.fareGroups.detail", group);
+    }
+
+    static async lineMembership(line: Entity): Promise<FareGroupLineMembership | null> {
+        return (await engine.call("k45::xtm.fareGroups.lineMembership", line)) ?? null;
     }
 
     static async listShieldLines(

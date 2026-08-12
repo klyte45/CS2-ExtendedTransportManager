@@ -14,6 +14,10 @@ import {
     useState,
 } from "react";
 import { XtmLineListingPage } from "./XtmLineListingPage";
+import {
+    consumeForceXtmListing,
+    subscribeForceXtmListing,
+} from "./overviewNavigation";
 import "#styles/lineListing.scss";
 
 type OverviewProps = {
@@ -96,6 +100,17 @@ export const XtmTransportationOverviewRegister = (Component: any): any => {
             return () => {
                 cancelled = true;
             };
+        }, []);
+
+        useEffect(() => {
+            const applyForce = () => {
+                if (consumeForceXtmListing()) {
+                    userTouchedRef.current = true;
+                    setUseXtmListing(true);
+                }
+            };
+            applyForce();
+            return subscribeForceXtmListing(applyForce);
         }, []);
 
         const onToggle = () => {
