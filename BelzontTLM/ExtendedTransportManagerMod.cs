@@ -4,6 +4,7 @@ using BelzontTLM.Palettes;
 using BelzontTLM.UI;
 using Game;
 using Game.Modding;
+using Game.Policies;
 using Game.UI.InGame;
 using System.IO;
 using Unity.Entities;
@@ -28,6 +29,7 @@ namespace BelzontTLM
             updateSystem.UpdateAfter<XTMLineListingSection>(SystemUpdatePhase.UIUpdate);
 
             updateSystem.UpdateAt<XTMSegmentOccupancyHistorySystem>(SystemUpdatePhase.GameSimulation);
+            updateSystem.UpdateAfter<XTMFareGroupSystem, ModifiedSystem>(SystemUpdatePhase.Modification4);
             updateSystem.UpdateAt<XTM_WEIntegrationController>(SystemUpdatePhase.ModificationEnd);
             updateSystem.UpdateAt<XTMInfoPanelSystem>(SystemUpdatePhase.UIUpdate);
 

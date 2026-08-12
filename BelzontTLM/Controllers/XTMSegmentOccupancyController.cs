@@ -148,36 +148,7 @@ namespace BelzontTLM
         }
 
         private LineShieldInfo[] BuildLineShields(NativeList<Entity> matchingLines)
-        {
-            var lines = new LineShieldInfo[matchingLines.Length];
-            for (int i = 0; i < matchingLines.Length; i++)
-            {
-                Entity lineEntity = matchingLines[i];
-                EntityManager.TryGetComponent(lineEntity, out XTMRouteExtraData xtmData);
-                EntityManager.TryGetComponent(lineEntity, out RouteNumber routeNumber);
-                Color color = EntityManager.GetComponentData<Color>(lineEntity);
-                PrefabRef prefabRef = EntityManager.GetComponentData<PrefabRef>(lineEntity);
-                TransportLineData lineData = EntityManager.GetComponentData<TransportLineData>(prefabRef.m_Prefab);
-                Route route = EntityManager.GetComponentData<Route>(lineEntity);
-                RouteSchedule schedule = RouteUtils.CheckOption(route, RouteOption.Day)
-                    ? RouteSchedule.Day
-                    : (RouteUtils.CheckOption(route, RouteOption.Night) ? RouteSchedule.Night : RouteSchedule.DayAndNight);
-
-                lines[i] = new LineShieldInfo
-                {
-                    entity = lineEntity,
-                    name = m_NameSystem.GetName(lineEntity).ToValueableName(),
-                    routeNumber = routeNumber.m_Number,
-                    xtmData = xtmData,
-                    color = color.m_Color.ToRGB(true),
-                    type = lineData.m_TransportType.ToString(),
-                    isCargo = lineData.m_CargoTransport,
-                    isFixedColor = EntityManager.HasComponent<XTMPaletteLockedColor>(lineEntity),
-                    schedule = (int)schedule
-                };
-            }
-            return lines;
-        }
+            => LineShieldBuilder.BuildMany(EntityManager, m_NameSystem, matchingLines);
 
         private static LineShieldInfo[] FilterLinesWithStops(LineShieldInfo[] candidates, NativeList<NativeStopEntry> nativeStops)
         {
