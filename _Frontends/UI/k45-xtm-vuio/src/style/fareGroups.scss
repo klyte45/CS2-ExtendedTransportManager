@@ -1,0 +1,579 @@
+.xtm-line-listing {
+    .xtm-fareGroupsPage {
+        position: absolute;
+        top: 0;
+        right: 0;
+        bottom: 0;
+        left: 0;
+        display: flex;
+        flex-direction: row;
+        width: auto;
+        height: auto;
+        box-sizing: border-box;
+        overflow: hidden;
+        min-height: 0;
+
+        &_list {
+            flex: 0 0 500rem;
+            width: 500rem;
+            min-width: 500rem;
+            max-width: 500rem;
+            display: flex;
+            flex-direction: column;
+            height: 100%;
+            min-height: 0;
+            box-sizing: border-box;
+            padding-top: 8rem;
+            padding-right: 8rem;
+            padding-bottom: 8rem;
+            padding-left: 8rem;
+            border-right-width: 1rem;
+            border-right-style: solid;
+            border-right-color: var(--dividerColor);
+            overflow: hidden;
+        }
+
+        &_listHeader {
+            flex: 0 0 auto;
+            display: flex;
+            flex-direction: row;
+            align-items: center;
+            margin-bottom: 8rem;
+        }
+
+        &_listTitle {
+            flex: 1 1 auto;
+            min-width: 0;
+            font-size: var(--fontSizeL);
+            font-weight: bold;
+            color: var(--textColor);
+        }
+
+        &_listBody {
+            flex: 1 1 auto;
+            min-height: 0;
+            position: relative;
+            overflow: hidden;
+        }
+
+        &_listScroll {
+            position: absolute;
+            top: 0;
+            right: 0;
+            bottom: 0;
+            left: 0;
+        }
+
+        &_status {
+            padding-top: 24rem;
+            padding-right: 12rem;
+            padding-bottom: 24rem;
+            padding-left: 12rem;
+            color: var(--textColorDim);
+            text-align: center;
+            font-size: var(--fontSizeM);
+        }
+
+        &_editor {
+            flex: 1 1 auto;
+            min-width: 0;
+            min-height: 0;
+            height: 100%;
+            overflow: hidden;
+            box-sizing: border-box;
+            padding-top: 8rem;
+            padding-right: 10rem;
+            padding-bottom: 8rem;
+            padding-left: 10rem;
+        }
+    }
+
+    .xtm-fareGroupCard {
+        display: flex;
+        flex-direction: row;
+        align-items: center;
+        width: 100%;
+        box-sizing: border-box;
+        margin-bottom: 6rem;
+        padding-top: 8rem;
+        padding-right: 8rem;
+        padding-bottom: 8rem;
+        padding-left: 12rem;
+        border-width: 0;
+        border-radius: 8rem;
+        background-color: var(--menuPanel1);
+        color: var(--textColor);
+        text-align: left;
+        cursor: pointer;
+
+        &:hover {
+            background-color: var(--hoverColorNormal);
+        }
+
+        &.selected {
+            background-color: var(--menuSelectedColor);
+
+            .xtm-fareGroupCard_name {
+                color: var(--selectedTextColorDark);
+            }
+
+            .xtm-fareGroupCard_meta {
+                color: var(--selectedTextColorDarkDim);
+            }
+        }
+
+        &_main {
+            flex: 1 1 auto;
+            min-width: 0;
+            display: flex;
+            flex-direction: column;
+        }
+
+        &_name {
+            font-size: var(--fontSizeM);
+            font-weight: bold;
+            color: var(--textColor);
+            white-space: nowrap;
+            overflow: hidden;
+            margin-bottom: 2rem;
+        }
+
+        &_meta {
+            font-size: var(--fontSizeS);
+            color: var(--textColorDim);
+            white-space: nowrap;
+            overflow: hidden;
+        }
+
+        &_delete {
+            flex: 0 0 auto;
+            margin-left: 6rem;
+        }
+    }
+
+    .xtm-fareGroupEditor {
+        display: flex;
+        flex-direction: column;
+        width: 100%;
+        height: 100%;
+        min-height: 0;
+        overflow: hidden;
+        box-sizing: border-box;
+
+        &--empty {
+            align-items: center;
+            justify-content: center;
+            color: var(--textColorDim);
+            font-size: var(--fontSizeL);
+            text-align: center;
+        }
+
+        &_top {
+            flex: 0 0 auto;
+            margin-bottom: 10rem;
+        }
+
+        &_hint {
+            margin-top: 6rem;
+            color: var(--warningColor);
+            font-size: var(--fontSizeS);
+        }
+
+        &_split {
+            flex: 1 1 auto;
+            min-height: 0;
+            display: flex;
+            flex-direction: row;
+            overflow: hidden;
+
+            > * {
+                flex: 1 1 0;
+                min-width: 0;
+                min-height: 0;
+            }
+
+            > *:first-child {
+                margin-right: 10rem;
+            }
+        }
+    }
+
+    .xtm-fareGroupExceptions {
+        display: flex;
+        flex-direction: column;
+        height: 100%;
+        min-height: 0;
+        overflow: hidden;
+        box-sizing: border-box;
+        background-color: var(--menuPanel1);
+        border-radius: 8rem;
+        padding-top: 8rem;
+        padding-right: 8rem;
+        padding-bottom: 8rem;
+        padding-left: 8rem;
+
+        &_title {
+            flex: 0 0 auto;
+            font-size: var(--fontSizeM);
+            font-weight: bold;
+            color: var(--textColor);
+            margin-bottom: 8rem;
+        }
+
+        &_body {
+            flex: 1 1 auto;
+            min-height: 0;
+            position: relative;
+            overflow: hidden;
+        }
+
+        &_scroll {
+            position: absolute;
+            top: 0;
+            right: 0;
+            bottom: 0;
+            left: 0;
+        }
+
+        &_empty {
+            padding-top: 16rem;
+            padding-bottom: 16rem;
+            text-align: center;
+            color: var(--textColorDim);
+            font-size: var(--fontSizeS);
+        }
+
+        &_row {
+            display: flex;
+            flex-direction: row;
+            align-items: center;
+            flex-wrap: wrap;
+            margin-bottom: 8rem;
+            padding-top: 6rem;
+            padding-right: 6rem;
+            padding-bottom: 6rem;
+            padding-left: 6rem;
+            background-color: var(--menuPanel2);
+            border-radius: 6rem;
+            box-sizing: border-box;
+
+            > * {
+                margin-right: 6rem;
+            }
+        }
+
+        &_error {
+            flex: 0 0 auto;
+            margin-top: 6rem;
+            margin-bottom: 6rem;
+            color: var(--warningColor);
+            font-size: var(--fontSizeS);
+        }
+
+        &_add {
+            flex: 0 0 auto;
+            margin-top: 8rem;
+            align-self: flex-start;
+        }
+    }
+
+    .xtm-fareGroupLines {
+        display: flex;
+        flex-direction: column;
+        height: 100%;
+        min-height: 0;
+        overflow: hidden;
+        box-sizing: border-box;
+        background-color: var(--menuPanel1);
+        border-radius: 8rem;
+        padding-top: 8rem;
+        padding-right: 8rem;
+        padding-bottom: 8rem;
+        padding-left: 8rem;
+
+        &_linked {
+            flex: 1 1 auto;
+            min-height: 0;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+
+        &--availableOpen &_linked {
+            flex: 0 0 50%;
+            height: 50%;
+            max-height: 50%;
+            min-height: 0;
+        }
+
+        &_sectionTitle {
+            flex: 0 0 auto;
+            font-size: var(--fontSizeM);
+            font-weight: bold;
+            color: var(--textColor);
+            margin-bottom: 6rem;
+        }
+
+        &_linkedBody {
+            flex: 1 1 auto;
+            min-height: 0;
+            position: relative;
+            overflow: hidden;
+        }
+
+        &_linkedFooter {
+            flex: 0 0 auto;
+            display: flex;
+            flex-direction: row;
+            justify-content: flex-end;
+            align-items: center;
+            margin-top: 6rem;
+        }
+
+        &_linkedScroll,
+        &_availableScroll {
+            position: absolute;
+            top: 0;
+            right: 0;
+            bottom: 0;
+            left: 0;
+        }
+
+        &_available {
+            flex-grow: 1;
+            flex-shrink: 1;
+            flex-basis: 0;
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-end;
+            min-height: 0;
+            margin-top: 8rem;
+            overflow: hidden;
+        }
+
+        &--availableOpen &_available {
+            flex-grow: 0;
+            flex-shrink: 0;
+            flex-basis: 50%;
+            height: 50%;
+            max-height: 50%;
+            min-height: 0;
+            justify-content: flex-start;
+            overflow: hidden;
+            margin-top: 0;
+        }
+
+        &_foldout {
+            flex: 1 1 auto;
+            min-height: 0;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            box-sizing: border-box;
+
+            // Make vanilla foldout body participate in the 50% column height.
+            > [class*="content"],
+            > [class*="Content"] {
+                flex: 1 1 auto;
+                min-height: 0;
+                overflow: hidden;
+                display: flex;
+                flex-direction: column;
+            }
+        }
+
+        &_availableBody {
+            flex: 1 1 auto;
+            min-height: 0;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            margin-top: 6rem;
+            box-sizing: border-box;
+        }
+
+        &_filters {
+            flex: 0 0 auto;
+            display: flex;
+            flex-direction: row;
+            align-items: center;
+            margin-bottom: 6rem;
+        }
+
+        &_filtersMain {
+            flex: 1 1 auto;
+            min-width: 0;
+            display: flex;
+            flex-direction: row;
+            align-items: center;
+            flex-wrap: wrap;
+
+            > * {
+                display: flex;
+                flex-direction: row;
+                align-items: center;
+                flex-wrap: wrap;
+            }
+
+            > * > * + * {
+                margin-left: 4rem;
+            }
+        }
+
+        &_filtersActions {
+            flex: 0 0 auto;
+            margin-left: 8rem;
+        }
+
+        &_filterSpace {
+            width: 12rem;
+            flex-shrink: 0;
+        }
+
+        &_availableList {
+            flex: 1 1 auto;
+            min-height: 0;
+            position: relative;
+            overflow: hidden;
+        }
+
+        &_shieldGrid {
+            display: flex;
+            flex-direction: row;
+            flex-wrap: wrap;
+            align-content: flex-start;
+            padding-bottom: 12rem;
+        }
+
+        &_typeSeparator {
+            width: 100%;
+            flex-basis: 100%;
+            height: 10rem;
+            background-color: var(--menuPanel2);
+            margin-top: 4rem;
+            margin-bottom: 4rem;
+            box-sizing: border-box;
+        }
+
+        &_empty {
+            width: 100%;
+            padding-top: 12rem;
+            padding-bottom: 12rem;
+            text-align: center;
+            color: var(--textColorDim);
+            font-size: var(--fontSizeS);
+        }
+    }
+
+    .xtm-fareGroupShield {
+        position: relative;
+        width: 56rem;
+        height: 56rem;
+        margin-right: 6rem;
+        margin-bottom: 6rem;
+        flex-shrink: 0;
+        overflow: visible;
+
+        &_face {
+            position: relative;
+            width: 100%;
+            height: 100%;
+            overflow: visible;
+        }
+
+        &_format {
+            width: 100%;
+            height: 100%;
+        }
+
+        &_warn {
+            position: absolute;
+            right: 0;
+            bottom: 0;
+            width: 16rem;
+            height: 16rem;
+            z-index: 2;
+            pointer-events: none;
+        }
+
+        &_action {
+            display: none;
+            position: absolute;
+            width: 22rem;
+            height: 22rem;
+            z-index: 10000;
+            box-sizing: border-box;
+
+            &--remove {
+                top: 0;
+                left: 0;
+            }
+
+            &--add {
+                top: 0;
+                right: 0;
+            }
+        }
+
+        &_actionBtn {
+            width: 100%;
+            height: 100%;
+            padding-top: 0;
+            padding-right: 0;
+            padding-bottom: 0;
+            padding-left: 0;
+            margin-top: 0;
+            margin-right: 0;
+            margin-bottom: 0;
+            margin-left: 0;
+            border-width: 1rem;
+            border-style: solid;
+            border-color: #ffffff;
+            border-radius: 3rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            box-sizing: border-box;
+            background-color: #000000;
+            color: #ffffff;
+        }
+
+        &_actionIcon {
+            width: 16rem;
+            height: 16rem;
+            color: #ffffff;
+        }
+
+        &_action--remove &_actionBtn {
+            background-color: #5a1010;
+            border-color: #ffffff;
+            color: #ffffff;
+        }
+
+        &_action--add &_actionBtn {
+            background-color: #000000;
+            border-color: #ffffff;
+            color: #ffffff;
+        }
+
+        &:hover .xtm-fareGroupShield_action {
+            display: flex;
+        }
+    }
+
+    .screenTitleLabel {
+        padding-top: 0;
+        padding-right: 10rem;
+        padding-bottom: 0;
+        padding-left: 10rem;
+        white-space: nowrap;
+        flex-shrink: 0;
+        font-size: var(--fontSizeL);
+        font-weight: bold;
+        text-transform: none;
+        color: var(--textColor);
+    }
+}

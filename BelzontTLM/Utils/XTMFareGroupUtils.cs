@@ -43,6 +43,13 @@ namespace BelzontTLM
 
         public static bool TryClampFare(EntityManager em, Entity ticketPricePolicy, float fare, out float clamped)
         {
+            // 0 = free (vanilla TicketPriceSection); always allowed.
+            if (fare <= 0f)
+            {
+                clamped = 0f;
+                return true;
+            }
+
             clamped = fare;
             if (!em.HasComponent<PolicySliderData>(ticketPricePolicy))
             {

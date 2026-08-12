@@ -25,6 +25,7 @@ namespace BelzontTLM
             updateSystem.UpdateBefore<XTMRouteAutoColorSystem>(SystemUpdatePhase.UIUpdate);
             updateSystem.UpdateAt<XTMLineViewerController>(SystemUpdatePhase.UIUpdate);
             updateSystem.UpdateAt<XTMLineManagementController>(SystemUpdatePhase.UIUpdate);
+            updateSystem.UpdateAt<XTMFareGroupController>(SystemUpdatePhase.UIUpdate);
 
             updateSystem.UpdateAfter<XTMLineListingSection>(SystemUpdatePhase.UIUpdate);
 

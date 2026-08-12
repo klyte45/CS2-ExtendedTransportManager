@@ -1,0 +1,37 @@
+K45::XTM	vuio	fareGroups.mode		K45::XTM.vuio[fareGroups.mode]	Fare Groups	Grupos de tarifa
+K45::XTM	vuio	fareGroups.screenTitle		K45::XTM.vuio[fareGroups.screenTitle]	Fare Groups	Grupos de tarifa
+K45::XTM	vuio	fareGroups.groupCount		K45::XTM.vuio[fareGroups.groupCount]	{count} groups	{count} grupos
+K45::XTM	vuio	fareGroups.listTitle		K45::XTM.vuio[fareGroups.listTitle]	Groups	Grupos
+K45::XTM	vuio	fareGroups.addGroup		K45::XTM.vuio[fareGroups.addGroup]	Add fare group	Adicionar grupo de tarifa
+K45::XTM	vuio	fareGroups.loading		K45::XTM.vuio[fareGroups.loading]	Loading…	Carregando…
+K45::XTM	vuio	fareGroups.emptyList		K45::XTM.vuio[fareGroups.emptyList]	No fare groups yet	Nenhum grupo de tarifa ainda
+K45::XTM	vuio	fareGroups.selectGroup		K45::XTM.vuio[fareGroups.selectGroup]	Select a fare group	Selecione um grupo de tarifa
+K45::XTM	vuio	fareGroups.unnamed		K45::XTM.vuio[fareGroups.unnamed]	Unnamed fare group	Grupo de tarifa sem nome
+K45::XTM	vuio	fareGroups.fareFree		K45::XTM.vuio[fareGroups.fareFree]	Free	Gratuito
+K45::XTM	vuio	fareGroups.lineCount		K45::XTM.vuio[fareGroups.lineCount]	{count} lines	{count} linhas
+K45::XTM	vuio	fareGroups.delete.tooltip		K45::XTM.vuio[fareGroups.delete.tooltip]	Delete fare group	Excluir grupo de tarifa
+K45::XTM	vuio	fareGroups.delete.title		K45::XTM.vuio[fareGroups.delete.title]	Delete fare group	Excluir grupo de tarifa
+K45::XTM	vuio	fareGroups.delete.message		K45::XTM.vuio[fareGroups.delete.message]	Are you sure you want to delete the fare group "{name}"?	Tem certeza de que deseja excluir o grupo de tarifa "{name}"?
+K45::XTM	vuio	fareGroups.field.name		K45::XTM.vuio[fareGroups.field.name]	Name	Nome
+K45::XTM	vuio	fareGroups.field.defaultFare		K45::XTM.vuio[fareGroups.field.defaultFare]	Default fare	Tarifa padrão
+K45::XTM	vuio	fareGroups.exceptions.title		K45::XTM.vuio[fareGroups.exceptions.title]	Hour exceptions	Exceções por horário
+K45::XTM	vuio	fareGroups.exceptions.empty		K45::XTM.vuio[fareGroups.exceptions.empty]	No exceptions	Sem exceções
+K45::XTM	vuio	fareGroups.exceptions.startHour		K45::XTM.vuio[fareGroups.exceptions.startHour]	Start	Início
+K45::XTM	vuio	fareGroups.exceptions.endHour		K45::XTM.vuio[fareGroups.exceptions.endHour]	End	Fim
+K45::XTM	vuio	fareGroups.exceptions.fare		K45::XTM.vuio[fareGroups.exceptions.fare]	Fare	Tarifa
+K45::XTM	vuio	fareGroups.exceptions.remove		K45::XTM.vuio[fareGroups.exceptions.remove]	Remove exception	Remover exceção
+K45::XTM	vuio	fareGroups.exceptions.add		K45::XTM.vuio[fareGroups.exceptions.add]	Add exception	Adicionar exceção
+K45::XTM	vuio	fareGroups.exceptions.errorMax		K45::XTM.vuio[fareGroups.exceptions.errorMax]	Maximum of {count} exceptions	Máximo de {count} exceções
+K45::XTM	vuio	fareGroups.exceptions.errorOverlap		K45::XTM.vuio[fareGroups.exceptions.errorOverlap]	Exception hours must not overlap	Os horários das exceções não podem se sobrepor
+K45::XTM	vuio	fareGroups.exceptions.errorInvalid		K45::XTM.vuio[fareGroups.exceptions.errorInvalid]	Invalid hour range	Intervalo de horas inválido
+K45::XTM	vuio	fareGroups.exceptions.saveBlocked		K45::XTM.vuio[fareGroups.exceptions.saveBlocked]	Fix exception hours before changes can be saved	Corrija os horários das exceções antes de salvar
+K45::XTM	vuio	fareGroups.linkedLines		K45::XTM.vuio[fareGroups.linkedLines]	Lines in this group	Linhas neste grupo
+K45::XTM	vuio	fareGroups.linkedEmpty		K45::XTM.vuio[fareGroups.linkedEmpty]	No lines linked	Nenhuma linha vinculada
+K45::XTM	vuio	fareGroups.availableLines		K45::XTM.vuio[fareGroups.availableLines]	Available lines to link to this group	Linhas disponíveis para vincular a este grupo
+K45::XTM	vuio	fareGroups.availableEmpty		K45::XTM.vuio[fareGroups.availableEmpty]	No matching lines	Nenhuma linha correspondente
+K45::XTM	vuio	fareGroups.removeLine		K45::XTM.vuio[fareGroups.removeLine]	Remove line from group	Remover linha do grupo
+K45::XTM	vuio	fareGroups.addLine		K45::XTM.vuio[fareGroups.addLine]	Add line to group	Adicionar linha ao grupo
+K45::XTM	vuio	fareGroups.addAllFiltered		K45::XTM.vuio[fareGroups.addAllFiltered]	Add all filtered lines to this group	Adicionar todas as linhas filtradas a este grupo
+K45::XTM	vuio	fareGroups.removeAllLines		K45::XTM.vuio[fareGroups.removeAllLines]	Remove all lines from this group	Remover todas as linhas deste grupo
+K45::XTM	vuio	fareGroups.otherGroup.unknown		K45::XTM.vuio[fareGroups.otherGroup.unknown]	another group	outro grupo
+K45::XTM	vuio	fareGroups.otherGroup.warning		K45::XTM.vuio[fareGroups.otherGroup.warning]	Belongs to {group}. Adding it here will remove it from that group.	Pertence a {group}. Adicioná-la aqui a removerá daquele grupo.

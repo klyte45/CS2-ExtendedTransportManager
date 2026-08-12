@@ -1,10 +1,8 @@
-using Colossal.Entities;
 using Game;
 using Game.Common;
 using Game.Policies;
 using Game.Prefabs;
 using Game.Simulation;
-using Game.UI.InGame;
 using Unity.Burst;
 using Unity.Collections;
 using Unity.Entities;
@@ -29,23 +27,18 @@ namespace BelzontTLM
         private EntityQuery m_DirtyLinesQuery;
         private EntityQuery m_ModifyEventsQuery;
         private EntityQuery m_UpdatedAssociatedQuery;
-        private EntityQuery m_ConfigQuery;
 
         private TimeSystem m_TimeSystem;
-        private PoliciesUISystem m_PoliciesUISystem;
+        private XTMFareGroupEndFrameSystem m_XTMFareGroupEndFrameSystem;
         private PrefabSystem m_PrefabSystem;
-
-        private Entity m_TicketPricePolicy;
         private int m_LastHour = -1;
-        private bool m_TicketPolicyResolved;
 
-        private NativeHashSet<Entity> m_AppliedThisFrame;
 
         protected override void OnCreate()
         {
             base.OnCreate();
             m_TimeSystem = World.GetOrCreateSystemManaged<TimeSystem>();
-            m_PoliciesUISystem = World.GetOrCreateSystemManaged<PoliciesUISystem>();
+            m_XTMFareGroupEndFrameSystem = World.GetOrCreateSystemManaged<XTMFareGroupEndFrameSystem>();
             m_PrefabSystem = World.GetOrCreateSystemManaged<PrefabSystem>();
 
             m_FareGroupQuery = GetEntityQuery(ComponentType.ReadOnly<XTMFareGroup>());
@@ -67,34 +60,17 @@ namespace BelzontTLM
                 ComponentType.ReadOnly<XTMFareLineAssociation>(),
                 ComponentType.ReadOnly<Updated>(),
                 ComponentType.Exclude<XTMFarePersistingConflict>());
-            m_ConfigQuery = GetEntityQuery(ComponentType.ReadOnly<UITransportConfigurationData>());
-
-            m_AppliedThisFrame = new NativeHashSet<Entity>(64, Allocator.Persistent);
         }
 
         public override int GetUpdateInterval(SystemUpdatePhase phase)
         {
             return 32;
         }
-        
 
-        protected override void OnDestroy()
-        {
-            if (m_AppliedThisFrame.IsCreated)
-            {
-                m_AppliedThisFrame.Dispose();
-            }
-            base.OnDestroy();
-        }
+
 
         protected override void OnUpdate()
         {
-            if (!TryResolveTicketPolicy())
-            {
-                return;
-            }
-
-            m_AppliedThisFrame.Clear();
 
             int hour = Mathf.Clamp(Mathf.FloorToInt(24f * m_TimeSystem.normalizedTime), 0, 23);
             bool firstTick = m_LastHour < 0;
@@ -118,30 +94,8 @@ namespace BelzontTLM
             ProcessExternalConflicts(hour);
         }
 
-        private bool TryResolveTicketPolicy()
-        {
-            if (m_TicketPolicyResolved && EntityManager.Exists(m_TicketPricePolicy))
-            {
-                return true;
-            }
-            if (m_ConfigQuery.IsEmptyIgnoreFilter)
-            {
-                return false;
-            }
-            UITransportConfigurationPrefab config = m_PrefabSystem.GetSingletonPrefab<UITransportConfigurationPrefab>(m_ConfigQuery);
-            m_TicketPricePolicy = m_PrefabSystem.GetEntity(config.m_TicketPricePolicy);
-            m_TicketPolicyResolved = m_TicketPricePolicy != Entity.Null;
-            return m_TicketPolicyResolved;
-        }
 
-        public Entity TicketPricePolicy
-        {
-            get
-            {
-                TryResolveTicketPolicy();
-                return m_TicketPricePolicy;
-            }
-        }
+
 
         private void StripInvalidAssociations()
         {
@@ -280,7 +234,7 @@ namespace BelzontTLM
 
             for (int i = 0; i < applyLines.Length; i++)
             {
-                ApplyFareToLine(applyLines[i], applyFares[i]);
+                m_XTMFareGroupEndFrameSystem.EnqueueFareChange(applyLines[i], applyFares[i]);
                 if (EntityManager.HasComponent<XTMFareLineDirty>(applyLines[i]))
                 {
                     EntityManager.RemoveComponent<XTMFareLineDirty>(applyLines[i]);
@@ -297,14 +251,14 @@ namespace BelzontTLM
                 for (int i = 0; i < modifies.Length; i++)
                 {
                     Modify modify = modifies[i];
-                    if (modify.m_Policy != m_TicketPricePolicy)
+                    if (modify.m_Policy != m_XTMFareGroupEndFrameSystem.TicketPricePolicy)
                     {
                         continue;
                     }
                     Entity line = modify.m_Entity;
                     if (!EntityManager.HasComponent<XTMFareLineAssociation>(line)
                         || EntityManager.HasComponent<XTMFarePersistingConflict>(line)
-                        || m_AppliedThisFrame.Contains(line))
+                        || m_XTMFareGroupEndFrameSystem.WasAppliedLastFrame(line))
                     {
                         continue;
                     }
@@ -329,7 +283,7 @@ namespace BelzontTLM
             for (int i = 0; i < lines.Length; i++)
             {
                 Entity line = lines[i];
-                if (m_AppliedThisFrame.Contains(line) || EntityManager.HasComponent<XTMFarePersistingConflict>(line))
+                if (m_XTMFareGroupEndFrameSystem.WasAppliedLastFrame(line) || EntityManager.HasComponent<XTMFarePersistingConflict>(line))
                 {
                     continue;
                 }
@@ -344,7 +298,7 @@ namespace BelzontTLM
                     continue;
                 }
 
-                float current = XTMFareGroupUtils.ReadTicketPriceAdjustment(EntityManager, line, m_TicketPricePolicy);
+                float current = XTMFareGroupUtils.ReadTicketPriceAdjustment(EntityManager, line, m_XTMFareGroupEndFrameSystem.TicketPricePolicy);
                 if (Mathf.Approximately(current, assoc.m_lastAdjustment))
                 {
                     continue;
@@ -372,7 +326,7 @@ namespace BelzontTLM
             }
             count++;
 
-            ApplyFareToLine(line, expected);
+            m_XTMFareGroupEndFrameSystem.EnqueueFareChange(line, expected);
 
             if (count >= XTMFareConflictCounter.PersistThreshold)
             {
@@ -413,7 +367,7 @@ namespace BelzontTLM
 
             for (int i = 0; i < targets.Length; i++)
             {
-                ApplyFareToLine(targets[i], fares[i]);
+                m_XTMFareGroupEndFrameSystem.EnqueueFareChange(targets[i], fares[i]);
             }
 
             if (clearConflictsExceptPersisting)
@@ -422,20 +376,6 @@ namespace BelzontTLM
             }
         }
 
-        private void ApplyFareToLine(Entity line, float fare)
-        {
-            XTMFareGroupUtils.TryClampFare(EntityManager, m_TicketPricePolicy, fare, out float clamped);
-            m_PoliciesUISystem.SetPolicy(line, m_TicketPricePolicy, clamped > 0f, clamped);
-
-            if (EntityManager.HasComponent<XTMFareLineAssociation>(line))
-            {
-                XTMFareLineAssociation assoc = EntityManager.GetComponentData<XTMFareLineAssociation>(line);
-                assoc.m_lastAdjustment = clamped;
-                EntityManager.SetComponentData(line, assoc);
-            }
-
-            m_AppliedThisFrame.Add(line);
-        }
 
         private void ClearConflictCountersExceptPersisting()
         {

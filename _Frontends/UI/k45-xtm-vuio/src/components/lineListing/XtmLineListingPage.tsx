@@ -44,8 +44,10 @@ import {
     TYPE_TO_ICONS,
 } from "./lineListingTypes";
 import { XtmOccupancyReportPage } from "./occupancyReport/XtmOccupancyReportPage";
+import { XtmFareGroupsPage } from "./fareGroups/XtmFareGroupsPage";
 import "#styles/lineListing.scss";
 import "#styles/occupancyReport.scss";
+import "#styles/fareGroups.scss";
 
 function getNameFor(type: string, isCargo: boolean) {
     return engine.translate(isCargo ? `Transport.ROUTES[${type}]` : `Transport.LINES[${type}]`);
@@ -70,7 +72,7 @@ const SORT_LABEL_KEYS: Record<LineSortKey, [string, string]> = {
 const SORT_MENU_ICON_ASC = "coui://uil/Standard/ArrowSortHighDown.svg";
 const SORT_MENU_ICON_DESC = "coui://uil/Standard/ArrowSortLowDown.svg";
 
-export type OverviewScreenMode = "listing" | "occupancyPassengers" | "occupancyCargo";
+export type OverviewScreenMode = "listing" | "fareGroups" | "occupancyPassengers" | "occupancyCargo";
 
 const REPORT_ACTIVITY_ORDER: LineActivityClass[] = [
     "activity-dayNight",
@@ -80,6 +82,7 @@ const REPORT_ACTIVITY_ORDER: LineActivityClass[] = [
 
 const MODE_MENU_ITEMS: { mode: OverviewScreenMode; labelKey: string; fallback: string }[] = [
     { mode: "listing", labelKey: "occupancyReport.mode.listing", fallback: "Line listing" },
+    { mode: "fareGroups", labelKey: "fareGroups.mode", fallback: "Fare Groups" },
     {
         mode: "occupancyPassengers",
         labelKey: "occupancyReport.mode.occupancyPassengers",
@@ -210,9 +213,11 @@ export const XtmLineListingPage = () => {
     const [cargoPalettes, setCargoPalettes] = useState<Partial<Record<TransportType, string>>>({});
     const [report, setReport] = useState<SegmentOccupancyReport | null>(null);
     const [reportLoading, setReportLoading] = useState(false);
+    const [fareGroupCount, setFareGroupCount] = useState(0);
     const localization = useLocalization();
     const ToolButton = VanillaComponentResolver.instance.ToolButton;
     const reportMode = isReportMode(overviewMode);
+    const fareGroupsMode = overviewMode === "fareGroups";
 
     const reloadLines = (res: LineData[]) => {
         if (!Array.isArray(res)) {
@@ -429,77 +434,91 @@ export const XtmLineListingPage = () => {
         { datetime: formatReportDateTime(localization, report?.cityDateTime) },
     );
 
-    const showPassengerTypes = overviewMode === "listing" || overviewMode === "occupancyPassengers";
-    const showCargoTypes = overviewMode === "listing" || overviewMode === "occupancyCargo";
+    const showPassengerTypes = !fareGroupsMode && (overviewMode === "listing" || overviewMode === "occupancyPassengers");
+    const showCargoTypes = !fareGroupsMode && (overviewMode === "listing" || overviewMode === "occupancyCargo");
 
     return (
         <div className="xtm-line-listing">
             <section className="filterRow">
                 <FocusDisabled>
-                    {showPassengerTypes && passengerTypeKeys.map(renderTypeFilterButton)}
-                    {overviewMode === "listing" && passengerTypeKeys.length > 0 && cargoTypeKeys.length > 0 && (
-                        <div className="space modalSplit" />
-                    )}
-                    {showCargoTypes && cargoTypeKeys.map(renderTypeFilterButton)}
-                    {visibleTypeKeys.length > 0 && <div className="space" />}
-                    {visibleActivityOrder.map((key) => (
-                        <ToolButton
-                            key={key}
-                            src={ACTIVITY_TO_ICONS[key]}
-                            selected={!activityExclude.includes(key)}
-                            tooltip={translate(...ACTIVITY_TOOLTIP_KEYS[key])}
-                            onSelect={() => toggleActivityFilter(key)}
-                        />
-                    ))}
-                    <div className="space" />
-                    <button type="button" className="neutralBtn txt" onClick={() => {
-                        setFilters([], []);
-                    }}>
-                        {translate("lineList.showAll", "Show all")}
-                    </button>
-                    <button
-                        type="button"
-                        className="neutralBtn txt"
-                        onClick={() => {
-                            setFilters(visibleTypeKeys.slice(), visibleActivityOrder.slice());
-                        }}
-                    >
-                        {translate("lineList.hideAll", "Hide all")}
-                    </button>
-                    {overviewMode === "listing" && (
+                    {fareGroupsMode ? (
+                        <div className="screenTitleLabel">
+                            {translate("fareGroups.screenTitle", "Fare Groups")}
+                        </div>
+                    ) : (
                         <>
-                            <button
-                                type="button"
-                                className="neutralBtn txt"
-                                onClick={() => setFilters(cargoTypeKeys.slice(), activityExclude)}
-                            >
-                                {translate("lineList.passengerLines", "Passenger lines")}
-                            </button>
-                            <button
-                                type="button"
-                                className="neutralBtn txt"
-                                onClick={() => setFilters(passengerTypeKeys.slice(), activityExclude)}
-                            >
-                                {translate("lineList.cargoRoutes", "Cargo routes")}
-                            </button>
-                        </>
-                    )}
-                    {reportMode && (
-                        <>
+                            {showPassengerTypes && passengerTypeKeys.map(renderTypeFilterButton)}
+                            {overviewMode === "listing" && passengerTypeKeys.length > 0 && cargoTypeKeys.length > 0 && (
+                                <div className="space modalSplit" />
+                            )}
+                            {showCargoTypes && cargoTypeKeys.map(renderTypeFilterButton)}
+                            {visibleTypeKeys.length > 0 && <div className="space" />}
+                            {visibleActivityOrder.map((key) => (
+                                <ToolButton
+                                    key={key}
+                                    src={ACTIVITY_TO_ICONS[key]}
+                                    selected={!activityExclude.includes(key)}
+                                    tooltip={translate(...ACTIVITY_TOOLTIP_KEYS[key])}
+                                    onSelect={() => toggleActivityFilter(key)}
+                                />
+                            ))}
                             <div className="space" />
+                            <button type="button" className="neutralBtn txt" onClick={() => {
+                                setFilters([], []);
+                            }}>
+                                {translate("lineList.showAll", "Show all")}
+                            </button>
                             <button
                                 type="button"
                                 className="neutralBtn txt"
-                                disabled={reportLoading}
-                                onClick={() => fetchReport(overviewMode)}
+                                onClick={() => {
+                                    setFilters(visibleTypeKeys.slice(), visibleActivityOrder.slice());
+                                }}
                             >
-                                {translate("occupancyReport.refreshData", "Refresh data")}
+                                {translate("lineList.hideAll", "Hide all")}
                             </button>
+                            {overviewMode === "listing" && (
+                                <>
+                                    <button
+                                        type="button"
+                                        className="neutralBtn txt"
+                                        onClick={() => setFilters(cargoTypeKeys.slice(), activityExclude)}
+                                    >
+                                        {translate("lineList.passengerLines", "Passenger lines")}
+                                    </button>
+                                    <button
+                                        type="button"
+                                        className="neutralBtn txt"
+                                        onClick={() => setFilters(passengerTypeKeys.slice(), activityExclude)}
+                                    >
+                                        {translate("lineList.cargoRoutes", "Cargo routes")}
+                                    </button>
+                                </>
+                            )}
+                            {reportMode && (
+                                <>
+                                    <div className="space" />
+                                    <button
+                                        type="button"
+                                        className="neutralBtn txt"
+                                        disabled={reportLoading}
+                                        onClick={() => fetchReport(overviewMode)}
+                                    >
+                                        {translate("occupancyReport.refreshData", "Refresh data")}
+                                    </button>
+                                </>
+                            )}
                         </>
                     )}
                     <div className="spacegrow" />
                     <div className="filterRowEnd">
-                        {reportMode ? (
+                        {fareGroupsMode ? (
+                            <div className="linesCountLabel">
+                                {replaceArgs(translate("fareGroups.groupCount", "{count} groups"), {
+                                    count: `${fareGroupCount}`,
+                                })}
+                            </div>
+                        ) : reportMode ? (
                             <div className="reportDateTimeLabel">{reportDateTimeText}</div>
                         ) : (
                             <>
@@ -524,7 +543,13 @@ export const XtmLineListingPage = () => {
                     </div>
                 </FocusDisabled>
             </section>
-            {reportMode ? (
+            {fareGroupsMode ? (
+                <section className="LineList LineList--report">
+                    <div className="reportArea">
+                        <XtmFareGroupsPage onGroupsChanged={setFareGroupCount} />
+                    </div>
+                </section>
+            ) : reportMode ? (
                 <section className="LineList LineList--report">
                     <div className="reportArea">
                         <XtmOccupancyReportPage

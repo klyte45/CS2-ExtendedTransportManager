@@ -1,6 +1,7 @@
 using Belzont.Interfaces;
 using Belzont.Utils;
 using Colossal.Entities;
+using Game;
 using Game.Common;
 using Game.Prefabs;
 using Game.Routes;
@@ -14,18 +15,21 @@ using static Belzont.Utils.NameSystemExtensions;
 
 namespace BelzontTLM
 {
-    public partial class XTMFareGroupController : SystemBase, IBelzontBindable
+    public partial class XTMFareGroupController : GameSystemBase, IBelzontBindable
     {
         private const string PREFIX = "fareGroups.";
         private const string UnnamedLocaleKey = "K45::XTM.vuio[fareGroups.unnamed]";
+        private const int MaxHourExceptions = 20;
 
         private EntityQuery m_FareGroupQuery;
         private EntityQuery m_AssociatedLinesQuery;
-        private EntityQuery m_PassengerLinesQuery;
+        private EntityQuery m_LinesQuery;
 
         private NameSystem m_NameSystem;
-        private XTMFareGroupSystem m_FareGroupSystem;
+        private XTMFareGroupEndFrameSystem m_FareGroupSystem;
         private EntityArchetype m_FareGroupArchetype;
+
+        private readonly Dictionary<Entity, FareGroupDetail> m_PendingSaves = new();
 
         public void SetupCaller(Action<string, object[]> eventCaller) { }
 
@@ -39,17 +43,23 @@ namespace BelzontTLM
             callBinder($"{PREFIX}delete", DeleteFareGroup);
             callBinder($"{PREFIX}detail", DetailFareGroup);
             callBinder($"{PREFIX}listShieldLines", ListShieldLines);
-            callBinder($"{PREFIX}save", SaveFareGroup);
+            callBinder($"{PREFIX}save", EnqueueSaveFareGroup);
+            callBinder($"{PREFIX}ticketSliderBounds", GetTicketSliderBounds);
+        }
+
+        public override int GetUpdateInterval(SystemUpdatePhase phase)
+        {
+            return 64;
         }
 
         protected override void OnCreate()
         {
             m_NameSystem = World.GetOrCreateSystemManaged<NameSystem>();
-            m_FareGroupSystem = World.GetOrCreateSystemManaged<XTMFareGroupSystem>();
+            m_FareGroupSystem = World.GetOrCreateSystemManaged<XTMFareGroupEndFrameSystem>();
 
             m_FareGroupQuery = GetEntityQuery(ComponentType.ReadOnly<XTMFareGroup>());
             m_AssociatedLinesQuery = GetEntityQuery(ComponentType.ReadOnly<XTMFareLineAssociation>());
-            m_PassengerLinesQuery = GetEntityQuery(new EntityQueryDesc
+            m_LinesQuery = GetEntityQuery(new EntityQueryDesc
             {
                 All = new ComponentType[]
                 {
@@ -72,7 +82,20 @@ namespace BelzontTLM
                 ComponentType.ReadWrite<XTMFareGroupHourException>());
         }
 
-        protected override void OnUpdate() { }
+        protected override void OnUpdate()
+        {
+            if (m_PendingSaves.Count == 0)
+            {
+                return;
+            }
+
+            var pending = new List<KeyValuePair<Entity, FareGroupDetail>>(m_PendingSaves);
+            m_PendingSaves.Clear();
+            for (int i = 0; i < pending.Count; i++)
+            {
+                ApplyFareGroupSave(pending[i].Key, pending[i].Value);
+            }
+        }
 
         private bool LineBelongsToGroup(Entity line)
         {
@@ -88,11 +111,18 @@ namespace BelzontTLM
         private FareGroupListItem[] ListFareGroups()
         {
             using NativeArray<Entity> groups = m_FareGroupQuery.ToEntityArray(Allocator.Temp);
-            var counts = CountLinesPerGroup();
-            var items = new FareGroupListItem[groups.Length];
+            var ordered = new Entity[groups.Length];
             for (int i = 0; i < groups.Length; i++)
             {
-                Entity group = groups[i];
+                ordered[i] = groups[i];
+            }
+            Array.Sort(ordered, (a, b) => a.Index.CompareTo(b.Index));
+
+            var counts = CountLinesPerGroup();
+            var items = new FareGroupListItem[ordered.Length];
+            for (int i = 0; i < ordered.Length; i++)
+            {
+                Entity group = ordered[i];
                 XTMFareGroup data = EntityManager.GetComponentData<XTMFareGroup>(group);
                 counts.TryGetValue(group, out int count);
                 items[i] = new FareGroupListItem
@@ -123,6 +153,7 @@ namespace BelzontTLM
             {
                 return false;
             }
+            m_PendingSaves.Remove(group);
             EntityManager.DestroyEntity(group);
             return true;
         }
@@ -157,30 +188,114 @@ namespace BelzontTLM
             };
         }
 
-        private LineShieldInfo[] ListShieldLines()
+        private FareTicketSliderBounds GetTicketSliderBounds()
         {
-            using NativeArray<Entity> lineEntities = m_PassengerLinesQuery.ToEntityArray(Allocator.Temp);
+            Entity ticketPolicy = m_FareGroupSystem.TicketPricePolicy;
+            if (!EntityManager.HasComponent<PolicySliderData>(ticketPolicy))
+            {
+                return new FareTicketSliderBounds
+                {
+                    min = 0f,
+                    max = 100f,
+                    step = 1f,
+                    defaultValue = 0f
+                };
+            }
+
+            PolicySliderData slider = EntityManager.GetComponentData<PolicySliderData>(ticketPolicy);
+            // Vanilla ticket UI allows 0 = Free even when policy slider min is higher.
+            return new FareTicketSliderBounds
+            {
+                min = 0f,
+                max = slider.m_Range.max,
+                step = slider.m_Step,
+                defaultValue = slider.m_Default
+            };
+        }
+
+        private FareGroupLineShieldInfo[] ListShieldLines(bool includePassengers, bool includeCargo, bool includeInactive)
+        {
+            if (!includePassengers && !includeCargo)
+            {
+                return Array.Empty<FareGroupLineShieldInfo>();
+            }
+
+            using NativeArray<Entity> lineEntities = m_LinesQuery.ToEntityArray(Allocator.Temp);
             var matching = new List<Entity>(lineEntities.Length);
             for (int i = 0; i < lineEntities.Length; i++)
             {
                 Entity lineEntity = lineEntities[i];
-                if (!EntityManager.TryGetComponent(lineEntity, out Route route)
-                    || RouteUtils.CheckOption(route, RouteOption.Inactive))
+                if (!EntityManager.TryGetComponent(lineEntity, out Route route))
+                {
+                    continue;
+                }
+                bool inactive = RouteUtils.CheckOption(route, RouteOption.Inactive);
+                if (inactive && !includeInactive)
                 {
                     continue;
                 }
                 if (!EntityManager.TryGetComponent(lineEntity, out PrefabRef prefabRef)
-                    || !EntityManager.TryGetComponent(prefabRef.m_Prefab, out TransportLineData lineData)
-                    || lineData.m_CargoTransport)
+                    || !EntityManager.TryGetComponent(prefabRef.m_Prefab, out TransportLineData lineData))
+                {
+                    continue;
+                }
+                if (lineData.m_CargoTransport)
+                {
+                    if (!includeCargo)
+                    {
+                        continue;
+                    }
+                }
+                else if (!includePassengers)
                 {
                     continue;
                 }
                 matching.Add(lineEntity);
             }
-            return LineShieldBuilder.BuildMany(EntityManager, m_NameSystem, matching);
+
+            var result = new FareGroupLineShieldInfo[matching.Count];
+            for (int i = 0; i < matching.Count; i++)
+            {
+                Entity line = matching[i];
+                Entity fareGroup = Entity.Null;
+                if (EntityManager.HasComponent<XTMFareLineAssociation>(line))
+                {
+                    XTMFareLineAssociation assoc = EntityManager.GetComponentData<XTMFareLineAssociation>(line);
+                    if (XTMFareGroupUtils.IsValidFareGroup(EntityManager, assoc.m_fareGroup))
+                    {
+                        fareGroup = assoc.m_fareGroup;
+                    }
+                }
+                Route route = EntityManager.GetComponentData<Route>(line);
+                result[i] = new FareGroupLineShieldInfo
+                {
+                    shield = LineShieldBuilder.Build(EntityManager, m_NameSystem, line),
+                    fareGroup = fareGroup,
+                    active = !RouteUtils.CheckOption(route, RouteOption.Inactive)
+                };
+            }
+            return result;
         }
 
-        private bool SaveFareGroup(Entity group, FareGroupDetail detail)
+        private bool EnqueueSaveFareGroup(Entity group, FareGroupDetail detail)
+        {
+            if (!XTMFareGroupUtils.IsValidFareGroup(EntityManager, group) || detail == null)
+            {
+                return false;
+            }
+
+            if (!ValidateExceptions(detail.exceptions, out FareGroupHourExceptionDto[] exceptions))
+            {
+                return false;
+            }
+
+            detail.exceptions = exceptions;
+            detail.entity = group;
+            m_PendingSaves[group] = detail;
+            return true;
+        }
+
+        private bool ApplyFareGroupSave(Entity group, FareGroupDetail detail)
         {
             if (!XTMFareGroupUtils.IsValidFareGroup(EntityManager, group) || detail == null)
             {
@@ -315,6 +430,12 @@ namespace BelzontTLM
         private static bool ValidateExceptions(FareGroupHourExceptionDto[] exceptions, out FareGroupHourExceptionDto[] cleaned)
         {
             cleaned = exceptions ?? Array.Empty<FareGroupHourExceptionDto>();
+            if (cleaned.Length > MaxHourExceptions)
+            {
+                cleaned = Array.Empty<FareGroupHourExceptionDto>();
+                return false;
+            }
+
             for (int i = 0; i < cleaned.Length; i++)
             {
                 FareGroupHourExceptionDto e = cleaned[i];
@@ -324,6 +445,21 @@ namespace BelzontTLM
                     return false;
                 }
             }
+
+            for (int i = 0; i < cleaned.Length; i++)
+            {
+                for (int j = i + 1; j < cleaned.Length; j++)
+                {
+                    // Inclusive overlap: shared boundary hours conflict.
+                    if (cleaned[i].startingHour <= cleaned[j].endingHour
+                        && cleaned[j].startingHour <= cleaned[i].endingHour)
+                    {
+                        cleaned = Array.Empty<FareGroupHourExceptionDto>();
+                        return false;
+                    }
+                }
+            }
+
             return true;
         }
 
