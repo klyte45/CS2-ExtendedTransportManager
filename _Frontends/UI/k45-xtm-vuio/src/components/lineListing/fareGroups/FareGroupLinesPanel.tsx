@@ -245,6 +245,10 @@ export function FareGroupLinesPanel({ detail, shields, groups, onChangeLines }: 
                             isCargo={!!line.isCargo}
                             text={line.xtmData?.Acronym || String(line.routeNumber)}
                             className="xtm-fareGroupShield_format"
+                            activity={getLineActivityClass({
+                                active: item.active,
+                                schedule: line.schedule,
+                            })}
                         />
                         {otherGroup && (
                             <div className="xtm-fareGroupShield_warn">

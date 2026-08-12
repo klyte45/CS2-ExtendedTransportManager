@@ -9,6 +9,7 @@ import { Panel, Portal } from "cs2/ui";
 import { useMemo } from "react";
 import { TlmLineFormatCmp } from "./TlmLineFormatCmp";
 import "#styles/SegmentOccupancyPanel.scss";
+import { getLineActivityClass } from "#components/lineListing/lineListingTypes";
 
 export type SegmentOccupancySelection = {
     fromStop: StationData;
@@ -53,6 +54,7 @@ export function SegmentOccupancyPanelCmp({ line, fromStop, toStop, onClose }: Pr
                     type={line.type}
                     isCargo={line.isCargo}
                     text={line.xtmData?.Acronym || line.routeNumber.toFixed()}
+                    activity={getLineActivityClass(line)}
                 />
                 <div className="k45_xtm_segmentOccupancyPanel_fromStop">{fromName}</div>
             </div>

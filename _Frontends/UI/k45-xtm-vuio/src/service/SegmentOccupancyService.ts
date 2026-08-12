@@ -17,6 +17,7 @@ export type LineShieldInfo = {
     type: string;
     isCargo: boolean;
     isFixedColor: boolean;
+    active: boolean;
     /** RouteSchedule: Day = 0, Night = 1, DayAndNight = 2. */
     schedule: number;
 };

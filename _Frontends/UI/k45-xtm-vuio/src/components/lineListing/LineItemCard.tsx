@@ -297,6 +297,7 @@ export const LineItemCard = ({
                         {...x}
                         color={displayColor}
                         borderWidth="2px"
+                        activity={activityClass}
                         contentOverride={<div className="gameIcon" />}
                     />
                 </div>

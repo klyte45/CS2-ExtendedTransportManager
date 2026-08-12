@@ -13,6 +13,7 @@ import { useValue } from "cs2/api";
 import { findSymmetricPairStop, findSymmetricReturnPreviousStop, getTerminusNames, isSymmetricMiddleStop } from "#utility/lineViewerUtils";
 import { MapStationOccupancyContainerCmp } from "./MapStationOccupancyContainerCmp";
 import { SegmentOccupancyPanelCmp, SegmentOccupancySelection } from "./SegmentOccupancyPanelCmp";
+import { getLineActivityClass } from "#components/lineListing/lineListingTypes";
 
 type Props = {
     lineDetails: LineDetails;
@@ -57,7 +58,7 @@ export function TlmViewerCmp({ lineDetails, getLineById, simetricLine, showDistr
             <>
                 <div>
                     <div className="titleRow" >
-                        <TlmLineFormatCmp {...lineCommonData} text={lineCommonData.xtmData?.Acronym || lineCommonData.routeNumber.toFixed()} onClick={() => selectedInfo.selectEntity(toVanillaEntity(lineCommonData.entity))} />
+                        <TlmLineFormatCmp {...lineCommonData} activity={getLineActivityClass(lineCommonData)} text={lineCommonData.xtmData?.Acronym || lineCommonData.routeNumber.toFixed()} onClick={() => selectedInfo.selectEntity(toVanillaEntity(lineCommonData.entity))} />
                     </div>
                 </div>
                 <Scrollable className="lineStationsContainer">

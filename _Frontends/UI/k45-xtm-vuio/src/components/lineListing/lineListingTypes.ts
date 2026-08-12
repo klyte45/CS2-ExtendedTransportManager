@@ -56,6 +56,16 @@ export const SCHEDULE_BUTTON_ACTIVE_BG: Record<LineActivityClass, string> = {
     "activity-disabled": "rgba(200, 50, 50, 0.55)",
 };
 
+/** Solid circle colors for the line-format schedule badge (same hues as strip buttons). */
+export const SCHEDULE_BADGE_BG: Record<
+    Exclude<LineActivityClass, "activity-dayNight">,
+    string
+> = {
+    "activity-day": "rgb(252, 243, 125)",
+    "activity-night": "rgb(145, 99, 206)",
+    "activity-disabled": "rgb(200, 50, 50)",
+};
+
 /**
  * Info-area text colors live in lineListing.scss under `.BgItem.activity-*`
  * (Cohtml: prefer classes over custom properties for text color).

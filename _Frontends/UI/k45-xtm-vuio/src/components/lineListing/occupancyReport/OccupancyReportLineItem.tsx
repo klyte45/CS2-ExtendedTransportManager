@@ -6,6 +6,7 @@ import { nameToString, toVanillaEntity } from "@klyte45/vuio-commons";
 import { transport } from "cs2/bindings";
 import { LocalizedNumber, useLocalization } from "cs2/l10n";
 import { RankedLineItem } from "./occupancyReportRanking";
+import { getLineActivityClass } from "#components/lineListing/lineListingTypes";
 
 type Props = {
     item: RankedLineItem;
@@ -28,6 +29,7 @@ export function OccupancyReportLineItem({ item, rank }: Props) {
                     isCargo={line.isCargo}
                     text={shieldText}
                     className="xtm-occupancyReportItem_format"
+                    activity={getLineActivityClass(line)}
                     onClick={() => transport.selectLine(toVanillaEntity(line.entity))}
                 />
             </div>

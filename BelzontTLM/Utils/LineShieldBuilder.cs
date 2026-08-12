@@ -40,6 +40,7 @@ namespace BelzontTLM
                 type = lineData.m_TransportType.ToString(),
                 isCargo = lineData.m_CargoTransport,
                 isFixedColor = em.HasComponent<XTMPaletteLockedColor>(lineEntity),
+                active = !RouteUtils.CheckOption(route, RouteOption.Inactive),
                 schedule = (int)schedule
             };
         }

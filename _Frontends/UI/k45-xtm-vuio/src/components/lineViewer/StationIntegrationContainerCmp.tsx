@@ -5,6 +5,7 @@ import { CSSProperties } from "react";
 import { TlmLineFormatCmp } from "./TlmLineFormatCmp";
 import { selectedInfo } from "cs2/bindings";
 import { Tooltip } from "cs2/ui";
+import { getLineActivityClass } from "#components/lineListing/lineListingTypes";
 
 type Props = {
     station: StationData;
@@ -53,7 +54,7 @@ export function StationIntegrationContainerCmp({ station, getLineById, thisLineI
                 {linesToIntegrate.map((lineData, i) => {
                     return lineData && <Tooltip key={i} tooltip={nameToString(lineData.name)}>
                         <div className="lineIntersection" onClick={() => selectedInfo.selectEntity(toVanillaEntity(lineData.entity))}>
-                            <TlmLineFormatCmp {...lineData} text={lineData.xtmData?.Acronym || lineData.routeNumber.toFixed()} />
+                            <TlmLineFormatCmp {...lineData} activity={getLineActivityClass(lineData)} text={lineData.xtmData?.Acronym || lineData.routeNumber.toFixed()} />
                         </div>
                     </Tooltip>;
                 })}

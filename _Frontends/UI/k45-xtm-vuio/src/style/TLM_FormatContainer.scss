@@ -189,4 +189,37 @@
         display: none;
     }
 
+    // Area = 1/9 of shield → side = 1/3 of container. Bottom-left, circular.
+    .scheduleMarker {
+        position: absolute;
+        z-index: 9999;
+        left: 0;
+        bottom: -2px;
+        width: 33.333%;
+        height: 33.333%;
+        border-top-left-radius: 99999px 99999px;
+        border-top-right-radius: 99999px 99999px;
+        border-bottom-left-radius: 99999px 99999px;
+        border-bottom-right-radius: 99999px 99999px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        box-sizing: border-box;
+        pointer-events: none;
+
+        .scheduleMarker_icon {
+            width: 70%;
+            height: 70%;
+            background-size: contain;
+            background-repeat: no-repeat;
+            background-position: center;
+            pointer-events: none;
+
+            &--dark {
+                // White placeholder SVGs → black for contrast on yellow day badge.
+                filter: brightness(0);
+            }
+        }
+    }
+
 }
