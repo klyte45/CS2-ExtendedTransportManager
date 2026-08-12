@@ -245,9 +245,7 @@
 
         &_row {
             display: flex;
-            flex-direction: row;
-            align-items: center;
-            flex-wrap: wrap;
+            flex-direction: column;
             margin-bottom: 8rem;
             padding-top: 6rem;
             padding-right: 6rem;
@@ -256,10 +254,32 @@
             background-color: var(--menuPanel2);
             border-radius: 6rem;
             box-sizing: border-box;
+        }
+
+        &_rowFields {
+            display: flex;
+            flex-direction: row;
+            align-items: center;
+            flex-wrap: wrap;
 
             > * {
                 margin-right: 6rem;
             }
+        }
+
+        &_rowFooter {
+            display: flex;
+            flex-direction: row;
+            align-items: center;
+            margin-top: 6rem;
+        }
+
+        &_summary {
+            flex: 1 1 auto;
+            min-width: 0;
+            margin-right: 6rem;
+            color: var(--textColorDim);
+            font-size: var(--fontSizeS);
         }
 
         &_error {
@@ -490,12 +510,24 @@
 
         &_warn {
             position: absolute;
-            right: 0;
-            bottom: 0;
-            width: 16rem;
-            height: 16rem;
+            right: -2rem;
+            bottom: -2rem;
+            width: 20rem;
+            height: 20rem;
+            border-radius: 50%;
+            background-color: #a01010;
+            display: flex;
+            align-items: center;
+            justify-content: center;
             z-index: 2;
             pointer-events: none;
+            box-sizing: border-box;
+        }
+
+        &_warnIcon {
+            width: 14rem;
+            height: 14rem;
+            color: #ffffff;
         }
 
         &_action {

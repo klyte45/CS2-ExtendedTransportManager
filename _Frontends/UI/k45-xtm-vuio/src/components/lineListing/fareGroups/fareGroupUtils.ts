@@ -17,6 +17,14 @@ export function isNullEntity(entity: Entity | null | undefined): boolean {
     return !entity || entity.Index === 0;
 }
 
+export function compareByEntityIndex(a: Entity | null | undefined, b: Entity | null | undefined): number {
+    return (a?.Index ?? 0) - (b?.Index ?? 0);
+}
+
+export function sortByEntityIndex<T extends { entity: Entity }>(items: T[]): T[] {
+    return items.slice().sort((a, b) => compareByEntityIndex(a.entity, b.entity));
+}
+
 /** Inclusive ranges: shared boundary hours conflict. */
 export function rangesOverlap(
     a: { startingHour: number; endingHour: number },

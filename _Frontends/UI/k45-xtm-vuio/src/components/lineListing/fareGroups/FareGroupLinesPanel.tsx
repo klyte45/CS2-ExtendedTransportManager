@@ -47,6 +47,43 @@ function getNameFor(type: string, isCargo: boolean) {
     return engine.translate(isCargo ? `Transport.ROUTES[${type}]` : `Transport.LINES[${type}]`);
 }
 
+function orderShieldsForListing(items: FareGroupLineShieldInfo[]): FareGroupLineShieldInfo[] {
+    const byRoute = items.slice().sort((a, b) => {
+        const dir = DEFAULT_LINE_SORT.descending ? -1 : 1;
+        return dir * (a.shield.routeNumber - b.shield.routeNumber);
+    });
+    return groupLinesByTransportType(
+        byRoute.map((item) => ({
+            ...item,
+            type: item.shield.type,
+            isCargo: !!item.shield.isCargo,
+        })),
+    );
+}
+
+function renderShieldGridItems(
+    items: FareGroupLineShieldInfo[],
+    renderChip: (item: FareGroupLineShieldInfo) => JSX.Element,
+    keyPrefix: string,
+) {
+    return items.flatMap((s, i, a) => {
+        const prev = i > 0 ? a[i - 1] : null;
+        const showSep =
+            !!prev &&
+            (prev.shield.type !== s.shield.type ||
+                !!prev.shield.isCargo !== !!s.shield.isCargo);
+        return [
+            showSep ? (
+                <div
+                    key={`${keyPrefix}sep_${entityKey(s.shield.entity)}`}
+                    className="xtm-fareGroupLines_typeSeparator"
+                />
+            ) : null,
+            renderChip(s),
+        ];
+    });
+}
+
 /** Cohtml may nest shield or flatten fields; normalize either shape. */
 function normalizeShieldRow(raw: FareGroupLineShieldInfo | (LineShieldInfo & { fareGroup?: Entity; active?: boolean; shield?: LineShieldInfo })): FareGroupLineShieldInfo | null {
     if (!raw) return null;
@@ -73,6 +110,7 @@ export function FareGroupLinesPanel({ detail, shields, groups, onChangeLines }: 
     const [availableOpen, setAvailableOpen] = useState(false);
     const [filterExclude, setFilterExclude] = useState<string[]>([]);
     const [activityExclude, setActivityExclude] = useState<LineActivityClass[]>([]);
+    const [hideAssigned, setHideAssigned] = useState(false);
 
     const normalizedShields = useMemo(() => {
         const out: FareGroupLineShieldInfo[] = [];
@@ -100,9 +138,10 @@ export function FareGroupLinesPanel({ detail, shields, groups, onChangeLines }: 
     }, [normalizedShields]);
 
     const linkedShields = useMemo(() => {
-        return (detail.lines ?? [])
+        const items = (detail.lines ?? [])
             .map((line) => shieldByLine.get(entityKey(line)))
             .filter((x): x is FareGroupLineShieldInfo => !!x);
+        return orderShieldsForListing(items);
     }, [detail.lines, shieldByLine]);
 
     const availableShields = useMemo(() => {
@@ -117,21 +156,14 @@ export function FareGroupLinesPanel({ detail, shields, groups, onChangeLines }: 
                 schedule: item.shield.schedule ?? 2,
             });
             if (activityExclude.includes(activity)) return false;
+            const assignedElsewhere =
+                !isNullEntity(item.fareGroup) &&
+                !entitiesEqual(item.fareGroup, detail.entity);
+            if (hideAssigned && assignedElsewhere) return false;
             return true;
         });
-        // Default listing order: route number asc, then group by transport type.
-        const byRoute = filtered.slice().sort((a, b) => {
-            const dir = DEFAULT_LINE_SORT.descending ? -1 : 1;
-            return dir * (a.shield.routeNumber - b.shield.routeNumber);
-        });
-        return groupLinesByTransportType(
-            byRoute.map((item) => ({
-                ...item,
-                type: item.shield.type,
-                isCargo: !!item.shield.isCargo,
-            })),
-        );
-    }, [normalizedShields, detail.lines, filterExclude, activityExclude]);
+        return orderShieldsForListing(filtered);
+    }, [normalizedShields, detail.lines, detail.entity, filterExclude, activityExclude, hideAssigned]);
 
     const presentPassengerTypes = useMemo(() => {
         const keys = new Set<string>();
@@ -215,11 +247,13 @@ export function FareGroupLinesPanel({ detail, shields, groups, onChangeLines }: 
                             className="xtm-fareGroupShield_format"
                         />
                         {otherGroup && (
-                            <img
-                                className="xtm-fareGroupShield_warn"
-                                src={WARN_ICON}
-                                alt=""
-                            />
+                            <div className="xtm-fareGroupShield_warn">
+                                <Icon
+                                    src={WARN_ICON}
+                                    tinted
+                                    className="xtm-fareGroupShield_warnIcon"
+                                />
+                            </div>
                         )}
                     </div>
                 </Tooltip>
@@ -272,7 +306,11 @@ export function FareGroupLinesPanel({ detail, shields, groups, onChangeLines }: 
                                     {translate("fareGroups.linkedEmpty", "No lines linked")}
                                 </div>
                             ) : (
-                                linkedShields.map((s) => renderShieldChip(s, "linked"))
+                                renderShieldGridItems(
+                                    linkedShields,
+                                    (s) => renderShieldChip(s, "linked"),
+                                    "linked_",
+                                )
                             )}
                         </div>
                     </Scrollable>
@@ -333,6 +371,17 @@ export function FareGroupLinesPanel({ detail, shields, groups, onChangeLines }: 
                                             focusKey={VanillaComponentResolver.instance.FOCUS_DISABLED}
                                         />
                                     ))}
+                                    <div className="xtm-fareGroupLines_filterSpace" />
+                                    <ToolButton
+                                        src={WARN_ICON}
+                                        selected={!hideAssigned}
+                                        tooltip={translate(
+                                            "fareGroups.filterAssigned",
+                                            "Lines already assigned to a group",
+                                        )}
+                                        onSelect={() => setHideAssigned((v) => !v)}
+                                        focusKey={VanillaComponentResolver.instance.FOCUS_DISABLED}
+                                    />
                                 </FocusDisabled>
                             </div>
                             {availableShields.length > 0 && (
@@ -363,22 +412,11 @@ export function FareGroupLinesPanel({ detail, shields, groups, onChangeLines }: 
                                             )}
                                         </div>
                                     ) : (
-                                        availableShields.flatMap((s, i, a) => {
-                                            const prev = i > 0 ? a[i - 1] : null;
-                                            const showSep =
-                                                !!prev &&
-                                                (prev.shield.type !== s.shield.type ||
-                                                    !!prev.shield.isCargo !== !!s.shield.isCargo);
-                                            return [
-                                                showSep ? (
-                                                    <div
-                                                        key={`sep_${entityKey(s.shield.entity)}`}
-                                                        className="xtm-fareGroupLines_typeSeparator"
-                                                    />
-                                                ) : null,
-                                                renderShieldChip(s, "available"),
-                                            ];
-                                        })
+                                        renderShieldGridItems(
+                                            availableShields,
+                                            (s) => renderShieldChip(s, "available"),
+                                            "avail_",
+                                        )
                                     )}
                                 </div>
                             </Scrollable>

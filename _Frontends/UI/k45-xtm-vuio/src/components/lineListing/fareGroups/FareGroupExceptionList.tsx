@@ -59,54 +59,82 @@ export function FareGroupExceptionList({ exceptions, defaultFare, bounds, onChan
                     ) : (
                         exceptions.map((row, index) => (
                             <div key={index} className="xtm-fareGroupExceptions_row">
-                                <EditorItemRowNoFocus
-                                    label={translate("fareGroups.exceptions.startHour", "Start")}
-                                >
-                                    <IntInput
-                                        className={editorModule.input}
-                                        value={row.startingHour}
-                                        min={0}
-                                        max={23}
-                                        onChange={(v) => updateAt(index, { startingHour: v })}
-                                        focusKey={VanillaComponentResolver.instance.FOCUS_DISABLED}
-                                    />
-                                </EditorItemRowNoFocus>
-                                <EditorItemRowNoFocus
-                                    label={translate("fareGroups.exceptions.endHour", "End")}
-                                >
-                                    <IntInput
-                                        className={editorModule.input}
-                                        value={row.endingHour}
-                                        min={0}
-                                        max={23}
-                                        onChange={(v) => updateAt(index, { endingHour: v })}
-                                        focusKey={VanillaComponentResolver.instance.FOCUS_DISABLED}
-                                    />
-                                </EditorItemRowNoFocus>
-                                <EditorItemRowNoFocus
-                                    label={translate("fareGroups.exceptions.fare", "Fare")}
-                                >
-                                    <IntInput
-                                        className={editorModule.input}
-                                        value={Math.round(row.fareValue)}
-                                        min={0}
-                                        max={Math.round(bounds.max)}
-                                        onChange={(v) => updateAt(index, { fareValue: v })}
-                                        focusKey={VanillaComponentResolver.instance.FOCUS_DISABLED}
-                                    />
-                                </EditorItemRowNoFocus>
-                                <FocusDisabled>
-                                    <ToolButton
-                                        src={REMOVE_ICON}
-                                        selected={false}
-                                        tooltip={translate(
-                                            "fareGroups.exceptions.remove",
-                                            "Remove exception",
-                                        )}
-                                        onSelect={() => removeAt(index)}
-                                        focusKey={VanillaComponentResolver.instance.FOCUS_DISABLED}
-                                    />
-                                </FocusDisabled>
+                                <div className="xtm-fareGroupExceptions_rowFields">
+                                    <EditorItemRowNoFocus
+                                        label={translate("fareGroups.exceptions.startHour", "Start")}
+                                    >
+                                        <IntInput
+                                            className={editorModule.input}
+                                            value={row.startingHour}
+                                            min={0}
+                                            max={23}
+                                            onChange={(v) => updateAt(index, { startingHour: v })}
+                                            focusKey={VanillaComponentResolver.instance.FOCUS_DISABLED}
+                                        />
+                                    </EditorItemRowNoFocus>
+                                    <EditorItemRowNoFocus
+                                        label={translate("fareGroups.exceptions.endHour", "End")}
+                                    >
+                                        <IntInput
+                                            className={editorModule.input}
+                                            value={row.endingHour}
+                                            min={0}
+                                            max={23}
+                                            onChange={(v) => updateAt(index, { endingHour: v })}
+                                            focusKey={VanillaComponentResolver.instance.FOCUS_DISABLED}
+                                        />
+                                    </EditorItemRowNoFocus>
+                                    <EditorItemRowNoFocus
+                                        label={translate("fareGroups.exceptions.fare", "Fare")}
+                                    >
+                                        <IntInput
+                                            className={editorModule.input}
+                                            value={Math.round(row.fareValue)}
+                                            min={0}
+                                            max={Math.round(bounds.max)}
+                                            onChange={(v) => updateAt(index, { fareValue: v })}
+                                            focusKey={VanillaComponentResolver.instance.FOCUS_DISABLED}
+                                        />
+                                    </EditorItemRowNoFocus>
+                                </div>
+                                <div className="xtm-fareGroupExceptions_rowFooter">
+                                    <div className="xtm-fareGroupExceptions_summary">
+                                        {Math.round(row.fareValue) === 0
+                                            ? replaceArgs(
+                                                translate(
+                                                    "fareGroups.exceptions.summaryFree",
+                                                    "Free travel will be applied from {start}:00 to {end}:59",
+                                                ),
+                                                {
+                                                    start: String(row.startingHour),
+                                                    end: String(row.endingHour),
+                                                },
+                                            )
+                                            : replaceArgs(
+                                                translate(
+                                                    "fareGroups.exceptions.summary",
+                                                    "The fare {fare}¢ will be applied from {start}:00 to {end}:59",
+                                                ),
+                                                {
+                                                    fare: String(Math.round(row.fareValue)),
+                                                    start: String(row.startingHour),
+                                                    end: String(row.endingHour),
+                                                },
+                                            )}
+                                    </div>
+                                    <FocusDisabled>
+                                        <ToolButton
+                                            src={REMOVE_ICON}
+                                            selected={false}
+                                            tooltip={translate(
+                                                "fareGroups.exceptions.remove",
+                                                "Remove exception",
+                                            )}
+                                            onSelect={() => removeAt(index)}
+                                            focusKey={VanillaComponentResolver.instance.FOCUS_DISABLED}
+                                        />
+                                    </FocusDisabled>
+                                </div>
                             </div>
                         ))
                     )}

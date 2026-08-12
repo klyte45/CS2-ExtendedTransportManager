@@ -12,7 +12,7 @@ import { ConfirmationDialog, Portal, Scrollable } from "cs2/ui";
 import { useCallback, useEffect, useState } from "react";
 import { FareGroupEditor } from "./FareGroupEditor";
 import { FareGroupListCard } from "./FareGroupListCard";
-import { entitiesEqual, entityKey, findExceptionOverlapError } from "./fareGroupUtils";
+import { entitiesEqual, entityKey, findExceptionOverlapError, sortByEntityIndex } from "./fareGroupUtils";
 
 const PLUS_ICON = "coui://uil/Standard/Plus.svg";
 
@@ -40,10 +40,10 @@ export function XtmFareGroupsPage({ refreshToken = 0, onGroupsChanged }: Props) 
     const [loading, setLoading] = useState(true);
 
     const refreshList = useCallback(async () => {
-        const list = await FareGroupService.list();
-        setGroups(list ?? []);
-        onGroupsChanged?.(list?.length ?? 0);
-        return list ?? [];
+        const list = sortByEntityIndex(await FareGroupService.list() ?? []);
+        setGroups(list);
+        onGroupsChanged?.(list.length);
+        return list;
     }, [onGroupsChanged]);
 
     const refreshShields = useCallback(async () => {
@@ -68,10 +68,11 @@ export function XtmFareGroupsPage({ refreshToken = 0, onGroupsChanged }: Props) 
                     FareGroupService.ticketSliderBounds(),
                 ]);
                 if (cancelled) return;
-                setGroups(list ?? []);
+                const groups = sortByEntityIndex(list ?? []);
+                setGroups(groups);
                 setShields(shieldData ?? []);
                 setBounds(slider ?? DEFAULT_BOUNDS);
-                onGroupsChanged?.(list?.length ?? 0);
+                onGroupsChanged?.(groups.length);
             } finally {
                 if (!cancelled) setLoading(false);
             }
