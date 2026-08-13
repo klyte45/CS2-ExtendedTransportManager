@@ -57,6 +57,16 @@ export type VehicleModelPresentType = {
     isCargo: boolean;
 };
 
+export type VehicleModelGroupLineMembership = {
+    group: Entity;
+    groupName: string;
+    lineCount: number;
+    lineLabels: string[];
+    overflowCount: number;
+    transportType: number;
+    isCargo: boolean;
+};
+
 export class VehicleModelGroupService {
     static async list(): Promise<VehicleModelGroupListItem[]> {
         return (await engine.call("k45::xtm.vehicleModelGroups.list")) ?? [];
@@ -72,6 +82,10 @@ export class VehicleModelGroupService {
 
     static async detail(group: Entity): Promise<VehicleModelGroupDetail | null> {
         return await engine.call("k45::xtm.vehicleModelGroups.detail", group);
+    }
+
+    static async lineMembership(line: Entity): Promise<VehicleModelGroupLineMembership | null> {
+        return (await engine.call("k45::xtm.vehicleModelGroups.lineMembership", line)) ?? null;
     }
 
     static async listShieldLines(
@@ -108,5 +122,14 @@ export class VehicleModelGroupService {
 
     static async listPresentTypes(): Promise<VehicleModelPresentType[]> {
         return (await engine.call("k45::xtm.vehicleModelGroups.listPresentTypes")) ?? [];
+    }
+
+    /** Assign line to group, or pass null/Entity.Null to remove membership. */
+    static async assignLine(line: Entity, group: Entity | null): Promise<boolean> {
+        return await engine.call(
+            "k45::xtm.vehicleModelGroups.assignLine",
+            line,
+            group ?? { Index: 0, Version: 0 },
+        );
     }
 }

@@ -1926,10 +1926,11 @@ declare module "cs2/bindings" {
 		vehicleCounts: Number2[];
 	}
 	export interface SelectVehiclesSection extends SelectedInfoSectionBase {
-		primaryVehicle: VehiclePrefab | null;
-		secondaryVehicle: VehiclePrefab | null;
-		primaryVehicles: VehiclePrefab[];
-		secondaryVehicles: VehiclePrefab[] | null;
+		routePrefab: number;
+		selectedPrimaryVehicles: VehiclePrefab[];
+		selectedSecondaryVehicles: VehiclePrefab[];
+		availablePrimaryVehicles: VehiclePrefab[];
+		availableSecondaryVehicles: VehiclePrefab[] | null;
 	}
 	export interface AttractivenessSection extends SelectedInfoSectionBase {
 		attractiveness: number;
@@ -2316,6 +2317,8 @@ declare module "cs2/bindings" {
 		locked: boolean;
 		requirements: PrefabRequirement[];
 		thumbnail: string;
+		multiunit?: boolean;
+		objectRequirementIcons?: string[];
 	}
 	export interface LocalServiceBuilding {
 		name: Name;

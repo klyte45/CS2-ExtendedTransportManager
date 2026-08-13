@@ -33,6 +33,11 @@ import {
     transportTypeFromInt,
     typeKey,
 } from "./vehicleModelGroupUtils";
+import {
+    consumePendingVehicleModelGroup,
+    getPendingVehicleModelGroupToken,
+    subscribePendingVehicleModelGroup,
+} from "../overviewNavigation";
 
 const PLUS_ICON = "coui://uil/Standard/Plus.svg";
 
@@ -178,6 +183,7 @@ export function XtmVehicleModelGroupsPage({ onGroupsChanged }: Props) {
     const [detail, setDetail] = useState<VehicleModelGroupDetail | null>(null);
     const [pendingDelete, setPendingDelete] = useState<VehicleModelGroupListItem | null>(null);
     const [loading, setLoading] = useState(true);
+    const [pendingNavToken, setPendingNavToken] = useState(getPendingVehicleModelGroupToken);
 
     const filteredGroups = useMemo(() => {
         if (!selectedType) return [];
@@ -226,6 +232,23 @@ export function XtmVehicleModelGroupsPage({ onGroupsChanged }: Props) {
         [loadDetail],
     );
 
+    const openGroupFromNav = useCallback(
+        async (group: Entity) => {
+            const d = await VehicleModelGroupService.detail(group);
+            if (!d) return;
+            const type: SelectedType = {
+                transportType: d.transportType,
+                isCargo: !!d.isCargo,
+            };
+            setSelectedType(type);
+            await refreshTypeData(type);
+            setDetail(d);
+            setSelected(group);
+            await refreshList();
+        },
+        [refreshList, refreshTypeData],
+    );
+
     const changeType = useCallback(
         async (type: SelectedType) => {
             setSelectedType(type);
@@ -263,6 +286,17 @@ export function XtmVehicleModelGroupsPage({ onGroupsChanged }: Props) {
             cancelled = true;
         };
     }, []);
+
+    useEffect(() => subscribePendingVehicleModelGroup(() => {
+        setPendingNavToken(getPendingVehicleModelGroupToken());
+    }), []);
+
+    useEffect(() => {
+        if (pendingNavToken <= 0) return;
+        const group = consumePendingVehicleModelGroup();
+        if (!group) return;
+        void openGroupFromNav(group);
+    }, [pendingNavToken, openGroupFromNav]);
 
     const createGroup = async () => {
         if (!selectedType) return;

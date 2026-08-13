@@ -5,12 +5,13 @@ import {
 import { Unit } from "#enum/Unit";
 import translate from "#utility/translate";
 import { openFareGroupEditor } from "#components/lineListing/overviewNavigation";
+import { ManagedGroupSipMenu } from "#components/ManagedGroupSipMenu";
 import { replaceArgs, toEntityTyped, VanillaComponentResolver } from "@klyte45/vuio-commons";
 import { useValue } from "cs2/api";
 import { selectedInfo } from "cs2/bindings";
-import { LocalizedNumber, LocalizedString, useLocalization } from "cs2/l10n";
+import { LocalizedNumber, useLocalization } from "cs2/l10n";
 import { FormattedParagraphs } from "cs2/ui";
-import { useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import engine from "cohtml/cohtml";
 
 type PolicySliderData = {
@@ -53,11 +54,14 @@ export function TicketPriceSectionXtm({
     const localization = useLocalization();
     const [membership, setMembership] = useState<FareGroupLineMembership | null>(null);
     const [loading, setLoading] = useState(true);
+    const [refreshKey, setRefreshKey] = useState(0);
+
+    const lineEntity = useMemo(() => toEntityTyped(selectedEntity), [selectedEntity?.index, selectedEntity?.version]);
 
     useEffect(() => {
         let cancelled = false;
         setLoading(true);
-        FareGroupService.lineMembership(toEntityTyped(selectedEntity))
+        FareGroupService.lineMembership(lineEntity)
             .then((data) => {
                 if (!cancelled) setMembership(data);
             })
@@ -67,10 +71,14 @@ export function TicketPriceSectionXtm({
         return () => {
             cancelled = true;
         };
-    }, [selectedEntity?.index, selectedEntity?.version]);
+    }, [lineEntity?.Index, lineEntity?.Version, refreshKey]);
+
+    const loadGroups = useCallback(async () => {
+        const list = (await FareGroupService.list()) ?? [];
+        return list.map((g) => ({ entity: g.entity, name: g.name }));
+    }, []);
 
     const vanillaTooltip = selectedInfo.useGeneratedTooltipParagraphs(group, tooltipTags, tooltipKeys);
-    const ToolButton = VanillaComponentResolver.instance.ToolButton;
 
     const membershipTooltip = useMemo(() => {
         if (!membership) return null;
@@ -102,7 +110,7 @@ export function TicketPriceSectionXtm({
     const managedBy = replaceArgs(
         translate(
             "fareGroups.ticketPrice.managedBy",
-            "This line belongs to fare group {name}. Current fare: {fare}. Changing this fare will affect {count} lines.",
+            "This line belongs to fare group <{name}>. Current fare: <{fare}>.\nChanging this fare will affect <{count}> lines.",
         ),
         {
             name: membership.groupName || translate("fareGroups.unnamed", "Unnamed group"),
@@ -114,24 +122,32 @@ export function TicketPriceSectionXtm({
     return VanillaComponentResolver.CreateInfoSection(
         [
             {
-                // Same locale ID Loc.SelectedInfoLabel.TICKET_PRICE resolves to in vanilla.
-                left: (
-                    engine.translate("SelectedInfoPanel.TICKET_PRICE")
-                ),
+                left: engine.translate("SelectedInfoPanel.TICKET_PRICE"),
                 uppercase: true,
             },
             {
-                left: (
-                    <FormattedParagraphs text={managedBy} />
-                ),
-                right:
-                    <ToolButton
-                        src="coui://uil/Standard/Pencil.svg"
-                        className="neutralBtn xtm-ticketPriceManaged_cta"
-                        onClick={() => openFareGroupEditor(membership.group)}
-                        tooltip={translate("fareGroups.ticketPrice.editGroup", "Edit fare group")}
+                left: <FormattedParagraphs text={managedBy} />,
+                right: (
+                    <ManagedGroupSipMenu
+                        line={lineEntity}
+                        currentGroup={membership.group}
+                        currentGroupName={membership.groupName}
+                        loadGroups={loadGroups}
+                        assignLine={FareGroupService.assignLine}
+                        onEditGroup={openFareGroupEditor}
+                        onMembershipChanged={() => setRefreshKey((k) => k + 1)}
+                        editLabel={translate("fareGroups.ticketPrice.editGroup", "Edit fare group")}
+                        removeLabel={translate(
+                            "fareGroups.ticketPrice.removeFromGroup",
+                            "Remove from group",
+                        )}
+                        moveSubtitle={translate(
+                            "fareGroups.ticketPrice.moveToGroup",
+                            "Move to another group",
+                        )}
+                        unnamedLabel={translate("fareGroups.unnamed", "Unnamed group")}
                     />
-
+                ),
             },
         ],
         membershipTooltip ?? vanillaTooltip,

@@ -55,6 +55,7 @@ namespace BelzontTLM
             callBinder($"{PREFIX}save", EnqueueSaveVehicleModelGroup);
             callBinder($"{PREFIX}listAvailableVehicles", ListAvailableVehicles);
             callBinder($"{PREFIX}listPresentTypes", ListPresentTypes);
+            callBinder($"{PREFIX}assignLine", AssignLine);
         }
 
         public override int GetUpdateInterval(SystemUpdatePhase phase)
@@ -147,6 +148,8 @@ namespace BelzontTLM
                 return null;
             }
 
+            XTMVehicleModelGroup settings = EntityManager.GetComponentData<XTMVehicleModelGroup>(group);
+
             Entity[] lines = CollectLinesForGroup(group);
             Array.Sort(lines, (a, b) => a.Index.CompareTo(b.Index));
 
@@ -168,7 +171,9 @@ namespace BelzontTLM
                 groupName = m_NameSystem.GetName(group).Translate(),
                 lineCount = n,
                 lineLabels = labels,
-                overflowCount = overflow
+                overflowCount = overflow,
+                transportType = (int)settings.m_transportType,
+                isCargo = settings.m_isCargo
             };
         }
 
@@ -757,6 +762,39 @@ namespace BelzontTLM
             {
                 EntityManager.RemoveComponent<XTMVehicleModelLineDirty>(line);
             }
+        }
+
+        /// <summary>
+        /// Assign <paramref name="line"/> to <paramref name="group"/>, or clear membership when group is null.
+        /// Target group must match the line transport type / cargo flag.
+        /// </summary>
+        private bool AssignLine(Entity line, Entity group)
+        {
+            if (line == Entity.Null || !EntityManager.Exists(line)
+                || !EntityManager.HasComponent<TransportLine>(line))
+            {
+                return false;
+            }
+
+            if (group == Entity.Null || !EntityManager.Exists(group)
+                || !XTMVehicleModelGroupUtils.IsValidVehicleModelGroup(EntityManager, group))
+            {
+                RemoveLineFromGroup(line);
+                return true;
+            }
+
+            XTMVehicleModelGroup settings = EntityManager.GetComponentData<XTMVehicleModelGroup>(group);
+            if (!XTMVehicleModelGroupUtils.LineMatchesGroup(EntityManager, line, settings))
+            {
+                return false;
+            }
+
+            AssociateLine(line, group);
+            if (!EntityManager.HasComponent<XTMVehicleModelGroupDirty>(group))
+            {
+                EntityManager.AddComponent<XTMVehicleModelGroupDirty>(group);
+            }
+            return true;
         }
 
         private Entity[] CollectLinesForGroup(Entity group)

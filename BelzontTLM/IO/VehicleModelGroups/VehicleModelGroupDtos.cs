@@ -50,6 +50,8 @@ namespace BelzontTLM
         public int lineCount { get; set; }
         public string[] lineLabels { get; set; }
         public int overflowCount { get; set; }
+        public int transportType { get; set; }
+        public bool isCargo { get; set; }
     }
 
     [Serializable]

@@ -94,4 +94,13 @@ export class FareGroupService {
             }
         );
     }
+
+    /** Assign line to group, or pass null/Entity.Null to remove membership. */
+    static async assignLine(line: Entity, group: Entity | null): Promise<boolean> {
+        return await engine.call(
+            "k45::xtm.fareGroups.assignLine",
+            line,
+            group ?? { Index: 0, Version: 0 },
+        );
+    }
 }

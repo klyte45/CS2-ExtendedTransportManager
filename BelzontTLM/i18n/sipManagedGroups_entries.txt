@@ -1,0 +1,5 @@
+K45::XTM	vuio	fareGroups	ticketPrice.removeFromGroup	Remove from group	Remover do grupo
+K45::XTM	vuio	fareGroups	ticketPrice.moveToGroup	Move to another group	Mover para outro grupo
+K45::XTM	vuio	fareGroups	fareTable.title	Fare schedule	Tabela de tarifas
+K45::XTM	vuio	fareGroups	fareTable.default	Default	Padrão
+K45::XTM	vuio	fareGroups	fareTable.hours	{start}:00 - {end}:59	{start}:00 - {end}:59

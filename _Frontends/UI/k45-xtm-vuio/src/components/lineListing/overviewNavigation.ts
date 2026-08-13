@@ -6,10 +6,13 @@ export type OverviewScreenMode = "listing" | "fareGroups" | "vehicleModelGroups"
 /** Survives Transportation Overview remounts within the session. */
 let persistedOverviewMode: OverviewScreenMode = "listing";
 let pendingFareGroup: Entity | null = null;
+let pendingVehicleModelGroup: Entity | null = null;
 let forceXtmListing = false;
 let pendingFareGroupToken = 0;
+let pendingVehicleModelGroupToken = 0;
 let overviewModeToken = 0;
 const pendingFareGroupListeners = new Set<() => void>();
+const pendingVehicleModelGroupListeners = new Set<() => void>();
 const forceXtmListingListeners = new Set<() => void>();
 const overviewModeListeners = new Set<() => void>();
 
@@ -47,6 +50,16 @@ export function consumePendingFareGroup(): Entity | null {
     return group;
 }
 
+export function getPendingVehicleModelGroupToken(): number {
+    return pendingVehicleModelGroupToken;
+}
+
+export function consumePendingVehicleModelGroup(): Entity | null {
+    const group = pendingVehicleModelGroup;
+    pendingVehicleModelGroup = null;
+    return group;
+}
+
 export function consumeForceXtmListing(): boolean {
     if (!forceXtmListing) return false;
     forceXtmListing = false;
@@ -67,18 +80,41 @@ export function subscribePendingFareGroup(listener: () => void): () => void {
     };
 }
 
+export function subscribePendingVehicleModelGroup(listener: () => void): () => void {
+    pendingVehicleModelGroupListeners.add(listener);
+    return () => {
+        pendingVehicleModelGroupListeners.delete(listener);
+    };
+}
+
+function openOverviewForced(): void {
+    forceXtmListing = true;
+    for (const listener of forceXtmListingListeners) {
+        listener();
+    }
+    game.showTransportationOverviewPanel(game.TransportationOverviewPanelTab.PublicTransport);
+}
+
 /** Open Transportation Overview on Fare Groups and select the given group. */
 export function openFareGroupEditor(group: Entity): void {
     if (!group) return;
     setPersistedOverviewMode("fareGroups");
     pendingFareGroup = group;
     pendingFareGroupToken += 1;
-    forceXtmListing = true;
-    for (const listener of forceXtmListingListeners) {
-        listener();
-    }
     for (const listener of pendingFareGroupListeners) {
         listener();
     }
-    game.showTransportationOverviewPanel(game.TransportationOverviewPanelTab.PublicTransport);
+    openOverviewForced();
+}
+
+/** Open Transportation Overview on Vehicle Model Groups and select the given group. */
+export function openVehicleModelGroupEditor(group: Entity): void {
+    if (!group) return;
+    setPersistedOverviewMode("vehicleModelGroups");
+    pendingVehicleModelGroup = group;
+    pendingVehicleModelGroupToken += 1;
+    for (const listener of pendingVehicleModelGroupListeners) {
+        listener();
+    }
+    openOverviewForced();
 }

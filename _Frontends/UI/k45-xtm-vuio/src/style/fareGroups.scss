@@ -179,6 +179,56 @@
             font-size: var(--fontSizeS);
         }
 
+        &_fareTableFoldout {
+            margin-top: 8rem;
+        }
+
+        &_fareTable {
+            display: flex;
+            flex-direction: column;
+            width: 100%;
+            box-sizing: border-box;
+            padding-top: 4rem;
+            padding-bottom: 4rem;
+        }
+
+        &_fareTableRow {
+            display: flex;
+            flex-direction: row;
+            align-items: center;
+            justify-content: space-between;
+            padding-top: 4rem;
+            padding-bottom: 4rem;
+            padding-right: 4rem;
+            padding-left: 4rem;
+            border-bottom-width: 1rem;
+            border-bottom-style: solid;
+            border-bottom-color: var(--dividerColor);
+            color: var(--textColor);
+            font-size: var(--fontSizeS);
+
+            &--default {
+                font-weight: bold;
+            }
+
+            &:last-child {
+                border-bottom-width: 0;
+            }
+        }
+
+        &_fareTableHours {
+            flex: 1 1 auto;
+            min-width: 0;
+            color: var(--textColorDim);
+        }
+
+        &_fareTableFare {
+            flex: 0 0 auto;
+            margin-left: 12rem;
+            color: var(--textColor);
+            font-weight: bold;
+        }
+
         &_split {
             flex: 1 1 auto;
             min-height: 0;

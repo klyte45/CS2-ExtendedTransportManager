@@ -46,6 +46,7 @@ namespace BelzontTLM
             callBinder($"{PREFIX}listShieldLines", ListShieldLines);
             callBinder($"{PREFIX}save", EnqueueSaveFareGroup);
             callBinder($"{PREFIX}ticketSliderBounds", GetTicketSliderBounds);
+            callBinder($"{PREFIX}assignLine", AssignLine);
         }
 
         public override int GetUpdateInterval(SystemUpdatePhase phase)
@@ -484,6 +485,32 @@ namespace BelzontTLM
             {
                 EntityManager.RemoveComponent<XTMFareLineDirty>(line);
             }
+        }
+
+        /// <summary>
+        /// Assign <paramref name="line"/> to <paramref name="group"/>, or clear membership when group is null.
+        /// </summary>
+        private bool AssignLine(Entity line, Entity group)
+        {
+            if (line == Entity.Null || !EntityManager.Exists(line)
+                || !EntityManager.HasComponent<TransportLine>(line))
+            {
+                return false;
+            }
+
+            if (group == Entity.Null || !EntityManager.Exists(group)
+                || !EntityManager.HasComponent<XTMFareGroup>(group))
+            {
+                RemoveLineFromGroup(line);
+                return true;
+            }
+
+            AssociateLine(line, group);
+            if (!EntityManager.HasComponent<XTMFareGroupDirty>(group))
+            {
+                EntityManager.AddComponent<XTMFareGroupDirty>(group);
+            }
+            return true;
         }
 
         private static bool ValidateExceptions(FareGroupHourExceptionDto[] exceptions, out FareGroupHourExceptionDto[] cleaned)
