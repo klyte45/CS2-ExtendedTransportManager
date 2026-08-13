@@ -1,5 +1,5 @@
 import "#styles/TLM_FormatContainer.scss";
-import { CSSProperties } from "react";
+import { CSSProperties, memo } from "react";
 import { TransportType } from "#enum/TransportType";
 import { ColorUtils } from "@klyte45/vuio-commons";
 import {
@@ -9,6 +9,12 @@ import {
 import i_scheduleDay from "#images/i_scheduleDay.svg";
 import i_scheduleNight from "#images/i_scheduleNight.svg";
 import i_scheduleDisabled from "#images/i_scheduleDisabled.svg";
+import fmt_hexagon from "#images/fmt_hexagon.svg";
+import fmt_trapezoid from "#images/fmt_trapezoid.svg";
+import fmt_circle from "#images/fmt_circle.svg";
+import fmt_pentagon from "#images/fmt_pentagon.svg";
+import fmt_cross from "#images/fmt_cross.svg";
+import fmt_diamond from "#images/fmt_diamond.svg";
 
 type Props = {
     color: string;
@@ -36,6 +42,23 @@ const SCHEDULE_BADGE_ICONS: Record<
     "activity-disabled": i_scheduleDisabled,
 };
 
+/** type.isCargo → shared white silhouette; omit = rectangle (no mask). */
+const FORMAT_MASK_BY_KEY: Record<string, string> = {
+    [`${TransportType.Bus}.false`]: fmt_hexagon,
+    [`${TransportType.Tram}.false`]: fmt_trapezoid,
+    [`${TransportType.Train}.false`]: fmt_circle,
+    [`${TransportType.Train}.true`]: fmt_circle,
+    [`${TransportType.Airplane}.false`]: fmt_pentagon,
+    [`${TransportType.Airplane}.true`]: fmt_pentagon,
+    [`${TransportType.Ship}.false`]: fmt_cross,
+    [`${TransportType.Ship}.true`]: fmt_cross,
+    [`${TransportType.Ferry}.false`]: fmt_diamond,
+};
+
+function resolveFormatMask(type: TransportType, isCargo: boolean): string | undefined {
+    return FORMAT_MASK_BY_KEY[`${type}.${isCargo}`];
+}
+
 function ScheduleBadge({ activity }: { activity: LineActivityClass }) {
     if (activity === "activity-dayNight") return null;
     return (
@@ -54,7 +77,7 @@ function ScheduleBadge({ activity }: { activity: LineActivityClass }) {
     );
 }
 
-export function TlmLineFormatCmp({
+function TlmLineFormatCmpInner({
     color,
     text,
     type,
@@ -66,6 +89,7 @@ export function TlmLineFormatCmp({
     activity,
 }: Props) {
     const fontColor = ColorUtils.toRGBA(ColorUtils.getContrastColorFor(ColorUtils.toColor01(color)));
+    const maskUrl = resolveFormatMask(type, isCargo);
     return (
         <div
             className={[className, "formatContainer"].filter(Boolean).join(" ")}
@@ -76,6 +100,7 @@ export function TlmLineFormatCmp({
                 style={{
                     "--currentBgColor": ColorUtils.getClampedColor(color),
                     "--form-border-width": borderWidth ?? "0",
+                    ...(maskUrl ? { "--format-mask": `url(${maskUrl})` } : {}),
                 } as CSSProperties}
                 className={`format ${type} ${isCargo ? "cargo" : "passengers"}`}
             >
@@ -90,3 +115,20 @@ export function TlmLineFormatCmp({
         </div>
     );
 }
+
+function formatPropsEqual(prev: Props, next: Props): boolean {
+    return (
+        prev.color === next.color
+        && prev.strokeColor === next.strokeColor
+        && prev.text === next.text
+        && prev.type === next.type
+        && prev.isCargo === next.isCargo
+        && prev.contentOverride === next.contentOverride
+        && prev.className === next.className
+        && prev.borderWidth === next.borderWidth
+        && prev.onClick === next.onClick
+        && prev.activity === next.activity
+    );
+}
+
+export const TlmLineFormatCmp = memo(TlmLineFormatCmpInner, formatPropsEqual);

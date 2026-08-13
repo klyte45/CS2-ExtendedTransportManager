@@ -47,6 +47,9 @@ const titleTextInputTheme = getModule(
     "classes",
 );
 
+/** Stable node so memo(TlmLineFormatCmp) is not defeated on every card render. */
+const LISTING_GAME_ICON = <div className="gameIcon" />;
+
 function getNameFor(type: string, isCargo: boolean) {
     return engine.translate(isCargo ? `Transport.ROUTES[${type}]` : `Transport.LINES[${type}]`);
 }
@@ -332,11 +335,12 @@ const LineItemCardCmp = ({
                 >
                     <TlmLineFormatCmp
                         className="icon"
-                        {...x}
                         color={displayColor}
+                        type={x.type}
+                        isCargo={x.isCargo}
                         borderWidth="2px"
                         activity={activityClass}
-                        contentOverride={<div className="gameIcon" />}
+                        contentOverride={LISTING_GAME_ICON}
                     />
                 </div>
                 {pickerOpen && (
