@@ -11,190 +11,46 @@
     height: calc(60rem * var(--scaleFormat));
     display: block;
 
-    .format {
-        --format-mask: none;
+    // Hit target is only the outer host (onClick / parent wrappers).
+    transition-property: none;
+    transition-duration: 0s;
+    transition-delay: 0s;
+    animation-name: none;
+    animation-duration: 0s;
+    animation-delay: 0s;
+
+    * {
+        pointer-events: none;
+        transition-property: none;
+        transition-duration: 0s;
+        transition-delay: 0s;
+        animation-name: none;
+        animation-duration: 0s;
+        animation-delay: 0s;
+    }
+
+    &.formatContainer--baked {
+        background-repeat: no-repeat;
+        background-position: center;
+        background-size: contain;
+    }
+
+    .formatBaked_overlay {
         position: absolute;
-        background-color: transparent;
         top: 0;
         left: 0;
         right: 0;
         bottom: 0;
-        display: block;
-
-        .before,
-        .after {
-            // --format-mask set from TS (url) or defaults to none (rectangle)
-            mask-image: var(--format-mask);
-            mask-size: 100% 100%;
-            mask-repeat: no-repeat;
-            mask-position: center;
-            -webkit-mask-image: var(--format-mask);
-            -webkit-mask-size: 100% 100%;
-            -webkit-mask-repeat: no-repeat;
-            -webkit-mask-position: center;
-        }
-
-        .before {
-            position: absolute;
-            background-color: var(--fontColor);
-            top: calc(-1* var(--form-border-width));
-            left: calc(-1* var(--form-border-width));
-            right: calc(-1* var(--form-border-width));
-            bottom: calc(-1* var(--form-border-width));
-            z-index: -1;
-        }
-
-        .after {
-            position: absolute;
-            background-color: var(--currentBgColor);
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-        }
-
-        +.num {
-            position: absolute;
-            font-size: 48.000000rem;
-            font-weight: bold;
-            color: var(--fontColor);
-            z-index: 9;
-            top: 50.000000%;
-            text-align: center;
-            width: 100%;
-            height: auto;
-            line-height: 100.000000%;
-            transform: translateY(-50%);
-            coh-font-fit-mode: shrink;
-            height: 100%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            padding-bottom: 6rem;
-            padding-top: 6rem;
-
-        }
-
-        &.Bus.passengers {
-            +.num {
-                padding-left: 6rem;
-                padding-right: 6rem;
-            }
-        }
-
-        &.Tram.passengers {
-            +.num {
-                padding-left: 8rem;
-                padding-right: 8rem;
-            }
-        }
-
-        &.Train.passengers,
-        &.Train.cargo {
-            +.num {
-                padding-top: 4rem;
-                padding-right: 4rem;
-                padding-bottom: 4rem;
-                padding-left: 4rem;
-            }
-        }
-
-        &.Subway.passengers {
-            +.num {
-                padding-top: 4rem;
-                padding-right: 4rem;
-                padding-bottom: 4rem;
-                padding-left: 4rem;
-            }
-        }
-
-        &.Airplane.passengers,
-        &.Airplane.cargo {
-            +.num {
-                padding-top: 16rem;
-                padding-bottom: 10rem;
-                padding-left: 7rem;
-                padding-right: 7rem;
-            }
-        }
-
-        &.Ship.cargo,
-        &.Ship.passengers {
-            +.num {
-                padding-top: 15rem;
-                padding-bottom: 15rem;
-                padding-left: 9rem;
-                padding-right: 9rem;
-            }
-        }
-
-        &.Ferry.passengers {
-            +.num {
-                padding-top: 15rem;
-                padding-bottom: 15rem;
-                padding-left: 9rem;
-                padding-right: 9rem;
-            }
-        }
-    }
-
-    .cargoMarker {
-        position: absolute;
-        z-index: 9999;
-        bottom: -2px;
-        font-size: 15rem;
-        line-height: 15rem;
-        right: 0px;
-        background-color: rgba(245, 222, 179, 1);
         display: flex;
         align-items: center;
         justify-content: center;
-        font-weight: bold;
-        height: 13rem;
-        width: 13rem;
-        border-top-left-radius: 99999px 99999px;
-        border-top-right-radius: 99999px 99999px;
-        border-bottom-left-radius: 99999px 99999px;
-        border-bottom-right-radius: 99999px 99999px;
-        color: rgba(0, 0, 0, 1);
-        display: flex;
-    }
-
-    .format.passengers+.num+.cargoMarker {
-        display: none;
-    }
-
-    // Area = 1/9 of shield → side = 1/3 of container. Bottom-left, circular.
-    .scheduleMarker {
-        position: absolute;
-        z-index: 9999;
-        left: 0;
-        bottom: -2px;
-        width: 33.333%;
-        height: 33.333%;
-        border-top-left-radius: 99999px 99999px;
-        border-top-right-radius: 99999px 99999px;
-        border-bottom-left-radius: 99999px 99999px;
-        border-bottom-right-radius: 99999px 99999px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        box-sizing: border-box;
         pointer-events: none;
 
-        .scheduleMarker_icon {
-            width: 70%;
-            height: 70%;
-            background-size: contain;
-            background-repeat: no-repeat;
-            background-position: center;
-            pointer-events: none;
-
-            &--dark {
-                // White placeholder SVGs → black for contrast on yellow day badge.
-                filter: brightness(0);
-            }
+        .gameIcon {
+            width: 30rem;
+            height: 30rem;
+            background-image: var(--xtm-game-icon);
+            background-size: cover;
         }
     }
-
 }

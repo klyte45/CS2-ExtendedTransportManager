@@ -149,6 +149,10 @@
       <HintPath>$(CSII_MANAGEDPATH)\System.dll</HintPath>
       <Private>false</Private>
     </Reference>
+    <Reference Include="System.Drawing">
+      <HintPath>$(CSII_MANAGEDPATH)\System.Drawing.dll</HintPath>
+      <Private>false</Private>
+    </Reference>
     <Reference Update="System.Core">
       <HintPath>$(CSII_MANAGEDPATH)\System.Core.dll</HintPath>
       <Private>false</Private>
