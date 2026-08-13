@@ -56,6 +56,7 @@ namespace BelzontTLM
             callBinder($"{PREFIX}listAvailableVehicles", ListAvailableVehicles);
             callBinder($"{PREFIX}listPresentTypes", ListPresentTypes);
             callBinder($"{PREFIX}assignLine", AssignLine);
+            callBinder($"{PREFIX}lineTypeInfo", LineTypeInfo);
         }
 
         public override int GetUpdateInterval(SystemUpdatePhase phase)
@@ -131,6 +132,26 @@ namespace BelzontTLM
             }
             XTMVehicleModelLineAssociation assoc = EntityManager.GetComponentData<XTMVehicleModelLineAssociation>(line);
             return XTMVehicleModelGroupUtils.IsValidVehicleModelGroup(EntityManager, assoc.m_group);
+        }
+
+        /// <summary>
+        /// Transport type / cargo flag for an unassigned line (from its route prefab).
+        /// </summary>
+        private VehicleModelPresentType LineTypeInfo(Entity line)
+        {
+            if (line == Entity.Null || !EntityManager.Exists(line)
+                || !EntityManager.HasComponent<TransportLine>(line)
+                || !EntityManager.TryGetComponent(line, out PrefabRef prefabRef)
+                || !EntityManager.TryGetComponent(prefabRef.m_Prefab, out TransportLineData lineData))
+            {
+                return null;
+            }
+
+            return new VehicleModelPresentType
+            {
+                transportType = (int)lineData.m_TransportType,
+                isCargo = lineData.m_CargoTransport
+            };
         }
 
         private VehicleModelGroupLineMembership LineMembership(Entity line)

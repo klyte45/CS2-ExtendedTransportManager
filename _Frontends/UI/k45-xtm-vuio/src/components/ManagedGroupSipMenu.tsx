@@ -40,7 +40,7 @@ type Props = {
 export function ManagedGroupSipMenu({
     line,
     currentGroup,
-    currentGroupName,
+    currentGroupName: _currentGroupName,
     loadGroups,
     assignLine,
     onEditGroup,
@@ -52,6 +52,7 @@ export function ManagedGroupSipMenu({
     unnamedLabel,
 }: Props) {
     const [groups, setGroups] = useState<ManagedGroupOption[]>([]);
+    const toolButtonTheme = VanillaComponentResolver.instance.toolButtonTheme;
 
     useEffect(() => {
         let cancelled = false;
@@ -77,6 +78,16 @@ export function ManagedGroupSipMenu({
                 },
             }));
 
+        const moveTargets = others.length > 0
+            ? others
+            : [{
+                label: translate(
+                    "managedGroups.sip.noGroupsAvailable",
+                    "<No Groups available>",
+                ),
+                disabled: true as const,
+            }];
+
         return [
             {
                 label: editLabel
@@ -98,12 +109,11 @@ export function ManagedGroupSipMenu({
                     ?? translate("fareGroups.ticketPrice.moveToGroup", "Move to another group"),
                 subtitle: true,
             },
-            ...others,
+            ...moveTargets,
         ];
     }, [
         groups,
         currentGroup,
-        currentGroupName,
         line,
         assignLine,
         onEditGroup,
@@ -115,22 +125,16 @@ export function ManagedGroupSipMenu({
     ]);
 
     return (
-        <div className="xtm-ticketPriceManaged">
-            <FocusDisabled>
-                <ContextMenuButton
-                    src={GEAR_ICON}
-                    className={className ?? "neutralBtn xtm-ticketPriceManaged_cta"}
-                    tooltip={
-                        currentGroupName
-                        || unnamedLabel
-                        || translate("fareGroups.unnamed", "Unnamed group")
-                    }
-                    menuDirection={ContextMenuExpansion.BOTTOM_LEFT}
-                    menuClassName="xtm-popup-solid"
-                    menuItems={menuItems}
-                    focusKey={VanillaComponentResolver.instance.FOCUS_DISABLED}
-                />
-            </FocusDisabled>
-        </div>
+        <FocusDisabled>
+            <ContextMenuButton
+                src={GEAR_ICON}
+                className={className ?? toolButtonTheme?.button}
+                tooltip={translate("managedGroups.sip.menuTooltip", "Groups Options")}
+                menuDirection={ContextMenuExpansion.BOTTOM_LEFT}
+                menuClassName="xtm-popup-solid"
+                menuItems={menuItems}
+                focusKey={VanillaComponentResolver.instance.FOCUS_DISABLED}
+            />
+        </FocusDisabled>
     );
 }

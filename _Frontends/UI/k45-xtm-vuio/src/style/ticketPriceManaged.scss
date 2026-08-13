@@ -23,3 +23,10 @@
         white-space: nowrap;
     }
 }
+
+/* Slider wrapped into InfoRow.left — fill the left column. */
+[data-xtm-slider-wrap] [class*="route-slider__"] {
+    width: 100%;
+    min-width: 0;
+    padding-bottom: 5rem;
+}

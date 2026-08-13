@@ -3,7 +3,12 @@ import {
     VehicleModelGroupService,
 } from "#service/VehicleModelGroupService";
 import translate from "#utility/translate";
+import {
+    resolveInfoRowRightHostNear,
+    useSipAssignPortalHost,
+} from "#utility/sipAssignPortal";
 import { openVehicleModelGroupEditor } from "#components/lineListing/overviewNavigation";
+import { AssignGroupSipMenu } from "#components/AssignGroupSipMenu";
 import { ManagedGroupSipMenu } from "#components/ManagedGroupSipMenu";
 import { localizePrefabName } from "#components/lineListing/vehicleModelGroups/vehicleModelGroupUtils";
 import { replaceArgs, toEntityTyped, VanillaComponentResolver } from "@klyte45/vuio-commons";
@@ -13,6 +18,8 @@ import { getModule } from "cs2/modding";
 import { FormattedParagraphs } from "cs2/ui";
 import classNames from "classnames";
 import { ComponentType, useCallback, useEffect, useMemo, useState } from "react";
+import { createPortal } from "react-dom";
+import "#styles/ticketPriceManaged.scss";
 
 type VehiclePrefab = {
     entity: { Index: number; Version?: number };
@@ -37,6 +44,8 @@ const selectVehiclesClasses = getModule(
     "game-ui/game/components/selected-info-panel/selected-info-sections/route-sections/select-vehicles-section/select-vehicles-section.module.scss",
     "classes",
 ) as {
+    dropdown: string;
+    dropdownLabel: string;
     wrapbox: string;
     item: string;
     pill: string;
@@ -89,6 +98,70 @@ function VehiclePills({ vehicles }: { vehicles: VehiclePrefab[] | null | undefin
     );
 }
 
+function SelectVehiclesUnmanaged({
+    group,
+    tooltipKeys,
+    tooltipTags,
+    routePrefab,
+    selectedPrimaryVehicles,
+    selectedSecondaryVehicles,
+    availablePrimaryVehicles,
+    availableSecondaryVehicles,
+    Original,
+    lineEntity,
+    loadGroups,
+    onAssigned,
+}: Props & {
+    lineEntity: ReturnType<typeof toEntityTyped>;
+    loadGroups: () => Promise<{ entity: any; name: string }[]>;
+    onAssigned: () => void;
+}) {
+    const portalHost = useSipAssignPortalHost(
+        selectVehiclesClasses.dropdown,
+        (section) => resolveInfoRowRightHostNear(section, selectVehiclesClasses.dropdown),
+        [
+            lineEntity?.Index,
+            lineEntity?.Version,
+            routePrefab,
+            selectedPrimaryVehicles?.length,
+            availablePrimaryVehicles?.length,
+        ],
+    );
+
+    return (
+        <>
+            <Original
+                group={group}
+                tooltipKeys={tooltipKeys}
+                tooltipTags={tooltipTags}
+                routePrefab={routePrefab}
+                selectedPrimaryVehicles={selectedPrimaryVehicles}
+                selectedSecondaryVehicles={selectedSecondaryVehicles}
+                availablePrimaryVehicles={availablePrimaryVehicles}
+                availableSecondaryVehicles={availableSecondaryVehicles}
+            />
+            {portalHost
+                && createPortal(
+                    <AssignGroupSipMenu
+                        line={lineEntity}
+                        loadGroups={loadGroups}
+                        assignLine={VehicleModelGroupService.assignLine}
+                        onAssigned={onAssigned}
+                        menuTitle={translate(
+                            "managedGroups.sip.assignModelsTitle",
+                            "Assign to vehicle model group",
+                        )}
+                        unnamedLabel={translate(
+                            "vehicleModelGroups.unnamed",
+                            "Unnamed vehicle model group",
+                        )}
+                    />,
+                    portalHost,
+                )}
+        </>
+    );
+}
+
 export function SelectVehiclesSectionXtm({
     group,
     tooltipKeys,
@@ -104,6 +177,7 @@ export function SelectVehiclesSectionXtm({
     const [membership, setMembership] = useState<VehicleModelGroupLineMembership | null>(null);
     const [loading, setLoading] = useState(true);
     const [refreshKey, setRefreshKey] = useState(0);
+    const [lineType, setLineType] = useState<{ transportType: number; isCargo: boolean } | null>(null);
 
     const lineEntity = useMemo(
         () => toEntityTyped(selectedEntity),
@@ -125,10 +199,27 @@ export function SelectVehiclesSectionXtm({
         };
     }, [lineEntity?.Index, lineEntity?.Version, refreshKey]);
 
+    useEffect(() => {
+        if (membership) {
+            setLineType({
+                transportType: membership.transportType,
+                isCargo: membership.isCargo,
+            });
+            return;
+        }
+        let cancelled = false;
+        VehicleModelGroupService.lineTypeInfo(lineEntity).then((info) => {
+            if (!cancelled) setLineType(info);
+        });
+        return () => {
+            cancelled = true;
+        };
+    }, [lineEntity?.Index, lineEntity?.Version, membership?.transportType, membership?.isCargo, membership]);
+
     const loadGroups = useCallback(async () => {
         const list = (await VehicleModelGroupService.list()) ?? [];
-        const transportType = membership?.transportType;
-        const isCargo = membership?.isCargo;
+        const transportType = membership?.transportType ?? lineType?.transportType;
+        const isCargo = membership?.isCargo ?? lineType?.isCargo;
         return list
             .filter(
                 (g) =>
@@ -136,7 +227,7 @@ export function SelectVehiclesSectionXtm({
                     || (g.transportType === transportType && !!g.isCargo === !!isCargo),
             )
             .map((g) => ({ entity: g.entity, name: g.name }));
-    }, [membership?.transportType, membership?.isCargo]);
+    }, [membership?.transportType, membership?.isCargo, lineType?.transportType, lineType?.isCargo]);
 
     const vanillaTooltip = selectedInfo.useGeneratedTooltipParagraphs(group, tooltipTags, tooltipKeys);
 
@@ -146,7 +237,7 @@ export function SelectVehiclesSectionXtm({
         return text ? <FormattedParagraphs text={text} /> : null;
     }, [membership]);
 
-    if (loading || !membership) {
+    if (loading) {
         return (
             <Original
                 group={group}
@@ -157,6 +248,25 @@ export function SelectVehiclesSectionXtm({
                 selectedSecondaryVehicles={selectedSecondaryVehicles}
                 availablePrimaryVehicles={availablePrimaryVehicles}
                 availableSecondaryVehicles={availableSecondaryVehicles}
+            />
+        );
+    }
+
+    if (!membership) {
+        return (
+            <SelectVehiclesUnmanaged
+                group={group}
+                tooltipKeys={tooltipKeys}
+                tooltipTags={tooltipTags}
+                routePrefab={routePrefab}
+                selectedPrimaryVehicles={selectedPrimaryVehicles}
+                selectedSecondaryVehicles={selectedSecondaryVehicles}
+                availablePrimaryVehicles={availablePrimaryVehicles}
+                availableSecondaryVehicles={availableSecondaryVehicles}
+                Original={Original}
+                lineEntity={lineEntity}
+                loadGroups={loadGroups}
+                onAssigned={() => setRefreshKey((k) => k + 1)}
             />
         );
     }

@@ -1,5 +1,9 @@
 K45::XTM	vuio	fareGroups	ticketPrice.removeFromGroup	Remove from group	Remover do grupo
 K45::XTM	vuio	fareGroups	ticketPrice.moveToGroup	Move to another group	Mover para outro grupo
 K45::XTM	vuio	fareGroups	fareTable.title	Fare schedule	Tabela de tarifas
-K45::XTM	vuio	fareGroups	fareTable.default	Default	PadrÃ£o
+K45::XTM	vuio	fareGroups	fareTable.default	Default	Padrão
 K45::XTM	vuio	fareGroups	fareTable.hours	{start}:00 - {end}:59	{start}:00 - {end}:59
+K45::XTM	vuio	managedGroups	sip.menuTooltip	Groups Options	Opções de grupos
+K45::XTM	vuio	managedGroups	sip.noGroupsAvailable	<No Groups available>	<Nenhum grupo disponível>
+K45::XTM	vuio	managedGroups	sip.assignFareTitle	Assign to fare group	Atribuir a grupo de tarifa
+K45::XTM	vuio	managedGroups	sip.assignModelsTitle	Assign to vehicle model group	Atribuir a grupo de modelos

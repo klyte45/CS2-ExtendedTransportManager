@@ -32,6 +32,8 @@ namespace BelzontTLM
 
             updateSystem.UpdateAt<XTMSegmentOccupancyHistorySystem>(SystemUpdatePhase.GameSimulation);
             updateSystem.UpdateAfter<XTMFareGroupSystem, ModifiedSystem>(SystemUpdatePhase.Modification4);
+            // Drain fare apply queue at end of frame (Belzont EndFrame = MainLoop).
+            updateSystem.UpdateAfter<XTMFareGroupEndFrameSystem>(SystemUpdatePhase.MainLoop);
             updateSystem.UpdateAfter<XTMVehicleModelGroupSystem, Game.Routes.InitializeSystem>(SystemUpdatePhase.Modification4);
             updateSystem.UpdateAfter<XTMVehicleModelGroupApplySystem, XTMVehicleModelGroupSystem>(SystemUpdatePhase.Modification4);
             updateSystem.UpdateAt<XTM_WEIntegrationController>(SystemUpdatePhase.ModificationEnd);

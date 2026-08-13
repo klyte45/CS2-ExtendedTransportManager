@@ -88,6 +88,10 @@ export class VehicleModelGroupService {
         return (await engine.call("k45::xtm.vehicleModelGroups.lineMembership", line)) ?? null;
     }
 
+    static async lineTypeInfo(line: Entity): Promise<VehicleModelPresentType | null> {
+        return (await engine.call("k45::xtm.vehicleModelGroups.lineTypeInfo", line)) ?? null;
+    }
+
     static async listShieldLines(
         transportType: number,
         isCargo: boolean,

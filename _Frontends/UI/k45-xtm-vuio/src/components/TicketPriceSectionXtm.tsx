@@ -4,7 +4,13 @@ import {
 } from "#service/FareGroupService";
 import { Unit } from "#enum/Unit";
 import translate from "#utility/translate";
+import {
+    resolveRouteSliderRightHost,
+    routeSliderClasses,
+    useSipAssignPortalHost,
+} from "#utility/sipAssignPortal";
 import { openFareGroupEditor } from "#components/lineListing/overviewNavigation";
+import { AssignGroupSipMenu } from "#components/AssignGroupSipMenu";
 import { ManagedGroupSipMenu } from "#components/ManagedGroupSipMenu";
 import { replaceArgs, toEntityTyped, VanillaComponentResolver } from "@klyte45/vuio-commons";
 import { useValue } from "cs2/api";
@@ -12,7 +18,9 @@ import { selectedInfo } from "cs2/bindings";
 import { LocalizedNumber, useLocalization } from "cs2/l10n";
 import { FormattedParagraphs } from "cs2/ui";
 import { useCallback, useEffect, useMemo, useState } from "react";
+import { createPortal } from "react-dom";
 import engine from "cohtml/cohtml";
+import "#styles/ticketPriceManaged.scss";
 
 type PolicySliderData = {
     value: number;
@@ -41,6 +49,53 @@ function buildMembershipTooltip(membership: FareGroupLineMembership): string {
         );
     }
     return lines.join("\n");
+}
+
+function TicketPriceUnmanaged({
+    group,
+    tooltipKeys,
+    tooltipTags,
+    sliderData,
+    Original,
+    lineEntity,
+    loadGroups,
+    onAssigned,
+}: Props & {
+    lineEntity: ReturnType<typeof toEntityTyped>;
+    loadGroups: () => Promise<{ entity: any; name: string }[]>;
+    onAssigned: () => void;
+}) {
+    const portalHost = useSipAssignPortalHost(
+        routeSliderClasses.routeSlider,
+        resolveRouteSliderRightHost,
+        [lineEntity?.Index, lineEntity?.Version, sliderData?.value, sliderData?.range?.max],
+    );
+
+    return (
+        <>
+            <Original
+                group={group}
+                tooltipKeys={tooltipKeys}
+                tooltipTags={tooltipTags}
+                sliderData={sliderData}
+            />
+            {portalHost
+                && createPortal(
+                    <AssignGroupSipMenu
+                        line={lineEntity}
+                        loadGroups={loadGroups}
+                        assignLine={FareGroupService.assignLine}
+                        onAssigned={onAssigned}
+                        menuTitle={translate(
+                            "managedGroups.sip.assignFareTitle",
+                            "Assign to fare group",
+                        )}
+                        unnamedLabel={translate("fareGroups.unnamed", "Unnamed group")}
+                    />,
+                    portalHost,
+                )}
+        </>
+    );
 }
 
 export function TicketPriceSectionXtm({
@@ -86,13 +141,28 @@ export function TicketPriceSectionXtm({
         return text ? <FormattedParagraphs text={text} /> : null;
     }, [membership]);
 
-    if (loading || !membership) {
+    if (loading) {
         return (
             <Original
                 group={group}
                 tooltipKeys={tooltipKeys}
                 tooltipTags={tooltipTags}
                 sliderData={sliderData}
+            />
+        );
+    }
+
+    if (!membership) {
+        return (
+            <TicketPriceUnmanaged
+                group={group}
+                tooltipKeys={tooltipKeys}
+                tooltipTags={tooltipTags}
+                sliderData={sliderData}
+                Original={Original}
+                lineEntity={lineEntity}
+                loadGroups={loadGroups}
+                onAssigned={() => setRefreshKey((k) => k + 1)}
             />
         );
     }
