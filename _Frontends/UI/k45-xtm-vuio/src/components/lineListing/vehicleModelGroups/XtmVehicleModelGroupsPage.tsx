@@ -144,6 +144,7 @@ function TypeFilterButton({
                                         type="button"
                                         className={classNames(
                                             "k45_comm_contextMenu_item",
+                                            "xtm-vmGroupsPage_typeMenuItem",
                                             isCurrent && "disabled",
                                         )}
                                         disabled={isCurrent}

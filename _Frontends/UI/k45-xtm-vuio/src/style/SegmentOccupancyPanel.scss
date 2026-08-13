@@ -1,6 +1,9 @@
 .k45_xtm_segmentOccupancyPanel_anchor {
     position: absolute;
-    inset: 0;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    left: 0;
     pointer-events: none;
     z-index: 10000;
 
@@ -19,7 +22,6 @@
     display: flex;
     flex-direction: row;
     align-items: center;
-    gap: 8rem;
     min-width: 0;
     padding-right: 8rem;
 
@@ -27,6 +29,10 @@
         transform: scale(0.75);
         transform-origin: left center;
         flex-shrink: 0;
+    }
+
+    .k45_xtm_segmentOccupancyPanel_fromStop {
+        margin-left: 8rem;
     }
 }
 
@@ -41,8 +47,14 @@
 .k45_xtm_segmentOccupancyPanel_body {
     display: flex;
     flex-direction: column;
-    gap: 8rem;
-    padding: 8rem 12rem 12rem;
+    padding-top: 8rem;
+    padding-right: 12rem;
+    padding-bottom: 12rem;
+    padding-left: 12rem;
+
+    .k45_xtm_occupancyTimeChart {
+        margin-top: 8rem;
+    }
 }
 
 .k45_xtm_segmentOccupancyPanel_headline {
@@ -51,6 +63,7 @@
 }
 
 .k45_xtm_segmentOccupancyPanel_footer {
+    margin-top: 8rem;
     font-size: var(--fontSizeS);
     opacity: 0.9;
 }

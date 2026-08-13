@@ -2,7 +2,7 @@ import translate from "#utility/translate";
 import { replaceArgs, VanillaComponentResolver } from "@klyte45/vuio-commons";
 import { FocusDisabled } from "cs2/input";
 import { Scrollable } from "cs2/ui";
-import { useEffect, useRef } from "react";
+import { useEffect, useLayoutEffect, useRef } from "react";
 import {
     FULL_RANKING_LIMIT,
     OccupancyReportColumnId,
@@ -20,6 +20,23 @@ import { OccupancyReportSegmentItem } from "./OccupancyReportSegmentItem";
 const SORT_ICON_ASC = "coui://uil/Standard/ArrowSortHighDown.svg";
 const SORT_ICON_DESC = "coui://uil/Standard/ArrowSortLowDown.svg";
 const BACK_ICON = "coui://uil/Standard/ArrowLeft.svg";
+
+/** Cohtml rejects width:max-content — size the column-wrap flow from measured cells. */
+function syncFlowWidth(flow: HTMLDivElement) {
+    const viewportWidth = flow.parentElement?.clientWidth ?? 0;
+    const cells = flow.children;
+    if (cells.length === 0) {
+        flow.style.width = viewportWidth > 0 ? `${viewportWidth}px` : "100%";
+        return;
+    }
+    const flowHeight = flow.clientHeight;
+    const first = cells[0] as HTMLElement;
+    const cellWidth = Math.max(1, first.offsetWidth);
+    const cellHeight = Math.max(1, first.offsetHeight);
+    const perColumn = Math.max(1, Math.floor(flowHeight / cellHeight));
+    const columns = Math.ceil(cells.length / perColumn);
+    flow.style.width = `${Math.max(columns * cellWidth, viewportWidth)}px`;
+}
 
 type Props = {
     kind: OccupancyReportSectionKind;
@@ -48,6 +65,15 @@ export function OccupancyReportColumnDetail({
     const itemsEmpty = kind === "lines" ? lines.length === 0 : segments.length === 0;
     /** Scrollable forwards ref to content_gqa (the scrolling viewport). */
     const viewportRef = useRef<HTMLDivElement>(null);
+    const flowRef = useRef<HTMLDivElement>(null);
+
+    useLayoutEffect(() => {
+        const flow = flowRef.current;
+        if (!flow || itemsEmpty) return;
+        syncFlowWidth(flow);
+        const id = window.requestAnimationFrame(() => syncFlowWidth(flow));
+        return () => window.cancelAnimationFrame(id);
+    }, [kind, lines, segments, itemsEmpty]);
 
     useEffect(() => {
         const viewport = viewportRef.current;
@@ -112,7 +138,7 @@ export function OccupancyReportColumnDetail({
                         horizontal
                         vertical={false}
                     >
-                        <div className="xtm-occupancyReportDetail_flow">
+                        <div className="xtm-occupancyReportDetail_flow" ref={flowRef}>
                             {kind === "lines"
                                 ? lines.map((item, i) => (
                                     <div key={`${item.line.entity.Index}_${i}`} className="xtm-occupancyReportDetail_cell">

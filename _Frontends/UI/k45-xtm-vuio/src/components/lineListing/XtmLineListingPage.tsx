@@ -25,8 +25,8 @@ import { useLocalization } from "cs2/l10n";
 import { getModule } from "cs2/modding";
 import { Portal, Scrollable } from "cs2/ui";
 import classNames from "classnames";
-import { CSSProperties, useEffect, useMemo, useRef, useState } from "react";
-import { LineItemCard } from "./LineItemCard";
+import { CSSProperties, startTransition, useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { LineIdentityPatch, LineItemCard } from "./LineItemCard";
 import {
     ACTIVITY_ORDER,
     ACTIVITY_TO_ICONS,
@@ -60,6 +60,19 @@ import "#styles/vehicleModelGroups.scss";
 
 function getNameFor(type: string, isCargo: boolean) {
     return engine.translate(isCargo ? `Transport.ROUTES[${type}]` : `Transport.LINES[${type}]`);
+}
+
+function isSpecialOverviewMode(mode: OverviewScreenMode): boolean {
+    return mode === "fareGroups" || mode === "vehicleModelGroups";
+}
+
+/** Yield to the browser so the overview shell can paint before heavy work. */
+function yieldForPaint(): Promise<void> {
+    return new Promise((resolve) => {
+        requestAnimationFrame(() => {
+            requestAnimationFrame(() => resolve());
+        });
+    });
 }
 
 const ACTIVITY_TOOLTIP_KEYS: Record<LineActivityClass, [string, string]> = {
@@ -229,11 +242,13 @@ export const XtmLineListingPage = () => {
     const [linesLoaded, setLinesLoaded] = useState(false);
     const localization = useLocalization();
     const ToolButton = VanillaComponentResolver.instance.ToolButton;
+    const noFocus = VanillaComponentResolver.instance.FOCUS_DISABLED;
     const reportMode = isReportMode(overviewMode);
     const fareGroupsMode = overviewMode === "fareGroups";
     const vehicleModelGroupsMode = overviewMode === "vehicleModelGroups";
-    const specialMode = fareGroupsMode || vehicleModelGroupsMode;
+    const specialMode = isSpecialOverviewMode(overviewMode);
     const cityHasNoLines = linesList.length === 0;
+    const showModeChange = specialMode || !cityHasNoLines;
 
     useEffect(() => subscribeOverviewMode(() => {
         setOverviewMode(getPersistedOverviewMode());
@@ -242,29 +257,33 @@ export const XtmLineListingPage = () => {
 
     // Only force listing after the city line list has loaded — an empty list during
     // the initial fetch must not wipe SIP-driven fare/model-group navigation.
+    // Fare / model-group screens do not require lines, so keep them even if empty.
     useEffect(() => {
         if (!linesLoaded || !cityHasNoLines) return;
+        if (isSpecialOverviewMode(overviewMode)) return;
         if (overviewMode !== "listing") {
             setPersistedOverviewMode("listing");
             setOverviewMode("listing");
         }
     }, [cityHasNoLines, overviewMode, linesLoaded]);
 
-    const reloadLines = (res: LineData[]) => {
+    const reloadLines = useCallback((res: LineData[]) => {
         setLinesLoaded(true);
-        if (!Array.isArray(res)) {
-            setLinesList([]);
-            return;
-        }
-        setLinesList((prev) => {
-            if (prev.length === 0) {
-                return sortAndGroupLines(res, persistedSort);
+        startTransition(() => {
+            if (!Array.isArray(res)) {
+                setLinesList([]);
+                return;
             }
-            return mergeLinesPreservingOrder(prev, res);
+            setLinesList((prev) => {
+                if (prev.length === 0) {
+                    return sortAndGroupLines(res, persistedSort);
+                }
+                return mergeLinesPreservingOrder(prev, res);
+            });
         });
-    };
+    }, [persistedSort]);
 
-    const patchLineActivity = (entityIndex: number, activity: LineActivityClass) => {
+    const patchLineActivity = useCallback((entityIndex: number, activity: LineActivityClass) => {
         const flags = activityToLineFlags(activity);
         setLinesList((prev) =>
             prev.map((line) =>
@@ -277,9 +296,9 @@ export const XtmLineListingPage = () => {
                     : line,
             ),
         );
-    };
+    }, []);
 
-    const patchLineColor = (entityIndex: number, color: string, isFixedColor: boolean) => {
+    const patchLineColor = useCallback((entityIndex: number, color: string, isFixedColor: boolean) => {
         setLinesList((prev) =>
             prev.map((line) =>
                 line.entity.Index === entityIndex
@@ -287,11 +306,11 @@ export const XtmLineListingPage = () => {
                     : line,
             ),
         );
-    };
+    }, []);
 
-    const patchLineIdentity = (
+    const patchLineIdentity = useCallback((
         entityIndex: number,
-        patch: { acronym?: string; routeNumber?: number },
+        patch: LineIdentityPatch,
     ) => {
         setLinesList((prev) =>
             prev.map((line) => {
@@ -306,7 +325,29 @@ export const XtmLineListingPage = () => {
                 return next;
             }),
         );
-    };
+    }, []);
+
+    const onOpenLineDetails = useCallback((entity: LineData["entity"]) => {
+        transport.selectLine(toVanillaEntity(entity));
+    }, []);
+
+    const onLineColorChange = useCallback((entityIndex: number, color: string, isFixedColor: boolean) => {
+        patchLineColor(entityIndex, color, isFixedColor);
+        if (!isFixedColor) {
+            const reload = () => LineManagementService.listLines().then(reloadLines);
+            window.setTimeout(reload, 100);
+            window.setTimeout(reload, 400);
+        }
+    }, [patchLineColor, reloadLines]);
+
+    const onLineIdentityChange = useCallback((entityIndex: number, patch: LineIdentityPatch) => {
+        patchLineIdentity(entityIndex, patch);
+        if (patch.routeNumber !== undefined) {
+            const reload = () => LineManagementService.listLines().then(reloadLines);
+            window.setTimeout(reload, 100);
+            window.setTimeout(reload, 400);
+        }
+    }, [patchLineIdentity, reloadLines]);
 
     const typeUsesPalette = (type: TransportType, isCargo: boolean) =>
         typeHasPaletteGuid(isCargo ? cargoPalettes[type] : passengerPalettes[type]);
@@ -325,30 +366,76 @@ export const XtmLineListingPage = () => {
     };
 
     useEffect(() => {
-        const onLines = (x: LineData[]) => reloadLines(x);
+        let cancelled = false;
+        const onLines = (x: LineData[]) => {
+            if (!cancelled) reloadLines(x);
+        };
         const reloadPaletteSettings = async () => {
             const [passenger, cargo] = await Promise.all([
                 AutoColorService.passengerModalSettings(),
                 AutoColorService.cargoModalSettings(),
             ]);
+            if (cancelled) return;
             setPassengerPalettes(passenger ?? {});
             setCargoPalettes(cargo ?? {});
         };
+
         engine.whenReady.then(async () => {
+            if (cancelled) return;
             engine.on("k45::xtm.lineViewer.getCityLines->", onLines);
-            LineManagementService.listLines().then(reloadLines);
-            await reloadPaletteSettings();
+
+            // Let the overview shell / special-mode page paint before heavy city-line work.
+            await yieldForPaint();
+            if (cancelled) return;
+
+            const mode = getPersistedOverviewMode();
+            const needsLinesNow = !isSpecialOverviewMode(mode);
+            if (needsLinesNow) {
+                void LineManagementService.listLines().then((res) => {
+                    if (!cancelled) reloadLines(res);
+                });
+            }
+
+            // Palette settings are only needed for the line listing cards.
+            if (needsLinesNow) {
+                void reloadPaletteSettings();
+            }
             AutoColorService.doOnAutoColorSettingsChanged(() => {
-                reloadPaletteSettings();
+                void reloadPaletteSettings();
             });
-            if (isReportMode(getPersistedOverviewMode())) {
-                fetchReport(getPersistedOverviewMode());
+
+            if (isReportMode(mode)) {
+                void fetchReport(mode);
             }
         });
+
         return () => {
+            cancelled = true;
             engine.off("k45::xtm.lineViewer.getCityLines->");
         };
     }, []);
+
+    // When leaving fare/model-group screens for listing/report, load lines if still missing.
+    useEffect(() => {
+        if (specialMode || linesLoaded) return;
+        let cancelled = false;
+        void (async () => {
+            await yieldForPaint();
+            if (cancelled) return;
+            const res = await LineManagementService.listLines();
+            if (!cancelled) reloadLines(res);
+            const [passenger, cargo] = await Promise.all([
+                AutoColorService.passengerModalSettings(),
+                AutoColorService.cargoModalSettings(),
+            ]);
+            if (cancelled) return;
+            setPassengerPalettes(passenger ?? {});
+            setCargoPalettes(cargo ?? {});
+        })();
+        return () => {
+            cancelled = true;
+        };
+    }, [specialMode, linesLoaded]);
 
     const toggleFilterType = (type: string) => {
         setFilterExclude((prev) => {
@@ -377,7 +464,9 @@ export const XtmLineListingPage = () => {
         setCurrentSort((prev) => {
             const next = nextLineSort(prev, key);
             persistedSort = next;
-            setLinesList((lines) => sortAndGroupLines(lines, next));
+            startTransition(() => {
+                setLinesList((lines) => sortAndGroupLines(lines, next));
+            });
             return next;
         });
     };
@@ -453,6 +542,7 @@ export const XtmLineListingPage = () => {
                 selected={!filterExclude.includes(key)}
                 tooltip={getNameFor(type, isCargo)}
                 onSelect={() => toggleFilterType(key)}
+                focusKey={noFocus}
             />
         );
     };
@@ -469,10 +559,13 @@ export const XtmLineListingPage = () => {
     const showPassengerTypes = !specialMode && (overviewMode === "listing" || overviewMode === "occupancyPassengers");
     const showCargoTypes = !specialMode && (overviewMode === "listing" || overviewMode === "occupancyCargo");
 
+    // PanelContent is a KeyFocusController (single child). Vanilla overview uses one
+    // AutoNavigationScope; our listing has many ActiveFocusDiv hosts (foldouts, etc.).
+    // FocusDisabled stops them from registering under PanelContent.
     return (
-        <div className="xtm-line-listing">
-            <section className="filterRow">
-                <FocusDisabled>
+        <FocusDisabled>
+            <div className="xtm-line-listing">
+                <section className="filterRow">
                     {fareGroupsMode ? (
                         <div className="screenTitleLabel">
                             {translate("fareGroups.screenTitle", "Fare Groups")}
@@ -496,6 +589,7 @@ export const XtmLineListingPage = () => {
                                     selected={!activityExclude.includes(key)}
                                     tooltip={translate(...ACTIVITY_TOOLTIP_KEYS[key])}
                                     onSelect={() => toggleActivityFilter(key)}
+                                    focusKey={noFocus}
                                 />
                             ))}
                             <div className="space" />
@@ -576,80 +670,66 @@ export const XtmLineListingPage = () => {
                                     menuDirection={ContextMenuExpansion.BOTTOM_LEFT}
                                     menuClassName="xtm-popup-solid"
                                     menuItems={sortMenuItems}
-                                    focusKey={VanillaComponentResolver.instance.FOCUS_DISABLED}
+                                    focusKey={noFocus}
                                 />
                             </>
                         )}
-                        {!cityHasNoLines && (
+                        {showModeChange && (
                             <>
                                 <div className="modeChangeSpacer" />
                                 <ModeChangeButton currentMode={overviewMode} onSelectMode={onSelectMode} />
                             </>
                         )}
                     </div>
-                </FocusDisabled>
-            </section>
-            {fareGroupsMode ? (
-                <section className="LineList LineList--report">
-                    <div className="reportArea">
-                        <XtmFareGroupsPage onGroupsChanged={setFareGroupCount} />
-                    </div>
                 </section>
-            ) : vehicleModelGroupsMode ? (
-                <section className="LineList LineList--report">
-                    <div className="reportArea">
-                        <XtmVehicleModelGroupsPage onGroupsChanged={setVehicleModelGroupCount} />
-                    </div>
-                </section>
-            ) : reportMode ? (
-                <section className="LineList LineList--report">
-                    <div className="reportArea">
-                        <XtmOccupancyReportPage
-                            report={report}
-                            loading={reportLoading}
-                            filterExclude={filterExclude}
-                            activityExclude={activityExclude}
-                        />
-                    </div>
-                </section>
-            ) : (
-                <section className="LineList">
-                    <Scrollable className="scrollArea">
-                        {visibleLines.length === 0 ? (
-                            <div className="emptyListMessage">{emptyListMessage}</div>
-                        ) : (
-                            visibleLines.flatMap((x, i, a) => [
-                                i > 0 && (a[i - 1].type !== x.type || a[i - 1].isCargo !== x.isCargo) ? (
-                                    <div key={`sep_${i}`} className="typeSeparator" />
-                                ) : null,
-                                <LineItemCard
-                                    key={`${x.entity.Index}_${i}`}
-                                    lineData={x}
-                                    typeUsesPalette={typeUsesPalette(x.type, x.isCargo)}
-                                    onOpenDetails={() => transport.selectLine(toVanillaEntity(x.entity))}
-                                    onActivityChange={(activity) => patchLineActivity(x.entity.Index, activity)}
-                                    onColorChange={(color, isFixedColor) => {
-                                        patchLineColor(x.entity.Index, color, isFixedColor);
-                                        if (!isFixedColor) {
-                                            const reload = () => LineManagementService.listLines().then(reloadLines);
-                                            window.setTimeout(reload, 100);
-                                            window.setTimeout(reload, 400);
-                                        }
-                                    }}
-                                    onIdentityChange={(patch) => {
-                                        patchLineIdentity(x.entity.Index, patch);
-                                        if (patch.routeNumber !== undefined) {
-                                            const reload = () => LineManagementService.listLines().then(reloadLines);
-                                            window.setTimeout(reload, 100);
-                                            window.setTimeout(reload, 400);
-                                        }
-                                    }}
-                                />,
-                            ])
-                        )}
-                    </Scrollable>
-                </section>
-            )}
-        </div>
+                {fareGroupsMode ? (
+                    <section className="LineList LineList--report">
+                        <div className="reportArea">
+                            <XtmFareGroupsPage onGroupsChanged={setFareGroupCount} />
+                        </div>
+                    </section>
+                ) : vehicleModelGroupsMode ? (
+                    <section className="LineList LineList--report">
+                        <div className="reportArea">
+                            <XtmVehicleModelGroupsPage onGroupsChanged={setVehicleModelGroupCount} />
+                        </div>
+                    </section>
+                ) : reportMode ? (
+                    <section className="LineList LineList--report">
+                        <div className="reportArea">
+                            <XtmOccupancyReportPage
+                                report={report}
+                                loading={reportLoading}
+                                filterExclude={filterExclude}
+                                activityExclude={activityExclude}
+                            />
+                        </div>
+                    </section>
+                ) : (
+                    <section className="LineList">
+                        <Scrollable className="scrollArea">
+                            {visibleLines.length === 0 ? (
+                                <div className="emptyListMessage">{emptyListMessage}</div>
+                            ) : (
+                                visibleLines.flatMap((x, i, a) => [
+                                    i > 0 && (a[i - 1].type !== x.type || a[i - 1].isCargo !== x.isCargo) ? (
+                                        <div key={`sep_${x.entity.Index}`} className="typeSeparator" />
+                                    ) : null,
+                                    <LineItemCard
+                                        key={x.entity.Index}
+                                        lineData={x}
+                                        typeUsesPalette={typeUsesPalette(x.type, x.isCargo)}
+                                        onOpenDetails={onOpenLineDetails}
+                                        onActivityChange={patchLineActivity}
+                                        onColorChange={onLineColorChange}
+                                        onIdentityChange={onLineIdentityChange}
+                                    />,
+                                ])
+                            )}
+                        </Scrollable>
+                    </section>
+                )}
+            </div>
+        </FocusDisabled>
     );
 };

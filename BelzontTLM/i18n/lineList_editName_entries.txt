@@ -1,0 +1,1 @@
+K45::XTM	vuio	lineList	editName	Edit line name	Editar nome da linha

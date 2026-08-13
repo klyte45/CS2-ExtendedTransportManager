@@ -19,7 +19,7 @@ import { FocusDisabled } from "cs2/input";
 import { LocalizedNumber, useLocalization } from "cs2/l10n";
 import { getModule } from "cs2/modding";
 import { Portal } from "cs2/ui";
-import { CSSProperties, MouseEvent, useEffect, useRef, useState } from "react";
+import { CSSProperties, memo, MouseEvent, useEffect, useRef, useState } from "react";
 import {
     ACTIVITY_TO_ICONS,
     activityToLineFlags,
@@ -31,20 +31,15 @@ import {
     TYPE_TO_ICONS,
 } from "./lineListingTypes";
 
+export type LineIdentityPatch = { acronym?: string; routeNumber?: number };
+
 type LineItemCardProps = {
     lineData: LineData;
     typeUsesPalette: boolean;
-    onOpenDetails(): void;
-    onActivityChange(activity: LineActivityClass): void;
-    onColorChange(color: string, isFixedColor: boolean): void;
-    onIdentityChange(patch: { acronym?: string; routeNumber?: number }): void;
-};
-
-const SCHEDULE_TOOLTIP_KEYS: Record<LineActivityClass, [string, string]> = {
-    "activity-disabled": ["lineList.filterDisabled", "Disabled"],
-    "activity-dayNight": ["lineList.filterDayNight", "Day & night"],
-    "activity-day": ["lineList.filterDay", "Day only"],
-    "activity-night": ["lineList.filterNight", "Night only"],
+    onOpenDetails(entity: LineData["entity"]): void;
+    onActivityChange(entityIndex: number, activity: LineActivityClass): void;
+    onColorChange(entityIndex: number, color: string, isFixedColor: boolean): void;
+    onIdentityChange(entityIndex: number, patch: LineIdentityPatch): void;
 };
 
 const titleTextInputTheme = getModule(
@@ -92,7 +87,7 @@ function isEventOnElement(event: globalThis.MouseEvent, el: HTMLElement | null) 
     );
 }
 
-export const LineItemCard = ({
+const LineItemCardCmp = ({
     lineData: x,
     typeUsesPalette,
     onOpenDetails,
@@ -110,6 +105,7 @@ export const LineItemCard = ({
     const occupancyCrowd = getCrowdnessBorderStyle(x.usageMax ?? x.usage ?? 0);
     const resolvedName = nameToString(x.name) ?? "";
     const [nameValue, setNameValue] = useState(resolvedName);
+    const [nameEditing, setNameEditing] = useState(false);
     const [pickerOpen, setPickerOpen] = useState(false);
     const [identityOpen, setIdentityOpen] = useState(false);
     const [acronymDraft, setAcronymDraft] = useState(x.xtmData?.Acronym ?? "");
@@ -120,8 +116,9 @@ export const LineItemCard = ({
     const pickerRef = useRef<HTMLDivElement>(null!);
     const identityTextRef = useRef<HTMLDivElement>(null!);
     const identityMenuRef = useRef<HTMLDivElement>(null!);
+    const nameInputRef = useRef<HTMLInputElement>(null!);
+    const skipNameCommitRef = useRef(false);
     const EllipsisTextInput = VanillaComponentResolver.instance.EllipsisTextInput;
-    const InfoLink = VanillaComponentResolver.instance.InfoLink;
     const ColorPicker = VanillaComponentResolver.instance.ColorPicker;
     const IntInput = VanillaComponentResolver.instance.IntInput;
     const noFocus = VanillaComponentResolver.instance.FOCUS_DISABLED;
@@ -132,8 +129,18 @@ export const LineItemCard = ({
     const canRestorePalette = typeUsesPalette && x.isFixedColor;
 
     useEffect(() => {
+        if (nameEditing) return;
         setNameValue(resolvedName);
-    }, [resolvedName, x.entity.Index]);
+    }, [resolvedName, x.entity.Index, nameEditing]);
+
+    useEffect(() => {
+        if (!nameEditing) return;
+        const id = window.requestAnimationFrame(() => {
+            nameInputRef.current?.focus?.();
+            nameInputRef.current?.select?.();
+        });
+        return () => window.cancelAnimationFrame(id);
+    }, [nameEditing]);
 
     useEffect(() => {
         if (identityOpen) return;
@@ -178,21 +185,54 @@ export const LineItemCard = ({
         e.preventDefault();
         if (activity === activityClass) return;
         applyLineActivity(x.entity, activity);
-        onActivityChange(activity);
+        onActivityChange(x.entity.Index, activity);
+    };
+
+    const startNameEdit = (e: MouseEvent) => {
+        e.stopPropagation();
+        e.preventDefault();
+        setPickerOpen(false);
+        setIdentityOpen(false);
+        setNameValue(resolvedName);
+        setNameEditing(true);
     };
 
     const onNameChange = (e: any) => {
         setNameValue(e?.target?.value ?? e ?? "");
     };
 
-    const onNameBlur = () => {
-        const trimmed = (nameValue ?? "").trim();
+    const commitNameEdit = () => {
+        if (skipNameCommitRef.current) {
+            skipNameCommitRef.current = false;
+            setNameEditing(false);
+            setNameValue(resolvedName);
+            return;
+        }
+        const raw = nameInputRef.current?.value ?? nameValue ?? "";
+        const trimmed = raw.trim();
+        setNameEditing(false);
         if (!trimmed) {
             setNameValue(resolvedName);
             return;
         }
+        setNameValue(trimmed);
         if (trimmed === resolvedName) return;
         transport.renameLine(toVanillaEntity(x.entity as any), trimmed);
+    };
+
+    const onNameKeyDownCapture = (e: any) => {
+        // TextInput blurs on Escape before bubbling onKeyDown; mark cancel first.
+        if (e?.key === "Escape" || e?.keyCode === 27) {
+            skipNameCommitRef.current = true;
+            setNameValue(resolvedName);
+        }
+    };
+
+    const onNameKeyDown = (e: any) => {
+        if (e?.key === "Enter" || e?.keyCode === 13) {
+            e.preventDefault?.();
+            e.stopPropagation?.();
+        }
     };
 
     const onFormatIconPointer = (e: MouseEvent) => {
@@ -227,7 +267,7 @@ export const LineItemCard = ({
 
     const onPickerColorChange = async (hsva: any) => {
         const hex = ColorUtils.toRGBHex(VanillaColorUtils.hsvaToRgba(hsva));
-        onColorChange(hex, true);
+        onColorChange(x.entity.Index, hex, true);
         if (!x.isFixedColor) {
             await LineManagementService.setIgnorePalette(x.entity, true);
         }
@@ -239,7 +279,7 @@ export const LineItemCard = ({
         e?.preventDefault();
         setPickerOpen(false);
         await LineManagementService.setIgnorePalette(x.entity, false);
-        onColorChange(displayColor, false);
+        onColorChange(x.entity.Index, displayColor, false);
     };
 
     const saveAcronym = async () => {
@@ -247,7 +287,7 @@ export const LineItemCard = ({
         const current = (x.xtmData?.Acronym ?? "").trim();
         if (next === current) return;
         await LineManagementService.setRouteAcronym(x.entity, next);
-        onIdentityChange({ acronym: next });
+        onIdentityChange(x.entity.Index, { acronym: next });
     };
 
     const saveRouteNumber = async () => {
@@ -255,7 +295,7 @@ export const LineItemCard = ({
         if (next === x.routeNumber) return;
         setNumberDraft(next);
         await LineManagementService.setRouteNumber(x.entity, next);
-        onIdentityChange({ routeNumber: next });
+        onIdentityChange(x.entity.Index, { routeNumber: next });
     };
 
     return (
@@ -272,7 +312,6 @@ export const LineItemCard = ({
                     className="text"
                     ref={identityTextRef}
                     role="button"
-                    title={translate("lineList.editIdentity", "Edit line acronym / number")}
                     onMouseDown={onIdentityTextPointer}
                     onClick={(e) => {
                         e.stopPropagation();
@@ -285,7 +324,6 @@ export const LineItemCard = ({
                     className="formatIconHost"
                     ref={iconRef}
                     role="button"
-                    title={translate("lineList.editColor", "Change line color")}
                     onMouseDown={onFormatIconPointer}
                     onClick={(e) => {
                         e.stopPropagation();
@@ -370,23 +408,47 @@ export const LineItemCard = ({
                 )}
             </div>
             <div className="lineName">
-                <FocusDisabled>
-                    <EllipsisTextInput
-                        className="nameInput"
-                        theme={titleTextInputTheme}
-                        value={nameValue}
-                        onChange={onNameChange}
-                        onBlur={onNameBlur}
-                    />
-                </FocusDisabled>
+                {nameEditing ? (
+                    <FocusDisabled>
+                        <div className="nameInputHost" onKeyDownCapture={onNameKeyDownCapture}>
+                            <EllipsisTextInput
+                                ref={nameInputRef}
+                                className="nameInput"
+                                theme={titleTextInputTheme}
+                                value={nameValue}
+                                onChange={onNameChange}
+                                onBlur={commitNameEdit}
+                                onKeyDown={onNameKeyDown}
+                                disableHint
+                            />
+                        </div>
+                    </FocusDisabled>
+                ) : (
+                    <div
+                        className="nameDisplay"
+                        role="button"
+                        onMouseDown={(e) => {
+                            e.stopPropagation();
+                        }}
+                        onClick={startNameEdit}
+                    >
+                        {resolvedName}
+                    </div>
+                )}
             </div>
             <div className="lineType">
                 <span className="typeLabel">{getNameFor(x.type, x.isCargo)}</span>
-                <FocusDisabled>
-                    <InfoLink onSelect={onOpenDetails}>
-                        {translate("lineList.openDetails", "Details")}
-                    </InfoLink>
-                </FocusDisabled>
+                <button
+                    type="button"
+                    className="neutralBtn txt detailsBtn"
+                    onClick={(e) => {
+                        e.stopPropagation();
+                        e.preventDefault();
+                        onOpenDetails(x.entity);
+                    }}
+                >
+                    {translate("lineList.openDetails", "Details")}
+                </button>
             </div>
             <div className="lineLength">
                 {activityClass === "activity-disabled"
@@ -403,7 +465,7 @@ export const LineItemCard = ({
                         <>
                             <span>{`${x.vehicles} ${engine.translate(`Transport.LEGEND_VEHICLES[${x.type}]`)} • `}</span>
                             <span
-                                className={["occupancyRange", occupancyCrowd.pulse && "crowdnessPulse"].filter(Boolean).join(" ")}
+                                className="occupancyRange"
                                 style={{ backgroundColor: occupancyCrowd.borderColor }}
                             >
                                 {[
@@ -428,7 +490,6 @@ export const LineItemCard = ({
                             key={key}
                             role="button"
                             className={`scheduleBtn${isCurrent ? " current" : ""}`}
-                            title={translate(...SCHEDULE_TOOLTIP_KEYS[key])}
                             style={{
                                 backgroundColor: isCurrent
                                     ? SCHEDULE_BUTTON_ACTIVE_BG[key]
@@ -453,3 +514,5 @@ export const LineItemCard = ({
         </div>
     );
 };
+
+export const LineItemCard = memo(LineItemCardCmp);

@@ -393,7 +393,7 @@
             align-items: stretch;
             height: 100%;
             max-height: 100%;
-            width: max-content;
+            // width set in OccupancyReportColumnDetail (Cohtml rejects max-content)
             min-width: 100%;
             box-sizing: border-box;
             padding-right: 12rem;

@@ -1,6 +1,19 @@
 @import "@klyte45/vuio-commons/src/styles/buttonsStyles";
 @import "./crowdness.scss";
 
+%xtmEditableHoverHint {
+    background-color: transparent;
+    transition-property: background-color;
+    transition-duration: 0.15s;
+    transition-timing-function: ease-out;
+
+    &:hover {
+        background-color: black;
+        color: #FFFFFF !important;
+        border: 1rem solid;
+    }
+}
+
 .xtm-line-listing {
     @extend %buttonsStyle;
 
@@ -28,7 +41,7 @@
         box-sizing: border-box;
         width: 100%;
 
-        > * + * {
+        >*+* {
             margin-left: 4rem;
         }
 
@@ -72,7 +85,7 @@
             align-items: center;
             flex-shrink: 0;
 
-            > * + * {
+            >*+* {
                 margin-left: 4rem;
             }
         }
@@ -118,7 +131,7 @@
         }
 
         // Report overview: pin content to top so tall pages stay scrollable (centering clips the top).
-        &.LineList--report .scrollArea >[class^="content_"] {
+        &.LineList--report .scrollArea>[class^="content_"] {
             flex-wrap: nowrap;
             flex-direction: column;
             align-content: flex-start;
@@ -160,7 +173,6 @@
             border-bottom-right-radius: 0;
             border-bottom-left-radius: 30rem;
             background-color: var(--menuPanel1);
-            backdrop-filter: var(--panelBlur);
             max-width: 450rem;
             min-width: 250rem;
             height: 115rem;
@@ -197,6 +209,8 @@
                 // Let clicks through to the format icon under the left stripe
                 pointer-events: none;
 
+                .nameDisplay,
+                .nameInputHost,
                 .nameInput {
                     pointer-events: auto;
                     width: auto;
@@ -204,7 +218,24 @@
                     flex: 0 1 auto;
                     font-weight: bold;
                     font-size: 100%;
+                }
 
+                .nameInputHost {
+                    display: flex;
+                    max-width: 100%;
+                }
+
+                .nameDisplay {
+                    overflow-x: hidden;
+                    overflow-y: hidden;
+                    text-overflow: ellipsis;
+                    white-space: nowrap;
+                    cursor: pointer;
+                    min-width: 30rem;
+                    @extend %xtmEditableHoverHint;
+                }
+
+                .nameInput {
                     input {
                         position: absolute;
                         left: 0;
@@ -227,6 +258,7 @@
             }
 
             &.activity-day {
+
                 .lineName,
                 .lineType,
                 .lineLength,
@@ -234,12 +266,14 @@
                     color: #f0e6a0;
                 }
 
-                .lineName .nameInput input + div {
+                .lineName .nameDisplay,
+                .lineName .nameInput input+div {
                     color: #f0e6a0 !important;
                 }
             }
 
             &.activity-night {
+
                 .lineName,
                 .lineType,
                 .lineLength,
@@ -247,12 +281,14 @@
                     color: #d2b8f0;
                 }
 
-                .lineName .nameInput input + div {
+                .lineName .nameDisplay,
+                .lineName .nameInput input+div {
                     color: #d2b8f0 !important;
                 }
             }
 
             &.activity-disabled {
+
                 .lineName,
                 .lineType,
                 .lineLength,
@@ -260,7 +296,8 @@
                     color: #8a8a8a;
                 }
 
-                .lineName .nameInput input + div {
+                .lineName .nameDisplay,
+                .lineName .nameInput input+div {
                     color: #8a8a8a !important;
                 }
             }
@@ -301,6 +338,7 @@
                     padding-top: 15rem;
                     pointer-events: auto;
                     cursor: pointer;
+                    @extend %xtmEditableHoverHint;
                 }
 
                 .formatIconHost {
@@ -313,6 +351,7 @@
                     cursor: pointer;
                     z-index: 2;
                     pointer-events: auto;
+                    @extend %xtmEditableHoverHint;
 
                     .icon {
                         transform: none;
@@ -354,7 +393,16 @@
                     margin-right: 16rem;
                 }
 
-                > * {
+                .detailsBtn {
+                    flex: 0 0 auto;
+                    padding-top: 1rem;
+                    padding-left: 1rem;
+                    padding-right: 1rem;
+                    padding-bottom: 1rem;
+                    font-size: 10rem;
+                }
+
+                >* {
                     pointer-events: auto;
                 }
             }
@@ -494,7 +542,7 @@
     z-index: 10000;
     pointer-events: auto;
 
-    > * + * {
+    >*+* {
         margin-left: 8rem;
     }
 
@@ -552,8 +600,8 @@
     padding-bottom: 10rem;
     z-index: 100000;
 
-    [class^=row_] + [class^=row_],
-    [class^=editor-item_] + [class^=editor-item_] {
+    [class^=row_]+[class^=row_],
+    [class^=editor-item_]+[class^=editor-item_] {
         margin-top: 8rem;
     }
 }
