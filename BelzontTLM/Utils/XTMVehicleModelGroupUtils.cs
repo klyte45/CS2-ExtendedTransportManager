@@ -94,7 +94,21 @@ namespace BelzontTLM
 
             if (isSecondary)
             {
-                return SupportsSecondary(transportType) && em.HasComponent<TrainCarriageData>(prefab);
+                return SupportsSecondary(transportType, isCargo) && em.HasComponent<TrainCarriageData>(prefab);
+            }
+
+            // Cargo rail engines often have TrainEngineData without CargoTransportVehicleData
+            // (capacity lives on carriages). Accept them as primary when pairing is supported.
+            if (isCargo
+                && SupportsSecondary(transportType, true)
+                && em.HasComponent<TrainEngineData>(prefab))
+            {
+                if (em.TryGetComponent(prefab, out PublicTransportVehicleData cargoEnginePt)
+                    && cargoEnginePt.m_TransportType != transportType)
+                {
+                    return false;
+                }
+                return true;
             }
 
             if (em.TryGetComponent(prefab, out PublicTransportVehicleData ptData))
@@ -107,17 +121,19 @@ namespace BelzontTLM
                 return isCargo ? hasCargo : !hasCargo || (ptData.m_PurposeMask & PublicTransportPurpose.TransportLine) != 0;
             }
 
-            if (em.HasComponent<TrainEngineData>(prefab) && SupportsSecondary(transportType))
-            {
-                bool hasCargo = em.HasComponent<CargoTransportVehicleData>(prefab);
-                return isCargo == hasCargo;
-            }
-
             return false;
         }
 
-        public static bool SupportsSecondary(TransportType transportType)
+        /// <summary>
+        /// Engine + carriage pairing is cargo rail only (Train / Tram / Subway cargo).
+        /// Passenger rail uses self-contained / MU models with no secondary carriage pick.
+        /// </summary>
+        public static bool SupportsSecondary(TransportType transportType, bool isCargo)
         {
+            if (!isCargo)
+            {
+                return false;
+            }
             return transportType == TransportType.Train
                 || transportType == TransportType.Tram
                 || transportType == TransportType.Subway;

@@ -40,8 +40,11 @@ export type VehicleModelPrefabInfo = {
     meshWidth: number;
     meshHeight: number;
     meshDepth: number;
+    /** Mesh depth of this prefab alone (never multiplied by unit count). */
+    singleMeshDepth: number;
     compositionDescriptor: string;
     compositionUnitCount: number;
+    carsPerUnitCount: number;
 };
 
 export type VehicleModelAvailableVehicles = {

@@ -29,6 +29,7 @@ namespace BelzontTLM
         public int transportType { get; set; }
         public bool isCargo { get; set; }
         public VehicleModelPairDto[] models { get; set; }
+        /// <summary>Linked lines. May be empty — groups with models and no lines are valid.</summary>
         public Entity[] lines { get; set; }
     }
 
@@ -57,18 +58,29 @@ namespace BelzontTLM
         public Entity entity { get; set; }
         public string name { get; set; }
         public string imageUrl { get; set; }
+        /// <summary>Total capacity for a full composition (vanilla-style sum), or single-car capacity.</summary>
         public int capacity { get; set; }
         public bool isSecondary { get; set; }
-        /// <summary>Mesh size X (width). 0 when unavailable.</summary>
+        /// <summary>Mesh size X (width) of this prefab alone. 0 when unavailable.</summary>
         public float meshWidth { get; set; }
-        /// <summary>Mesh size Y (height). 0 when unavailable.</summary>
+        /// <summary>Mesh size Y (height) of this prefab alone. 0 when unavailable.</summary>
         public float meshHeight { get; set; }
-        /// <summary>Mesh size Z (depth/length). 0 when unavailable.</summary>
+        /// <summary>
+        /// Total composition length (sum of cars × unit count) when this is an engine/MU front;
+        /// otherwise this prefab's mesh depth alone.
+        /// </summary>
         public float meshDepth { get; set; }
-        /// <summary>Human-readable composition summary from TrainEngineData.m_Count, or empty.</summary>
+        /// <summary>Mesh depth of this prefab alone (never multiplied by unit count).</summary>
+        public float singleMeshDepth { get; set; }
+        /// <summary>
+        /// Composition summary: "{units}×{carsPerUnit}" (ranges when min≠max), from
+        /// TrainEngineData.m_Count and VehicleCarriageElement counts. Empty when N/A.
+        /// </summary>
         public string compositionDescriptor { get; set; }
-        /// <summary>Max composition unit count from TrainEngineData; 0 when N/A.</summary>
+        /// <summary>Max unit repeat count from TrainEngineData; 0 when N/A.</summary>
         public int compositionUnitCount { get; set; }
+        /// <summary>Max cars per unit (self + VehicleCarriageElement counts); 0 when N/A.</summary>
+        public int carsPerUnitCount { get; set; }
     }
 
     [Serializable]

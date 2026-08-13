@@ -35,7 +35,9 @@ export function typeKey(transportType: number, isCargo: boolean): string {
     return `${transportTypeFromInt(transportType)}.${isCargo}`;
 }
 
-export function supportsSecondary(transportType: number): boolean {
+/** Engine + carriage pairing is cargo rail only (Train / Tram / Subway cargo). */
+export function supportsSecondary(transportType: number, isCargo: boolean): boolean {
+    if (!isCargo) return false;
     const t = transportTypeFromInt(transportType);
     return t === TransportType.Train || t === TransportType.Tram || t === TransportType.Subway;
 }
@@ -80,6 +82,18 @@ export function localizePrefabName(prefabName: string | null | undefined): strin
     return translated;
 }
 
+/** Max distinct primary+secondary slots choosable in the compositions UI. */
+export function maxCompositionSlots(
+    engineCount: number,
+    carriageCount: number,
+    showCarriagePicker: boolean,
+): number {
+    if (engineCount <= 0) return 0;
+    if (!showCarriagePicker) return engineCount;
+    // Engine × (no carriage + each carriage option).
+    return engineCount * (carriageCount + 1);
+}
+
 /** Stable key for a primary+secondary composition pair. */
 export function compositionPairKey(
     primary: Entity | null | undefined,
@@ -114,14 +128,94 @@ export function nextVehiclePrefabSort(
     return { key, descending: key === "capacity" };
 }
 
-/** Vehicle length for sorting (mesh depth × composition units when known). */
+/** Total length already baked into meshDepth for rail compositions. */
 export function prefabTotalLength(info: {
     meshDepth?: number;
-    compositionUnitCount?: number;
 }): number {
-    const depth = info.meshDepth ?? 0;
-    const units = info.compositionUnitCount ?? 0;
-    return depth * Math.max(1, units);
+    return info.meshDepth ?? 0;
+}
+
+/** Single-prefab mesh depth (never multiplied by unit count). */
+export function prefabSingleLength(info: {
+    singleMeshDepth?: number;
+    meshDepth?: number;
+}): number {
+    return info.singleMeshDepth ?? info.meshDepth ?? 0;
+}
+
+/**
+ * Total length for a fixed engine and wagon single-length W:
+ * A × (E + W × (B − 1)).
+ */
+export function compositionLengthWithWagon(
+    engine: { compositionUnitCount?: number; carsPerUnitCount?: number; singleMeshDepth?: number; meshDepth?: number } | null | undefined,
+    wagonLen: number,
+): number | null {
+    if (!engine) return null;
+    const units = engine.compositionUnitCount ?? 0;
+    const cars = engine.carsPerUnitCount ?? 0;
+    const engineLen = prefabSingleLength(engine);
+    if (units <= 0 || cars <= 0 || engineLen <= 0) return null;
+    const wagonsPerUnit = cars - 1;
+    if (wagonsPerUnit <= 0) return units * engineLen;
+    if (wagonLen <= 0) return null;
+    return units * (engineLen + wagonLen * wagonsPerUnit);
+}
+
+/**
+ * Engine + carriage total length when both prefabs are known.
+ */
+export function pairedCompositionLength(
+    engine: { compositionUnitCount?: number; carsPerUnitCount?: number; singleMeshDepth?: number; meshDepth?: number } | null | undefined,
+    carriage: { singleMeshDepth?: number; meshDepth?: number } | null | undefined,
+): number | null {
+    if (!engine || !carriage) return null;
+    return compositionLengthWithWagon(engine, prefabSingleLength(carriage));
+}
+
+export function wagonSingleLengthBounds(
+    carriages: { singleMeshDepth?: number; meshDepth?: number }[],
+): { min: number; max: number } | null {
+    let min = Number.POSITIVE_INFINITY;
+    let max = 0;
+    for (const carriage of carriages) {
+        const len = prefabSingleLength(carriage);
+        if (len <= 0) continue;
+        min = Math.min(min, len);
+        max = Math.max(max, len);
+    }
+    if (!Number.isFinite(min) || max <= 0) return null;
+    return { min, max };
+}
+
+export function formatPairedCompositionLength(
+    engine: { compositionUnitCount?: number; carsPerUnitCount?: number; singleMeshDepth?: number; meshDepth?: number } | null | undefined,
+    carriage: { singleMeshDepth?: number; meshDepth?: number } | null | undefined,
+    wagonBounds: { min: number; max: number } | null | undefined,
+    formatLength: (value: number) => string | null,
+    unknown = "?",
+): string {
+    if (!engine) return unknown;
+    if (carriage) {
+        const len = pairedCompositionLength(engine, carriage);
+        if (len == null) return unknown;
+        return formatLength(len) ?? unknown;
+    }
+    const cars = engine.carsPerUnitCount ?? 0;
+    const wagonsPerUnit = cars - 1;
+    if (wagonsPerUnit <= 0) {
+        const len = compositionLengthWithWagon(engine, 0);
+        if (len == null) return unknown;
+        return formatLength(len) ?? unknown;
+    }
+    if (!wagonBounds) return unknown;
+    const minLen = compositionLengthWithWagon(engine, wagonBounds.min);
+    const maxLen = compositionLengthWithWagon(engine, wagonBounds.max);
+    const minStr = minLen != null ? formatLength(minLen) : null;
+    const maxStr = maxLen != null ? formatLength(maxLen) : null;
+    if (!minStr || !maxStr) return unknown;
+    if (minLen === maxLen) return minStr;
+    return `${minStr} ~ ${maxStr}`;
 }
 
 export function sortVehiclePrefabs<T extends {
@@ -129,8 +223,18 @@ export function sortVehiclePrefabs<T extends {
     capacity?: number;
     meshDepth?: number;
     compositionUnitCount?: number;
-}>(items: T[], sort: VehiclePrefabSort): T[] {
+}>(
+    items: T[],
+    sort: VehiclePrefabSort,
+    isUnavailable?: (item: T) => boolean,
+): T[] {
     return items.slice().sort((a, b) => {
+        const aUnavailable = isUnavailable?.(a) ?? false;
+        const bUnavailable = isUnavailable?.(b) ?? false;
+        if (aUnavailable !== bUnavailable) {
+            return aUnavailable ? 1 : -1;
+        }
+
         let cmp = 0;
         switch (sort.key) {
             case "name":

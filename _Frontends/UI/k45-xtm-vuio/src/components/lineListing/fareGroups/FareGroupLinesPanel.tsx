@@ -31,7 +31,7 @@ import { entitiesEqual, entityKey, isNullEntity } from "./fareGroupUtils";
 
 const REMOVE_ICON = "coui://uil/Standard/XClose.svg";
 const ADD_ICON = "coui://uil/Standard/ArrowUp.svg";
-const ADD_ALL_ICON = "coui://uil/Standard/Plus.svg";
+const ADD_ALL_ICON = "coui://uil/Standard/ArrowUp.svg";
 const REMOVE_ALL_ICON = "coui://uil/Standard/Trash.svg";
 const WARN_ICON = "coui://uil/Standard/ExclamationMark.svg";
 

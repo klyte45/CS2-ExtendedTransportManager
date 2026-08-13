@@ -356,15 +356,15 @@ namespace BelzontTLM
             var primaryArr = new VehicleModelPrefabInfo[primary.Length];
             for (int i = 0; i < primary.Length; i++)
             {
-                primaryArr[i] = BuildPrefabInfo(primary[i], isSecondary: false);
+                primaryArr[i] = BuildPrefabInfo(primary[i]);
             }
             VehicleModelPrefabInfo[] secondaryArr;
-            if (XTMVehicleModelGroupUtils.SupportsSecondary(type))
+            if (XTMVehicleModelGroupUtils.SupportsSecondary(type, isCargo))
             {
                 secondaryArr = new VehicleModelPrefabInfo[secondary.Length];
                 for (int i = 0; i < secondary.Length; i++)
                 {
-                    secondaryArr[i] = BuildPrefabInfo(secondary[i], isSecondary: true);
+                    secondaryArr[i] = BuildPrefabInfo(secondary[i]);
                 }
             }
             else
@@ -411,42 +411,63 @@ namespace BelzontTLM
             return list.ToArray();
         }
 
-        private VehicleModelPrefabInfo BuildPrefabInfo(Entity prefab, bool isSecondary)
+        private VehicleModelPrefabInfo BuildPrefabInfo(Entity prefab)
         {
             string name = m_PrefabSystem.GetPrefabName(prefab) ?? string.Empty;
             // Same source as SelectVehiclesSection SIP chips/dropdown (`VehiclePrefab.thumbnail`).
             string imageUrl = m_ImageSystem.GetThumbnail(prefab) ?? m_ImageSystem.placeholderIcon;
+            bool isCarriage = EntityManager.HasComponent<TrainCarriageData>(prefab);
 
-            int capacity = 0;
-            if (EntityManager.TryGetComponent(prefab, out PublicTransportVehicleData ptData))
-            {
-                capacity = ptData.m_PassengerCapacity;
-            }
-            else if (EntityManager.TryGetComponent(prefab, out CargoTransportVehicleData cargoData))
-            {
-                capacity = cargoData.m_CargoCapacity;
-            }
+            int ownCapacity = GetPrefabCapacity(prefab);
+            GetPrefabMeshSize(prefab, out float meshWidth, out float meshHeight, out float ownLength);
 
-            float meshWidth = 0f;
-            float meshHeight = 0f;
-            float meshDepth = 0f;
-            if (EntityManager.TryGetComponent(prefab, out ObjectGeometryData geometry))
-            {
-                meshWidth = geometry.m_Size.x;
-                meshHeight = geometry.m_Size.y;
-                meshDepth = geometry.m_Size.z;
-            }
-
+            int capacity = ownCapacity;
+            float meshDepth = ownLength;
             string compositionDescriptor = string.Empty;
             int compositionUnitCount = 0;
+            int carsPerUnitCount = 0;
+
+            // Rail engines / MU fronts: sum cars per unit × unit count (vanilla TransportVehicleSelectData).
             if (EntityManager.TryGetComponent(prefab, out TrainEngineData engineData))
             {
-                int min = engineData.m_Count.x;
-                int max = engineData.m_Count.y;
-                compositionUnitCount = max;
-                compositionDescriptor = min == max
-                    ? $"{min}"
-                    : $"{min}-{max}";
+                int unitMin = Math.Max(1, engineData.m_Count.x);
+                int unitMax = Math.Max(unitMin, engineData.m_Count.y);
+                compositionUnitCount = unitMax;
+
+                int carsMin = 1;
+                int carsMax = 1;
+                int capacityPerUnit = ownCapacity;
+                float lengthPerUnit = ownLength;
+
+                if (EntityManager.TryGetBuffer(prefab, true, out DynamicBuffer<VehicleCarriageElement> carriages))
+                {
+                    for (int i = 0; i < carriages.Length; i++)
+                    {
+                        VehicleCarriageElement el = carriages[i];
+                        int cMin = Math.Max(0, el.m_Count.x);
+                        int cMax = Math.Max(cMin, el.m_Count.y);
+                        carsMin += cMin;
+                        carsMax += cMax;
+
+                        // Entity.Null slots are filled by the selected secondary carriage at spawn time.
+                        if (el.m_Prefab == Entity.Null)
+                        {
+                            continue;
+                        }
+
+                        int carriageCapacity = GetPrefabCapacity(el.m_Prefab);
+                        GetPrefabMeshSize(el.m_Prefab, out _, out _, out float carriageLength);
+                        // Match vanilla: use m_Count.x when aggregating.
+                        capacityPerUnit += carriageCapacity * cMin;
+                        lengthPerUnit += carriageLength * cMin;
+                    }
+                }
+
+                carsPerUnitCount = carsMax;
+                // Match vanilla unitCount = TrainEngineData.m_Count.x
+                capacity = capacityPerUnit * unitMin;
+                meshDepth = lengthPerUnit * unitMin;
+                compositionDescriptor = FormatCompositionDescriptor(unitMin, unitMax, carsMin, carsMax);
             }
 
             return new VehicleModelPrefabInfo
@@ -455,13 +476,48 @@ namespace BelzontTLM
                 name = name,
                 imageUrl = imageUrl,
                 capacity = capacity,
-                isSecondary = isSecondary,
+                isSecondary = isCarriage,
                 meshWidth = meshWidth,
                 meshHeight = meshHeight,
                 meshDepth = meshDepth,
+                singleMeshDepth = ownLength,
                 compositionDescriptor = compositionDescriptor,
-                compositionUnitCount = compositionUnitCount
+                compositionUnitCount = compositionUnitCount,
+                carsPerUnitCount = carsPerUnitCount
             };
+        }
+
+        private static string FormatCompositionDescriptor(int unitMin, int unitMax, int carsMin, int carsMax)
+        {
+            string units = unitMin == unitMax ? $"{unitMin}" : $"{unitMin}-{unitMax}";
+            string cars = carsMin == carsMax ? $"{carsMin}" : $"{carsMin}-{carsMax}";
+            return $"{units}×{cars}";
+        }
+
+        private int GetPrefabCapacity(Entity prefab)
+        {
+            if (EntityManager.TryGetComponent(prefab, out PublicTransportVehicleData ptData))
+            {
+                return ptData.m_PassengerCapacity;
+            }
+            if (EntityManager.TryGetComponent(prefab, out CargoTransportVehicleData cargoData))
+            {
+                return cargoData.m_CargoCapacity;
+            }
+            return 0;
+        }
+
+        private void GetPrefabMeshSize(Entity prefab, out float width, out float height, out float depth)
+        {
+            width = 0f;
+            height = 0f;
+            depth = 0f;
+            if (EntityManager.TryGetComponent(prefab, out ObjectGeometryData geometry))
+            {
+                width = geometry.m_Size.x;
+                height = geometry.m_Size.y;
+                depth = geometry.m_Size.z;
+            }
         }
 
         private void CollectDepotEnergyTypes(TransportType transportType, NativeArray<int> results)
@@ -503,6 +559,8 @@ namespace BelzontTLM
             {
                 return false;
             }
+            // Empty line membership is allowed: groups may hold compositions before any lines are linked.
+            detail.lines ??= Array.Empty<Entity>();
             detail.entity = group;
             m_PendingSaves[group] = detail;
             return true;
@@ -598,11 +656,18 @@ namespace BelzontTLM
             }
 
             XTMVehicleModelGroupUtils.StripInvalidGroupModels(EntityManager, group);
+            // Accepted models already passed IsCompatible; if strip emptied the buffer, restore them.
             if (!XTMVehicleModelGroupUtils.HasAtLeastOneValidModel(EntityManager, group))
             {
-                return false;
+                buffer = EntityManager.GetBuffer<VehicleModel>(group, false);
+                buffer.Clear();
+                for (int i = 0; i < accepted.Count; i++)
+                {
+                    buffer.Add(accepted[i]);
+                }
             }
 
+            // Zero lines is valid — clear membership and keep the group + models.
             ReplaceMembership(group, settings, detail.lines ?? Array.Empty<Entity>());
 
             if (!EntityManager.HasComponent<XTMVehicleModelGroupDirty>(group))
@@ -615,6 +680,7 @@ namespace BelzontTLM
 
         private void ReplaceMembership(Entity group, XTMVehicleModelGroup settings, Entity[] desiredLines)
         {
+            desiredLines ??= Array.Empty<Entity>();
             var desired = new HashSet<Entity>();
             for (int i = 0; i < desiredLines.Length; i++)
             {

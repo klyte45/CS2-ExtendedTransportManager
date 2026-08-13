@@ -103,7 +103,7 @@ function TypeFilterButton({
         <div className="xtm-vmGroupsPage_typeBtn" ref={btnRef}>
             <button
                 type="button"
-                className="positiveBtn txt"
+                className="neutralBtn txt"
                 onClick={() => setMenuOpen((v) => !v)}
                 disabled={presentTypes.length === 0}
             >
@@ -291,12 +291,17 @@ export function XtmVehicleModelGroupsPage({ onGroupsChanged }: Props) {
 
     const patchDetail = async (patch: Partial<VehicleModelGroupDetail>) => {
         if (!detail || !selected) return;
+        // Empty lines[] is intentional and saveable — only models are required.
         const next: VehicleModelGroupDetail = {
             ...detail,
             ...patch,
             entity: selected,
             models: patch.models ?? detail.models ?? [],
-            lines: patch.lines ?? detail.lines ?? [],
+            lines: Array.isArray(patch.lines)
+                ? patch.lines
+                : Array.isArray(detail.lines)
+                  ? detail.lines
+                  : [],
         };
         setDetail(next);
 

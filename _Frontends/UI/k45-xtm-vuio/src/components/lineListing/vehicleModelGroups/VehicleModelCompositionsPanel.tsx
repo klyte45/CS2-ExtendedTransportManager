@@ -21,6 +21,7 @@ import {
     entityKey,
     isNullEntity,
     localizePrefabName,
+    maxCompositionSlots,
     nextVehiclePrefabSort,
     nullEntity,
     sortVehiclePrefabs,
@@ -28,6 +29,7 @@ import {
     VehiclePrefabSort,
     VehiclePrefabSortKey,
     VEHICLE_PREFAB_SORT_KEYS,
+    wagonSingleLengthBounds,
 } from "./vehicleModelGroupUtils";
 
 const PLUS_ICON = "coui://uil/Standard/Plus.svg";
@@ -57,47 +59,42 @@ export function VehicleModelCompositionsPanel({
     onChangeModels,
 }: Props) {
     const ToolButton = VanillaComponentResolver.instance.ToolButton;
-    const canSecondary = supportsSecondary(transportType);
+    const canSecondary = supportsSecondary(transportType, isCargo);
     const [editIndex, setEditIndex] = useState<number | null>(
         models.length > 0 ? 0 : null,
     );
     const [prefabSort, setPrefabSort] = useState<VehiclePrefabSort>(DEFAULT_VEHICLE_PREFAB_SORT);
 
-    const primaryByKey = useMemo(() => {
+    // Vanilla ListVehicles: non-MU engines → secondary list, carriages → primary list.
+    // Our DTO keeps primaryPrefab=engine, secondaryPrefab=carriage — swap UI groups when needed.
+    const railListsSwapped = canSecondary && (available?.secondary?.length ?? 0) > 0;
+    const engineOptions = railListsSwapped
+        ? (available?.secondary ?? [])
+        : (available?.primary ?? []);
+    const carriageOptions = railListsSwapped
+        ? (available?.primary ?? [])
+        : (available?.secondary ?? []);
+    const showCarriagePicker = canSecondary && carriageOptions.length > 0;
+
+    const engineByKey = useMemo(() => {
         const map = new Map<string, VehicleModelPrefabInfo>();
-        for (const p of available?.primary ?? []) {
+        for (const p of engineOptions) {
             map.set(entityKey(p.entity), p);
         }
         return map;
-    }, [available]);
+    }, [engineOptions]);
 
-    const secondaryByKey = useMemo(() => {
+    const carriageByKey = useMemo(() => {
         const map = new Map<string, VehicleModelPrefabInfo>();
-        for (const p of available?.secondary ?? []) {
+        for (const p of carriageOptions) {
             map.set(entityKey(p.entity), p);
         }
         return map;
-    }, [available]);
-
-    const sortedPrimary = useMemo(
-        () => sortVehiclePrefabs(available?.primary ?? [], prefabSort),
-        [available, prefabSort],
-    );
-    const sortedSecondary = useMemo(
-        () => sortVehiclePrefabs(available?.secondary ?? [], prefabSort),
-        [available, prefabSort],
-    );
+    }, [carriageOptions]);
 
     const activeIndex =
         editIndex != null && editIndex >= 0 && editIndex < models.length ? editIndex : null;
     const active = activeIndex != null ? models[activeIndex] : null;
-
-    const prefabLabel = (entity: Entity | null | undefined, map: Map<string, VehicleModelPrefabInfo>) => {
-        if (isNullEntity(entity)) return "—";
-        const name = map.get(entityKey(entity))?.name;
-        if (!name) return `#${entity!.Index}`;
-        return localizePrefabName(name);
-    };
 
     const pairTakenElsewhere = (
         index: number,
@@ -113,7 +110,57 @@ export function VehicleModelCompositionsPanel({
         );
     };
 
+    const isPrimaryDisabled = (prefab: Entity) => {
+        if (activeIndex == null || !active) return true;
+        if (entitiesEqual(active.primaryPrefab, prefab)) return false;
+        return pairTakenElsewhere(activeIndex, prefab, active.secondaryPrefab);
+    };
+
+    const isSecondaryDisabled = (prefab: Entity) => {
+        if (activeIndex == null || !active) return true;
+        if (entitiesEqual(active.secondaryPrefab, prefab)) return false;
+        return pairTakenElsewhere(activeIndex, active.primaryPrefab, prefab);
+    };
+
+    const sortedEngines = useMemo(
+        () => sortVehiclePrefabs(engineOptions, prefabSort, (info) => isPrimaryDisabled(info.entity)),
+        [engineOptions, prefabSort, activeIndex, active, models],
+    );
+    const sortedCarriages = useMemo(
+        () => sortVehiclePrefabs(carriageOptions, prefabSort, (info) => isSecondaryDisabled(info.entity)),
+        [carriageOptions, prefabSort, activeIndex, active, models],
+    );
+
+    const maxSlots = maxCompositionSlots(
+        engineOptions.length,
+        carriageOptions.length,
+        showCarriagePicker,
+    );
+    const atCompositionLimit = maxSlots <= 0 || models.length >= maxSlots;
+    const compositionsTitle = `${translate("vehicleModelGroups.compositions", "Compositions")} (${models.length}/${maxSlots})`;
+
+    const activeEngineInfo =
+        active && !isNullEntity(active.primaryPrefab)
+            ? engineByKey.get(entityKey(active.primaryPrefab)) ?? null
+            : null;
+    const activeCarriageInfo =
+        active && !isNullEntity(active.secondaryPrefab)
+            ? carriageByKey.get(entityKey(active.secondaryPrefab)) ?? null
+            : null;
+    const wagonLengthBounds = useMemo(
+        () => wagonSingleLengthBounds(carriageOptions),
+        [carriageOptions],
+    );
+
+    const prefabLabel = (entity: Entity | null | undefined, map: Map<string, VehicleModelPrefabInfo>) => {
+        if (isNullEntity(entity)) return "—";
+        const name = map.get(entityKey(entity))?.name;
+        if (!name) return `#${entity!.Index}`;
+        return localizePrefabName(name);
+    };
+
     const addComposition = () => {
+        if (atCompositionLimit) return;
         const next = [
             ...models,
             { primaryPrefab: nullEntity(), secondaryPrefab: nullEntity() },
@@ -160,18 +207,6 @@ export function VehicleModelCompositionsPanel({
         patchActive({ secondaryPrefab: prefab });
     };
 
-    const isPrimaryDisabled = (prefab: Entity) => {
-        if (activeIndex == null || !active) return true;
-        if (entitiesEqual(active.primaryPrefab, prefab)) return false;
-        return pairTakenElsewhere(activeIndex, prefab, active.secondaryPrefab);
-    };
-
-    const isSecondaryDisabled = (prefab: Entity) => {
-        if (activeIndex == null || !active) return true;
-        if (entitiesEqual(active.secondaryPrefab, prefab)) return false;
-        return pairTakenElsewhere(activeIndex, active.primaryPrefab, prefab);
-    };
-
     const onSelectSort = (key: VehiclePrefabSortKey) => {
         setPrefabSort((prev) => nextVehiclePrefabSort(prev, key));
     };
@@ -189,7 +224,7 @@ export function VehicleModelCompositionsPanel({
         <div className="xtm-vmCompositions">
             <div className="xtm-vmCompositions_header">
                 <div className="xtm-vmCompositions_title">
-                    {translate("vehicleModelGroups.compositions", "Compositions")}
+                    {compositionsTitle}
                 </div>
                 <FocusDisabled>
                     <ToolButton
@@ -198,63 +233,70 @@ export function VehicleModelCompositionsPanel({
                         tooltip={translate("vehicleModelGroups.addComposition", "Add composition")}
                         onSelect={addComposition}
                         focusKey={VanillaComponentResolver.instance.FOCUS_DISABLED}
+                        disabled={atCompositionLimit}
                     />
                 </FocusDisabled>
             </div>
             <div className="xtm-vmCompositions_list">
                 {models.length === 0 ? (
-                    <div className="xtm-vmCompositions_empty">
-                        {translate(
-                            "vehicleModelGroups.compositionsEmpty",
-                            "No compositions yet — add one to pick vehicles",
-                        )}
+                    <div className="xtm-vmCompositions_listBody">
+                        <div className="xtm-vmCompositions_empty">
+                            {translate(
+                                "vehicleModelGroups.compositionsEmpty",
+                                "No compositions yet — add one to pick vehicles",
+                            )}
+                        </div>
                     </div>
                 ) : (
-                    models.map((model, index) => {
-                        const selected = index === activeIndex;
-                        const label = canSecondary
-                            ? `${prefabLabel(model.primaryPrefab, primaryByKey)} + ${prefabLabel(model.secondaryPrefab, secondaryByKey)}`
-                            : prefabLabel(model.primaryPrefab, primaryByKey);
-                        return (
-                            <div
-                                key={`comp_${index}`}
-                                className={[
-                                    "xtm-vmCompositionRow",
-                                    selected && "selected",
-                                ].filter(Boolean).join(" ")}
-                            >
-                                <button
-                                    type="button"
-                                    className="xtm-vmCompositionRow_main"
-                                    onClick={() => setEditIndex(index)}
+                    <div className="xtm-vmCompositions_listBody">
+                        <Scrollable className="xtm-vmCompositions_listScroll" trackVisibility="scrollable">
+                        {models.map((model, index) => {
+                            const selected = index === activeIndex;
+                            const label = showCarriagePicker
+                                ? `${prefabLabel(model.primaryPrefab, engineByKey)} + ${prefabLabel(model.secondaryPrefab, carriageByKey)}`
+                                : prefabLabel(model.primaryPrefab, engineByKey);
+                            return (
+                                <div
+                                    key={`comp_${index}`}
+                                    className={[
+                                        "xtm-vmCompositionRow",
+                                        selected && "selected",
+                                    ].filter(Boolean).join(" ")}
                                 >
-                                    <span className="xtm-vmCompositionRow_index">{`#${index + 1}`}</span>
-                                    <span className="xtm-vmCompositionRow_label">{label}</span>
-                                </button>
-                                <div className="xtm-vmCompositionRow_remove">
-                                    <FocusDisabled>
-                                        <ToolButton
-                                            src={REMOVE_ICON}
-                                            selected={false}
-                                            tooltip={translate(
-                                                "vehicleModelGroups.removeComposition",
-                                                "Remove composition",
-                                            )}
-                                            onSelect={() => removeComposition(index)}
-                                            focusKey={VanillaComponentResolver.instance.FOCUS_DISABLED}
-                                        />
-                                    </FocusDisabled>
+                                    <button
+                                        type="button"
+                                        className="xtm-vmCompositionRow_main"
+                                        onClick={() => setEditIndex(index)}
+                                    >
+                                        <span className="xtm-vmCompositionRow_index">{`#${index + 1}`}</span>
+                                        <span className="xtm-vmCompositionRow_label">{label}</span>
+                                    </button>
+                                    <div className="xtm-vmCompositionRow_remove">
+                                        <FocusDisabled>
+                                            <ToolButton
+                                                src={REMOVE_ICON}
+                                                selected={false}
+                                                tooltip={translate(
+                                                    "vehicleModelGroups.removeComposition",
+                                                    "Remove composition",
+                                                )}
+                                                onSelect={() => removeComposition(index)}
+                                                focusKey={VanillaComponentResolver.instance.FOCUS_DISABLED}
+                                            />
+                                        </FocusDisabled>
+                                    </div>
                                 </div>
-                            </div>
-                        );
-                    })
+                            );
+                        })}
+                        </Scrollable>
+                    </div>
                 )}
             </div>
             {activeIndex != null && active && (
                 <div className="xtm-vmCompositions_picker">
                     <div className="xtm-vmCompositions_pickerHeader">
                         <div className="xtm-vmCompositions_pickerTitle">
-                            {canSecondary
+                            {showCarriagePicker
                                 ? translate("vehicleModelGroups.pickPrimary", "Pick engine / primary")
                                 : translate("vehicleModelGroups.pickVehicle", "Pick vehicle")}
                         </div>
@@ -270,9 +312,9 @@ export function VehicleModelCompositionsPanel({
                             />
                         </FocusDisabled>
                     </div>
-                    <Scrollable className="xtm-vmCompositions_pickerScroll">
+                    <Scrollable className={"xtm-vmCompositions_pickerScroll"+(showCarriagePicker?"Multi":"")}>
                         <div className="xtm-vmCompositions_cardGrid">
-                            {sortedPrimary.map((info) => (
+                            {sortedEngines.map((info) => (
                                 <VehicleModelPrefabCard
                                     key={entityKey(info.entity)}
                                     info={info}
@@ -280,18 +322,21 @@ export function VehicleModelCompositionsPanel({
                                     selected={entitiesEqual(active.primaryPrefab, info.entity)}
                                     disabled={isPrimaryDisabled(info.entity)}
                                     onToggle={() => togglePrimary(info.entity)}
+                                    railPairLengthMode={showCarriagePicker}
+                                    pairedCarriage={activeCarriageInfo}
+                                    wagonLengthBounds={wagonLengthBounds}
                                 />
                             ))}
                         </div>
                     </Scrollable>
-                    {canSecondary && (
+                    {showCarriagePicker && (
                         <>
                             <div className="xtm-vmCompositions_pickerTitle">
                                 {translate("vehicleModelGroups.pickCarriage", "Pick carriage")}
                             </div>
-                            <Scrollable className="xtm-vmCompositions_pickerScroll">
+                            <Scrollable className="xtm-vmCompositions_pickerScrollMulti">
                                 <div className="xtm-vmCompositions_cardGrid">
-                                    {sortedSecondary.map((info) => (
+                                    {sortedCarriages.map((info) => (
                                         <VehicleModelPrefabCard
                                             key={entityKey(info.entity)}
                                             info={info}
@@ -299,6 +344,9 @@ export function VehicleModelCompositionsPanel({
                                             selected={entitiesEqual(active.secondaryPrefab, info.entity)}
                                             disabled={isSecondaryDisabled(info.entity)}
                                             onToggle={() => toggleSecondary(info.entity)}
+                                            railPairLengthMode={showCarriagePicker}
+                                            pairedEngine={activeEngineInfo}
+                                            wagonLengthBounds={wagonLengthBounds}
                                         />
                                     ))}
                                 </div>

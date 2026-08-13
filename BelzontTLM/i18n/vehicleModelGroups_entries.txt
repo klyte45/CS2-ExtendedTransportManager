@@ -1,0 +1,55 @@
+K45::XTM	vuio	vehicleModelGroups	mode	Vehicle Model Groups	Grupos de modelos de veículos
+K45::XTM	vuio	vehicleModelGroups	screenTitle	Vehicle Model Groups	Grupos de modelos de veículos
+K45::XTM	vuio	vehicleModelGroups	groupCount	{count} groups	{count} grupos
+K45::XTM	vuio	vehicleModelGroups	listTitle	Groups	Grupos
+K45::XTM	vuio	vehicleModelGroups	addGroup	Add vehicle model group	Adicionar grupo de modelos
+K45::XTM	vuio	vehicleModelGroups	loading	Loading…	Carregando…
+K45::XTM	vuio	vehicleModelGroups	typeMenu.empty	No transport type	Nenhum tipo de transporte
+K45::XTM	vuio	vehicleModelGroups	typeMenuTitle	Select the transport type to edit	Selecione o tipo de transporte para editar
+K45::XTM	vuio	vehicleModelGroups	emptyList	No vehicle model groups for this type yet	Nenhum grupo de modelos para este tipo ainda
+K45::XTM	vuio	vehicleModelGroups	selectGroup	Select a vehicle model group	Selecione um grupo de modelos de veículos
+K45::XTM	vuio	vehicleModelGroups	modelCount	{count} models	{count} modelos
+K45::XTM	vuio	vehicleModelGroups	lineCount	{count} lines	{count} linhas
+K45::XTM	vuio	vehicleModelGroups	delete.tooltip	Delete vehicle model group	Excluir grupo de modelos
+K45::XTM	vuio	vehicleModelGroups	delete.title	Delete vehicle model group	Excluir grupo de modelos
+K45::XTM	vuio	vehicleModelGroups	delete.message	Are you sure you want to delete the vehicle model group "{name}"?	Tem certeza de que deseja excluir o grupo de modelos "{name}"?
+K45::XTM	vuio	vehicleModelGroups	field.name	Name	Nome
+K45::XTM	vuio	vehicleModelGroups	modelsRequired	Add at least one composition with a vehicle before changes can be saved	Adicione pelo menos uma composição com um veículo antes de salvar
+K45::XTM	vuio	vehicleModelGroups	compositions	Compositions	Composições
+K45::XTM	vuio	vehicleModelGroups	compositionsEmpty	No compositions yet — add one to pick vehicles	Nenhuma composição ainda — adicione uma para selecionar veículos
+K45::XTM	vuio	vehicleModelGroups	addComposition	Add composition	Adicionar composição
+K45::XTM	vuio	vehicleModelGroups	removeComposition	Remove composition	Remover composição
+K45::XTM	vuio	vehicleModelGroups	pickVehicle	Pick vehicle	Selecionar veículo
+K45::XTM	vuio	vehicleModelGroups	pickPrimary	Pick engine / primary	Selecionar locomotiva / primário
+K45::XTM	vuio	vehicleModelGroups	pickCarriage	Pick carriage	Selecionar vagão
+K45::XTM	vuio	vehicleModelGroups	linkedLines	Lines in this group	Linhas neste grupo
+K45::XTM	vuio	vehicleModelGroups	linkedEmpty	No lines linked	Nenhuma linha vinculada
+K45::XTM	vuio	vehicleModelGroups	availableLines	Available lines to link to this group	Linhas disponíveis para vincular a este grupo
+K45::XTM	vuio	vehicleModelGroups	availableEmpty	No matching lines	Nenhuma linha correspondente
+K45::XTM	vuio	vehicleModelGroups	filterAssigned	Lines already assigned to a group	Linhas já atribuídas a um grupo
+K45::XTM	vuio	vehicleModelGroups	addAllFiltered	Add all filtered lines to this group	Adicionar todas as linhas filtradas a este grupo
+K45::XTM	vuio	vehicleModelGroups	addLine	Add line to group	Adicionar linha ao grupo
+K45::XTM	vuio	vehicleModelGroups	removeLine	Remove line from group	Remover linha do grupo
+K45::XTM	vuio	vehicleModelGroups	removeAllLines	Remove all lines from this group	Remover todas as linhas deste grupo
+K45::XTM	vuio	vehicleModelGroups	otherGroup.unknown	another group	outro grupo
+K45::XTM	vuio	vehicleModelGroups	otherGroup.warning	Belongs to {group}. Adding it here will remove it from that group.	Pertence a {group}. Adicioná-la aqui a removerá daquele grupo.
+K45::XTM	vuio	vehicleModelGroups	unnamed	Unnamed vehicle model group	Grupo de modelos sem nome
+K45::XTM	vuio	vehicleModelGroups	carriage	Carriage	Vagão
+K45::XTM	vuio	vehicleModelGroups	sort.title	Sort vehicles	Ordenar veículos
+K45::XTM	vuio	vehicleModelGroups	sort.name	Name	Nome
+K45::XTM	vuio	vehicleModelGroups	sort.capacity	Capacity	Capacidade
+K45::XTM	vuio	vehicleModelGroups	sort.length	Total length	Comprimento total
+K45::XTM	vuio	vehicleModelGroups	stat.cap	CAP	CAP
+K45::XTM	vuio	vehicleModelGroups	stat.cap.tooltip	Passenger capacity	Capacidade de passageiros
+K45::XTM	vuio	vehicleModelGroups	stat.cap.tooltipCargo	Cargo capacity	Capacidade de carga
+K45::XTM	vuio	vehicleModelGroups	stat.units	UNITS	UNID.
+K45::XTM	vuio	vehicleModelGroups	stat.units.tooltip	Composition unit count	Quantidade de unidades na composição
+K45::XTM	vuio	vehicleModelGroups	stat.len.unit	ULEN	ULEN
+K45::XTM	vuio	vehicleModelGroups	stat.len.unit.tooltip	Single vehicle length	Comprimento do veículo individual
+K45::XTM	vuio	vehicleModelGroups	stat.len	LEN	LEN
+K45::XTM	vuio	vehicleModelGroups	stat.len.tooltip	Total vehicle length	Comprimento total do veículo
+K45::XTM	vuio	vehicleModelGroups	stat.len.paired.tooltip	Total composition length: units × (engine + wagons × (cars − 1))	Comprimento total da composição: unidades × (locomotiva + vagões × (carros − 1))
+K45::XTM	vuio	vehicleModelGroups	stat.unit.pax	pax	pax
+K45::XTM	vuio	vehicleModelGroups	stat.unit.weight	kg	kg
+K45::XTM	vuio	vehicleModelGroups	stat.unit.cars	cars	vagões
+K45::XTM	vuio	vehicleModelGroups	stat.unit.meters	m	m
