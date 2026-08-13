@@ -1,7 +1,7 @@
 import { Entity } from "@klyte45/vuio-commons";
 import { game } from "cs2/bindings";
 
-export type OverviewScreenMode = "listing" | "fareGroups" | "occupancyPassengers" | "occupancyCargo";
+export type OverviewScreenMode = "listing" | "fareGroups" | "vehicleModelGroups" | "occupancyPassengers" | "occupancyCargo";
 
 /** Survives Transportation Overview remounts within the session. */
 let persistedOverviewMode: OverviewScreenMode = "listing";

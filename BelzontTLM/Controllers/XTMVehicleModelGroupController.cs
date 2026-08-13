@@ -31,8 +31,10 @@ namespace BelzontTLM
         private EntityQuery m_TransportVehiclePrefabQuery;
 
         private NameSystem m_NameSystem;
+        private PrefabSystem m_PrefabSystem;
         private CityConfigurationSystem m_CityConfigurationSystem;
         private TransportVehicleSelectData m_TransportVehicleSelectData;
+        private ImageSystem m_ImageSystem;
         private EntityArchetype m_GroupArchetype;
 
         private readonly Dictionary<Entity, VehicleModelGroupDetail> m_PendingSaves = new();
@@ -52,6 +54,7 @@ namespace BelzontTLM
             callBinder($"{PREFIX}listShieldLines", ListShieldLines);
             callBinder($"{PREFIX}save", EnqueueSaveVehicleModelGroup);
             callBinder($"{PREFIX}listAvailableVehicles", ListAvailableVehicles);
+            callBinder($"{PREFIX}listPresentTypes", ListPresentTypes);
         }
 
         public override int GetUpdateInterval(SystemUpdatePhase phase)
@@ -62,7 +65,9 @@ namespace BelzontTLM
         protected override void OnCreate()
         {
             m_NameSystem = World.GetOrCreateSystemManaged<NameSystem>();
+            m_PrefabSystem = World.GetOrCreateSystemManaged<PrefabSystem>();
             m_CityConfigurationSystem = World.GetOrCreateSystemManaged<CityConfigurationSystem>();
+            m_ImageSystem = World.GetOrCreateSystemManaged<ImageSystem>();
             m_TransportVehicleSelectData = new TransportVehicleSelectData(this);
 
             m_GroupQuery = GetEntityQuery(ComponentType.ReadOnly<XTMVehicleModelGroup>());
@@ -348,29 +353,114 @@ namespace BelzontTLM
             handle.Complete();
             m_TransportVehicleSelectData.PostUpdate(handle);
 
-            var primaryArr = new Entity[primary.Length];
+            var primaryArr = new VehicleModelPrefabInfo[primary.Length];
             for (int i = 0; i < primary.Length; i++)
             {
-                primaryArr[i] = primary[i];
+                primaryArr[i] = BuildPrefabInfo(primary[i], isSecondary: false);
             }
-            Entity[] secondaryArr;
+            VehicleModelPrefabInfo[] secondaryArr;
             if (XTMVehicleModelGroupUtils.SupportsSecondary(type))
             {
-                secondaryArr = new Entity[secondary.Length];
+                secondaryArr = new VehicleModelPrefabInfo[secondary.Length];
                 for (int i = 0; i < secondary.Length; i++)
                 {
-                    secondaryArr[i] = secondary[i];
+                    secondaryArr[i] = BuildPrefabInfo(secondary[i], isSecondary: true);
                 }
             }
             else
             {
-                secondaryArr = Array.Empty<Entity>();
+                secondaryArr = Array.Empty<VehicleModelPrefabInfo>();
             }
 
             return new VehicleModelAvailableVehicles
             {
                 primary = primaryArr,
                 secondary = secondaryArr
+            };
+        }
+
+        private VehicleModelPresentType[] ListPresentTypes()
+        {
+            using NativeArray<Entity> lineEntities = m_LinesQuery.ToEntityArray(Allocator.Temp);
+            var seen = new HashSet<long>();
+            var list = new List<VehicleModelPresentType>();
+            for (int i = 0; i < lineEntities.Length; i++)
+            {
+                Entity lineEntity = lineEntities[i];
+                if (!EntityManager.TryGetComponent(lineEntity, out PrefabRef prefabRef)
+                    || !EntityManager.TryGetComponent(prefabRef.m_Prefab, out TransportLineData lineData))
+                {
+                    continue;
+                }
+                long key = ((long)(int)lineData.m_TransportType << 1) | (lineData.m_CargoTransport ? 1L : 0L);
+                if (!seen.Add(key))
+                {
+                    continue;
+                }
+                list.Add(new VehicleModelPresentType
+                {
+                    transportType = (int)lineData.m_TransportType,
+                    isCargo = lineData.m_CargoTransport
+                });
+            }
+            list.Sort((a, b) =>
+            {
+                int cmp = a.transportType.CompareTo(b.transportType);
+                return cmp != 0 ? cmp : a.isCargo.CompareTo(b.isCargo);
+            });
+            return list.ToArray();
+        }
+
+        private VehicleModelPrefabInfo BuildPrefabInfo(Entity prefab, bool isSecondary)
+        {
+            string name = m_PrefabSystem.GetPrefabName(prefab) ?? string.Empty;
+            // Same source as SelectVehiclesSection SIP chips/dropdown (`VehiclePrefab.thumbnail`).
+            string imageUrl = m_ImageSystem.GetThumbnail(prefab) ?? m_ImageSystem.placeholderIcon;
+
+            int capacity = 0;
+            if (EntityManager.TryGetComponent(prefab, out PublicTransportVehicleData ptData))
+            {
+                capacity = ptData.m_PassengerCapacity;
+            }
+            else if (EntityManager.TryGetComponent(prefab, out CargoTransportVehicleData cargoData))
+            {
+                capacity = cargoData.m_CargoCapacity;
+            }
+
+            float meshWidth = 0f;
+            float meshHeight = 0f;
+            float meshDepth = 0f;
+            if (EntityManager.TryGetComponent(prefab, out ObjectGeometryData geometry))
+            {
+                meshWidth = geometry.m_Size.x;
+                meshHeight = geometry.m_Size.y;
+                meshDepth = geometry.m_Size.z;
+            }
+
+            string compositionDescriptor = string.Empty;
+            int compositionUnitCount = 0;
+            if (EntityManager.TryGetComponent(prefab, out TrainEngineData engineData))
+            {
+                int min = engineData.m_Count.x;
+                int max = engineData.m_Count.y;
+                compositionUnitCount = max;
+                compositionDescriptor = min == max
+                    ? $"{min}"
+                    : $"{min}-{max}";
+            }
+
+            return new VehicleModelPrefabInfo
+            {
+                entity = prefab,
+                name = name,
+                imageUrl = imageUrl,
+                capacity = capacity,
+                isSecondary = isSecondary,
+                meshWidth = meshWidth,
+                meshHeight = meshHeight,
+                meshDepth = meshDepth,
+                compositionDescriptor = compositionDescriptor,
+                compositionUnitCount = compositionUnitCount
             };
         }
 
@@ -409,9 +499,34 @@ namespace BelzontTLM
             {
                 return false;
             }
+            if (!HasAtLeastOneNonEmptyModel(detail.models))
+            {
+                return false;
+            }
             detail.entity = group;
             m_PendingSaves[group] = detail;
             return true;
+        }
+
+        private static bool HasAtLeastOneNonEmptyModel(VehicleModelPairDto[] models)
+        {
+            if (models == null || models.Length == 0)
+            {
+                return false;
+            }
+            for (int i = 0; i < models.Length; i++)
+            {
+                VehicleModelPairDto model = models[i];
+                if (model == null)
+                {
+                    continue;
+                }
+                if (model.primaryPrefab != Entity.Null || model.secondaryPrefab != Entity.Null)
+                {
+                    return true;
+                }
+            }
+            return false;
         }
 
         private bool ApplyVehicleModelGroupSave(Entity group, VehicleModelGroupDetail detail)
@@ -420,17 +535,16 @@ namespace BelzontTLM
             {
                 return false;
             }
+            if (!HasAtLeastOneNonEmptyModel(detail.models))
+            {
+                return false;
+            }
 
             // Transport type / cargo are immutable after create — keep existing settings.
             XTMVehicleModelGroup settings = EntityManager.GetComponentData<XTMVehicleModelGroup>(group);
 
-            string name = string.IsNullOrWhiteSpace(detail.name)
-                ? LocalizationExtensions.Translate(UnnamedLocaleKey)
-                : detail.name;
-            m_NameSystem.SetCustomName(group, name);
-
-            DynamicBuffer<VehicleModel> buffer = EntityManager.GetBuffer<VehicleModel>(group, false);
-            buffer.Clear();
+            var accepted = new List<VehicleModel>();
+            var seenPairs = new HashSet<(Entity, Entity)>();
             VehicleModelPairDto[] models = detail.models ?? Array.Empty<VehicleModelPairDto>();
             for (int i = 0; i < models.Length; i++)
             {
@@ -456,14 +570,39 @@ namespace BelzontTLM
                 {
                     continue;
                 }
-                buffer.Add(new VehicleModel
+                if (!seenPairs.Add((primary, secondary)))
+                {
+                    continue;
+                }
+                accepted.Add(new VehicleModel
                 {
                     m_PrimaryPrefab = primary,
                     m_SecondaryPrefab = secondary
                 });
             }
+            if (accepted.Count == 0)
+            {
+                return false;
+            }
+
+            string name = string.IsNullOrWhiteSpace(detail.name)
+                ? LocalizationExtensions.Translate(UnnamedLocaleKey)
+                : detail.name;
+            m_NameSystem.SetCustomName(group, name);
+
+            DynamicBuffer<VehicleModel> buffer = EntityManager.GetBuffer<VehicleModel>(group, false);
+            buffer.Clear();
+            for (int i = 0; i < accepted.Count; i++)
+            {
+                buffer.Add(accepted[i]);
+            }
 
             XTMVehicleModelGroupUtils.StripInvalidGroupModels(EntityManager, group);
+            if (!XTMVehicleModelGroupUtils.HasAtLeastOneValidModel(EntityManager, group))
+            {
+                return false;
+            }
+
             ReplaceMembership(group, settings, detail.lines ?? Array.Empty<Entity>());
 
             if (!EntityManager.HasComponent<XTMVehicleModelGroupDirty>(group))

@@ -45,6 +45,7 @@ import {
 } from "./lineListingTypes";
 import { XtmOccupancyReportPage } from "./occupancyReport/XtmOccupancyReportPage";
 import { XtmFareGroupsPage } from "./fareGroups/XtmFareGroupsPage";
+import { XtmVehicleModelGroupsPage } from "./vehicleModelGroups/XtmVehicleModelGroupsPage";
 import {
     getOverviewModeToken,
     getPersistedOverviewMode,
@@ -55,6 +56,7 @@ import {
 import "#styles/lineListing.scss";
 import "#styles/occupancyReport.scss";
 import "#styles/fareGroups.scss";
+import "#styles/vehicleModelGroups.scss";
 
 function getNameFor(type: string, isCargo: boolean) {
     return engine.translate(isCargo ? `Transport.ROUTES[${type}]` : `Transport.LINES[${type}]`);
@@ -88,6 +90,11 @@ const REPORT_ACTIVITY_ORDER: LineActivityClass[] = [
 const MODE_MENU_ITEMS: { mode: OverviewScreenMode; labelKey: string; fallback: string }[] = [
     { mode: "listing", labelKey: "occupancyReport.mode.listing", fallback: "Line listing" },
     { mode: "fareGroups", labelKey: "fareGroups.mode", fallback: "Fare Groups" },
+    {
+        mode: "vehicleModelGroups",
+        labelKey: "vehicleModelGroups.mode",
+        fallback: "Vehicle Model Groups",
+    },
     {
         mode: "occupancyPassengers",
         labelKey: "occupancyReport.mode.occupancyPassengers",
@@ -218,15 +225,27 @@ export const XtmLineListingPage = () => {
     const [report, setReport] = useState<SegmentOccupancyReport | null>(null);
     const [reportLoading, setReportLoading] = useState(false);
     const [fareGroupCount, setFareGroupCount] = useState(0);
+    const [vehicleModelGroupCount, setVehicleModelGroupCount] = useState(0);
     const localization = useLocalization();
     const ToolButton = VanillaComponentResolver.instance.ToolButton;
     const reportMode = isReportMode(overviewMode);
     const fareGroupsMode = overviewMode === "fareGroups";
+    const vehicleModelGroupsMode = overviewMode === "vehicleModelGroups";
+    const specialMode = fareGroupsMode || vehicleModelGroupsMode;
+    const cityHasNoLines = linesList.length === 0;
 
     useEffect(() => subscribeOverviewMode(() => {
         setOverviewMode(getPersistedOverviewMode());
         void getOverviewModeToken();
     }), []);
+
+    useEffect(() => {
+        if (!cityHasNoLines) return;
+        if (overviewMode !== "listing") {
+            setPersistedOverviewMode("listing");
+            setOverviewMode("listing");
+        }
+    }, [cityHasNoLines, overviewMode]);
 
     const reloadLines = (res: LineData[]) => {
         if (!Array.isArray(res)) {
@@ -435,7 +454,7 @@ export const XtmLineListingPage = () => {
     };
 
     const emptyListMessage = linesList.length === 0
-        ? translate("lineList.noLinesInCity", "No lines in the city")
+        ? translate("lineList.noLinesInCity", "No lines registered in this city")
         : translate("lineList.noMatchingLines", "No matching lines");
 
     const reportDateTimeText = replaceArgs(
@@ -443,8 +462,8 @@ export const XtmLineListingPage = () => {
         { datetime: formatReportDateTime(localization, report?.cityDateTime) },
     );
 
-    const showPassengerTypes = !fareGroupsMode && (overviewMode === "listing" || overviewMode === "occupancyPassengers");
-    const showCargoTypes = !fareGroupsMode && (overviewMode === "listing" || overviewMode === "occupancyCargo");
+    const showPassengerTypes = !specialMode && (overviewMode === "listing" || overviewMode === "occupancyPassengers");
+    const showCargoTypes = !specialMode && (overviewMode === "listing" || overviewMode === "occupancyCargo");
 
     return (
         <div className="xtm-line-listing">
@@ -453,6 +472,10 @@ export const XtmLineListingPage = () => {
                     {fareGroupsMode ? (
                         <div className="screenTitleLabel">
                             {translate("fareGroups.screenTitle", "Fare Groups")}
+                        </div>
+                    ) : vehicleModelGroupsMode ? (
+                        <div className="screenTitleLabel">
+                            {translate("vehicleModelGroups.screenTitle", "Vehicle Model Groups")}
                         </div>
                     ) : (
                         <>
@@ -527,6 +550,12 @@ export const XtmLineListingPage = () => {
                                     count: `${fareGroupCount}`,
                                 })}
                             </div>
+                        ) : vehicleModelGroupsMode ? (
+                            <div className="linesCountLabel">
+                                {replaceArgs(translate("vehicleModelGroups.groupCount", "{count} groups"), {
+                                    count: `${vehicleModelGroupCount}`,
+                                })}
+                            </div>
                         ) : reportMode ? (
                             <div className="reportDateTimeLabel">{reportDateTimeText}</div>
                         ) : (
@@ -547,8 +576,12 @@ export const XtmLineListingPage = () => {
                                 />
                             </>
                         )}
-                        <div className="modeChangeSpacer" />
-                        <ModeChangeButton currentMode={overviewMode} onSelectMode={onSelectMode} />
+                        {!cityHasNoLines && (
+                            <>
+                                <div className="modeChangeSpacer" />
+                                <ModeChangeButton currentMode={overviewMode} onSelectMode={onSelectMode} />
+                            </>
+                        )}
                     </div>
                 </FocusDisabled>
             </section>
@@ -556,6 +589,12 @@ export const XtmLineListingPage = () => {
                 <section className="LineList LineList--report">
                     <div className="reportArea">
                         <XtmFareGroupsPage onGroupsChanged={setFareGroupCount} />
+                    </div>
+                </section>
+            ) : vehicleModelGroupsMode ? (
+                <section className="LineList LineList--report">
+                    <div className="reportArea">
+                        <XtmVehicleModelGroupsPage onGroupsChanged={setVehicleModelGroupCount} />
                     </div>
                 </section>
             ) : reportMode ? (

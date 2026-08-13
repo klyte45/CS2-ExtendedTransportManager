@@ -1,0 +1,457 @@
+.xtm-line-listing {
+    .xtm-vmGroupsPage {
+        position: absolute;
+        top: 0;
+        right: 0;
+        bottom: 0;
+        left: 0;
+        display: flex;
+        flex-direction: row;
+        width: auto;
+        height: auto;
+        box-sizing: border-box;
+        overflow: hidden;
+        min-height: 0;
+
+        &_list {
+            flex: 0 0 500rem;
+            width: 500rem;
+            min-width: 500rem;
+            max-width: 500rem;
+            display: flex;
+            flex-direction: column;
+            height: 100%;
+            min-height: 0;
+            box-sizing: border-box;
+            padding-top: 8rem;
+            padding-right: 8rem;
+            padding-bottom: 8rem;
+            padding-left: 8rem;
+            border-right-width: 1rem;
+            border-right-style: solid;
+            border-right-color: var(--dividerColor);
+            overflow: hidden;
+        }
+
+        &_listHeader {
+            flex: 0 0 auto;
+            display: flex;
+            flex-direction: row;
+            align-items: center;
+            margin-bottom: 8rem;
+            gap: 6rem;
+        }
+
+        &_listTitle {
+            flex: 1 1 auto;
+            min-width: 0;
+            font-size: var(--fontSizeL);
+            font-weight: bold;
+            color: var(--textColor);
+        }
+
+        &_typeBtn {
+            flex: 0 0 auto;
+            margin-left: 12rem;
+        }
+
+        &_typeMenuIcon {
+            display: inline-block;
+            width: 18rem;
+            height: 18rem;
+            margin-right: 8rem;
+            background-size: contain;
+            background-repeat: no-repeat;
+            background-position: center;
+            vertical-align: middle;
+        }
+
+        &_listBody {
+            flex: 1 1 auto;
+            min-height: 0;
+            position: relative;
+            overflow: hidden;
+        }
+
+        &_listScroll {
+            position: absolute;
+            top: 0;
+            right: 0;
+            bottom: 0;
+            left: 0;
+        }
+
+        &_status {
+            padding-top: 24rem;
+            padding-right: 12rem;
+            padding-bottom: 24rem;
+            padding-left: 12rem;
+            color: var(--textColorDim);
+            text-align: center;
+            font-size: var(--fontSizeM);
+        }
+
+        &_editor {
+            flex: 1 1 auto;
+            min-width: 0;
+            min-height: 0;
+            height: 100%;
+            overflow: hidden;
+            box-sizing: border-box;
+            padding-top: 8rem;
+            padding-right: 10rem;
+            padding-bottom: 8rem;
+            padding-left: 10rem;
+        }
+    }
+
+    .xtm-vmGroupCard {
+        display: flex;
+        flex-direction: row;
+        align-items: center;
+        width: 100%;
+        box-sizing: border-box;
+        margin-bottom: 6rem;
+        padding-top: 8rem;
+        padding-right: 8rem;
+        padding-bottom: 8rem;
+        padding-left: 12rem;
+        border-width: 0;
+        border-radius: 8rem;
+        background-color: var(--menuPanel1);
+        color: var(--textColor);
+        text-align: left;
+        cursor: pointer;
+
+        &:hover {
+            background-color: var(--hoverColorNormal);
+        }
+
+        &.selected {
+            background-color: var(--menuSelectedColor);
+
+            .xtm-vmGroupCard_name {
+                color: var(--selectedTextColorDark);
+            }
+
+            .xtm-vmGroupCard_meta {
+                color: var(--selectedTextColorDarkDim);
+            }
+        }
+
+        &_main {
+            flex: 1 1 auto;
+            min-width: 0;
+            display: flex;
+            flex-direction: column;
+        }
+
+        &_name {
+            font-size: var(--fontSizeM);
+            font-weight: bold;
+            color: var(--textColor);
+            white-space: nowrap;
+            overflow: hidden;
+            margin-bottom: 2rem;
+        }
+
+        &_meta {
+            font-size: var(--fontSizeS);
+            color: var(--textColorDim);
+            white-space: nowrap;
+            overflow: hidden;
+        }
+
+        &_delete {
+            flex: 0 0 auto;
+            margin-left: 6rem;
+        }
+    }
+
+    .xtm-vmGroupEditor {
+        display: flex;
+        flex-direction: column;
+        width: 100%;
+        height: 100%;
+        min-height: 0;
+        overflow: hidden;
+        box-sizing: border-box;
+
+        &--empty {
+            align-items: center;
+            justify-content: center;
+            color: var(--textColorDim);
+            font-size: var(--fontSizeL);
+            text-align: center;
+        }
+
+        &_top {
+            flex: 0 0 auto;
+            margin-bottom: 10rem;
+        }
+
+        &_hint {
+            margin-top: 6rem;
+            color: var(--warningColor);
+            font-size: var(--fontSizeS);
+        }
+
+        &_split {
+            flex: 1 1 auto;
+            min-height: 0;
+            display: flex;
+            flex-direction: row;
+            overflow: hidden;
+
+            > * {
+                flex: 1 1 0;
+                min-width: 0;
+                min-height: 0;
+            }
+
+            > *:first-child {
+                margin-right: 10rem;
+            }
+        }
+    }
+
+    .xtm-vmCompositions {
+        display: flex;
+        flex-direction: column;
+        height: 100%;
+        min-height: 0;
+        overflow: hidden;
+        box-sizing: border-box;
+        background-color: var(--menuPanel1);
+        border-radius: 8rem;
+        padding-top: 8rem;
+        padding-right: 8rem;
+        padding-bottom: 8rem;
+        padding-left: 8rem;
+
+        &_header {
+            flex: 0 0 auto;
+            display: flex;
+            flex-direction: row;
+            align-items: center;
+            margin-bottom: 8rem;
+        }
+
+        &_title {
+            flex: 1 1 auto;
+            font-size: var(--fontSizeM);
+            font-weight: bold;
+            color: var(--textColor);
+        }
+
+        &_list {
+            flex: 0 0 auto;
+            max-height: 140rem;
+            overflow-y: auto;
+            margin-bottom: 8rem;
+        }
+
+        &_empty {
+            padding-top: 12rem;
+            padding-bottom: 12rem;
+            color: var(--textColorDim);
+            text-align: center;
+            font-size: var(--fontSizeS);
+        }
+
+        &_picker {
+            flex: 1 1 auto;
+            min-height: 0;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+
+        &_pickerHeader {
+            flex: 0 0 auto;
+            display: flex;
+            flex-direction: row;
+            align-items: center;
+            margin-bottom: 6rem;
+            margin-top: 4rem;
+            gap: 6rem;
+        }
+
+        &_pickerTitle {
+            flex: 1 1 auto;
+            min-width: 0;
+            font-size: var(--fontSizeS);
+            font-weight: bold;
+            color: var(--textColor);
+            margin-bottom: 6rem;
+            margin-top: 4rem;
+        }
+
+        &_pickerHeader &_pickerTitle {
+            margin-bottom: 0;
+            margin-top: 0;
+        }
+
+        &_pickerScroll {
+            flex: 1 1 auto;
+            min-height: 0;
+            margin-bottom: 6rem;
+        }
+
+        &_cardGrid {
+            display: flex;
+            flex-direction: row;
+            flex-wrap: wrap;
+            align-content: flex-start;
+        }
+    }
+
+    .xtm-vmCompositionRow {
+        display: flex;
+        flex-direction: row;
+        align-items: center;
+        width: 100%;
+        box-sizing: border-box;
+        margin-bottom: 4rem;
+        border-radius: 6rem;
+        background-color: var(--panelColorNormal);
+
+        &.selected {
+            background-color: var(--menuSelectedColor);
+
+            .xtm-vmCompositionRow_index,
+            .xtm-vmCompositionRow_label {
+                color: var(--selectedTextColorDark);
+            }
+        }
+
+        &_main {
+            flex: 1 1 auto;
+            min-width: 0;
+            display: flex;
+            flex-direction: row;
+            align-items: center;
+            border-width: 0;
+            background-color: transparent;
+            padding-top: 6rem;
+            padding-right: 8rem;
+            padding-bottom: 6rem;
+            padding-left: 8rem;
+            text-align: left;
+            cursor: pointer;
+            color: var(--textColor);
+        }
+
+        &_index {
+            flex: 0 0 auto;
+            margin-right: 8rem;
+            font-weight: bold;
+            font-size: var(--fontSizeS);
+        }
+
+        &_label {
+            flex: 1 1 auto;
+            min-width: 0;
+            font-size: var(--fontSizeS);
+            white-space: nowrap;
+            overflow: hidden;
+        }
+
+        &_remove {
+            flex: 0 0 auto;
+            padding-right: 8rem;
+        }
+    }
+
+    .xtm-vmPrefabCard {
+        width: 250rem;
+        min-height: 112rem;
+        box-sizing: border-box;
+        margin-right: 6rem;
+        margin-bottom: 6rem;
+        padding-top: 6rem;
+        padding-right: 6rem;
+        padding-bottom: 6rem;
+        padding-left: 6rem;
+        border-width: 0;
+        border-radius: 8rem;
+        background-color: var(--menuPanel1);
+        color: var(--textColor);
+        text-align: left;
+        cursor: pointer;
+        display: flex;
+        flex-direction: row;
+        align-items: stretch;
+
+        &:hover {
+            background-color: var(--hoverColorNormal);
+        }
+
+        &.selected {
+            background-color: var(--menuSelectedColor);
+            color: var(--selectedTextColorDark);
+
+            .xtm-vmPrefabCard_name,
+            .xtm-vmPrefabCard_row,
+            .xtm-vmPrefabCard_badge {
+                color: var(--selectedTextColorDark);
+            }
+        }
+
+        &.disabled {
+            opacity: 0.45;
+            cursor: default;
+        }
+
+        &_thumb {
+            flex: 0 0 auto;
+            width: 100rem;
+            height: 100rem;
+            margin-right: 8rem;
+            border-radius: 4rem;
+            background-color: rgba(0, 0, 0, 0.25);
+            overflow: hidden;
+            display: flex;
+            flex-direction: row;
+            align-items: center;
+            justify-content: center;
+        }
+
+        &_thumbImg {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+        }
+
+        &_body {
+            flex: 1 1 auto;
+            min-width: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: stretch;
+            justify-content: center;
+        }
+
+        &_name {
+            font-size: var(--fontSizeS);
+            font-weight: bold;
+            margin-bottom: 2rem;
+            white-space: nowrap;
+            overflow: hidden;
+        }
+
+        &_badge {
+            font-size: var(--fontSizeXS);
+            margin-bottom: 2rem;
+            color: var(--textColorDim);
+        }
+
+        &_row {
+            font-size: var(--fontSizeXS);
+            color: var(--textColorDim);
+            margin-bottom: 1rem;
+            white-space: nowrap;
+            overflow: hidden;
+        }
+    }
+}
