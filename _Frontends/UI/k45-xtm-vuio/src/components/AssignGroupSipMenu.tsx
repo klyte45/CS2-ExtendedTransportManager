@@ -17,6 +17,8 @@ type Props = {
     loadGroups: () => Promise<ManagedGroupOption[]>;
     assignLine: (line: Entity, group: Entity | null) => Promise<boolean>;
     onAssigned?: () => void;
+    onManageGroups?: () => void;
+    manageGroupsLabel?: string;
     menuTitle: string;
     unnamedLabel?: string;
     className?: string;
@@ -27,6 +29,8 @@ export function AssignGroupSipMenu({
     loadGroups,
     assignLine,
     onAssigned,
+    onManageGroups,
+    manageGroupsLabel,
     menuTitle,
     unnamedLabel,
     className,
@@ -47,24 +51,35 @@ export function AssignGroupSipMenu({
     const menuItems = useMemo((): ContextButtonMenuItemArray => {
         const unnamed = unnamedLabel
             ?? translate("fareGroups.unnamed", "Unnamed group");
-        if (groups.length === 0) {
-            return [{
+        const assignItems: ContextButtonMenuItemArray = groups.length === 0
+            ? [{
                 label: translate(
                     "managedGroups.sip.noGroupsAvailable",
                     "<No Groups available>",
                 ),
                 disabled: true,
-            }];
-        }
-        return groups.map((g) => ({
-            label: g.name || unnamed,
-            action: () => {
-                void assignLine(line, g.entity).then((ok) => {
-                    if (ok) onAssigned?.();
-                });
+            }]
+            : groups.map((g) => ({
+                label: g.name || unnamed,
+                action: () => {
+                    void assignLine(line, g.entity).then((ok) => {
+                        if (ok) onAssigned?.();
+                    });
+                },
+            }));
+
+        if (!onManageGroups) return assignItems;
+
+        return [
+            ...assignItems,
+            null,
+            {
+                label: manageGroupsLabel
+                    ?? translate("managedGroups.sip.manageGroups", "Manage groups"),
+                action: onManageGroups,
             },
-        }));
-    }, [groups, line, assignLine, onAssigned, unnamedLabel]);
+        ];
+    }, [groups, line, assignLine, onAssigned, onManageGroups, manageGroupsLabel, unnamedLabel]);
 
     return (
         <FocusDisabled>

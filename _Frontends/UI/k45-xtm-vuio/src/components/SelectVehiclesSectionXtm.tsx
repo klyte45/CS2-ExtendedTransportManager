@@ -7,7 +7,7 @@ import {
     resolveInfoRowRightHostNear,
     useSipAssignPortalHost,
 } from "#utility/sipAssignPortal";
-import { openVehicleModelGroupEditor } from "#components/lineListing/overviewNavigation";
+import { openVehicleModelGroupEditor, openVehicleModelGroupsScreen } from "#components/lineListing/overviewNavigation";
 import { AssignGroupSipMenu } from "#components/AssignGroupSipMenu";
 import { ManagedGroupSipMenu } from "#components/ManagedGroupSipMenu";
 import { localizePrefabName } from "#components/lineListing/vehicleModelGroups/vehicleModelGroupUtils";
@@ -109,10 +109,12 @@ function SelectVehiclesUnmanaged({
     availableSecondaryVehicles,
     Original,
     lineEntity,
+    lineType,
     loadGroups,
     onAssigned,
 }: Props & {
     lineEntity: ReturnType<typeof toEntityTyped>;
+    lineType: { transportType: number; isCargo: boolean } | null;
     loadGroups: () => Promise<{ entity: any; name: string }[]>;
     onAssigned: () => void;
 }) {
@@ -147,6 +149,11 @@ function SelectVehiclesUnmanaged({
                         loadGroups={loadGroups}
                         assignLine={VehicleModelGroupService.assignLine}
                         onAssigned={onAssigned}
+                        onManageGroups={() => openVehicleModelGroupsScreen(lineType)}
+                        manageGroupsLabel={translate(
+                            "managedGroups.sip.manageModelGroups",
+                            "Manage vehicle model groups",
+                        )}
                         menuTitle={translate(
                             "managedGroups.sip.assignModelsTitle",
                             "Assign to vehicle model group",
@@ -265,6 +272,7 @@ export function SelectVehiclesSectionXtm({
                 availableSecondaryVehicles={availableSecondaryVehicles}
                 Original={Original}
                 lineEntity={lineEntity}
+                lineType={lineType}
                 loadGroups={loadGroups}
                 onAssigned={() => setRefreshKey((k) => k + 1)}
             />

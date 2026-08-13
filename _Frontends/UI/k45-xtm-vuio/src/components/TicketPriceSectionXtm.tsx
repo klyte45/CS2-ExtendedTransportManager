@@ -9,7 +9,7 @@ import {
     routeSliderClasses,
     useSipAssignPortalHost,
 } from "#utility/sipAssignPortal";
-import { openFareGroupEditor } from "#components/lineListing/overviewNavigation";
+import { openFareGroupEditor, openFareGroupsScreen } from "#components/lineListing/overviewNavigation";
 import { AssignGroupSipMenu } from "#components/AssignGroupSipMenu";
 import { ManagedGroupSipMenu } from "#components/ManagedGroupSipMenu";
 import { replaceArgs, toEntityTyped, VanillaComponentResolver } from "@klyte45/vuio-commons";
@@ -86,6 +86,11 @@ function TicketPriceUnmanaged({
                         loadGroups={loadGroups}
                         assignLine={FareGroupService.assignLine}
                         onAssigned={onAssigned}
+                        onManageGroups={openFareGroupsScreen}
+                        manageGroupsLabel={translate(
+                            "managedGroups.sip.manageFareGroups",
+                            "Manage fare groups",
+                        )}
                         menuTitle={translate(
                             "managedGroups.sip.assignFareTitle",
                             "Assign to fare group",

@@ -35,8 +35,11 @@ import {
 } from "./vehicleModelGroupUtils";
 import {
     consumePendingVehicleModelGroup,
+    consumePendingVehicleModelType,
     getPendingVehicleModelGroupToken,
+    getPendingVehicleModelTypeToken,
     subscribePendingVehicleModelGroup,
+    subscribePendingVehicleModelType,
 } from "../overviewNavigation";
 
 const PLUS_ICON = "coui://uil/Standard/Plus.svg";
@@ -184,6 +187,7 @@ export function XtmVehicleModelGroupsPage({ onGroupsChanged }: Props) {
     const [pendingDelete, setPendingDelete] = useState<VehicleModelGroupListItem | null>(null);
     const [loading, setLoading] = useState(true);
     const [pendingNavToken, setPendingNavToken] = useState(getPendingVehicleModelGroupToken);
+    const [pendingTypeToken, setPendingTypeToken] = useState(getPendingVehicleModelTypeToken);
 
     const filteredGroups = useMemo(() => {
         if (!selectedType) return [];
@@ -291,12 +295,23 @@ export function XtmVehicleModelGroupsPage({ onGroupsChanged }: Props) {
         setPendingNavToken(getPendingVehicleModelGroupToken());
     }), []);
 
+    useEffect(() => subscribePendingVehicleModelType(() => {
+        setPendingTypeToken(getPendingVehicleModelTypeToken());
+    }), []);
+
     useEffect(() => {
         if (pendingNavToken <= 0) return;
         const group = consumePendingVehicleModelGroup();
         if (!group) return;
         void openGroupFromNav(group);
     }, [pendingNavToken, openGroupFromNav]);
+
+    useEffect(() => {
+        if (pendingTypeToken <= 0 || loading) return;
+        const type = consumePendingVehicleModelType();
+        if (!type) return;
+        void changeType(type);
+    }, [pendingTypeToken, loading, changeType]);
 
     const createGroup = async () => {
         if (!selectedType) return;

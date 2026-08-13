@@ -226,6 +226,7 @@ export const XtmLineListingPage = () => {
     const [reportLoading, setReportLoading] = useState(false);
     const [fareGroupCount, setFareGroupCount] = useState(0);
     const [vehicleModelGroupCount, setVehicleModelGroupCount] = useState(0);
+    const [linesLoaded, setLinesLoaded] = useState(false);
     const localization = useLocalization();
     const ToolButton = VanillaComponentResolver.instance.ToolButton;
     const reportMode = isReportMode(overviewMode);
@@ -239,15 +240,18 @@ export const XtmLineListingPage = () => {
         void getOverviewModeToken();
     }), []);
 
+    // Only force listing after the city line list has loaded — an empty list during
+    // the initial fetch must not wipe SIP-driven fare/model-group navigation.
     useEffect(() => {
-        if (!cityHasNoLines) return;
+        if (!linesLoaded || !cityHasNoLines) return;
         if (overviewMode !== "listing") {
             setPersistedOverviewMode("listing");
             setOverviewMode("listing");
         }
-    }, [cityHasNoLines, overviewMode]);
+    }, [cityHasNoLines, overviewMode, linesLoaded]);
 
     const reloadLines = (res: LineData[]) => {
+        setLinesLoaded(true);
         if (!Array.isArray(res)) {
             setLinesList([]);
             return;
