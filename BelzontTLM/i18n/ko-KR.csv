@@ -36,9 +36,12 @@ K45::XTM.vuio[lineViewer.dataTotalPassengersLoaded]	차량 내 승객
 K45::XTM.vuio[lineViewer.dataTotalCargoWaiting]	정류장 보관 화물
 K45::XTM.vuio[lineViewer.dataTotalCargoLoaded]	차량 적재 화물
 K45::XTM.vuio[lineViewer.dataLineFullLapAverageTime]	예상 왕복 시간
-K45::XTM.vuio[lineViewerEditor.displayIdentifier]	경로 식별자 (이름 생성 시 노선 번호보다 우선함)
-K45::XTM.vuio[lineViewerEditor.ignorePalette]	고정 색상 사용 (이 노선에 대한 팔레트 설정 무시)
-K45::XTM.vuio[lineViewerEditor.internalNumber]	내부 경로 번호 (팔레트 및 명명에 사용)
+K45::XTM.vuio[lineViewerEditor.displayIdentifier]	경로 식별자
+K45::XTM.vuio[lineViewerEditor.displayIdentifier.tooltip]	이름 생성 시 노선 번호보다 우선함
+K45::XTM.vuio[lineViewerEditor.ignorePalette]	고정 색상 사용
+K45::XTM.vuio[lineViewerEditor.ignorePalette.tooltip]	이 노선에 대한 팔레트 설정 무시
+K45::XTM.vuio[lineViewerEditor.internalNumber]	내부 경로 번호
+K45::XTM.vuio[lineViewerEditor.internalNumber.tooltip]	팔레트 및 명명에 사용
 K45::XTM.vuio[lineViewerEditor.lineFixedColor]	고정 노선 색상
 K45::XTM.vuio[loadBtn]	불러오기
 K45::XTM.vuio[paletteEditor.addColor]	색상 추가

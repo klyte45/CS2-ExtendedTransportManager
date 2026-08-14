@@ -54,7 +54,8 @@ export const ColorEditorXtm = ({ group, tooltipTags, tooltipKeys }: Props) => {
     return VanillaComponentResolver.CreateInfoSection([
         { left: engine.translate("SelectedInfoPanel.COLOR"), uppercase: true },
         {
-            left: translate("lineViewerEditor.ignorePalette"),
+            left: translate("lineViewerEditor.ignorePalette", "Use fixed color"),
+            tooltip: translate("lineViewerEditor.ignorePalette.tooltip", "Ignore palette's settings for this line"),
             right: <VanillaComponentResolver.instance.ToggleField
                 value={isIgnorePalette}
                 onChange={() => onChangeIsIgnorePalette(!isIgnorePalette)}

@@ -128,6 +128,7 @@ const XtmLineSectionButtonRegister = (Component: any): any => {
                     <ToolButton tooltip={translate("lineViewer.showPlatformCrowdnessLbl")} onSelect={() => setXtmOptionsState(x => xtmOptions = ({ ...x, showPlatformCrowdness: !x.showPlatformCrowdness }))} src={i_platformCrowdness} selected={xtmOptionsState.showPlatformCrowdness} />
                     <ContextMenuButton
                         src={SEGMENT_OCCUPANCY_MODE_ICONS[xtmOptionsState.segmentOccupancyDisplay]}
+                        selected={xtmOptionsState.segmentOccupancyDisplay !== "none"}
                         tooltip={replaceArgs(
                             translate("lineViewer.segmentOccupancyDisplayed", "Segment occupancy displayed: {mode}"),
                             {
