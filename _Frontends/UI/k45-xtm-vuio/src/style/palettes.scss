@@ -151,40 +151,6 @@
             text-overflow: ellipsis;
             white-space: nowrap;
         }
-
-        &_swatches {
-            display: flex;
-            flex-direction: row;
-            flex-wrap: wrap;
-            align-items: center;
-            gap: 3rem;
-        }
-
-        &_swatch {
-            width: 14rem;
-            height: 14rem;
-            border-radius: 3rem;
-            background-color: var(--swatchColor);
-            border-style: solid;
-            border-top-width: 1rem;
-            border-right-width: 1rem;
-            border-bottom-width: 1rem;
-            border-left-width: 1rem;
-            border-top-color: rgba(0, 0, 0, 0.25);
-            border-right-color: rgba(0, 0, 0, 0.25);
-            border-bottom-color: rgba(0, 0, 0, 0.25);
-            border-left-color: rgba(0, 0, 0, 0.25);
-        }
-
-        &_extra {
-            font-size: var(--fontSizeXS);
-            color: var(--textColorDim);
-            margin-left: 2rem;
-        }
-
-        &.selected &_extra {
-            color: rgba(255, 255, 255, 0.8);
-        }
     }
 
     .xtm-paletteEditor {
@@ -503,4 +469,39 @@
     [class^="preview_"] {
         display: none;
     }
+}
+
+/* Unscoped so swatches also work inside portaled FilePickerDialog rows. */
+.xtm-paletteCard_swatches {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 3rem;
+}
+
+.xtm-paletteCard_swatch {
+    width: 14rem;
+    height: 14rem;
+    border-radius: 3rem;
+    background-color: var(--swatchColor);
+    border-style: solid;
+    border-top-width: 1rem;
+    border-right-width: 1rem;
+    border-bottom-width: 1rem;
+    border-left-width: 1rem;
+    border-top-color: rgba(0, 0, 0, 0.25);
+    border-right-color: rgba(0, 0, 0, 0.25);
+    border-bottom-color: rgba(0, 0, 0, 0.25);
+    border-left-color: rgba(0, 0, 0, 0.25);
+}
+
+.xtm-paletteCard_extra {
+    font-size: var(--fontSizeXS);
+    color: var(--textColorDim);
+    margin-left: 2rem;
+}
+
+.xtm-paletteCard.selected .xtm-paletteCard_extra {
+    color: rgba(255, 255, 255, 0.8);
 }

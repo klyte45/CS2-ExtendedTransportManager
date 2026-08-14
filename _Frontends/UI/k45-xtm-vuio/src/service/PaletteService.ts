@@ -15,9 +15,16 @@ export class PaletteService {
     static undoOnCityPalettesUpdated() { engine.off("k45::xtm.palettes.onCityPalettesChanged") }
     static async sendPaletteForCity(name: string, colors: `#${string}`[]) { await engine.call("k45::xtm.palettes.addPaletteToCity", name, colors) }
     static async listCityPalettes(): Promise<PaletteData[]> { return await engine.call("k45::xtm.palettes.listCityPalettes") }
-    static async listDefaultPalettes(): Promise<PaletteData[]> { return await engine.call("k45::xtm.palettes.listDefaultPalettes") }
+    static async listDefaultPalettes(): Promise<PaletteData[]> {
+        const list = await engine.call("k45::xtm.palettes.listDefaultPalettes");
+        return Array.isArray(list) ? list : [];
+    }
     static async openPalettesFolder(): Promise<void> { return await engine.call("k45::xtm.palettes.openPalettesFolder") }
     static async getPalettesFolderPath(): Promise<string> { return await engine.call("k45::xtm.palettes.getPalettesFolderPath") }
     static async addPaletteFromFile(file: string): Promise<PaletteData> { return await engine.call("k45::xtm.palettes.addPaletteFromFile", file) }
+    /** Read palette colors from a disk .hex path without adding it to the city. */
+    static async previewPaletteFromFile(file: string): Promise<string[] | null> {
+        return await engine.call("k45::xtm.palettes.previewPaletteFromFile", file)
+    }
 }
 

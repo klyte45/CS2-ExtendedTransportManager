@@ -76,10 +76,10 @@ namespace BelzontTLM.Palettes
             return value;
         }
 
-        public static XTMPaletteFile FromFileContent(string name, string[] fileContentLines)
+        public static XTMPaletteFile FromFileContent(string name, string[] fileContentLines, bool fixedGuid = false)
         {
             var colors = fileContentLines.Select(x => ColorExtensions.FromRGB(x, x.StartsWith("#")));
-            return new XTMPaletteFile(name, colors);
+            return new XTMPaletteFile(name, colors, fixedGuid);
         }
 
         public void Save()

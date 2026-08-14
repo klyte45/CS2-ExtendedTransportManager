@@ -196,5 +196,8 @@
 
   <ItemGroup>
     <EmbeddedResource Include="changelog.md" />
+    <EmbeddedResource Include="Resources\Palettes\**\*.hex">
+      <LogicalName>$([System.String]::Copy('XTMPalettes/%(RecursiveDir)%(Filename)%(Extension)').Replace('\', '/'))</LogicalName>
+    </EmbeddedResource>
   </ItemGroup>
 </Project>

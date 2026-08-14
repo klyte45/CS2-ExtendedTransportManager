@@ -27,6 +27,7 @@ namespace BelzontTLM.Palettes
             eventCaller.Invoke("palettes.openPalettesFolder", OpenPalettesFolder);
             eventCaller.Invoke("palettes.getPalettesFolderPath", GetPalettesFolderPath);
             eventCaller.Invoke("palettes.addPaletteFromFile", AddPaletteFromFile);
+            eventCaller.Invoke("palettes.previewPaletteFromFile", PreviewPaletteFromFile);
         }
 
         private Action<string, object[]> eventCaller;
@@ -72,6 +73,21 @@ namespace BelzontTLM.Palettes
                 return palette;
             }
             return null;
+        }
+
+        private string[] PreviewPaletteFromFile(string path)
+        {
+            try
+            {
+                var palette = XTMPaletteFile.FromFileContent(path);
+                if (palette == null || palette.Count == 0) return null;
+                return [.. palette.ColorsRGB];
+            }
+            catch (Exception e)
+            {
+                LogUtils.DoWarnLog($"Failed to preview palette file '{path}': {e.Message}");
+                return null;
+            }
         }
 
         private void DeleteCityPalette(string guid)
