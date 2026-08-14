@@ -186,6 +186,7 @@
             flex: 0 0 auto;
             padding-top: 8rem;
             padding-bottom: 4rem;
+            width: 100%;
 
             .k45_keyValueContent {
                 display: flex;
@@ -196,6 +197,7 @@
 
                 .key {
                     font-weight: bold;
+                    flex-grow: 1;
                 }
 
                 .value {

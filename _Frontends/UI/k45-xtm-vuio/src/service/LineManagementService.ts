@@ -141,6 +141,14 @@ export type MapViewerOptions = {
 
 export class LineManagementService {
     static async listLines(): Promise<LineData[]> { return await engine.call("k45::xtm.lineViewer.getCityLines"); }
+    /** Cheap existence check for UI gating; falls back to true so modes stay reachable on failure. */
+    static async cityHasLines(): Promise<boolean> {
+        try {
+            return !!(await engine.call("k45::xtm.lineViewer.cityHasLines"));
+        } catch {
+            return true;
+        }
+    }
     static async getUseXtmLineListingDefault(): Promise<boolean> {
         try {
             return !!(await engine.call("k45::xtm.settings.getUseXtmLineListingDefault"));

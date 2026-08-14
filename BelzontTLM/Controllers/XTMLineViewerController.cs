@@ -25,6 +25,7 @@ namespace BelzontTLM
         public void SetupCallBinder(Action<string, Delegate> eventCaller)
         {
             eventCaller("lineViewer.getCityLines", GetCityLines);
+            eventCaller("lineViewer.cityHasLines", CityHasLines);
             eventCaller("settings.getUseXtmLineListingDefault", () =>
                 (BasicIMod.ModData as XTMModData)?.UseXtmLineListingDefault ?? true);
         }
@@ -38,7 +39,7 @@ namespace BelzontTLM
         private EntityQuery m_modifiedLineQuery;
         private EndFrameBarrier m_EndFrameBarrier;
         private XTMLineListingSection m_LineListingSection;
-        private EntityQuery m_linesQueue;
+        private EntityQuery m_linesQuery;
         private PrefabSystem m_PrefabSystem;
         private NameSystem m_NameSystem;
 
@@ -86,7 +87,7 @@ namespace BelzontTLM
 
             m_EndFrameBarrier = World.GetOrCreateSystemManaged<EndFrameBarrier>();
             m_LineListingSection = World.GetOrCreateSystemManaged<XTMLineListingSection>();
-            m_linesQueue = GetEntityQuery(new EntityQueryDesc[] {
+            m_linesQuery = GetEntityQuery(new EntityQueryDesc[] {
                 new() {
                     All = new ComponentType[]
                     {
@@ -141,10 +142,19 @@ namespace BelzontTLM
             return ListLines();
         }
 
+        /// <summary>
+        /// Existence check for callers that only gate UI on "city has any line", avoiding the
+        /// full <see cref="ListLines"/> sort + name resolution pass.
+        /// </summary>
+        private bool CityHasLines()
+        {
+            return !m_linesQuery.IsEmptyIgnoreFilter;
+        }
+
 
         private LineItemStruct[] ListLines()
         {
-            NativeArray<UITransportLineData> sortedLines = TransportUIUtils.GetSortedLines(m_linesQueue, EntityManager, m_PrefabSystem);
+            NativeArray<UITransportLineData> sortedLines = TransportUIUtils.GetSortedLines(m_linesQuery, EntityManager, m_PrefabSystem);
             var currentDay = m_LineListingSection.GetCurrentDay();
             var output = new LineItemStruct[sortedLines.Length];
             for (int i = 0; i < sortedLines.Length; i++)

@@ -256,6 +256,8 @@ export const XtmLineListingPage = () => {
     const [vehicleModelGroupCount, setVehicleModelGroupCount] = useState(0);
     const [paletteCount, setPaletteCount] = useState(0);
     const [linesLoaded, setLinesLoaded] = useState(false);
+    /** null while the city lines check is still pending — modes stay selectable until it resolves. */
+    const [cityHasLines, setCityHasLines] = useState<boolean | null>(null);
     const localization = useLocalization();
     const ToolButton = VanillaComponentResolver.instance.ToolButton;
     const noFocus = VanillaComponentResolver.instance.FOCUS_DISABLED;
@@ -264,7 +266,7 @@ export const XtmLineListingPage = () => {
     const vehicleModelGroupsMode = overviewMode === "vehicleModelGroups";
     const palettesMode = overviewMode === "palettes";
     const specialMode = isSpecialOverviewMode(overviewMode);
-    const cityHasNoLines = linesList.length === 0;
+    const cityHasNoLines = cityHasLines === false;
     // Always show Change Mode so empty cities can reach Palettes (and leave special modes).
     const showModeChange = true;
 
@@ -273,20 +275,21 @@ export const XtmLineListingPage = () => {
         void getOverviewModeToken();
     }), []);
 
-    // Only force listing after the city line list has loaded — an empty list during
-    // the initial fetch must not wipe SIP-driven fare/model-group navigation.
+    // cityHasNoLines stays false until the check resolves, so an in-flight fetch cannot
+    // wipe SIP-driven fare/model-group navigation.
     // Fare / model-group screens do not require lines, so keep them even if empty.
     useEffect(() => {
-        if (!linesLoaded || !cityHasNoLines) return;
+        if (!cityHasNoLines) return;
         if (isSpecialOverviewMode(overviewMode)) return;
         if (overviewMode !== "listing") {
             setPersistedOverviewMode("listing");
             setOverviewMode("listing");
         }
-    }, [cityHasNoLines, overviewMode, linesLoaded]);
+    }, [cityHasNoLines, overviewMode]);
 
     const reloadLines = useCallback((res: LineData[]) => {
         setLinesLoaded(true);
+        setCityHasLines(Array.isArray(res) && res.length > 0);
         startTransition(() => {
             if (!Array.isArray(res)) {
                 setLinesList([]);
@@ -408,9 +411,17 @@ export const XtmLineListingPage = () => {
 
             const mode = getPersistedOverviewMode();
             const needsLinesNow = !isSpecialOverviewMode(mode);
+
+            // Mode availability depends on the city having lines, so resolve it on every mount:
+            // special modes render without the list, and leaving the check pending would keep
+            // every line-dependent mode disabled in the Change Mode menu.
             if (needsLinesNow) {
                 void LineManagementService.listLines().then((res) => {
                     if (!cancelled) reloadLines(res);
+                });
+            } else {
+                void LineManagementService.cityHasLines().then((hasLines) => {
+                    if (!cancelled) setCityHasLines(hasLines);
                 });
             }
 
