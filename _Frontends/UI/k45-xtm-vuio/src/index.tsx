@@ -242,7 +242,22 @@ const XtmLayoutOverrideRegistering = (onChange?: () => any) => (componentList: a
         }
         return <SelectVehiclesSectionXtm {...args} Original={_originalSelectVehicles} />;
     };
-    componentList["BelzontTLM.XTMInfoPanelSystem"] = () => <XtmInfoSection />;
+
+    // Line Data right after vanilla "Public transport line" (LineSection is before TicketPrice in C# order).
+    // Standalone XTM middle section stays last for stop/vehicle SIP; suppress it on the route itself.
+    const _originalLine = componentList["Game.UI.InGame.LineSection"];
+    componentList["Game.UI.InGame.LineSection"] = (args: any) => (
+        <>
+            <_originalLine {...args} />
+            <XtmInfoSection />
+        </>
+    );
+    componentList["BelzontTLM.XTMInfoPanelSystem"] = () => {
+        const selectedEntity = useValue(selectedInfo.selectedEntity$);
+        const selectedRoute = useValue(selectedInfo.selectedRoute$);
+        if (selectedEntity?.index === selectedRoute?.index) return null;
+        return <XtmInfoSection />;
+    };
     return componentList as any;
 };
 
