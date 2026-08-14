@@ -1,13 +1,10 @@
 ﻿using Belzont.Interfaces;
 using Belzont.Utils;
 using BelzontTLM.Palettes;
-using BelzontTLM.UI;
 using Game;
 using Game.Modding;
 using Game.Policies;
-using Game.UI.InGame;
 using System.IO;
-using Unity.Entities;
 
 namespace BelzontTLM
 {
@@ -48,8 +45,6 @@ namespace BelzontTLM
 
         public override void DoOnLoad()
         {
-            World.DefaultGameObjectInjectionWorld.GetOrCreateSystemManaged<GamePanelUISystem>().SetDefaultArgs(new XTMMainPanel());
-            LogUtils.DoInfoLog($"Registered panel: {typeof(XTMMainPanel).FullName}");
         }
         public override BasicModData CreateSettingsFile() => new XTMModData(this);
 

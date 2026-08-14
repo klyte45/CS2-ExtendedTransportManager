@@ -46,6 +46,7 @@ import {
 import { XtmOccupancyReportPage } from "./occupancyReport/XtmOccupancyReportPage";
 import { XtmFareGroupsPage } from "./fareGroups/XtmFareGroupsPage";
 import { XtmVehicleModelGroupsPage } from "./vehicleModelGroups/XtmVehicleModelGroupsPage";
+import { XtmPalettesPage } from "./palettes/XtmPalettesPage";
 import {
     getOverviewModeToken,
     getPersistedOverviewMode,
@@ -57,13 +58,14 @@ import "#styles/lineListing.scss";
 import "#styles/occupancyReport.scss";
 import "#styles/fareGroups.scss";
 import "#styles/vehicleModelGroups.scss";
+import "#styles/palettes.scss";
 
 function getNameFor(type: string, isCargo: boolean) {
     return engine.translate(isCargo ? `Transport.ROUTES[${type}]` : `Transport.LINES[${type}]`);
 }
 
 function isSpecialOverviewMode(mode: OverviewScreenMode): boolean {
-    return mode === "fareGroups" || mode === "vehicleModelGroups";
+    return mode === "fareGroups" || mode === "vehicleModelGroups" || mode === "palettes";
 }
 
 /** Yield to the browser so the overview shell can paint before heavy work. */
@@ -109,6 +111,11 @@ const MODE_MENU_ITEMS: { mode: OverviewScreenMode; labelKey: string; fallback: s
         fallback: "Vehicle Model Groups",
     },
     {
+        mode: "palettes",
+        labelKey: "cityPalettesLibrary.title",
+        fallback: "Available palettes",
+    },
+    {
         mode: "occupancyPassengers",
         labelKey: "occupancyReport.mode.occupancyPassengers",
         fallback: "Occupancy Report: Passengers",
@@ -119,6 +126,9 @@ const MODE_MENU_ITEMS: { mode: OverviewScreenMode; labelKey: string; fallback: s
         fallback: "Occupancy Report: Cargo",
     },
 ];
+
+/** Modes still selectable when the city has zero transport lines. */
+const EMPTY_CITY_ENABLED_MODES: OverviewScreenMode[] = ["listing", "palettes"];
 
 /** Survives Transportation Overview remounts / navigation within the session. */
 let persistedFilterExclude: string[] = [];
@@ -153,9 +163,11 @@ function formatReportDateTime(
 function ModeChangeButton({
     currentMode,
     onSelectMode,
+    cityHasNoLines,
 }: {
     currentMode: OverviewScreenMode;
     onSelectMode: (mode: OverviewScreenMode) => void;
+    cityHasNoLines: boolean;
 }) {
     const btnRef = useRef<HTMLDivElement>(null!);
     const menuRef = useRef<HTMLDivElement>(null!);
@@ -203,16 +215,19 @@ function ModeChangeButton({
                         <EditorScrollable style={{ maxHeight: "300rem" }}>
                             {MODE_MENU_ITEMS.map(({ mode, labelKey, fallback }) => {
                                 const selected = mode === currentMode;
+                                const blockedByEmptyCity =
+                                    cityHasNoLines && !EMPTY_CITY_ENABLED_MODES.includes(mode);
+                                const disabled = selected || blockedByEmptyCity;
                                 const label = translate(labelKey, fallback);
                                 return (
                                     <button
                                         key={mode}
                                         type="button"
-                                        className={classNames("k45_comm_contextMenu_item", selected && "disabled")}
-                                        disabled={selected}
+                                        className={classNames("k45_comm_contextMenu_item", disabled && "disabled")}
+                                        disabled={disabled}
                                         onClick={() => {
                                             setMenuOpen(false);
-                                            if (!selected) onSelectMode(mode);
+                                            if (!disabled) onSelectMode(mode);
                                         }}
                                     >
                                         {`${selected ? "✓ " : ""}${label}`}
@@ -239,6 +254,7 @@ export const XtmLineListingPage = () => {
     const [reportLoading, setReportLoading] = useState(false);
     const [fareGroupCount, setFareGroupCount] = useState(0);
     const [vehicleModelGroupCount, setVehicleModelGroupCount] = useState(0);
+    const [paletteCount, setPaletteCount] = useState(0);
     const [linesLoaded, setLinesLoaded] = useState(false);
     const localization = useLocalization();
     const ToolButton = VanillaComponentResolver.instance.ToolButton;
@@ -246,9 +262,11 @@ export const XtmLineListingPage = () => {
     const reportMode = isReportMode(overviewMode);
     const fareGroupsMode = overviewMode === "fareGroups";
     const vehicleModelGroupsMode = overviewMode === "vehicleModelGroups";
+    const palettesMode = overviewMode === "palettes";
     const specialMode = isSpecialOverviewMode(overviewMode);
     const cityHasNoLines = linesList.length === 0;
-    const showModeChange = specialMode || !cityHasNoLines;
+    // Always show Change Mode so empty cities can reach Palettes (and leave special modes).
+    const showModeChange = true;
 
     useEffect(() => subscribeOverviewMode(() => {
         setOverviewMode(getPersistedOverviewMode());
@@ -574,6 +592,10 @@ export const XtmLineListingPage = () => {
                         <div className="screenTitleLabel">
                             {translate("vehicleModelGroups.screenTitle", "Vehicle Model Groups")}
                         </div>
+                    ) : palettesMode ? (
+                        <div className="screenTitleLabel">
+                            {translate("cityPalettesLibrary.title", "Available palettes")}
+                        </div>
                     ) : (
                         <>
                             {showPassengerTypes && passengerTypeKeys.map(renderTypeFilterButton)}
@@ -654,6 +676,12 @@ export const XtmLineListingPage = () => {
                                     count: `${vehicleModelGroupCount}`,
                                 })}
                             </div>
+                        ) : palettesMode ? (
+                            <div className="linesCountLabel">
+                                {replaceArgs(translate("palettes.paletteCount", "{count} palettes"), {
+                                    count: `${paletteCount}`,
+                                })}
+                            </div>
                         ) : reportMode ? (
                             <div className="reportDateTimeLabel">{reportDateTimeText}</div>
                         ) : (
@@ -677,7 +705,11 @@ export const XtmLineListingPage = () => {
                         {showModeChange && (
                             <>
                                 <div className="modeChangeSpacer" />
-                                <ModeChangeButton currentMode={overviewMode} onSelectMode={onSelectMode} />
+                                <ModeChangeButton
+                                    currentMode={overviewMode}
+                                    onSelectMode={onSelectMode}
+                                    cityHasNoLines={cityHasNoLines}
+                                />
                             </>
                         )}
                     </div>
@@ -692,6 +724,12 @@ export const XtmLineListingPage = () => {
                     <section className="LineList LineList--report">
                         <div className="reportArea">
                             <XtmVehicleModelGroupsPage onGroupsChanged={setVehicleModelGroupCount} />
+                        </div>
+                    </section>
+                ) : palettesMode ? (
+                    <section className="LineList LineList--report">
+                        <div className="reportArea">
+                            <XtmPalettesPage onPalettesChanged={setPaletteCount} />
                         </div>
                     </section>
                 ) : reportMode ? (

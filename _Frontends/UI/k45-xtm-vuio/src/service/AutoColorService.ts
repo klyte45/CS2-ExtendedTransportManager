@@ -18,6 +18,9 @@ export class AutoColorService {
     public static async setModalAutoColor(transportType: TransportType, isCargo: boolean, guid: string) {
         return await engine.call("k45::xtm.autoColor.setAutoColorFor", transportType, isCargo, guid ?? null);
     }
+    public static async defaultLineColor(transportType: TransportType, isCargo: boolean): Promise<string> {
+        return await engine.call("k45::xtm.autoColor.defaultLineColorFor", transportType, isCargo);
+    }
     static doOnAutoColorSettingsChanged(event: () => void) {
         engine.on("k45::xtm.autoColor.onAutoColorSettingsChanged", event)
     }

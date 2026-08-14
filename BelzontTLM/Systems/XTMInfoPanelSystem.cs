@@ -1,6 +1,5 @@
 ﻿using Belzont.Interfaces;
 using Belzont.Utils;
-using BelzontTLM.UI;
 using Colossal.Collections;
 using Colossal.Entities;
 using Colossal.UI.Binding;
@@ -59,9 +58,6 @@ namespace BelzontTLM
             [
                 TransportVehicleSelectData.GetEntityQueryDesc()
             ]);
-
-            var panelSystem = World.GetOrCreateSystemManaged<GamePanelUISystem>();
-            AddBinding(new TriggerBinding<int>("k45::xtm.main", "setTabActive", (x) => panelSystem.ShowPanel<XTMMainPanel>(x)));
         }
         protected override void OnUpdate()
         {

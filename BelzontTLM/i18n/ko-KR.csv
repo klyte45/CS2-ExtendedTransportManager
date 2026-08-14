@@ -66,6 +66,9 @@ K45::XTM.vuio[paletteEditor.shuffleColors]	색상 섞기
 K45::XTM.vuio[palettesSettings.cargoModalsTitle]	화물 팝업 창
 K45::XTM.vuio[palettesSettings.modalSettings]	승객 팝업 창
 K45::XTM.vuio[palettesSettings.title]	팝업 창을 팔레트 설정으로
+K45::XTM.vuio[palettes.section.passengers]	승객
+K45::XTM.vuio[palettes.section.cargo]	화물
+K45::XTM.vuio[palettes.paletteCount]	팔레트 {count}개
 K45::XTM.vuio[saveBtn]	저장
 K45::XTM.vuio[seeXtmMap]	XTM 지도 보기
 K45::XTM.vuio[weIntegrationBlinds.addKeyframe]	키프레임 추가

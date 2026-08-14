@@ -23,15 +23,16 @@ import {
     SegmentOccupancyDisplayMode,
 } from "#service/LineManagementService";
 import translate from "#utility/translate";
-import { InfoRow, InfoSection, Portal } from "cs2/ui";
+import { Button, InfoRow, InfoSection, Portal, Tooltip } from "cs2/ui";
 import { ColorEditorXtm } from "#components/ColorEditorXtm";
 import { TicketPriceSectionXtm } from "#components/TicketPriceSectionXtm";
 import { SelectVehiclesSectionXtm } from "#components/SelectVehiclesSectionXtm";
 import { XtmInfoSection } from "#components/XtmInfoSection";
-import { bindValue, useValue } from "cs2/api";
-import { XtmMainPanel, XtmButton, XtmMainPanelId } from "#components/mainUI/XtmMainPanel";
+import { useValue } from "cs2/api";
+import { PalettesEditorDialog } from "#components/lineListing/palettes/PalettesEditorDialog";
 import { XtmTransportationOverviewRegister } from "#components/lineListing/XtmTransportationOverviewRegister";
 import "#styles/ticketPriceManaged.scss";
+import "#styles/palettes.scss";
 import { requestXtmLineMapRefresh, setXtmMapEnabled } from "#utility/xtmLineMapRefresh";
 
 let IsXtm = true;
@@ -76,16 +77,12 @@ const register: ModRegistrar = (moduleRegistry) => {
 
     moduleRegistry.extend("game-ui/game/components/selected-info-panel/selected-info-sections/selected-info-sections.tsx", 'selectedInfoSectionComponents', XtmLayoutOverrideRegistering(() => { }));
 
-
-    moduleRegistry.extend("game-ui/game/data-binding/game-bindings.ts", 'GamePanelType', RegisterXtmPanelType);
-    moduleRegistry.extend("game-ui/game/components/game-panel-renderer.tsx", 'gamePanelComponents', RegisterXtmPanel);
-    moduleRegistry.extend("game-ui/editor/components/toolbar/toolbar.tsx", 'Toolbar', XtmPanelEditor);
+    moduleRegistry.extend("game-ui/editor/components/toolbar/toolbar.tsx", 'Toolbar', XtmPalettesEditorToolbar);
     moduleRegistry.extend(
         "game-ui/game/components/transportation-overview-panel/transportation-overview-panel.tsx",
         "TransportationOverviewPanel",
         XtmTransportationOverviewRegister,
     );
-    moduleRegistry.append('GameTopLeft', XtmButton);
 }
 
 export default register;
@@ -263,38 +260,28 @@ const XtmLayoutOverrideRegistering = (onChange?: () => any) => (componentList: a
 };
 
 
-const RegisterXtmPanelType = (input: any) => {
-    input["K45_XTM"] = XtmMainPanelId
-    console.log("Registered XTM Panel Type", input)
-    return input;
-}
-
-const RegisterXtmPanel = (input: any) => {
-    console.log("Registering XTM Panel", input)
-    input[XtmMainPanelId] = XtmMainPanel
-    return input;
-}
-
-const XtmPanelEditor = (input: any) => {
-    const editorGroup = "editorTool"
-    const editorSelection = "activeTool"
-    const engine = (window as any).engine;
+/** Editor-mode access: toolbar button opens a light FE-only palettes dialog. */
+const XtmPalettesEditorToolbar = (Toolbar: any): any => {
     return (args: any) => {
-        const bindResult = bindValue(editorGroup, editorSelection);
-        const [tabActive, setTabActive] = useState(0)
-        useEffect(() => {
-
-            engine.whenReady.then(() => {
-                engine.on("k45::xtm.main.setTabActive", setTabActive)
-            })
-
-            return () => engine.off("k45::xtm.main.setTabActive", setTabActive)
-        }, [])
-        return <>
-            {input(args)}
-            {bindResult.value === "k45__xtm_MainWindow" && <Portal>
-                <XtmMainPanel selectedTab={tabActive} noClose moveable />
-            </Portal>}
-        </>
-    }
-}
+        const [open, setOpen] = useState(false);
+        return (
+            <>
+                {Toolbar(args)}
+                <div className="xtm-palettesEditorToolbarBtn">
+                    <Tooltip tooltip={translate("cityPalettesLibrary.title", "Available palettes")}>
+                        <Button
+                            src={iconWhite}
+                            variant="floating"
+                            onSelect={() => setOpen((v) => !v)}
+                        />
+                    </Tooltip>
+                </div>
+                {open && (
+                    <Portal>
+                        <PalettesEditorDialog onClose={() => setOpen(false)} />
+                    </Portal>
+                )}
+            </>
+        );
+    };
+};

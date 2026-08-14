@@ -1,7 +1,13 @@
 import { Entity } from "@klyte45/vuio-commons";
 import { game } from "cs2/bindings";
 
-export type OverviewScreenMode = "listing" | "fareGroups" | "vehicleModelGroups" | "occupancyPassengers" | "occupancyCargo";
+export type OverviewScreenMode =
+    | "listing"
+    | "fareGroups"
+    | "vehicleModelGroups"
+    | "palettes"
+    | "occupancyPassengers"
+    | "occupancyCargo";
 
 export type VehicleModelTypeSelection = { transportType: number; isCargo: boolean };
 

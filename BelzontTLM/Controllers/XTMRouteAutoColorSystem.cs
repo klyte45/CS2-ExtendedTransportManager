@@ -36,6 +36,10 @@ namespace BelzontTLM.Palettes
         }
         private TransportType[] PassengerLineAllowed = new[] { TransportType.Bus, TransportType.Tram, TransportType.Subway, TransportType.Train, TransportType.Ship, TransportType.Airplane, TransportType.Ferry };
         private TransportType[] CargoLineAllowed = new[] { TransportType.Train, TransportType.Ship, TransportType.Airplane };
+        private const string MagentaHex = "#FF00FF";
+        private EntityQuery m_TransportLinePrefabQuery;
+        private PrefabSystem m_PrefabSystem;
+
         public void SetupCallBinder(Action<string, Delegate> eventCaller)
         {
             eventCaller.Invoke("autoColor.passengerModalAvailable", () => PassengerLineAllowed.Select(x => x.ToString()).ToList());
@@ -43,7 +47,43 @@ namespace BelzontTLM.Palettes
             eventCaller.Invoke("autoColor.passengerModalSettings", () => PaletteSettingsPassenger.ToDictionary(x => x.Key.ToString(), x => x.Value.ToString()));
             eventCaller.Invoke("autoColor.cargoModalSettings", () => PaletteSettingsCargo.ToDictionary(x => x.Key.ToString(), x => x.Value.ToString()));
             eventCaller.Invoke("autoColor.setAutoColorFor", SetModalAutoColorSettings);
-            //     File.WriteAllLines(Path.Combine(BasicIMod.Instance.ModRootFolder, "localeDump.txt"), GameManager.instance.localizationManager.activeDictionary.entries.Select(x => $"{x.Key}\t{x.Value.Replace("\n", "\\n").Replace("\r", "\\r")}").ToArray());
+            eventCaller.Invoke("autoColor.defaultLineColorFor", GetDefaultLineColorFor);
+        }
+
+        /// <summary>
+        /// Default route color for a transport type — same source as temp/new lines:
+        /// <see cref="RoutePrefab.m_Color"/> on the TransportLine prefab entity.
+        /// </summary>
+        private string GetDefaultLineColorFor(string transportTypeStr, bool isCargo)
+        {
+            if (!Enum.TryParse(transportTypeStr, true, out TransportType transportType))
+            {
+                LogUtils.DoWarnLog($"defaultLineColorFor: unknown type '{transportTypeStr}'");
+                return MagentaHex;
+            }
+
+            NativeArray<Entity> prefabs = m_TransportLinePrefabQuery.ToEntityArray(Allocator.Temp);
+            try
+            {
+                for (int i = 0; i < prefabs.Length; i++)
+                {
+                    Entity prefabEntity = prefabs[i];
+                    TransportLineData lineData = EntityManager.GetComponentData<TransportLineData>(prefabEntity);
+                    if (lineData.m_TransportType != transportType || lineData.m_CargoTransport != isCargo)
+                    {
+                        continue;
+                    }
+                    RouteData routeData = EntityManager.GetComponentData<RouteData>(prefabEntity);
+                    return routeData.m_Color.ToRGB(true);
+                }
+            }
+            finally
+            {
+                prefabs.Dispose();
+            }
+
+            LogUtils.DoWarnLog($"defaultLineColorFor: no TransportLineData prefab for {transportType} cargo={isCargo}");
+            return MagentaHex;
         }
         #endregion
 
@@ -141,6 +181,17 @@ namespace BelzontTLM.Palettes
             Instance = this;
             m_EndFrameBarrier = World.GetOrCreateSystemManaged<EndFrameBarrier>();
             m_IconCommandSystem = World.GetOrCreateSystemManaged<IconCommandSystem>();
+            m_PrefabSystem = World.GetOrCreateSystemManaged<PrefabSystem>();
+            m_TransportLinePrefabQuery = GetEntityQuery([
+                new EntityQueryDesc
+                {
+                    All =
+                    [
+                        ComponentType.ReadOnly<TransportLineData>(),
+                        ComponentType.ReadWrite<RouteData>(),
+                    ]
+                }
+            ]);
             m_linesWithNoData = GetEntityQuery(new EntityQueryDesc[] {
                 new EntityQueryDesc
                 {
