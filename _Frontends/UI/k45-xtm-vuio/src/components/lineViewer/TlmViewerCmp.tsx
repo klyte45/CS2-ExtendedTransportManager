@@ -13,7 +13,7 @@ import { useValue } from "cs2/api";
 import { findSymmetricPairStop, findSymmetricReturnPreviousStop, getTerminusNames, isSymmetricMiddleStop } from "#utility/lineViewerUtils";
 import { MapStationOccupancyContainerCmp } from "./MapStationOccupancyContainerCmp";
 import { SegmentOccupancyPanelCmp, SegmentOccupancySelection } from "./SegmentOccupancyPanelCmp";
-import { getLineActivityClass } from "#components/lineListing/lineListingTypes";
+import { getLineActivityClass } from "#components/mainWindow/mainWindowTypes";
 
 type Props = {
     lineDetails: LineDetails;

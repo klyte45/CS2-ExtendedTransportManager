@@ -22,7 +22,7 @@ import { FocusDisabled } from "cs2/input";
 import { ConfirmationDialog, Portal, Scrollable } from "cs2/ui";
 import classNames from "classnames";
 import { CSSProperties, useCallback, useEffect, useMemo, useRef, useState } from "react";
-import { TYPE_ORDER, TYPE_TO_ICONS } from "#components/lineListing/lineListingTypes";
+import { TYPE_ORDER, TYPE_TO_ICONS } from "#components/mainWindow/mainWindowTypes";
 import { VehicleModelGroupEditor } from "./VehicleModelGroupEditor";
 import { VehicleModelGroupListCard } from "./VehicleModelGroupListCard";
 import {

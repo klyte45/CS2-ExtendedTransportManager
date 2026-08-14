@@ -7,10 +7,10 @@ import {
     resolveInfoRowRightHostNear,
     useSipAssignPortalHost,
 } from "#utility/sipAssignPortal";
-import { openVehicleModelGroupEditor, openVehicleModelGroupsScreen } from "#components/lineListing/overviewNavigation";
+import { openVehicleModelGroupEditor, openVehicleModelGroupsScreen } from "#components/mainWindow/overviewNavigation";
 import { AssignGroupSipMenu } from "#components/AssignGroupSipMenu";
 import { ManagedGroupSipMenu } from "#components/ManagedGroupSipMenu";
-import { localizePrefabName } from "#components/lineListing/vehicleModelGroups/vehicleModelGroupUtils";
+import { localizePrefabName } from "#components/mainWindow/vehicleModelGroups/vehicleModelGroupUtils";
 import { replaceArgs, toEntityTyped, VanillaComponentResolver } from "@klyte45/vuio-commons";
 import { useValue } from "cs2/api";
 import { selectedInfo } from "cs2/bindings";

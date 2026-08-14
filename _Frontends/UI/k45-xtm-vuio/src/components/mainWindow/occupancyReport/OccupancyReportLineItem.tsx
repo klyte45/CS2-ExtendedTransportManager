@@ -6,7 +6,7 @@ import { nameToString, toVanillaEntity } from "@klyte45/vuio-commons";
 import { transport } from "cs2/bindings";
 import { LocalizedNumber, useLocalization } from "cs2/l10n";
 import { RankedLineItem } from "./occupancyReportRanking";
-import { getLineActivityClass } from "#components/lineListing/lineListingTypes";
+import { getLineActivityClass } from "#components/mainWindow/mainWindowTypes";
 
 type Props = {
     item: RankedLineItem;

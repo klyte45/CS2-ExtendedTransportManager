@@ -3,7 +3,7 @@ import { CSSProperties, memo, useEffect, useState } from "react";
 import { TransportType } from "#enum/TransportType";
 import {
     LineActivityClass,
-} from "#components/lineListing/lineListingTypes";
+} from "#components/mainWindow/mainWindowTypes";
 import { ShieldImageService } from "#service/ShieldImageService";
 
 type Props = {

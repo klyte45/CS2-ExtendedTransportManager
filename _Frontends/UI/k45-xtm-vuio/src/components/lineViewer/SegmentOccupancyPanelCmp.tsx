@@ -9,7 +9,7 @@ import { Panel, Portal } from "cs2/ui";
 import { useMemo } from "react";
 import { TlmLineFormatCmp } from "./TlmLineFormatCmp";
 import "#styles/SegmentOccupancyPanel.scss";
-import { getLineActivityClass } from "#components/lineListing/lineListingTypes";
+import { getLineActivityClass } from "#components/mainWindow/mainWindowTypes";
 
 export type SegmentOccupancySelection = {
     fromStop: StationData;

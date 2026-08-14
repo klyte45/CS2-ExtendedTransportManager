@@ -6,7 +6,7 @@ import {
     DEFAULT_LINE_SORT,
     getLineActivityClass,
     LineActivityClass,
-} from "#components/lineListing/lineListingTypes";
+} from "#components/mainWindow/mainWindowTypes";
 import {
     VehicleModelGroupDetail,
     VehicleModelGroupLineShieldInfo,

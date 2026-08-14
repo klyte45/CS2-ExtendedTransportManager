@@ -1,6 +1,6 @@
 import translate from "#utility/translate";
 import { SegmentOccupancyReport } from "#service/SegmentOccupancyService";
-import { LineActivityClass } from "#components/lineListing/lineListingTypes";
+import { LineActivityClass } from "#components/mainWindow/mainWindowTypes";
 import { useMemo, useState } from "react";
 import {
     FULL_RANKING_LIMIT,

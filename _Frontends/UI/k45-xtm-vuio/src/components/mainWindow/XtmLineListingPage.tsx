@@ -42,7 +42,7 @@ import {
     sortAndGroupLines,
     TYPE_ORDER,
     TYPE_TO_ICONS,
-} from "./lineListingTypes";
+} from "./mainWindowTypes";
 import { XtmOccupancyReportPage } from "./occupancyReport/XtmOccupancyReportPage";
 import { XtmFareGroupsPage } from "./fareGroups/XtmFareGroupsPage";
 import { XtmVehicleModelGroupsPage } from "./vehicleModelGroups/XtmVehicleModelGroupsPage";
@@ -54,7 +54,7 @@ import {
     setPersistedOverviewMode,
     subscribeOverviewMode,
 } from "./overviewNavigation";
-import "#styles/lineListing.scss";
+import "#styles/mainWindow.scss";
 import "#styles/occupancyReport.scss";
 import "#styles/fareGroups.scss";
 import "#styles/vehicleModelGroups.scss";

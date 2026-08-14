@@ -4,7 +4,7 @@ import {
     SegmentOccupancyReport,
     SegmentOccupancyStop,
 } from "#service/SegmentOccupancyService";
-import { LineActivityClass, getLineActivityClass } from "#components/lineListing/lineListingTypes";
+import { LineActivityClass, getLineActivityClass } from "#components/mainWindow/mainWindowTypes";
 
 export const OCCUPANCY_BUCKET_COUNT = 6;
 export const TOP_LINES_PER_COLUMN = 3;

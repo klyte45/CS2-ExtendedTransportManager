@@ -9,7 +9,7 @@ import {
     routeSliderClasses,
     useSipAssignPortalHost,
 } from "#utility/sipAssignPortal";
-import { openFareGroupEditor, openFareGroupsScreen } from "#components/lineListing/overviewNavigation";
+import { openFareGroupEditor, openFareGroupsScreen } from "#components/mainWindow/overviewNavigation";
 import { AssignGroupSipMenu } from "#components/AssignGroupSipMenu";
 import { ManagedGroupSipMenu } from "#components/ManagedGroupSipMenu";
 import { replaceArgs, toEntityTyped, VanillaComponentResolver } from "@klyte45/vuio-commons";

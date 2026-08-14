@@ -2,6 +2,7 @@ import iconWhite from "#images/iconWhite.svg";
 import { LineManagementService } from "#service/LineManagementService";
 import translate from "#utility/translate";
 import { VanillaComponentResolver } from "@klyte45/vuio-commons";
+import engine from "cohtml/cohtml";
 import { FocusDisabled } from "cs2/input";
 import {
     Children,
@@ -18,7 +19,7 @@ import {
     consumeForceXtmListing,
     subscribeForceXtmListing,
 } from "./overviewNavigation";
-import "#styles/lineListing.scss";
+import "#styles/mainWindow.scss";
 
 type OverviewProps = {
     selectedTab?: number;
@@ -139,7 +140,7 @@ export const XtmTransportationOverviewRegister = (Component: any): any => {
                     header: (
                         <>
                             <PanelTitleBar onCloseOverride={props.onClose}>
-                                {translate("lineList.title", "Lines")}
+                                {engine.translate("Assets.NAME[Transportation Overview]")}
                             </PanelTitleBar>
                             <div className="xtm-transport-overview-header-tools xtm-transport-overview-header-xtm">{toggle}</div>
                         </>

@@ -67,7 +67,7 @@ export const SCHEDULE_BADGE_BG: Record<
 };
 
 /**
- * Info-area text colors live in lineListing.scss under `.BgItem.activity-*`
+ * Info-area text colors live in mainWindow.scss under `.BgItem.activity-*`
  * (Cohtml: prefer classes over custom properties for text color).
  */
 

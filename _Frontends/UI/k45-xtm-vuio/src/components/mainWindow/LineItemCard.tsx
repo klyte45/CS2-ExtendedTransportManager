@@ -29,7 +29,7 @@ import {
     SCHEDULE_BUTTON_IDLE_BG,
     SCHEDULE_COLUMN_ORDER,
     TYPE_TO_ICONS,
-} from "./lineListingTypes";
+} from "./mainWindowTypes";
 
 export type LineIdentityPatch = { acronym?: string; routeNumber?: number };
 

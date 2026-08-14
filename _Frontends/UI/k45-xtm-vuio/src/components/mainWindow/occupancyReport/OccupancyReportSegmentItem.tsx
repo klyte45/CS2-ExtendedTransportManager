@@ -7,7 +7,7 @@ import { nameToString, toVanillaEntity, VanillaComponentResolver } from "@klyte4
 import { camera, selectedInfo } from "cs2/bindings";
 import { LocalizedNumber, useLocalization } from "cs2/l10n";
 import { RankedSegmentItem } from "./occupancyReportRanking";
-import { getLineActivityClass } from "#components/lineListing/lineListingTypes";
+import { getLineActivityClass } from "#components/mainWindow/mainWindowTypes";
 
 const BUCKET_LABEL_KEYS: Record<number, [string, string]> = {
     0: ["lineViewer.segmentOccupancyMode.00_04", "00:00-04:00"],

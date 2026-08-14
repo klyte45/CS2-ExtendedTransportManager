@@ -5,7 +5,7 @@ import { CSSProperties } from "react";
 import { TlmLineFormatCmp } from "./TlmLineFormatCmp";
 import { selectedInfo } from "cs2/bindings";
 import { Tooltip } from "cs2/ui";
-import { getLineActivityClass } from "#components/lineListing/lineListingTypes";
+import { getLineActivityClass } from "#components/mainWindow/mainWindowTypes";
 
 type Props = {
     station: StationData;

@@ -9,7 +9,7 @@ import {
     LineActivityClass,
     TYPE_ORDER,
     TYPE_TO_ICONS,
-} from "#components/lineListing/lineListingTypes";
+} from "#components/mainWindow/mainWindowTypes";
 import {
     FareGroupDetail,
     FareGroupLineShieldInfo,
