@@ -14,6 +14,7 @@ import { LocalizedNumber, Unit, useLocalization } from "cs2/l10n";
 import { Portal } from "cs2/ui";
 import { useEffect, useMemo, useState } from "react";
 import { LineDetail_WriteEverywhere } from "./WE_BlindEditor/LineDetail_WriteEverywhere";
+import { requestXtmLineMapRefresh } from "#utility/xtmLineMapRefresh";
 
 /** Survives SIP remounts when switching lines / leaving and returning to line selection. */
 let persistedHistoricalOccupancyExpanded = false;
@@ -91,13 +92,19 @@ export const XtmInfoSection = () => {
             {
                 left: translate("lineViewerEditor.internalNumber"), right: <VanillaComponentResolver.instance.IntInput value={lineNumber} className={editorModule.input}
                     onChange={setLineNumber}
-                    onBlur={() => { LineManagementService.setRouteNumber(toEntityTyped(selectedEntity), lineNumber); selectedInfo.clearSelection(); setTimeout(() => selectedInfo.selectEntity(selectedEntity), 300) }} />
+                    onBlur={() => {
+                        LineManagementService.setRouteNumber(toEntityTyped(selectedEntity), lineNumber)
+                            .then(() => requestXtmLineMapRefresh(250));
+                    }} />
             },
             {
                 left: translate("lineViewerEditor.displayIdentifier"), right: <VanillaWidgets.instance.StringInputField
                     className={editorModule.input}
                     value={lineAcronym} onChange={setLineAcronym}
-                    onChangeEnd={() => { LineManagementService.setRouteAcronym(toEntityTyped(selectedEntity), lineAcronym); selectedInfo.clearSelection(); setTimeout(() => selectedInfo.selectEntity(selectedEntity), 300) }}
+                    onChangeEnd={() => {
+                        LineManagementService.setRouteAcronym(toEntityTyped(selectedEntity), lineAcronym)
+                            .then(() => requestXtmLineMapRefresh(250));
+                    }}
                 />
             },
             { left: translate(lineDetails?.LineData.isCargo ? "lineViewer.dataTotalCargoWaiting" : "lineViewer.dataTotalPassengersWaiting"), right: <>{LocalizedNumber.renderString(localization, { value: lineDetails.Stops.reduce((p, n) => p + n.cargo, 0), unit: lineDetails.LineData.isCargo ? Unit.Weight : Unit.Integer })}</> },

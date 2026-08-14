@@ -3,7 +3,7 @@ import { XtmLineViewer } from "components/LineViewer";
 import { photo, selectedInfo, ValueBinding } from "cs2/bindings";
 import { FocusDisabled } from "cs2/input";
 import { ModRegistrar } from "cs2/modding";
-import { ReactNode, useEffect, useState } from "react";
+import { ReactNode, useEffect, useRef, useState } from "react";
 import "#styles/lineViewer.scss";
 import iconWhite from "#images/iconWhite.svg";
 import i_platformCrowdness from "#images/i_platformCrowdness.svg";
@@ -32,6 +32,7 @@ import { bindValue, useValue } from "cs2/api";
 import { XtmMainPanel, XtmButton, XtmMainPanelId } from "#components/mainUI/XtmMainPanel";
 import { XtmTransportationOverviewRegister } from "#components/lineListing/XtmTransportationOverviewRegister";
 import "#styles/ticketPriceManaged.scss";
+import { requestXtmLineMapRefresh, setXtmMapEnabled } from "#utility/xtmLineMapRefresh";
 
 let IsXtm = true;
 let xtmOptions: MapViewerOptions = {
@@ -113,7 +114,11 @@ const XtmLineSectionButtonRegister = (Component: any): any => {
         const ToolButton = VanillaComponentResolver.instance.ToolButton;
         component.props.children.unshift(<FocusDisabled>
             <div style={{ position: "absolute", top: "5rem", right: "5rem", left: "5rem", zIndex: 9999, display: "flex", flexDirection: "row", }}>
-                <ToolButton onSelect={() => setIsXtm(x => { IsXtm = !x; return IsXtm; })} src={iconWhite} selected={isXtm} tooltip={translate("seeXtmMap")} />
+                <ToolButton onSelect={() => setIsXtm(x => {
+                    IsXtm = !x;
+                    setXtmMapEnabled(IsXtm);
+                    return IsXtm;
+                })} src={iconWhite} selected={isXtm} tooltip={translate("seeXtmMap")} />
                 <div style={{ flexGrow: 1 }} />
                 {isXtm && <>
                     <ToolButton tooltip={translate("lineViewer.showDistancesLbl")} onSelect={() => setXtmOptionsState(x => xtmOptions = ({ ...x, showDistances: !x.showDistances }))} src={i_distances} selected={xtmOptionsState.showDistances} />
@@ -166,6 +171,59 @@ const XtmLayoutOverrideRegistering = (onChange?: () => any) => (componentList: a
         }
         return <ColorEditorXtm {...args} />;
     };
+
+    const _originalSchedule = componentList["Game.UI.InGame.ScheduleSection"];
+    componentList["Game.UI.InGame.ScheduleSection"] = (args: any) => {
+        const selectedEntity = useValue(selectedInfo.selectedEntity$);
+        const selectedRoute = useValue(selectedInfo.selectedRoute$);
+        const isRoute = selectedEntity?.index === selectedRoute?.index;
+        const prevSchedule = useRef<number | undefined>(undefined);
+        useEffect(() => {
+            prevSchedule.current = undefined;
+        }, [selectedEntity?.index]);
+        useEffect(() => {
+            if (!isRoute) {
+                prevSchedule.current = args.schedule;
+                return;
+            }
+            if (prevSchedule.current === undefined) {
+                prevSchedule.current = args.schedule;
+                return;
+            }
+            if (prevSchedule.current !== args.schedule) {
+                prevSchedule.current = args.schedule;
+                requestXtmLineMapRefresh();
+            }
+        }, [args.schedule, isRoute, selectedEntity]);
+        return <_originalSchedule {...args} />;
+    };
+
+    const _originalActions = componentList["Game.UI.InGame.ActionsSection"];
+    componentList["Game.UI.InGame.ActionsSection"] = (args: any) => {
+        const selectedEntity = useValue(selectedInfo.selectedEntity$);
+        const selectedRoute = useValue(selectedInfo.selectedRoute$);
+        const isRoute = selectedEntity?.index === selectedRoute?.index;
+        const prevDisabled = useRef<boolean | undefined>(undefined);
+        useEffect(() => {
+            prevDisabled.current = undefined;
+        }, [selectedEntity?.index]);
+        useEffect(() => {
+            if (!isRoute || !args.disableable) {
+                prevDisabled.current = args.disabled;
+                return;
+            }
+            if (prevDisabled.current === undefined) {
+                prevDisabled.current = args.disabled;
+                return;
+            }
+            if (prevDisabled.current !== args.disabled) {
+                prevDisabled.current = args.disabled;
+                requestXtmLineMapRefresh();
+            }
+        }, [args.disabled, args.disableable, isRoute, selectedEntity]);
+        return <_originalActions {...args} />;
+    };
+
     const _originalTicketPrice = componentList["Game.UI.InGame.TicketPriceSection"];
     componentList["Game.UI.InGame.TicketPriceSection"] = (args: any) => {
         const selectedEntity = useValue(selectedInfo.selectedEntity$);

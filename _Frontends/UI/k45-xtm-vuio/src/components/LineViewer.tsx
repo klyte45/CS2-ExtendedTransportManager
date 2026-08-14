@@ -7,6 +7,7 @@ import { TransportType } from "#enum/TransportType";
 import engine from "cohtml/cohtml";
 import "#styles/TLM_LineDetail.scss";
 import { enrichVehicleInfo, enrichStopInfo } from "#utility/lineViewerUtils";
+import { subscribeXtmLineMapRefresh } from "#utility/xtmLineMapRefresh";
 import { useValue } from "cs2/api";
 
 type Props = {
@@ -79,6 +80,14 @@ export const XtmLineViewer = ({ children, args, isXtm, xtmOptions }: Props) => {
         LineManagementService.getCurrentLineInfo().then(reloadData);
         return () => { };
     }, [useValue(selectedInfo.selectedEntity$), useValue(time.ticks$), isXtm])
+
+    useEffect(() => {
+        if (!isXtm) return;
+        return subscribeXtmLineMapRefresh(() => {
+            LineManagementService.listLines().then(reloadLines);
+            LineManagementService.getCurrentLineInfo().then(reloadData);
+        });
+    }, [isXtm]);
 
     if (!isXtm || !lineDetails) {
         return <>{children}</>;
