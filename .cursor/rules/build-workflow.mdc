@@ -1,0 +1,25 @@
+---
+description: Ask user to compile backend; agents may run frontend npm builds
+alwaysApply: true
+---
+
+# Build / compile workflow
+
+## Backend (C# / solution)
+
+Do **not** compile the backend yourself (`msbuild`, `dotnet build`, Visual Studio, or `kcs2m_build_verify`).
+
+When a backend build is needed (after C# changes, before verifying compile errors, etc.):
+
+1. **Ask the user** to compile the solution (`ExtendedTransportManager.sln`).
+2. Wait for their result / feedback before assuming it succeeded or iterating on build errors.
+
+## Frontend (`_Frontends`)
+
+Agents **may always** run frontend builds via npm in the relevant package directory (e.g. `_Frontends/UI/k45-xtm-vuio`):
+
+- `npm run build` / `npm run build:webpack`
+- `npm run dev` (watch)
+- other scripts defined in that package’s `package.json`
+
+Use the package that owns the changed UI; install deps with `npm install` there if needed.

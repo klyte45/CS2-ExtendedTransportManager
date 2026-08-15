@@ -26,5 +26,12 @@ export class PaletteService {
     static async previewPaletteFromFile(file: string): Promise<string[] | null> {
         return await engine.call("k45::xtm.palettes.previewPaletteFromFile", file)
     }
+    static async getClipboardText(): Promise<string> {
+        const text = await engine.call("k45::xtm.palettes.getClipboardText")
+        return typeof text === "string" ? text : ""
+    }
+    static async setClipboardText(text: string): Promise<boolean> {
+        return !!(await engine.call("k45::xtm.palettes.setClipboardText", text))
+    }
 }
 

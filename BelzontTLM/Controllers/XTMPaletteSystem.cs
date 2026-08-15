@@ -10,6 +10,7 @@ using System.Linq;
 using System.Xml.Serialization;
 using Unity.Collections;
 using Unity.Jobs;
+using UnityEngine;
 
 namespace BelzontTLM.Palettes
 {
@@ -28,6 +29,8 @@ namespace BelzontTLM.Palettes
             eventCaller.Invoke("palettes.getPalettesFolderPath", GetPalettesFolderPath);
             eventCaller.Invoke("palettes.addPaletteFromFile", AddPaletteFromFile);
             eventCaller.Invoke("palettes.previewPaletteFromFile", PreviewPaletteFromFile);
+            eventCaller.Invoke("palettes.getClipboardText", GetClipboardText);
+            eventCaller.Invoke("palettes.setClipboardText", SetClipboardText);
         }
 
         private Action<string, object[]> eventCaller;
@@ -122,6 +125,33 @@ namespace BelzontTLM.Palettes
         private string GetPalettesFolderPath()
         {
             return ExtendedTransportManagerMod.Instance.PalettesFolder;
+        }
+
+        private string GetClipboardText()
+        {
+            try
+            {
+                return GUIUtility.systemCopyBuffer ?? string.Empty;
+            }
+            catch (Exception e)
+            {
+                LogUtils.DoWarnLog($"Failed to read clipboard: {e.Message}");
+                return string.Empty;
+            }
+        }
+
+        private bool SetClipboardText(string text)
+        {
+            try
+            {
+                GUIUtility.systemCopyBuffer = text ?? string.Empty;
+                return true;
+            }
+            catch (Exception e)
+            {
+                LogUtils.DoWarnLog($"Failed to write clipboard: {e.Message}");
+                return false;
+            }
         }
 
         #region Serialization

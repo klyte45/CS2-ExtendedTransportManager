@@ -1,5 +1,7 @@
 import { PaletteData, PaletteService } from "#service/PaletteService";
 import translate from "#utility/translate";
+import pasteAppendIcon from "#images/i_palettePasteAppend.svg";
+import pasteReplaceIcon from "#images/i_palettePasteReplace.svg";
 import {
     calculateElementPosition,
     ColorUtils,
@@ -32,12 +34,18 @@ const PLUS_ICON = "coui://uil/Standard/Plus.svg";
 const DICE_ICON = "coui://uil/Standard/Dice.svg";
 const PENCIL_ICON = "coui://uil/Standard/PencilPaper.svg";
 const APPEND_ICON = "coui://uil/Standard/PaperWithArrow.svg";
+const COPY_ICON = "coui://uil/Standard/RectangleCopy.svg";
+const RESET_ICON = "coui://uil/Standard/Reset.svg";
+const PASTE_REPLACE_ICON = pasteReplaceIcon;
+const PASTE_APPEND_ICON = pasteAppendIcon;
 
 const CELL_BASE_REM = 4.55;
 const MAX_MULTIPLIER = 30;
 const MIN_MULTIPLIER = 1;
 const DEFAULT_MULTIPLIER = 3;
 const DRAG_THRESHOLD_PX = 4;
+const ACTION_STATUS_MS = 5000;
+const HEX_COLOR_LINE = /^#?[a-fA-F0-9]{6}$/;
 
 function sequentialDisplayNumbers(count: number): number[] {
     return Array.from({ length: count }, (_, i) => i + 1);
@@ -45,6 +53,15 @@ function sequentialDisplayNumbers(count: number): number[] {
 
 function nextDisplayNumber(labels: number[]): number {
     return (labels.length ? Math.max(...labels) : 0) + 1;
+}
+
+function parseHexPaletteClipboard(text: string): `#${string}`[] | null {
+    const colors = text
+        .split(/\r?\n/)
+        .map((line) => line.trim())
+        .filter((line) => HEX_COLOR_LINE.test(line))
+        .map((line) => (line.startsWith("#") ? line : `#${line}`) as `#${string}`);
+    return colors.length > 0 ? colors : null;
 }
 
 function calcLineIconMultiplier(
@@ -88,10 +105,12 @@ export function PaletteEditorPanel({
     const [lineIconMultiplier, setLineIconMultiplier] = useState(DEFAULT_MULTIPLIER);
     const [isRenamingPalette, setIsRenamingPalette] = useState(false);
     const [isDeletingPalette, setIsDeletingPalette] = useState(false);
+    const [isResettingPalette, setIsResettingPalette] = useState(false);
     const [isPickingAppendFile, setIsPickingAppendFile] = useState(false);
     const [palettesFolderPath, setPalettesFolderPath] = useState("");
     const [draggingIndex, setDraggingIndex] = useState<number | null>(null);
     const [dropIndex, setDropIndex] = useState<number | null>(null);
+    const [actionStatus, setActionStatus] = useState<string | null>(null);
     const libraryPalettesCache = useRef<PaletteData[]>([]);
     const skipNextPaletteReset = useRef(false);
     const currentPaletteDataRef = useRef(currentPaletteData);
@@ -100,8 +119,27 @@ export function PaletteEditorPanel({
     const draggingIndexRef = useRef<number | null>(null);
     const dropIndexRef = useRef<number | null>(null);
     const suppressClickRef = useRef(false);
+    const actionStatusTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
     draggingIndexRef.current = draggingIndex;
     dropIndexRef.current = dropIndex;
+
+    const showActionStatus = useCallback((msg: string, ms = ACTION_STATUS_MS) => {
+        if (actionStatusTimerRef.current) {
+            clearTimeout(actionStatusTimerRef.current);
+            actionStatusTimerRef.current = null;
+        }
+        setActionStatus(msg);
+        actionStatusTimerRef.current = setTimeout(() => {
+            setActionStatus(null);
+            actionStatusTimerRef.current = null;
+        }, ms);
+    }, []);
+
+    useEffect(() => {
+        return () => {
+            if (actionStatusTimerRef.current) clearTimeout(actionStatusTimerRef.current);
+        };
+    }, []);
 
     useEffect(() => {
         PaletteService.getPalettesFolderPath().then(setPalettesFolderPath);
@@ -288,6 +326,91 @@ export function PaletteEditorPanel({
         setContentChanged(true);
     }
 
+    async function copyPalette() {
+        if (!currentPaletteData?.ColorsRGB?.length) return;
+        const text = currentPaletteData.ColorsRGB.join("\n");
+        try {
+            const ok = await PaletteService.setClipboardText(text);
+            if (ok) {
+                showActionStatus(
+                    translate("paletteEditor.clipboard.copied", "Palette copied"),
+                );
+            } else {
+                showActionStatus(
+                    translate(
+                        "paletteEditor.clipboard.copyFailed",
+                        "Could not copy to clipboard",
+                    ),
+                );
+            }
+        } catch {
+            showActionStatus(
+                translate(
+                    "paletteEditor.clipboard.copyFailed",
+                    "Could not copy to clipboard",
+                ),
+            );
+        }
+    }
+
+    async function pastePalette(mode: "replace" | "append") {
+        let text: string;
+        try {
+            text = await PaletteService.getClipboardText();
+        } catch {
+            showActionStatus(
+                translate(
+                    "paletteEditor.clipboard.pasteFailed",
+                    "Could not read clipboard",
+                ),
+            );
+            return;
+        }
+        const colors = parseHexPaletteClipboard(text ?? "");
+        if (!colors) {
+            showActionStatus(
+                translate(
+                    "paletteEditor.clipboard.invalid",
+                    "Clipboard does not contain a valid .hex palette",
+                ),
+            );
+            return;
+        }
+        if (mode === "replace") {
+            setCurrentPaletteData((prev) => {
+                if (!prev) return prev;
+                return { ...prev, ColorsRGB: colors } as PaletteData;
+            });
+            setDisplayNumbers(sequentialDisplayNumbers(colors.length));
+        } else {
+            setCurrentPaletteData((prev) => {
+                if (!prev) return prev;
+                return { ...prev, ColorsRGB: [...prev.ColorsRGB, ...colors] } as PaletteData;
+            });
+            setDisplayNumbers((prev) => {
+                let next = nextDisplayNumber(prev);
+                const labels = colors.map(() => next++);
+                return [...prev, ...labels];
+            });
+        }
+        setEditingIndex(undefined);
+        setContentChanged(true);
+    }
+
+    function confirmResetPalette(confirmed: boolean) {
+        setIsResettingPalette(false);
+        if (!confirmed || !selectedPaletteGuid) return;
+        const original = availablePalettes.find((x) => x.GuidString === selectedPaletteGuid);
+        if (!original) return;
+        setCurrentPaletteData(original);
+        setDisplayNumbers(sequentialDisplayNumbers(original.ColorsRGB?.length ?? 0));
+        setContentChanged(false);
+        setEditingIndex(undefined);
+        setDraggingIndex(null);
+        setDropIndex(null);
+        dragCandidateRef.current = null;
+    }
+
     const onSetColor = useCallback((j: number, newColor: `#${string}`) => {
         setCurrentPaletteData((prev) => {
             if (!prev) return prev;
@@ -396,15 +519,6 @@ export function PaletteEditorPanel({
                     </div>
                 </div>
                 <div className="xtm-paletteEditor_actions">
-                    <button
-                        type="button"
-                        className="positiveBtn"
-                        onClick={savePalette}
-                        disabled={!contentChanged}
-                    >
-                        {translate("paletteEditor.saveChanges")}
-                    </button>
-                    <div className="xtm-paletteEditor_actionsGrow" />
                     <FocusDisabled>
                         <ToolButton
                             src={PLUS_ICON}
@@ -423,6 +537,7 @@ export function PaletteEditorPanel({
                             disabled={(currentPaletteData.ColorsRGB?.length ?? 0) < 2}
                             focusKey={VanillaComponentResolver.instance.FOCUS_DISABLED}
                         />
+                        <div className="xtm-paletteEditor_actionsGroupSpacer" />
                         <ToolButton
                             src={PENCIL_ICON}
                             selected={false}
@@ -439,8 +554,57 @@ export function PaletteEditorPanel({
                             onSelect={openAppendPicker}
                             focusKey={VanillaComponentResolver.instance.FOCUS_DISABLED}
                         />
+                        <div className="xtm-paletteEditor_actionsGroupSpacer" />
+                        <ToolButton
+                            src={COPY_ICON}
+                            selected={false}
+                            className="xtm-paletteEditor_iconBtn"
+                            tooltip={translate("paletteEditor.copyPalette", "Copy palette")}
+                            onSelect={copyPalette}
+                            focusKey={VanillaComponentResolver.instance.FOCUS_DISABLED}
+                        />
+                        <ToolButton
+                            src={PASTE_REPLACE_ICON}
+                            selected={false}
+                            className="xtm-paletteEditor_iconBtn"
+                            tooltip={translate(
+                                "paletteEditor.pasteReplacePalette",
+                                "Paste palette (replace)",
+                            )}
+                            onSelect={() => void pastePalette("replace")}
+                            focusKey={VanillaComponentResolver.instance.FOCUS_DISABLED}
+                        />
+                        <ToolButton
+                            src={PASTE_APPEND_ICON}
+                            selected={false}
+                            className="xtm-paletteEditor_iconBtn"
+                            tooltip={translate(
+                                "paletteEditor.pasteAppendPalette",
+                                "Paste palette (append)",
+                            )}
+                            onSelect={() => void pastePalette("append")}
+                            focusKey={VanillaComponentResolver.instance.FOCUS_DISABLED}
+                        />
+                        <div className="xtm-paletteEditor_actionsGroupSpacer" />
+                        <ToolButton
+                            src={RESET_ICON}
+                            selected={false}
+                            className="xtm-paletteEditor_iconBtn"
+                            tooltip={translate("paletteEditor.resetChanges", "Reset changes")}
+                            onSelect={() => setIsResettingPalette(true)}
+                            disabled={!contentChanged}
+                            focusKey={VanillaComponentResolver.instance.FOCUS_DISABLED}
+                        />
                     </FocusDisabled>
-                    <div className="xtm-paletteEditor_actionsGrow" />
+                    <div className="xtm-paletteEditor_actionsStatus">{actionStatus ?? ""}</div>
+                    <button
+                        type="button"
+                        className="positiveBtn"
+                        onClick={savePalette}
+                        disabled={!contentChanged}
+                    >
+                        {translate("paletteEditor.saveChanges")}
+                    </button>
                     <button
                         type="button"
                         className="negativeBtn"
@@ -497,6 +661,19 @@ export function PaletteEditorPanel({
                         )}
                         onConfirm={() => confirmDeletePalette(true)}
                         onCancel={() => confirmDeletePalette(false)}
+                    />
+                </Portal>
+            )}
+            {isResettingPalette && (
+                <Portal>
+                    <ConfirmationDialog
+                        title={translate("paletteEditor.reset.title", "Reset changes")}
+                        message={translate(
+                            "paletteEditor.reset.message",
+                            "Discard unsaved changes to this palette? This cannot be undone.",
+                        )}
+                        onConfirm={() => confirmResetPalette(true)}
+                        onCancel={() => confirmResetPalette(false)}
                     />
                 </Portal>
             )}

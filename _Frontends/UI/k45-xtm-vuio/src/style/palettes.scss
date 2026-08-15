@@ -220,15 +220,30 @@
             flex: 0 0 auto;
             display: flex;
             flex-direction: row;
-            flex-wrap: wrap;
+            flex-wrap: nowrap;
             align-items: center;
             gap: 6rem;
             padding-top: 4rem;
         }
 
-        &_actionsGrow {
+        &_actionsGroupSpacer {
+            flex: 0 0 12rem;
+            width: 12rem;
+            min-width: 12rem;
+            align-self: stretch;
+        }
+
+        &_actionsStatus {
             flex: 1 1 auto;
             min-width: 8rem;
+            text-align: center;
+            font-size: var(--fontSizeS);
+            color: var(--textColorDim);
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+            padding-left: 8rem;
+            padding-right: 8rem;
         }
 
         &_iconBtn {

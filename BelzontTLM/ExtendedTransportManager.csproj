@@ -118,6 +118,10 @@
       <HintPath>$(CSII_MANAGEDPATH)\UnityEngine.InputLegacyModule.dll</HintPath>
       <Private>False</Private>
     </Reference>
+    <Reference Include="UnityEngine.IMGUIModule">
+      <HintPath>$(CSII_MANAGEDPATH)\UnityEngine.IMGUIModule.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
     <Reference Include="Colossal.Mono.Cecil">
       <HintPath>$(CSII_MANAGEDPATH)\Colossal.Mono.Cecil.dll</HintPath>
       <Private>False</Private>

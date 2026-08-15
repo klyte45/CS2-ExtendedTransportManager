@@ -17,6 +17,7 @@ CS2 UI runs on **Coherent Gameface (cohtml)**. Unsupported CSS is often **silent
 - CSS `var(...)` inside fragile shorthands (especially `border-color` shorthand + variables)
 - `calc()` mixing `%` with other units; `calc()` / CSS variables inside `@keyframes`
 - Assuming `display: block` / `inline` match browsers — elements default to flex + `border-box`
+- `navigator.clipboard` doesn't work. It will require using backend custom API for clipboard operations (create one specific per feature/subject)
 
 ## Shorthands
 
