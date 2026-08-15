@@ -533,6 +533,11 @@ export function PaletteEditorPanel({
                                 dropIndex === idx &&
                                 draggingIndex !== idx
                             }
+                            dropAhead={
+                                draggingIndex !== null &&
+                                dropIndex === idx &&
+                                dropIndex > draggingIndex
+                            }
                             onExcludeColor={onExcludeColor}
                             onSetColor={onSetColor}
                             onBeginDragCandidate={beginDragCandidate}
@@ -725,6 +730,7 @@ type PropsIcon = {
     isOpen: boolean;
     isDragging: boolean;
     isDropTarget: boolean;
+    dropAhead: boolean;
     onExcludeColor: (index: number) => void;
     onSetColor: (index: number, color: `#${string}`) => void;
     onBeginDragCandidate: (index: number, x: number, y: number) => void;
@@ -741,6 +747,7 @@ const LineIconWithEditor = memo(
         isOpen,
         isDragging,
         isDropTarget,
+        dropAhead,
         onExcludeColor,
         onSetColor,
         onBeginDragCandidate,
@@ -779,7 +786,11 @@ const LineIconWithEditor = memo(
             "lineIconContainer" +
             (isOpen ? " currentSelected" : "") +
             (isDragging ? " isDragging" : "") +
-            (isDropTarget ? " isDropTarget" : "");
+            (isDropTarget
+                ? dropAhead
+                    ? " isDropTargetAhead"
+                    : " isDropTargetBehind"
+                : "");
 
         return (
             <div

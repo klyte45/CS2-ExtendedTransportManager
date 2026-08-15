@@ -316,23 +316,28 @@
                 cursor: grabbing;
             }
 
-            &.isDropTarget {
-                border-style: solid;
-                border-left-color: var(--accentColorNormal);
-                border-right-color: var(--accentColorNormal);
-                border-top-color: var(--accentColorNormal);
-                border-bottom-color: var(--accentColorNormal);
-                border-left-width: calc(0.25rem * var(--lineIconSizeMultiplier));
-                border-right-width: calc(0.25rem * var(--lineIconSizeMultiplier));
-                border-top-width: calc(0.25rem * var(--lineIconSizeMultiplier));
-                border-bottom-width: calc(0.25rem * var(--lineIconSizeMultiplier));
-                width: calc(4.5rem * var(--lineIconSizeMultiplier));
-                height: calc(4.5rem * var(--lineIconSizeMultiplier));
-                margin-top: 0;
-                margin-right: 0;
-                margin-bottom: 0;
-                margin-left: 0;
+            &.isDropTargetAhead,
+            &.isDropTargetBehind {
                 box-sizing: border-box;
+                border-style: solid;
+                border-top-width: 0;
+                border-bottom-width: 0;
+                border-top-color: transparent;
+                border-bottom-color: transparent;
+            }
+
+            &.isDropTargetAhead {
+                border-left-width: 0;
+                border-right-width: calc(0.25rem * var(--lineIconSizeMultiplier));
+                border-left-color: transparent;
+                border-right-color: var(--accentColorNormal);
+            }
+
+            &.isDropTargetBehind {
+                border-left-width: calc(0.25rem * var(--lineIconSizeMultiplier));
+                border-right-width: 0;
+                border-left-color: var(--accentColorNormal);
+                border-right-color: transparent;
             }
 
             .excludeBtn {

@@ -16,7 +16,7 @@ export function PaletteListCard({ palette, selected, onSelect }: Props) {
             onClick={onSelect}
         >
             <div className="xtm-paletteCard_name">{palette.Name}</div>
-            <PaletteColorSwatches colors={palette.ColorsRGB ?? []} maxSwatches={30} />
+            <PaletteColorSwatches colors={palette.ColorsRGB ?? []} maxSwatches={25} />
         </button>
     );
 }
