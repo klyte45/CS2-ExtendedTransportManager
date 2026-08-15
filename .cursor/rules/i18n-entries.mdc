@@ -1,0 +1,45 @@
+---
+description: Never edit i18n.csv; write tab-separated *_entries.txt instead
+alwaysApply: true
+---
+
+# i18n — agents never edit CSV
+
+Do **not** modify `BelzontTLM/i18n/i18n.csv`, `i18n.xlsm`, or locale CSVs. Humans merge via Excel macros.
+
+## New strings
+
+Create or append a tab-separated file:
+
+`BelzontTLM/i18n/{feature}_entries.txt`
+
+(same naming as existing `sipManagedGroups_entries.txt`, etc.)
+
+### Format (7 columns, tab-separated)
+
+```text
+K45::XTM	vuio	lineStationDetail	waiting.passengers	K45::XTM.vuio[lineStationDetail.waiting.passengers]	Passengers waiting: {quantity}	Passageiros aguardando: {quantity}
+::T	UI			::TUI	UI	UI
+```
+
+| Col | Meaning |
+|---|---|
+| 1 | prefix (`K45::XTM` or `::T` / `::G` / …) |
+| 2 | module (`vuio`) or empty for `::` rows |
+| 3 | group / namespace |
+| 4 | key segment |
+| 5 | assembled key (what code / CSV will use) |
+| 6 | en-US |
+| 7 | pt-BR |
+
+Older in-repo `*_entries.txt` files may have 6 columns (no assembled key). **New agent output uses 7 columns.**
+
+## `::` special keys
+
+Resolved at load by `BasicIMod.ProcessKey`. Prefixes (see `BelzontCommons/README.md`):
+
+`::M`, `::G{group}`, `::T{tab}`, `::L{prop}`, `::D{prop}`, `::B{action}`, `::H{action}`, `::E{Type}.{value}`, `::NT{id}`, `::ND{id}`
+
+For `::` rows: leave unused middle columns empty; column 5 is the CSV key (e.g. `::TUI`). Do not invent new `::` shapes — consult `BasicIMod` / Commons README when unsure.
+
+Frontend/C# should reference the **assembled** key; agents only write the pending `*_entries.txt`.

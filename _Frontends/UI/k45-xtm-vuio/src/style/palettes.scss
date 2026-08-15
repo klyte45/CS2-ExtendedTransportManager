@@ -180,6 +180,14 @@
             padding: 5rem;
             background-color: var(--menuPanel1);
             border-radius: 8rem;
+
+            &.isReordering {
+                cursor: grabbing;
+
+                .excludeBtn {
+                    display: none !important;
+                }
+            }
         }
 
         &_details {
@@ -247,6 +255,7 @@
             margin-top: calc(0.25rem * var(--lineIconSizeMultiplier));
             margin-bottom: calc(0.25rem * var(--lineIconSizeMultiplier));
             position: relative;
+            cursor: grab;
 
             &.currentSelected {
                 border-style: solid;
@@ -264,9 +273,28 @@
                 margin: 0;
             }
 
-            .excludeBtn,
-            .moveMinus,
-            .movePlus {
+            &.isDragging {
+                opacity: 0.45;
+                cursor: grabbing;
+            }
+
+            &.isDropTarget {
+                border-style: solid;
+                border-left-color: var(--accentColorNormal);
+                border-right-color: var(--accentColorNormal);
+                border-top-color: var(--accentColorNormal);
+                border-bottom-color: var(--accentColorNormal);
+                border-left-width: calc(0.25rem * var(--lineIconSizeMultiplier));
+                border-right-width: calc(0.25rem * var(--lineIconSizeMultiplier));
+                border-top-width: calc(0.25rem * var(--lineIconSizeMultiplier));
+                border-bottom-width: calc(0.25rem * var(--lineIconSizeMultiplier));
+                width: calc(4.5rem * var(--lineIconSizeMultiplier));
+                height: calc(4.5rem * var(--lineIconSizeMultiplier));
+                margin: 0;
+                box-sizing: border-box;
+            }
+
+            .excludeBtn {
                 display: none;
             }
 
@@ -290,6 +318,7 @@
                 display: flex;
                 font-weight: bold;
                 overflow: hidden;
+                cursor: grab;
 
                 .routeNum {
                     border: none !important;
@@ -315,10 +344,7 @@
             }
 
             &:hover {
-
-                .excludeBtn,
-                .moveMinus,
-                .movePlus {
+                .excludeBtn {
                     display: flex;
                     position: absolute;
                     width: calc(1rem * var(--lineIconSizeMultiplier));
@@ -330,27 +356,11 @@
                     z-index: 9999;
                     border-width: 1rem;
                     border-style: solid;
-                }
-
-                .excludeBtn {
                     top: 2rem;
                     right: 2rem;
                     background-color: var(--negativeColor);
                     color: var(--iconColor);
-                }
-
-                .moveMinus {
-                    bottom: 2rem;
-                    left: 2rem;
-                    background-color: var(--accentColorLight);
-                    color: var(--accentColorDarker);
-                }
-
-                .movePlus {
-                    bottom: 2rem;
-                    right: 2rem;
-                    background-color: var(--accentColorLight);
-                    color: var(--accentColorDarker);
+                    cursor: pointer;
                 }
             }
         }

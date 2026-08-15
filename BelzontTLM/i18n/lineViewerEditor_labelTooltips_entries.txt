@@ -1,6 +1,0 @@
-K45::XTM	vuio	lineViewerEditor	internalNumber	Internal route number	Número interno da rota
-K45::XTM	vuio	lineViewerEditor	internalNumber.tooltip	Used by palettes and naming	Usado por paletas e nomeação
-K45::XTM	vuio	lineViewerEditor	displayIdentifier	Route identifier	Identificador da rota
-K45::XTM	vuio	lineViewerEditor	displayIdentifier.tooltip	Overrides route number when name and shield are generated	Sobrescreve o número interno no nome gerado e no escudo da linha
-K45::XTM	vuio	lineViewerEditor	ignorePalette	Use fixed color	Usar cor fixa
-K45::XTM	vuio	lineViewerEditor	ignorePalette.tooltip	Ignore palette's settings for this line	Ignorar configuração da paleta

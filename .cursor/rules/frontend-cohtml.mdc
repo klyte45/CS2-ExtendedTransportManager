@@ -1,0 +1,32 @@
+---
+description: Cohtml (Gameface) CSS/JS limits — not a normal browser
+globs: _Frontends/**/*.{scss,css,tsx,ts,jsx,js}
+alwaysApply: false
+---
+
+# Frontend is cohtml, not a browser
+
+CS2 UI runs on **Coherent Gameface (cohtml)**. Unsupported CSS is often **silently ignored**. Prefer patterns already used in this repo’s SCSS/TSX.
+
+## Do not use
+
+- `gap` / `row-gap` / `column-gap` — use margins on children instead
+- CSS Grid (`display: grid` and all `grid-*`)
+- Flex `order`
+- Modern color syntax cohtml rejects (e.g. `rgb(r g b / a)`; avoid `currentcolor` unless already used nearby)
+- CSS `var(...)` inside fragile shorthands (especially `border-color` shorthand + variables)
+- `calc()` mixing `%` with other units; `calc()` / CSS variables inside `@keyframes`
+- Assuming `display: block` / `inline` match browsers — elements default to flex + `border-box`
+
+## Shorthands
+
+Prefer longhands when unsure. Existing project shorthands (`margin`, `padding`, `border`, `flex`, `overflow`, `background`) may be reused when matching nearby code. Treat **new** shorthand kinds as suspect; run `kcs2m_conventions_check` and `kcs2m_css_lookup` before inventing patterns.
+
+## Before a “usually native” web feature
+
+CSS, DOM, JS API, or layout trick:
+
+1. Search whether `_Frontends` already uses it.
+2. If not already used and not clearly unavoidable → **ask the user** before introducing it.
+
+Edge cases: [Gameface differences](https://docs.coherent-labs.com/cpp-gameface/what_is_gfp/htmlfeaturesupport/), [CSS properties](https://docs.coherent-labs.com/cpp-gameface/content_development/supported_features_tables/cssproperties/).

@@ -37,6 +37,15 @@ const CELL_BASE_REM = 4.55;
 const MAX_MULTIPLIER = 30;
 const MIN_MULTIPLIER = 1;
 const DEFAULT_MULTIPLIER = 3;
+const DRAG_THRESHOLD_PX = 4;
+
+function sequentialDisplayNumbers(count: number): number[] {
+    return Array.from({ length: count }, (_, i) => i + 1);
+}
+
+function nextDisplayNumber(labels: number[]): number {
+    return (labels.length ? Math.max(...labels) : 0) + 1;
+}
 
 function calcLineIconMultiplier(
     origWidth: number,
@@ -72,6 +81,7 @@ export function PaletteEditorPanel({
     onPalettesUpdated,
 }: Props) {
     const [currentPaletteData, setCurrentPaletteData] = useState<PaletteData>();
+    const [displayNumbers, setDisplayNumbers] = useState<number[]>([]);
     const [editingIndex, setEditingIndex] = useState<number>();
     const [contentChanged, setContentChanged] = useState(false);
     const previewRef = useRef<HTMLDivElement>(null);
@@ -80,10 +90,18 @@ export function PaletteEditorPanel({
     const [isDeletingPalette, setIsDeletingPalette] = useState(false);
     const [isPickingAppendFile, setIsPickingAppendFile] = useState(false);
     const [palettesFolderPath, setPalettesFolderPath] = useState("");
+    const [draggingIndex, setDraggingIndex] = useState<number | null>(null);
+    const [dropIndex, setDropIndex] = useState<number | null>(null);
     const libraryPalettesCache = useRef<PaletteData[]>([]);
     const skipNextPaletteReset = useRef(false);
     const currentPaletteDataRef = useRef(currentPaletteData);
     currentPaletteDataRef.current = currentPaletteData;
+    const dragCandidateRef = useRef<{ idx: number; x: number; y: number } | null>(null);
+    const draggingIndexRef = useRef<number | null>(null);
+    const dropIndexRef = useRef<number | null>(null);
+    const suppressClickRef = useRef(false);
+    draggingIndexRef.current = draggingIndex;
+    dropIndexRef.current = dropIndex;
 
     useEffect(() => {
         PaletteService.getPalettesFolderPath().then(setPalettesFolderPath);
@@ -117,11 +135,17 @@ export function PaletteEditorPanel({
             skipNextPaletteReset.current = false;
             return;
         }
-        setCurrentPaletteData(
-            availablePalettes.find((x) => x.GuidString === selectedPaletteGuid) ?? undefined,
+        const palette =
+            availablePalettes.find((x) => x.GuidString === selectedPaletteGuid) ?? undefined;
+        setCurrentPaletteData(palette);
+        setDisplayNumbers(
+            palette ? sequentialDisplayNumbers(palette.ColorsRGB?.length ?? 0) : [],
         );
         setContentChanged(false);
         setEditingIndex(undefined);
+        setDraggingIndex(null);
+        setDropIndex(null);
+        dragCandidateRef.current = null;
     }, [selectedPaletteGuid, availablePalettes]);
 
     const onExcludeColor = useCallback((j: number) => {
@@ -131,30 +155,93 @@ export function PaletteEditorPanel({
             newColors.splice(j, 1);
             return { ...prev, ColorsRGB: newColors } as PaletteData;
         });
-        setContentChanged(true);
-    }, []);
-
-    const onMoveColor = useCallback((j: number, delta: number) => {
-        setCurrentPaletteData((prev) => {
-            if (!prev) return prev;
-            const newColors = [...prev.ColorsRGB];
-            const color = newColors.splice(j, 1);
-            newColors.splice(Math.min(Math.max(j + delta, 0), newColors.length), 0, ...color);
-            return { ...prev, ColorsRGB: newColors } as PaletteData;
+        setDisplayNumbers((prev) => {
+            const next = [...prev];
+            next.splice(j, 1);
+            return next;
         });
         setContentChanged(true);
     }, []);
+
+    const reorderColor = useCallback((from: number, to: number) => {
+        if (from === to) return;
+        setCurrentPaletteData((prev) => {
+            if (!prev) return prev;
+            const newColors = [...prev.ColorsRGB];
+            const [color] = newColors.splice(from, 1);
+            newColors.splice(to, 0, color);
+            return { ...prev, ColorsRGB: newColors } as PaletteData;
+        });
+        setDisplayNumbers((prev) => {
+            const next = [...prev];
+            const [label] = next.splice(from, 1);
+            next.splice(to, 0, label);
+            return next;
+        });
+        setContentChanged(true);
+    }, []);
+
+    const beginDragCandidate = useCallback((idx: number, x: number, y: number) => {
+        dragCandidateRef.current = { idx, x, y };
+    }, []);
+
+    const setDropTarget = useCallback((idx: number) => {
+        if (draggingIndexRef.current === null) return;
+        setDropIndex(idx);
+    }, []);
+
+    const handleIconClick = useCallback((idx: number) => {
+        if (suppressClickRef.current) {
+            suppressClickRef.current = false;
+            return;
+        }
+        setEditingIndex(idx);
+    }, []);
+
+    useEffect(() => {
+        const onMove = (e: MouseEvent) => {
+            const candidate = dragCandidateRef.current;
+            if (!candidate) return;
+            if (draggingIndexRef.current !== null) return;
+            const dx = e.clientX - candidate.x;
+            const dy = e.clientY - candidate.y;
+            if (dx * dx + dy * dy < DRAG_THRESHOLD_PX * DRAG_THRESHOLD_PX) return;
+            setDraggingIndex(candidate.idx);
+            setDropIndex(candidate.idx);
+            setEditingIndex(undefined);
+        };
+        const onUp = () => {
+            const from = draggingIndexRef.current;
+            const to = dropIndexRef.current;
+            const wasDragging = from !== null;
+            dragCandidateRef.current = null;
+            if (!wasDragging) return;
+            suppressClickRef.current = true;
+            if (from !== null && to !== null && from !== to) {
+                reorderColor(from, to);
+            }
+            setDraggingIndex(null);
+            setDropIndex(null);
+        };
+        document.addEventListener("mousemove", onMove);
+        document.addEventListener("mouseup", onUp);
+        return () => {
+            document.removeEventListener("mousemove", onMove);
+            document.removeEventListener("mouseup", onUp);
+        };
+    }, [reorderColor]);
 
     function shuffleColors() {
-        setCurrentPaletteData((prev) => {
-            if (!prev) return prev;
-            const newColors = [...prev.ColorsRGB];
-            for (let i = newColors.length - 1; i > 0; i--) {
-                const j = Math.floor(Math.random() * (i + 1));
-                [newColors[i], newColors[j]] = [newColors[j], newColors[i]];
-            }
-            return { ...prev, ColorsRGB: newColors } as PaletteData;
-        });
+        if (!currentPaletteData) return;
+        const newColors = [...currentPaletteData.ColorsRGB];
+        const newLabels = [...displayNumbers];
+        for (let i = newColors.length - 1; i > 0; i--) {
+            const j = Math.floor(Math.random() * (i + 1));
+            [newColors[i], newColors[j]] = [newColors[j], newColors[i]];
+            [newLabels[i], newLabels[j]] = [newLabels[j], newLabels[i]];
+        }
+        setCurrentPaletteData({ ...currentPaletteData, ColorsRGB: newColors } as PaletteData);
+        setDisplayNumbers(newLabels);
         setContentChanged(true);
     }
 
@@ -163,6 +250,7 @@ export function PaletteEditorPanel({
             if (!prev) return prev;
             return { ...prev, ColorsRGB: [...prev.ColorsRGB, "#FFFFFF"] } as PaletteData;
         });
+        setDisplayNumbers((prev) => [...prev, nextDisplayNumber(prev)]);
         setContentChanged(true);
     }
 
@@ -191,6 +279,11 @@ export function PaletteEditorPanel({
         setCurrentPaletteData((prev) => {
             if (!prev) return prev;
             return { ...prev, ColorsRGB: [...prev.ColorsRGB, ...appended] } as PaletteData;
+        });
+        setDisplayNumbers((prev) => {
+            let next = nextDisplayNumber(prev);
+            const labels = appended.map(() => next++);
+            return [...prev, ...labels];
         });
         setContentChanged(true);
     }
@@ -234,6 +327,7 @@ export function PaletteEditorPanel({
         );
         if (!originalPalette) return;
         const unsavedColors = [...currentPaletteData.ColorsRGB];
+        const unsavedLabels = [...displayNumbers];
         const unsavedChanged = contentChanged;
         const guid = currentPaletteData.GuidString;
         await PaletteService.updatePalette(guid, newName.trim(), originalPalette.ColorsRGB);
@@ -243,6 +337,7 @@ export function PaletteEditorPanel({
         const renamedPalette = palettes.find((x) => x.GuidString === guid);
         if (renamedPalette) {
             setCurrentPaletteData({ ...renamedPalette, ColorsRGB: unsavedColors });
+            setDisplayNumbers(unsavedLabels);
             setContentChanged(unsavedChanged);
         }
     }
@@ -261,7 +356,10 @@ export function PaletteEditorPanel({
         <>
             <div className="xtm-paletteEditor">
                 <div
-                    className="xtm-paletteEditor_preview"
+                    className={
+                        "xtm-paletteEditor_preview" +
+                        (draggingIndex !== null ? " isReordering" : "")
+                    }
                     ref={previewRef}
                     style={
                         {
@@ -274,12 +372,20 @@ export function PaletteEditorPanel({
                             key={idx}
                             clr={clr}
                             idx={idx}
+                            displayNumber={displayNumbers[idx] ?? idx + 1}
                             isOpen={editingIndex === idx}
+                            isDragging={draggingIndex === idx}
+                            isDropTarget={
+                                draggingIndex !== null &&
+                                dropIndex === idx &&
+                                draggingIndex !== idx
+                            }
                             onExcludeColor={onExcludeColor}
-                            onMoveColor={onMoveColor}
                             onSetColor={onSetColor}
+                            onBeginDragCandidate={beginDragCandidate}
+                            onSetDropTarget={setDropTarget}
+                            onIconClick={handleIconClick}
                             setEditingIndex={setEditingIndex}
-                            totalLength={currentPaletteData.ColorsRGB.length}
                         />
                     ))}
                 </div>
@@ -401,11 +507,15 @@ export function PaletteEditorPanel({
 type PropsIcon = {
     clr: `#${string}`;
     idx: number;
+    displayNumber: number;
     isOpen: boolean;
-    totalLength: number;
+    isDragging: boolean;
+    isDropTarget: boolean;
     onExcludeColor: (index: number) => void;
-    onMoveColor: (index: number, direction: number) => void;
     onSetColor: (index: number, color: `#${string}`) => void;
+    onBeginDragCandidate: (index: number, x: number, y: number) => void;
+    onSetDropTarget: (index: number) => void;
+    onIconClick: (index: number) => void;
     setEditingIndex: (index: number) => void;
 };
 
@@ -413,12 +523,16 @@ const LineIconWithEditor = memo(
     ({
         clr,
         idx,
+        displayNumber,
         isOpen,
+        isDragging,
+        isDropTarget,
         onExcludeColor,
-        onMoveColor,
         onSetColor,
+        onBeginDragCandidate,
+        onSetDropTarget,
+        onIconClick,
         setEditingIndex,
-        totalLength,
     }: PropsIcon) => {
         const iconRef = useRef(null as any as HTMLDivElement);
         const pickerRef = useRef(null as any as HTMLDivElement);
@@ -447,11 +561,18 @@ const LineIconWithEditor = memo(
             return () => document.removeEventListener("mousedown", handleClickOutside, true);
         }, [isOpen, setEditingIndex]);
 
+        const containerClass =
+            "lineIconContainer" +
+            (isOpen ? " currentSelected" : "") +
+            (isDragging ? " isDragging" : "") +
+            (isDropTarget ? " isDropTarget" : "");
+
         return (
             <div
-                className={"lineIconContainer" + (isOpen ? " currentSelected" : "")}
+                className={containerClass}
                 key={idx}
                 ref={iconRef}
+                onMouseEnter={() => onSetDropTarget(idx)}
             >
                 <div
                     className="lineIcon"
@@ -463,32 +584,27 @@ const LineIconWithEditor = memo(
                             ),
                         } as CSSProperties
                     }
-                    onClick={() => setEditingIndex(idx)}
+                    onMouseDown={(e) => {
+                        if (e.button !== 0) return;
+                        onBeginDragCandidate(idx, e.clientX, e.clientY);
+                    }}
+                    onClick={() => onIconClick(idx)}
                 >
-                    <div className={`routeNum singleLine chars${(idx + 1)?.toString().length}`}>
+                    <div className={`routeNum singleLine chars${displayNumber.toString().length}`}>
                         {" "}
-                        {idx + 1}
+                        {displayNumber}
                     </div>
                 </div>
-                <div className="excludeBtn" onClick={() => onExcludeColor(idx)}>
+                <div
+                    className="excludeBtn"
+                    onMouseDown={(e) => e.stopPropagation()}
+                    onClick={(e) => {
+                        e.stopPropagation();
+                        onExcludeColor(idx);
+                    }}
+                >
                     X
                 </div>
-                {idx > 0 && (
-                    <div
-                        className="moveMinus"
-                        onClick={(x) => onMoveColor(idx, x.shiftKey ? -Infinity : -1)}
-                    >
-                        ⇚
-                    </div>
-                )}
-                {idx < totalLength - 1 && (
-                    <div
-                        className="movePlus"
-                        onClick={(x) => onMoveColor(idx, x.shiftKey ? Infinity : 1)}
-                    >
-                        ⇛
-                    </div>
-                )}
                 {isOpen && (
                     <Portal>
                         <div

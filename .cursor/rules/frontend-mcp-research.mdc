@@ -1,0 +1,33 @@
+---
+description: MCP-first game/UI research; halt if kcs2m is insufficient
+alwaysApply: true
+---
+
+# Frontend research via MCP
+
+When researching **game UI**, vanilla modules, CSS variables, or UIL icons:
+
+1. Use **kcs2m MCP first** (and other frontend MCPs when relevant).
+2. Prefer: `kcs2m_ui_modules_lookup` (call `kcs2m_ui_modules_extract` first if needed), `kcs2m_css_lookup`, `kcs2m_uil_icons_list` / `kcs2m_uil_icon_get`, `kcs2m_conventions_check`.
+
+## Forbidden (unless the user explicitly asks)
+
+Do **not** open, grep, or browse as a substitute for MCP:
+
+- Game install UI sources
+- Extracted UI module trees on disk
+- Other out-of-repo UI dumps
+
+## Allowed
+
+Reading and editing **this repo’s** `_Frontends/` for implementation is fine. The ban is only on bypassing MCP for **external/game** frontend research.
+
+## If MCP cannot answer
+
+**Stop immediately.** Report clearly:
+
+- What was needed
+- Which MCP tool(s) were tried
+- What capability should be added to kcs2m
+
+Do **not** fall back to raw game sources.

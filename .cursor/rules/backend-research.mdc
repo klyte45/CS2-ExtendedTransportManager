@@ -1,0 +1,19 @@
+---
+description: Out-of-workspace backend research only when explicitly requested
+alwaysApply: true
+---
+
+# Backend research scope
+
+## Default
+
+Stay **inside the workspace** for normal C# / backend work.
+
+## Outside the workspace
+
+Searching outside the workspace (game assemblies, other repos, AppData, etc.) is allowed **only when the user explicitly requests** it.
+
+Even then:
+
+1. **Narrow first** using MCP linkages (kcs2m, kanban, project binders) to get concrete type / path / name targets.
+2. Only then query the filesystem with that narrowed scope — no broad fishing expeditions.
