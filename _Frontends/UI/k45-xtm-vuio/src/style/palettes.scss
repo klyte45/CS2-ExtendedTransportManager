@@ -443,22 +443,27 @@
 }
 
 .xtm-palettesEditorDialog {
-    z-index: 10000;
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    pointer-events: none;
+
+    > * {
+        pointer-events: auto;
+    }
 
     &_body {
         position: relative;
-        width: 1200rem;
-        height: 800rem;
+        width: 1800rem;
+        height: 700rem;
         max-width: 90vw;
         max-height: 85vh;
     }
-}
-
-.xtm-palettesEditorToolbarBtn {
-    position: fixed;
-    top: 10rem;
-    left: 10rem;
-    z-index: 9999;
 }
 
 .k45_xtm_colorPickerOverlay {

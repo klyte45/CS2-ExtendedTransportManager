@@ -35,6 +35,7 @@ namespace BelzontTLM
             updateSystem.UpdateAfter<XTMVehicleModelGroupApplySystem, XTMVehicleModelGroupSystem>(SystemUpdatePhase.Modification4);
             updateSystem.UpdateAt<XTM_WEIntegrationController>(SystemUpdatePhase.ModificationEnd);
             updateSystem.UpdateAt<XTMInfoPanelSystem>(SystemUpdatePhase.UIUpdate);
+            updateSystem.UpdateAt<XTMEditorUISystem>(SystemUpdatePhase.UIUpdate);
 
             KFileUtils.EnsureFolderCreation(ExtendedTransportManagerMod.Instance.PalettesFolder);
         }

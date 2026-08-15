@@ -108,6 +108,10 @@ K45::XTM.vuio[lineStationDetail.waiting.passengers]	대기 중인 승객 수: {q
 ::GLineListing	노선 목록
 ::LUseXtmLineListingDefault	기본적으로 XTM 노선 목록 사용
 ::DUseXtmLineListingDefault	"활성화하면 교통 개요가 XTM 카드 목록으로 열립니다. 비활성화하면 기본 표로 열립니다. 헤더의 전환 버튼으로 현재 세션의 스타일을 여전히 바꿀 수 있습니다."
+Editor.TOOL[k45__xtm_MainWindow]	XTM: 팔레트 설정
+::GEditor	에디터
+::LShowEditorPalettesButton	에디터에 팔레트 버튼 표시
+::DShowEditorPalettesButton	"활성화하면 에디터 도구 모음에 XTM 버튼이 추가되어 팔레트 라이브러리를 엽니다. 다음에 에디터 모드에 들어갈 때 적용됩니다."
 K45::XTM.vuio[lineViewer.showPlatformCrowdnessLbl]	플랫폼 혼잡도 표시
 K45::XTM.vuio[lineStationDetail.crowdness]	{waiting} / {capacity} ({percent})
 K45::XTM.vuio[lineList.toggleXtmListing]	XTM 노선 목록

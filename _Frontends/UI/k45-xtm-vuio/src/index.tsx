@@ -3,7 +3,7 @@ import { XtmLineViewer } from "components/LineViewer";
 import { photo, selectedInfo, ValueBinding } from "cs2/bindings";
 import { FocusDisabled } from "cs2/input";
 import { ModRegistrar } from "cs2/modding";
-import { ReactNode, useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import "#styles/lineViewer.scss";
 import iconWhite from "#images/iconWhite.svg";
 import i_platformCrowdness from "#images/i_platformCrowdness.svg";
@@ -17,18 +17,17 @@ import i_occupancy12_16 from "#images/i_occupancy12_16.svg";
 import i_occupancy16_20 from "#images/i_occupancy16_20.svg";
 import i_occupancy20_24 from "#images/i_occupancy20_24.svg";
 import {
-    LineManagementService,
     MapViewerOptions,
     SEGMENT_OCCUPANCY_DISPLAY_MODES,
     SegmentOccupancyDisplayMode,
 } from "#service/LineManagementService";
 import translate from "#utility/translate";
-import { Button, InfoRow, InfoSection, Portal, Tooltip } from "cs2/ui";
+import { Portal } from "cs2/ui";
 import { ColorEditorXtm } from "#components/ColorEditorXtm";
 import { TicketPriceSectionXtm } from "#components/TicketPriceSectionXtm";
 import { SelectVehiclesSectionXtm } from "#components/SelectVehiclesSectionXtm";
 import { XtmInfoSection } from "#components/XtmInfoSection";
-import { useValue } from "cs2/api";
+import { bindValue, useValue } from "cs2/api";
 import { PalettesEditorDialog } from "#components/mainWindow/palettes/PalettesEditorDialog";
 import { XtmTransportationOverviewRegister } from "#components/mainWindow/XtmTransportationOverviewRegister";
 import "#styles/ticketPriceManaged.scss";
@@ -260,25 +259,20 @@ const XtmLayoutOverrideRegistering = (onChange?: () => any) => (componentList: a
 };
 
 
-/** Editor-mode access: toolbar button opens a light FE-only palettes dialog. */
+const XTM_EDITOR_TOOL_ID = "k45__xtm_MainWindow";
+const editorActiveTool$ = bindValue<any>("editorTool", "activeTool", null);
+
+/** Editor-mode access: vanilla EditorTool activeTool opens the palettes dialog. */
 const XtmPalettesEditorToolbar = (Toolbar: any): any => {
     return (args: any) => {
-        const [open, setOpen] = useState(false);
+        const activeTool = useValue(editorActiveTool$);
+        const activeToolId = typeof activeTool === "string" ? activeTool : activeTool?.id;
         return (
             <>
                 {Toolbar(args)}
-                <div className="xtm-palettesEditorToolbarBtn">
-                    <Tooltip tooltip={translate("cityPalettesLibrary.title", "Available palettes")}>
-                        <Button
-                            src={iconWhite}
-                            variant="floating"
-                            onSelect={() => setOpen((v) => !v)}
-                        />
-                    </Tooltip>
-                </div>
-                {open && (
+                {activeToolId === XTM_EDITOR_TOOL_ID && (
                     <Portal>
-                        <PalettesEditorDialog onClose={() => setOpen(false)} />
+                        <PalettesEditorDialog />
                     </Portal>
                 )}
             </>
