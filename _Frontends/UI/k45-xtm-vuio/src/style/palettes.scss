@@ -37,7 +37,7 @@
             padding-left: 10rem;
             border-top-width: 1rem;
             border-top-style: solid;
-            border-top-color:  var(--dividerColor) ;
+            border-top-color: var(--dividerColor);
             min-height: 100rem;
         }
 
@@ -223,6 +223,20 @@
             min-width: 8rem;
         }
 
+        &_iconBtn {
+            align-self: stretch;
+            height: auto;
+            width: 36rem;
+            padding-left: 4rem;
+            padding-right: 4rem;
+            box-sizing: border-box;
+
+            img {
+                height: 100%;
+                width: 100%;
+            }
+        }
+
         --lineIconSizeMultiplier: 3;
 
         .lineIconContainer {
@@ -301,6 +315,7 @@
             }
 
             &:hover {
+
                 .excludeBtn,
                 .moveMinus,
                 .movePlus {
@@ -424,7 +439,7 @@
             text-overflow: ellipsis;
             white-space: nowrap;
             max-width: 100%;
-            opacity: 0.95;            
+            opacity: 0.95;
             coh-font-fit-mode: shrink;
             coh-font-fit-min-size: 5rem;
             text-align: center;
@@ -453,7 +468,7 @@
     justify-content: center;
     pointer-events: none;
 
-    > * {
+    >* {
         pointer-events: auto;
     }
 

@@ -10,6 +10,7 @@ import {
     VanillaComponentResolver,
     VanillaFnResolver,
 } from "@klyte45/vuio-commons";
+import { FocusDisabled } from "cs2/input";
 import { ConfirmationDialog, Portal } from "cs2/ui";
 import {
     CSSProperties,
@@ -19,6 +20,10 @@ import {
     useRef,
     useState,
 } from "react";
+
+const PLUS_ICON = "coui://uil/Standard/Plus.svg";
+const DICE_ICON = "coui://uil/Standard/Dice.svg";
+const PENCIL_ICON = "coui://uil/Standard/PencilPaper.svg";
 
 const CELL_BASE_REM = 4.55;
 const MAX_MULTIPLIER = 30;
@@ -206,6 +211,8 @@ export function PaletteEditorPanel({
         );
     }
 
+    const ToolButton = VanillaComponentResolver.instance.ToolButton;
+
     return (
         <>
             <div className="xtm-paletteEditor">
@@ -248,24 +255,33 @@ export function PaletteEditorPanel({
                         {translate("paletteEditor.saveChanges")}
                     </button>
                     <div className="xtm-paletteEditor_actionsGrow" />
-                    <button type="button" className="neutralBtn" onClick={addNewColor}>
-                        {translate("paletteEditor.addColor")}
-                    </button>
-                    <button
-                        type="button"
-                        className="neutralBtn"
-                        onClick={shuffleColors}
-                        disabled={(currentPaletteData.ColorsRGB?.length ?? 0) < 2}
-                    >
-                        {translate("paletteEditor.shuffleColors", "Shuffle colors")}
-                    </button>
-                    <button
-                        type="button"
-                        className="neutralBtn"
-                        onClick={() => setIsRenamingPalette(true)}
-                    >
-                        {translate("paletteEditor.renamePalette")}
-                    </button>
+                    <FocusDisabled>
+                        <ToolButton
+                            src={PLUS_ICON}
+                            selected={false}
+                            className="xtm-paletteEditor_iconBtn"
+                            tooltip={translate("paletteEditor.addColor")}
+                            onSelect={addNewColor}
+                            focusKey={VanillaComponentResolver.instance.FOCUS_DISABLED}
+                        />
+                        <ToolButton
+                            src={DICE_ICON}
+                            selected={false}
+                            className="xtm-paletteEditor_iconBtn"
+                            tooltip={translate("paletteEditor.shuffleColors", "Shuffle colors")}
+                            onSelect={shuffleColors}
+                            disabled={(currentPaletteData.ColorsRGB?.length ?? 0) < 2}
+                            focusKey={VanillaComponentResolver.instance.FOCUS_DISABLED}
+                        />
+                        <ToolButton
+                            src={PENCIL_ICON}
+                            selected={false}
+                            className="xtm-paletteEditor_iconBtn"
+                            tooltip={translate("paletteEditor.renamePalette")}
+                            onSelect={() => setIsRenamingPalette(true)}
+                            focusKey={VanillaComponentResolver.instance.FOCUS_DISABLED}
+                        />
+                    </FocusDisabled>
                     <div className="xtm-paletteEditor_actionsGrow" />
                     <button
                         type="button"
