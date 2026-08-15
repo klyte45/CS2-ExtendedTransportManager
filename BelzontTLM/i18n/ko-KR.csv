@@ -64,6 +64,9 @@ K45::XTM.vuio[paletteEditor.import.libraryBookmark]	기본 라이브러리
 K45::XTM.vuio[paletteEditor.import.bookmarksTitle]	XTM 기본값
 K45::XTM.vuio[paletteEditor.import.invalidFile]	유효하지 않은 팔레트 파일
 K45::XTM.vuio[paletteEditor.shuffleColors]	색상 섞기
+K45::XTM.vuio[paletteEditor.appendPalette]	팔레트 이어붙이기
+K45::XTM.vuio[paletteEditor.append.title]	팔레트 이어붙이기
+K45::XTM.vuio[paletteEditor.append.prompt]	이어붙일 .hex 파일을 선택하세요. 색상이 현재 팔레트 끝에 추가됩니다.
 K45::XTM.vuio[palettesSettings.cargoModalsTitle]	화물 팝업 창
 K45::XTM.vuio[palettesSettings.modalSettings]	승객 팝업 창
 K45::XTM.vuio[palettesSettings.title]	팝업 창을 팔레트 설정으로

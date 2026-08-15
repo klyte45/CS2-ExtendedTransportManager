@@ -1,10 +1,7 @@
 import { PaletteData, PaletteService } from "#service/PaletteService";
 import translate from "#utility/translate";
 import {
-    BaseFileService,
-    DataProvider,
     FilePickerDialog,
-    ResolveFileItemPresentation,
     StringInputDialog,
     VanillaComponentResolver,
 } from "@klyte45/vuio-commons";
@@ -12,16 +9,18 @@ import { FocusDisabled } from "cs2/input";
 import { Scrollable } from "cs2/ui";
 import engine from "cohtml/cohtml";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import { PaletteColorSwatches } from "./PaletteColorSwatches";
 import { PaletteEditorPanel } from "./PaletteEditorPanel";
 import { PaletteListCard } from "./PaletteListCard";
+import {
+    XTM_LIBRARY_PATH,
+    createPaletteFileItemPresentation,
+    generatePaletteDataProviderWithLibrary,
+} from "./paletteFilePickerUtils";
 import { TransportPaletteAssignPanel } from "./TransportPaletteAssignPanel";
 
 const PLUS_ICON = "coui://uil/Standard/Plus.svg";
 const FOLDER_ICON = "coui://uil/Standard/Folder.svg";
 const STAR_ICON = "coui://uil/Standard/StarFilledSmall.svg";
-const XTM_LIBRARY_PATH = "XTM:/";
-const FILE_PICKER_MAX_SWATCHES = 16;
 
 type Props = {
     onPalettesChanged?: (count: number) => void;
@@ -43,9 +42,6 @@ export function XtmPalettesPage({ onPalettesChanged }: Props) {
         setImportInitialFolder(folder);
         setIsPickingImportFile(true);
     };
-
-    const generateDataContainer = (folder: string, allowedExtension: string) =>
-        BaseFileService.generateDataProvider("k45::xtm", folder, allowedExtension);
 
     const applyPalettes = useCallback(
         (palettes: PaletteData[], selectGuid?: string | null) => {
@@ -102,55 +98,16 @@ export function XtmPalettesPage({ onPalettesChanged }: Props) {
         [availablePalettes],
     );
 
-    async function generateDataProviderWithLibrary(
-        folder: string,
-        allowedExtension: string,
-    ): Promise<DataProvider> {
-        if (folder.startsWith("XTM:/")) {
-            if (!libraryPalettesCache.current?.length) {
-                const list = await PaletteService.listDefaultPalettes();
-                libraryPalettesCache.current = Array.isArray(list) ? list : [];
-            }
-            const palettes = libraryPalettesCache.current;
-            const subPath = folder.slice("XTM:/".length).replace(/\/$/, "");
-            const subParts = subPath === "" ? [] : subPath.split("/");
-            const depth = subParts.length;
-            const seen = new Set<string>();
-            const items: DataProvider = [];
-            for (const palette of palettes) {
-                const parts = palette.Name.split("/");
-                if (parts.length <= depth) continue;
-                let matches = true;
-                for (let i = 0; i < depth; i++) {
-                    if (parts[i] !== subParts[i]) {
-                        matches = false;
-                        break;
-                    }
-                }
-                if (!matches) continue;
-                const remaining = parts.slice(depth);
-                if (remaining.length === 1) {
-                    items.push({
-                        displayName: remaining[0] + ".hex",
-                        directory: false,
-                        fullPath: "XTM:/" + palette.Name + ".hex",
-                    });
-                } else {
-                    const dirName = remaining[0];
-                    if (!seen.has(dirName)) {
-                        seen.add(dirName);
-                        const dirFullPath =
-                            subPath === ""
-                                ? "XTM:/" + dirName + "/"
-                                : "XTM:/" + subPath + "/" + dirName + "/";
-                        items.push({ displayName: dirName, directory: true, fullPath: dirFullPath });
-                    }
-                }
-            }
-            return items;
-        }
-        return generateDataContainer(folder, allowedExtension);
-    }
+    const generateDataProviderWithLibrary = useCallback(
+        (folder: string, allowedExtension: string) =>
+            generatePaletteDataProviderWithLibrary(folder, allowedExtension, libraryPalettesCache),
+        [],
+    );
+
+    const resolveFileItemPresentation = useMemo(
+        () => createPaletteFileItemPresentation(libraryPalettesCache),
+        [],
+    );
 
     async function confirmAddNewPalette(name?: string) {
         if (!name?.trim()) return;
@@ -179,42 +136,6 @@ export function XtmPalettesPage({ onPalettesChanged }: Props) {
         const palettes = await PaletteService.listCityPalettes();
         applyPalettes(palettes, data.GuidString);
     }
-
-    const resolveFileItemPresentation = useCallback<ResolveFileItemPresentation>(
-        async (item) => {
-            if (item.directory) return undefined;
-
-            let colors: string[] | null = null;
-            if (item.fullPath.startsWith("XTM:/")) {
-                if (!libraryPalettesCache.current.length) {
-                    libraryPalettesCache.current =
-                        (await PaletteService.listDefaultPalettes()) ?? [];
-                }
-                const paletteName = item.fullPath.slice("XTM:/".length).replace(/\.hex$/, "");
-                const palette = libraryPalettesCache.current.find((x) => x.Name === paletteName);
-                colors = palette?.ColorsRGB?.length ? palette.ColorsRGB : null;
-            } else {
-                colors = await PaletteService.previewPaletteFromFile(item.fullPath);
-            }
-
-            if (!colors?.length) {
-                return {
-                    valid: false,
-                    tooltip: translate(
-                        "paletteEditor.import.invalidFile",
-                        "Not a valid palette file",
-                    ),
-                };
-            }
-            return {
-                valid: true,
-                extra: (
-                    <PaletteColorSwatches colors={colors} maxSwatches={FILE_PICKER_MAX_SWATCHES} />
-                ),
-            };
-        },
-        [],
-    );
 
     return (
         <div className="xtm-palettesPage">

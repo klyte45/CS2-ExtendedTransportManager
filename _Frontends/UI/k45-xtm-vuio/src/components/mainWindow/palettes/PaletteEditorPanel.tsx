@@ -3,6 +3,7 @@ import translate from "#utility/translate";
 import {
     calculateElementPosition,
     ColorUtils,
+    FilePickerDialog,
     isOnArea,
     onRecalculateContextMenuPosition,
     replaceArgs,
@@ -17,13 +18,20 @@ import {
     memo,
     useCallback,
     useEffect,
+    useMemo,
     useRef,
     useState,
 } from "react";
+import {
+    createPaletteFileItemPresentation,
+    generatePaletteDataProviderWithLibrary,
+    resolvePaletteFileColors,
+} from "./paletteFilePickerUtils";
 
 const PLUS_ICON = "coui://uil/Standard/Plus.svg";
 const DICE_ICON = "coui://uil/Standard/Dice.svg";
 const PENCIL_ICON = "coui://uil/Standard/PencilPaper.svg";
+const APPEND_ICON = "coui://uil/Standard/PaperWithArrow.svg";
 
 const CELL_BASE_REM = 4.55;
 const MAX_MULTIPLIER = 30;
@@ -70,9 +78,16 @@ export function PaletteEditorPanel({
     const [lineIconMultiplier, setLineIconMultiplier] = useState(DEFAULT_MULTIPLIER);
     const [isRenamingPalette, setIsRenamingPalette] = useState(false);
     const [isDeletingPalette, setIsDeletingPalette] = useState(false);
+    const [isPickingAppendFile, setIsPickingAppendFile] = useState(false);
+    const [palettesFolderPath, setPalettesFolderPath] = useState("");
+    const libraryPalettesCache = useRef<PaletteData[]>([]);
     const skipNextPaletteReset = useRef(false);
     const currentPaletteDataRef = useRef(currentPaletteData);
     currentPaletteDataRef.current = currentPaletteData;
+
+    useEffect(() => {
+        PaletteService.getPalettesFolderPath().then(setPalettesFolderPath);
+    }, []);
 
     useEffect(() => {
         const observer = new ResizeObserver(() => redrawIcons());
@@ -147,6 +162,35 @@ export function PaletteEditorPanel({
         setCurrentPaletteData((prev) => {
             if (!prev) return prev;
             return { ...prev, ColorsRGB: [...prev.ColorsRGB, "#FFFFFF"] } as PaletteData;
+        });
+        setContentChanged(true);
+    }
+
+    const openAppendPicker = () => {
+        libraryPalettesCache.current = [];
+        setIsPickingAppendFile(true);
+    };
+
+    const generateDataProviderWithLibrary = useCallback(
+        (folder: string, allowedExtension: string) =>
+            generatePaletteDataProviderWithLibrary(folder, allowedExtension, libraryPalettesCache),
+        [],
+    );
+
+    const resolveFileItemPresentation = useMemo(
+        () => createPaletteFileItemPresentation(libraryPalettesCache),
+        [],
+    );
+
+    async function onAppendFileSelected(path?: string) {
+        setIsPickingAppendFile(false);
+        if (!path) return;
+        const colors = await resolvePaletteFileColors(path, libraryPalettesCache);
+        if (!colors?.length) return;
+        const appended = colors as `#${string}`[];
+        setCurrentPaletteData((prev) => {
+            if (!prev) return prev;
+            return { ...prev, ColorsRGB: [...prev.ColorsRGB, ...appended] } as PaletteData;
         });
         setContentChanged(true);
     }
@@ -281,6 +325,14 @@ export function PaletteEditorPanel({
                             onSelect={() => setIsRenamingPalette(true)}
                             focusKey={VanillaComponentResolver.instance.FOCUS_DISABLED}
                         />
+                        <ToolButton
+                            src={APPEND_ICON}
+                            selected={false}
+                            className="xtm-paletteEditor_iconBtn"
+                            tooltip={translate("paletteEditor.appendPalette", "Append palette")}
+                            onSelect={openAppendPicker}
+                            focusKey={VanillaComponentResolver.instance.FOCUS_DISABLED}
+                        />
                     </FocusDisabled>
                     <div className="xtm-paletteEditor_actionsGrow" />
                     <button
@@ -303,6 +355,28 @@ export function PaletteEditorPanel({
                 initialValue={currentPaletteData?.Name}
                 actionOnSuccess={confirmRenamePalette}
                 translate={translate}
+            />
+            <FilePickerDialog
+                isActive={isPickingAppendFile}
+                setIsActive={setIsPickingAppendFile}
+                dialogTitle={translate("paletteEditor.append.title", "Append Palette")}
+                dialogPromptText={translate(
+                    "paletteEditor.append.prompt",
+                    "Select a .hex palette file to append its colors:",
+                )}
+                allowedExtensions="*.hex"
+                initialFolder={palettesFolderPath}
+                generateDataProvider={generateDataProviderWithLibrary}
+                bookmarks={[
+                    {
+                        name: translate("paletteEditor.import.libraryBookmark", "XTM: Library"),
+                        targetPath: "XTM:/",
+                    },
+                ]}
+                bookmarksTitle={translate("paletteEditor.import.bookmarksTitle", "Library")}
+                actionOnSuccess={onAppendFileSelected}
+                translate={translate}
+                resolveFileItemPresentation={resolveFileItemPresentation}
             />
             {isDeletingPalette && (
                 <Portal>
