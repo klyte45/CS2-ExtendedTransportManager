@@ -67,7 +67,10 @@
             flex-direction: row;
             align-items: center;
             margin-bottom: 8rem;
-            gap: 4rem;
+
+            > * + * {
+                margin-left: 4rem;
+            }
         }
 
         &_listTitle {
@@ -177,7 +180,10 @@
             display: flex;
             flex-direction: row;
             flex-wrap: wrap;
-            padding: 5rem;
+            padding-top: 5rem;
+            padding-right: 5rem;
+            padding-bottom: 5rem;
+            padding-left: 5rem;
             background-color: var(--menuPanel1);
             border-radius: 8rem;
 
@@ -199,7 +205,6 @@
             .k45_keyValueContent {
                 display: flex;
                 flex-direction: row;
-                gap: 8rem;
                 font-size: var(--fontSizeS);
                 color: var(--textColorDim);
 
@@ -209,6 +214,7 @@
                 }
 
                 .value {
+                    margin-left: 8rem;
                     overflow: hidden;
                     text-overflow: ellipsis;
                     white-space: nowrap;
@@ -222,8 +228,22 @@
             flex-direction: row;
             flex-wrap: nowrap;
             align-items: center;
-            gap: 6rem;
+            justify-content: space-between;
             padding-top: 4rem;
+        }
+
+        &_actionsStart,
+        &_actionsEnd {
+            flex: 0 0 auto;
+            display: flex;
+            flex-direction: row;
+            flex-wrap: nowrap;
+            align-items: stretch;
+            align-self: stretch;
+
+            > * + * {
+                margin-left: 6rem;
+            }
         }
 
         &_actionsGroupSpacer {
@@ -234,16 +254,16 @@
         }
 
         &_actionsStatus {
-            flex: 1 1 auto;
-            min-width: 8rem;
+            flex: 0 1 auto;
+            min-width: 0;
             text-align: center;
             font-size: var(--fontSizeS);
             color: var(--textColorDim);
             overflow: hidden;
             text-overflow: ellipsis;
             white-space: nowrap;
-            padding-left: 8rem;
-            padding-right: 8rem;
+            margin-left: 6rem;
+            margin-right: 6rem;
         }
 
         &_iconBtn {
@@ -285,7 +305,10 @@
                 border-bottom-width: calc(0.25rem * var(--lineIconSizeMultiplier));
                 width: calc(4.5rem * var(--lineIconSizeMultiplier));
                 height: calc(4.5rem * var(--lineIconSizeMultiplier));
-                margin: 0;
+                margin-top: 0;
+                margin-right: 0;
+                margin-bottom: 0;
+                margin-left: 0;
             }
 
             &.isDragging {
@@ -305,7 +328,10 @@
                 border-bottom-width: calc(0.25rem * var(--lineIconSizeMultiplier));
                 width: calc(4.5rem * var(--lineIconSizeMultiplier));
                 height: calc(4.5rem * var(--lineIconSizeMultiplier));
-                margin: 0;
+                margin-top: 0;
+                margin-right: 0;
+                margin-bottom: 0;
+                margin-left: 0;
                 box-sizing: border-box;
             }
 
@@ -336,8 +362,13 @@
                 cursor: grab;
 
                 .routeNum {
-                    border: none !important;
-                    background: none;
+                    border-style: none !important;
+                    border-top-width: 0 !important;
+                    border-right-width: 0 !important;
+                    border-bottom-width: 0 !important;
+                    border-left-width: 0 !important;
+                    background-color: transparent;
+                    background-image: none;
                     width: 100%;
                     position: absolute;
                     top: 50%;
@@ -385,13 +416,19 @@
         @extend %buttonsStyle;
         display: flex;
         flex-direction: column;
-        gap: 10rem;
+
+        > * + * {
+            margin-top: 10rem;
+        }
 
         &_row {
             display: flex;
             flex-direction: row;
             align-items: flex-start;
-            gap: 12rem;
+
+            > * + * {
+                margin-left: 12rem;
+            }
         }
 
         &_rowTitle {
@@ -409,11 +446,12 @@
             display: flex;
             flex-direction: row;
             flex-wrap: wrap;
-            gap: 8rem;
         }
 
         &_btnWrap {
             flex: 0 0 auto;
+            margin-right: 8rem;
+            margin-bottom: 8rem;
         }
 
         // Same pattern as .positiveBtn / .neutralBtn inside %buttonsStyle: share %k45_basicBtn, custom fill.
@@ -477,7 +515,10 @@
         &_tooltip {
             display: flex;
             flex-direction: column;
-            gap: 2rem;
+
+            > * + * {
+                margin-top: 2rem;
+            }
         }
     }
 }
@@ -524,7 +565,6 @@
     flex-direction: row;
     flex-wrap: wrap;
     align-items: center;
-    gap: 3rem;
 }
 
 .xtm-paletteCard_swatch {
@@ -541,6 +581,8 @@
     border-right-color: rgba(0, 0, 0, 0.25);
     border-bottom-color: rgba(0, 0, 0, 0.25);
     border-left-color: rgba(0, 0, 0, 0.25);
+    margin-right: 3rem;
+    margin-bottom: 3rem;
 }
 
 .xtm-paletteCard_extra {

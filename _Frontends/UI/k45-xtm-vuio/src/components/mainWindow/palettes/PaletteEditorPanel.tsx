@@ -549,102 +549,106 @@ export function PaletteEditorPanel({
                     </div>
                 </div>
                 <div className="xtm-paletteEditor_actions">
-                    <FocusDisabled>
-                        <ToolButton
-                            src={PLUS_ICON}
-                            selected={false}
-                            className="xtm-paletteEditor_iconBtn"
-                            tooltip={translate("paletteEditor.addColor")}
-                            onSelect={addNewColor}
-                            disabled={(currentPaletteData.ColorsRGB?.length ?? 0) >= MAX_PALETTE_COLORS}
-                            focusKey={VanillaComponentResolver.instance.FOCUS_DISABLED}
-                        />
-                        <ToolButton
-                            src={DICE_ICON}
-                            selected={false}
-                            className="xtm-paletteEditor_iconBtn"
-                            tooltip={translate("paletteEditor.shuffleColors", "Shuffle colors")}
-                            onSelect={shuffleColors}
-                            disabled={(currentPaletteData.ColorsRGB?.length ?? 0) < 2}
-                            focusKey={VanillaComponentResolver.instance.FOCUS_DISABLED}
-                        />
-                        <div className="xtm-paletteEditor_actionsGroupSpacer" />
-                        <ToolButton
-                            src={PENCIL_ICON}
-                            selected={false}
-                            className="xtm-paletteEditor_iconBtn"
-                            tooltip={translate("paletteEditor.renamePalette")}
-                            onSelect={() => setIsRenamingPalette(true)}
-                            focusKey={VanillaComponentResolver.instance.FOCUS_DISABLED}
-                        />
-                        <ToolButton
-                            src={APPEND_ICON}
-                            selected={false}
-                            className="xtm-paletteEditor_iconBtn"
-                            tooltip={translate("paletteEditor.appendPalette", "Append palette")}
-                            onSelect={openAppendPicker}
-                            disabled={(currentPaletteData.ColorsRGB?.length ?? 0) >= MAX_PALETTE_COLORS}
-                            focusKey={VanillaComponentResolver.instance.FOCUS_DISABLED}
-                        />
-                        <div className="xtm-paletteEditor_actionsGroupSpacer" />
-                        <ToolButton
-                            src={COPY_ICON}
-                            selected={false}
-                            className="xtm-paletteEditor_iconBtn"
-                            tooltip={translate("paletteEditor.copyPalette", "Copy palette")}
-                            onSelect={copyPalette}
-                            focusKey={VanillaComponentResolver.instance.FOCUS_DISABLED}
-                        />
-                        <ToolButton
-                            src={PASTE_REPLACE_ICON}
-                            selected={false}
-                            className="xtm-paletteEditor_iconBtn"
-                            tooltip={translate(
-                                "paletteEditor.pasteReplacePalette",
-                                "Paste palette (replace)",
-                            )}
-                            onSelect={() => void pastePalette("replace")}
-                            focusKey={VanillaComponentResolver.instance.FOCUS_DISABLED}
-                        />
-                        <ToolButton
-                            src={PASTE_APPEND_ICON}
-                            selected={false}
-                            className="xtm-paletteEditor_iconBtn"
-                            tooltip={translate(
-                                "paletteEditor.pasteAppendPalette",
-                                "Paste palette (append)",
-                            )}
-                            onSelect={() => void pastePalette("append")}
-                            disabled={(currentPaletteData.ColorsRGB?.length ?? 0) >= MAX_PALETTE_COLORS}
-                            focusKey={VanillaComponentResolver.instance.FOCUS_DISABLED}
-                        />
-                        <div className="xtm-paletteEditor_actionsGroupSpacer" />
-                        <ToolButton
-                            src={RESET_ICON}
-                            selected={false}
-                            className="xtm-paletteEditor_iconBtn"
-                            tooltip={translate("paletteEditor.resetChanges", "Reset changes")}
-                            onSelect={() => setIsResettingPalette(true)}
-                            disabled={!contentChanged}
-                            focusKey={VanillaComponentResolver.instance.FOCUS_DISABLED}
-                        />
-                    </FocusDisabled>
+                    <div className="xtm-paletteEditor_actionsStart">
+                        <FocusDisabled>
+                            <ToolButton
+                                src={PLUS_ICON}
+                                selected={false}
+                                className="xtm-paletteEditor_iconBtn"
+                                tooltip={translate("paletteEditor.addColor")}
+                                onSelect={addNewColor}
+                                disabled={(currentPaletteData.ColorsRGB?.length ?? 0) >= MAX_PALETTE_COLORS}
+                                focusKey={VanillaComponentResolver.instance.FOCUS_DISABLED}
+                            />
+                            <ToolButton
+                                src={DICE_ICON}
+                                selected={false}
+                                className="xtm-paletteEditor_iconBtn"
+                                tooltip={translate("paletteEditor.shuffleColors", "Shuffle colors")}
+                                onSelect={shuffleColors}
+                                disabled={(currentPaletteData.ColorsRGB?.length ?? 0) < 2}
+                                focusKey={VanillaComponentResolver.instance.FOCUS_DISABLED}
+                            />
+                            <div className="xtm-paletteEditor_actionsGroupSpacer" />
+                            <ToolButton
+                                src={PENCIL_ICON}
+                                selected={false}
+                                className="xtm-paletteEditor_iconBtn"
+                                tooltip={translate("paletteEditor.renamePalette")}
+                                onSelect={() => setIsRenamingPalette(true)}
+                                focusKey={VanillaComponentResolver.instance.FOCUS_DISABLED}
+                            />
+                            <ToolButton
+                                src={APPEND_ICON}
+                                selected={false}
+                                className="xtm-paletteEditor_iconBtn"
+                                tooltip={translate("paletteEditor.appendPalette", "Append palette")}
+                                onSelect={openAppendPicker}
+                                disabled={(currentPaletteData.ColorsRGB?.length ?? 0) >= MAX_PALETTE_COLORS}
+                                focusKey={VanillaComponentResolver.instance.FOCUS_DISABLED}
+                            />
+                            <div className="xtm-paletteEditor_actionsGroupSpacer" />
+                            <ToolButton
+                                src={COPY_ICON}
+                                selected={false}
+                                className="xtm-paletteEditor_iconBtn"
+                                tooltip={translate("paletteEditor.copyPalette", "Copy palette")}
+                                onSelect={copyPalette}
+                                focusKey={VanillaComponentResolver.instance.FOCUS_DISABLED}
+                            />
+                            <ToolButton
+                                src={PASTE_REPLACE_ICON}
+                                selected={false}
+                                className="xtm-paletteEditor_iconBtn"
+                                tooltip={translate(
+                                    "paletteEditor.pasteReplacePalette",
+                                    "Paste palette (replace)",
+                                )}
+                                onSelect={() => void pastePalette("replace")}
+                                focusKey={VanillaComponentResolver.instance.FOCUS_DISABLED}
+                            />
+                            <ToolButton
+                                src={PASTE_APPEND_ICON}
+                                selected={false}
+                                className="xtm-paletteEditor_iconBtn"
+                                tooltip={translate(
+                                    "paletteEditor.pasteAppendPalette",
+                                    "Paste palette (append)",
+                                )}
+                                onSelect={() => void pastePalette("append")}
+                                disabled={(currentPaletteData.ColorsRGB?.length ?? 0) >= MAX_PALETTE_COLORS}
+                                focusKey={VanillaComponentResolver.instance.FOCUS_DISABLED}
+                            />
+                            <div className="xtm-paletteEditor_actionsGroupSpacer" />
+                            <ToolButton
+                                src={RESET_ICON}
+                                selected={false}
+                                className="xtm-paletteEditor_iconBtn"
+                                tooltip={translate("paletteEditor.resetChanges", "Reset changes")}
+                                onSelect={() => setIsResettingPalette(true)}
+                                disabled={!contentChanged}
+                                focusKey={VanillaComponentResolver.instance.FOCUS_DISABLED}
+                            />
+                        </FocusDisabled>
+                    </div>
                     <div className="xtm-paletteEditor_actionsStatus">{actionStatus ?? ""}</div>
-                    <button
-                        type="button"
-                        className="positiveBtn"
-                        onClick={savePalette}
-                        disabled={!contentChanged}
-                    >
-                        {translate("paletteEditor.saveChanges")}
-                    </button>
-                    <button
-                        type="button"
-                        className="negativeBtn"
-                        onClick={() => setIsDeletingPalette(true)}
-                    >
-                        {translate("paletteEditor.deletePalette")}
-                    </button>
+                    <div className="xtm-paletteEditor_actionsEnd">
+                        <button
+                            type="button"
+                            className="positiveBtn"
+                            onClick={savePalette}
+                            disabled={!contentChanged}
+                        >
+                            {translate("paletteEditor.saveChanges")}
+                        </button>
+                        <button
+                            type="button"
+                            className="negativeBtn"
+                            onClick={() => setIsDeletingPalette(true)}
+                        >
+                            {translate("paletteEditor.deletePalette")}
+                        </button>
+                    </div>
                 </div>
             </div>
             <StringInputDialog
