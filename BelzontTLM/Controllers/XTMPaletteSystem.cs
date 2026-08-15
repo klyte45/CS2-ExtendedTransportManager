@@ -61,7 +61,7 @@ namespace BelzontTLM.Palettes
 
         private void AddCityPalette(string name, string[] colors)
         {
-            var effectiveNewPalette = new XTMPaletteFile(name, colors.Select(x => ColorExtensions.FromRGB(x, true)));
+            var effectiveNewPalette = new XTMPaletteFile(name, colors.Take(XTMPaletteFile.MaxColors).Select(x => ColorExtensions.FromRGB(x, true)));
             CityPalettes[effectiveNewPalette.Guid] = effectiveNewPalette;
             OnCityPalettesChanged();
         }
@@ -109,7 +109,7 @@ namespace BelzontTLM.Palettes
             {
                 palette.Name = name;
                 palette.Colors.Clear();
-                palette.Colors.AddRange(colors.Select(x => ColorExtensions.FromRGB(x, true)));
+                palette.Colors.AddRange(colors.Take(XTMPaletteFile.MaxColors).Select(x => ColorExtensions.FromRGB(x, true)));
                 OnCityPalettesChanged();
             }
             else

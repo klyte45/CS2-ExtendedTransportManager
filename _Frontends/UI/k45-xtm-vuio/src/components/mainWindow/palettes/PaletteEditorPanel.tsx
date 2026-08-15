@@ -46,6 +46,7 @@ const DEFAULT_MULTIPLIER = 3;
 const DRAG_THRESHOLD_PX = 4;
 const ACTION_STATUS_MS = 5000;
 const HEX_COLOR_LINE = /^#?[a-fA-F0-9]{6}$/;
+const MAX_PALETTE_COLORS = 500;
 
 function sequentialDisplayNumbers(count: number): number[] {
     return Array.from({ length: count }, (_, i) => i + 1);
@@ -53,6 +54,14 @@ function sequentialDisplayNumbers(count: number): number[] {
 
 function nextDisplayNumber(labels: number[]): number {
     return (labels.length ? Math.max(...labels) : 0) + 1;
+}
+
+function takePaletteColors(
+    colors: `#${string}`[],
+    currentLength = 0,
+): `#${string}`[] {
+    const room = Math.max(0, MAX_PALETTE_COLORS - currentLength);
+    return colors.slice(0, room);
 }
 
 function parseHexPaletteClipboard(text: string): `#${string}`[] | null {
@@ -284,11 +293,16 @@ export function PaletteEditorPanel({
     }
 
     function addNewColor() {
+        const current = currentPaletteDataRef.current;
+        if (!current || current.ColorsRGB.length >= MAX_PALETTE_COLORS) return;
         setCurrentPaletteData((prev) => {
-            if (!prev) return prev;
+            if (!prev || prev.ColorsRGB.length >= MAX_PALETTE_COLORS) return prev;
             return { ...prev, ColorsRGB: [...prev.ColorsRGB, "#FFFFFF"] } as PaletteData;
         });
-        setDisplayNumbers((prev) => [...prev, nextDisplayNumber(prev)]);
+        setDisplayNumbers((prev) => {
+            if (prev.length >= MAX_PALETTE_COLORS) return prev;
+            return [...prev, nextDisplayNumber(prev)];
+        });
         setContentChanged(true);
     }
 
@@ -313,14 +327,22 @@ export function PaletteEditorPanel({
         if (!path) return;
         const colors = await resolvePaletteFileColors(path, libraryPalettesCache);
         if (!colors?.length) return;
-        const appended = colors as `#${string}`[];
+        const appended = takePaletteColors(
+            colors as `#${string}`[],
+            currentPaletteDataRef.current?.ColorsRGB?.length ?? 0,
+        );
+        if (!appended.length) return;
         setCurrentPaletteData((prev) => {
             if (!prev) return prev;
-            return { ...prev, ColorsRGB: [...prev.ColorsRGB, ...appended] } as PaletteData;
+            return {
+                ...prev,
+                ColorsRGB: [...prev.ColorsRGB, ...takePaletteColors(appended, prev.ColorsRGB.length)],
+            } as PaletteData;
         });
         setDisplayNumbers((prev) => {
+            const kept = takePaletteColors(appended, prev.length);
             let next = nextDisplayNumber(prev);
-            const labels = appended.map(() => next++);
+            const labels = kept.map(() => next++);
             return [...prev, ...labels];
         });
         setContentChanged(true);
@@ -377,19 +399,27 @@ export function PaletteEditorPanel({
             return;
         }
         if (mode === "replace") {
+            const kept = takePaletteColors(colors);
             setCurrentPaletteData((prev) => {
                 if (!prev) return prev;
-                return { ...prev, ColorsRGB: colors } as PaletteData;
+                return { ...prev, ColorsRGB: kept } as PaletteData;
             });
-            setDisplayNumbers(sequentialDisplayNumbers(colors.length));
+            setDisplayNumbers(sequentialDisplayNumbers(kept.length));
         } else {
+            const roomBase = currentPaletteDataRef.current?.ColorsRGB?.length ?? 0;
+            const kept = takePaletteColors(colors, roomBase);
+            if (!kept.length) return;
             setCurrentPaletteData((prev) => {
                 if (!prev) return prev;
-                return { ...prev, ColorsRGB: [...prev.ColorsRGB, ...colors] } as PaletteData;
+                return {
+                    ...prev,
+                    ColorsRGB: [...prev.ColorsRGB, ...takePaletteColors(kept, prev.ColorsRGB.length)],
+                } as PaletteData;
             });
             setDisplayNumbers((prev) => {
+                const labelsColors = takePaletteColors(kept, prev.length);
                 let next = nextDisplayNumber(prev);
-                const labels = colors.map(() => next++);
+                const labels = labelsColors.map(() => next++);
                 return [...prev, ...labels];
             });
         }
@@ -526,6 +556,7 @@ export function PaletteEditorPanel({
                             className="xtm-paletteEditor_iconBtn"
                             tooltip={translate("paletteEditor.addColor")}
                             onSelect={addNewColor}
+                            disabled={(currentPaletteData.ColorsRGB?.length ?? 0) >= MAX_PALETTE_COLORS}
                             focusKey={VanillaComponentResolver.instance.FOCUS_DISABLED}
                         />
                         <ToolButton
@@ -552,6 +583,7 @@ export function PaletteEditorPanel({
                             className="xtm-paletteEditor_iconBtn"
                             tooltip={translate("paletteEditor.appendPalette", "Append palette")}
                             onSelect={openAppendPicker}
+                            disabled={(currentPaletteData.ColorsRGB?.length ?? 0) >= MAX_PALETTE_COLORS}
                             focusKey={VanillaComponentResolver.instance.FOCUS_DISABLED}
                         />
                         <div className="xtm-paletteEditor_actionsGroupSpacer" />
@@ -583,6 +615,7 @@ export function PaletteEditorPanel({
                                 "Paste palette (append)",
                             )}
                             onSelect={() => void pastePalette("append")}
+                            disabled={(currentPaletteData.ColorsRGB?.length ?? 0) >= MAX_PALETTE_COLORS}
                             focusKey={VanillaComponentResolver.instance.FOCUS_DISABLED}
                         />
                         <div className="xtm-paletteEditor_actionsGroupSpacer" />

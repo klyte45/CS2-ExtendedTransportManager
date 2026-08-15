@@ -15,6 +15,7 @@ namespace BelzontTLM.Palettes
     {
         public const char ENTRY_SEPARATOR = '\n';
         public const string EXT_PALETTE = ".hex";
+        public const int MaxColors = 500;
 
         public string Name { get; set; }
         public List<string> ColorsRGB => Colors.Select(x => x.ToRGB(true)).ToList();
@@ -28,6 +29,7 @@ namespace BelzontTLM.Palettes
 
         public void Add()
         {
+            if (Count >= MaxColors) return;
             Colors.Add(Color.white);
             RecalculateChecksum();
         }
@@ -57,7 +59,7 @@ namespace BelzontTLM.Palettes
         public XTMPaletteFile(string name, IEnumerable<Color32> colors, bool fixedGuid = false)
         {
             Name = name;
-            Colors = new List<Color32>(colors);
+            Colors = new List<Color32>(colors.Take(MaxColors));
             RecalculateChecksum();
             if (fixedGuid)
             {
