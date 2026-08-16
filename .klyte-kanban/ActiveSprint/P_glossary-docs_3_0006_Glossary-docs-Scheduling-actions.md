@@ -34,7 +34,12 @@ Documentation-planning task for one XTM encyclopedia topic group. Expand each su
 
 ## Implementation Notes
 
-
+1. Research verified exact active/schedule mappings, card mutation sequence, indicators and filter behavior, disabled-report exclusion, Details navigation, SIP tools, and single-selection limits.
+2. Code caveats found outside this documentation task: schedule-sorted cards do not reposition after schedule changes; active schedule changes issue two unordered triggers without rollback; schedule controls lack keyboard/accessibility metadata; unknown active schedules render as Day & night.
+3. Reuse image: _Frontends/UI/images/Encyclopedia/xtm-listing-service-states.jpg — all four same-mode schedule states with toolbar filters, selected strip colors, badges, and Line disabled visible.
+4. Reuse image: _Frontends/UI/images/Encyclopedia/xtm-line-card-anatomy.jpg — tight enabled/disabled card view with Details and all four schedule buttons readable.
+5. Reuse image: _Frontends/UI/images/Encyclopedia/xtm-route-tools.jpg — selected route SIP and enhanced map with route shield, stops, a vehicle, and connected-line shields.
+6. Reuse image: _Frontends/UI/images/Encyclopedia/xtm-sip-route-sections.jpg — selected route Color, Ticket Price, vehicle selection, and Line Data sections; include WE only when available.
 
 ---
 
