@@ -22,12 +22,12 @@ Documentation-planning task for one XTM encyclopedia topic group. Expand each su
 
 ## Acceptance Criteria / Definition of Done (DoD)
 
-- [ ] Document subsection "Transportation Overview" in BelzontTLM/i18n/en-US/glossary.content.start.gettingAround.overview.md (accurate, complete, aligned with current behavior)
-- [ ] Document subsection "Selected Info Panel" in BelzontTLM/i18n/en-US/glossary.content.start.gettingAround.sip.md (accurate, complete, aligned with current behavior)
-- [ ] Document subsection "Linear map" in BelzontTLM/i18n/en-US/glossary.content.start.gettingAround.linearMap.md (accurate, complete, aligned with current behavior)
-- [ ] Document subsection "Editor palette tool" in BelzontTLM/i18n/en-US/glossary.content.start.gettingAround.editorPalettes.md (accurate, complete, aligned with current behavior)
-- [ ] Keep short title/category strings consistent with glossaryContent.ts
-- [ ] Review the whole topic group against current UI behavior and terminology
+- [x] Document subsection "Transportation Overview" in BelzontTLM/i18n/en-US/glossary.content.start.gettingAround.overview.md (accurate, complete, aligned with current behavior)
+- [x] Document subsection "Selected Info Panel" in BelzontTLM/i18n/en-US/glossary.content.start.gettingAround.sip.md (accurate, complete, aligned with current behavior)
+- [x] Document subsection "Linear map" in BelzontTLM/i18n/en-US/glossary.content.start.gettingAround.linearMap.md (accurate, complete, aligned with current behavior)
+- [x] Document subsection "Editor palette tool" in BelzontTLM/i18n/en-US/glossary.content.start.gettingAround.editorPalettes.md (accurate, complete, aligned with current behavior)
+- [x] Keep short title/category strings consistent with glossaryContent.ts
+- [x] Review the whole topic group against current UI behavior and terminology
 
 ---
 
