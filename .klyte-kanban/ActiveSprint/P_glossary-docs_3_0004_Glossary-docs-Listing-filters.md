@@ -22,13 +22,13 @@ Documentation-planning task for one XTM encyclopedia topic group. Expand each su
 
 ## Acceptance Criteria / Definition of Done (DoD)
 
-- [ ] Document subsection "Transport modes" in BelzontTLM/i18n/en-US/glossary.content.lines.listing.modes.md (accurate, complete, aligned with current behavior)
-- [ ] Document subsection "Passenger and cargo filters" in BelzontTLM/i18n/en-US/glossary.content.lines.listing.passengerCargo.md (accurate, complete, aligned with current behavior)
-- [ ] Document subsection "Service-state filters" in BelzontTLM/i18n/en-US/glossary.content.lines.listing.serviceState.md (accurate, complete, aligned with current behavior)
-- [ ] Document subsection "Sorting" in BelzontTLM/i18n/en-US/glossary.content.lines.listing.sorting.md (accurate, complete, aligned with current behavior)
-- [ ] Document subsection "Reading line cards" in BelzontTLM/i18n/en-US/glossary.content.lines.listing.cards.md (accurate, complete, aligned with current behavior)
-- [ ] Keep short title/category strings consistent with glossaryContent.ts
-- [ ] Review the whole topic group against current UI behavior and terminology
+- [x] Document subsection "Transport modes" in BelzontTLM/i18n/en-US/glossary.content.lines.listing.modes.md (accurate, complete, aligned with current behavior)
+- [x] Document subsection "Passenger and cargo filters" in BelzontTLM/i18n/en-US/glossary.content.lines.listing.passengerCargo.md (accurate, complete, aligned with current behavior)
+- [x] Document subsection "Service-state filters" in BelzontTLM/i18n/en-US/glossary.content.lines.listing.serviceState.md (accurate, complete, aligned with current behavior)
+- [x] Document subsection "Sorting" in BelzontTLM/i18n/en-US/glossary.content.lines.listing.sorting.md (accurate, complete, aligned with current behavior)
+- [x] Document subsection "Reading line cards" in BelzontTLM/i18n/en-US/glossary.content.lines.listing.cards.md (accurate, complete, aligned with current behavior)
+- [x] Keep short title/category strings consistent with glossaryContent.ts
+- [x] Review the whole topic group against current UI behavior and terminology
 
 ---
 
