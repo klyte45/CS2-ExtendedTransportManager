@@ -17,6 +17,12 @@ When Kanban **is** requested, use the **user-klyte-kanban MCP** tools only (`kk_
 
 **Never** invoke Kanban via the shell / CLI / “line command” (or any non-MCP wrapper) as a substitute for those tools.
 
+## Commits from MCP
+
+When a `kk_*` response includes a non-empty **`commitMessage`**, **always create a git commit** using that message (stage the relevant product / board changes as appropriate). Do not skip or defer it.
+
+If MCP already auto-committed, do not duplicate the commit; still verify status. If auto-commit failed or was off and `commitMessage` is present, commit yourself with that message.
+
 ## If MCP is insufficient
 
 **Stop immediately.** Tell the user what was needed, which `kk_*` tool(s) were tried, and what is missing or broken. Ask for help — do **not** invent workarounds (CLI, editing kanban files by hand, etc.) unless the user explicitly directs that.
