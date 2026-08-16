@@ -191,6 +191,9 @@
     <None Update="i18n\*.csv">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
+    <None Update="i18n\**\*.md">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
     <Resource Include="*.md" />      
   </ItemGroup>
 

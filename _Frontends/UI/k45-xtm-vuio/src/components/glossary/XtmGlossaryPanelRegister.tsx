@@ -8,9 +8,17 @@ import {
     isValidElement,
     ReactElement,
     ReactNode,
+    useEffect,
+    useMemo,
     useState,
 } from "react";
-import { XtmGlossaryIndexPage } from "./XtmGlossaryIndexPage";
+import { ALL_TAB_ID, getGlossaryTabs } from "./glossaryContent";
+import {
+    consumeForceXtmGlossary,
+    subscribeForceXtmGlossary,
+} from "./glossaryNavigation";
+import { XtmGlossaryPage } from "./XtmGlossaryPage";
+import { WEIntegrationService } from "#service/WEIntegrationService";
 import "#styles/glossary.scss";
 
 type GlossaryProps = {
@@ -21,10 +29,6 @@ type GlossaryProps = {
     onClose?: () => void;
 };
 
-/**
- * Preserve a solitary child element. Children.map wraps one child in an array and can
- * break Children.only / focus ownership around the panel shell.
- */
 function mapChildrenPreserveShape(children: ReactNode, mapFn: (child: ReactNode) => ReactNode): ReactNode {
     const arr = Children.toArray(children);
     if (arr.length === 0) return children;
@@ -44,7 +48,6 @@ function mapTree(node: ReactNode, mapper: (el: ReactElement<any>) => ReactElemen
     });
 }
 
-/** Find the vanilla Panel (has header + children) and rewrite it in place. */
 function rewriteGlossaryPanel(
     node: ReactNode,
     rewrite: (panel: ReactElement<any>) => ReactElement<any>,
@@ -75,31 +78,44 @@ function XtmGlossaryToggleButton({
     );
 }
 
-const XTM_TAB_ID = "xtm-overview";
-// UISound is types-only at runtime, so use the raw value vanilla glossary tabs pass (UISound.economy).
 const TAB_SELECT_SOUND = "economy";
 
-/** XTM-owned header: mod title plus a tab bar holding the single mod-logo tab. */
-function XtmGlossaryHeader({ onClose }: { onClose?: () => void }) {
+function XtmGlossaryHeader({
+    onClose,
+    selectedTabId,
+    onSelectTabId,
+    weAvailable,
+}: {
+    onClose?: () => void;
+    selectedTabId: string;
+    onSelectTabId: (tabId: string) => void;
+    weAvailable: boolean;
+}) {
     const { PanelTitleBar, TabBar, Tab, Tooltip, glossaryPanelTheme } = VanillaComponentResolver.instance;
-    // Vanilla glossary module classes keep the tab strip pixel-identical to the original panel.
+    const tabs = useMemo(() => getGlossaryTabs({ weAvailable }), [weAvailable]);
+
     return (
         <>
             <PanelTitleBar onCloseOverride={onClose}>
                 {translate("glossary.title", "XTM Encyclopedia")}
             </PanelTitleBar>
             <TabBar className={glossaryPanelTheme.glossaryPanelTabBar}>
-                <Tooltip tooltip={translate("glossary.tab.overview", "XTM overview")}>
-                    <Tab
-                        id={XTM_TAB_ID}
-                        selectedId={XTM_TAB_ID}
-                        className={glossaryPanelTheme.glossaryPanelTab}
-                        selectSound={TAB_SELECT_SOUND}
-                        onSelect={() => { }}
+                {tabs.map((tab) => (
+                    <Tooltip
+                        key={tab.id}
+                        tooltip={translate(tab.titleKey, tab.titleFallback)}
                     >
-                        <img src={iconWhite} className={glossaryPanelTheme.tabIcon} />
-                    </Tab>
-                </Tooltip>
+                        <Tab
+                            id={tab.id}
+                            selectedId={selectedTabId}
+                            className={glossaryPanelTheme.glossaryPanelTab}
+                            selectSound={TAB_SELECT_SOUND}
+                            onSelect={(id: string) => onSelectTabId(id)}
+                        >
+                            <img src={tab.icon} className={glossaryPanelTheme.tabIcon} />
+                        </Tab>
+                    </Tooltip>
+                ))}
             </TabBar>
         </>
     );
@@ -107,10 +123,6 @@ function XtmGlossaryHeader({ onClose }: { onClose?: () => void }) {
 
 const stripThemeCache = new WeakMap<object, any>();
 
-/**
- * Tag the panel's header slot so the side strip can anchor to the window box
- * instead of the content box. Cached per source theme to keep Panel memos stable.
- */
 function withStripHeader(theme: any) {
     const source = theme ?? VanillaComponentResolver.instance.panelTheme;
     const cached = stripThemeCache.get(source);
@@ -125,15 +137,38 @@ function withStripHeader(theme: any) {
 
 /**
  * Always invoke the vanilla GlossaryPanel so its Panel shell stays mounted
- * (close / focus / transitions). Swap only children in XTM mode; keep a
+ * (close / focus / transitions). Swap header + children in XTM mode; keep a
  * forward-compatible side strip outside the right edge for the mode toggle.
  */
 export const XtmGlossaryPanelRegister = (Component: any): any => {
     return (props: GlossaryProps) => {
-        // Default vanilla each open — no persistence in this slice.
         const [useXtmGlossary, setUseXtmGlossary] = useState(false);
+        const [selectedTabId, setSelectedTabId] = useState(ALL_TAB_ID);
+        const [manualTabToken, setManualTabToken] = useState(0);
+        const [weAvailable, setWeAvailable] = useState(true);
+
+        useEffect(() => {
+            let cancelled = false;
+            void WEIntegrationService.isAvailable()
+                .then((v) => { if (!cancelled) setWeAvailable(!!v); })
+                .catch(() => { if (!cancelled) setWeAvailable(false); });
+            return () => { cancelled = true; };
+        }, []);
+
+        useEffect(() => {
+            const applyForce = () => {
+                if (consumeForceXtmGlossary()) setUseXtmGlossary(true);
+            };
+            applyForce();
+            return subscribeForceXtmGlossary(applyForce);
+        }, []);
 
         const onToggle = () => setUseXtmGlossary((x) => !x);
+
+        const onManualSelectTab = (tabId: string) => {
+            setSelectedTabId(tabId);
+            setManualTabToken((t) => t + 1);
+        };
 
         const sideStrip = (
             <div className="xtm-glossary-side-strip" data-xtm-glossary-strip="">
@@ -141,7 +176,6 @@ export const XtmGlossaryPanelRegister = (Component: any): any => {
             </div>
         );
 
-        // CRITICAL: call every render — do not conditionally skip (hooks + panel shell lifetime).
         const tree = Component(props);
 
         return rewriteGlossaryPanel(tree, (panel) => {
@@ -161,11 +195,22 @@ export const XtmGlossaryPanelRegister = (Component: any): any => {
                         .join(" "),
                     header: (
                         <>
-                            <XtmGlossaryHeader onClose={panel.props.onClose ?? props.onClose} />
+                            <XtmGlossaryHeader
+                                onClose={panel.props.onClose ?? props.onClose}
+                                selectedTabId={selectedTabId}
+                                onSelectTabId={onManualSelectTab}
+                                weAvailable={weAvailable}
+                            />
                             {sideStrip}
                         </>
                     ),
-                    children: <XtmGlossaryIndexPage />,
+                    children: (
+                        <XtmGlossaryPage
+                            selectedTabId={selectedTabId}
+                            onSelectTabId={setSelectedTabId}
+                            clearSearchToken={manualTabToken}
+                        />
+                    ),
                 });
             }
 

@@ -55,6 +55,31 @@ Long **markdown** body for this locale.
 - **`en-US/` is the base:** every language gets those entries first. If a key/file is missing under another `i18n/{lang}/`, the en-US body is used. Present lang files overlay en-US for matching keys.
 - Loaded by `BasicIMod.LoadLocales` after CSV; **last loaded wins** on key conflict (lang md overlays en-US md; md overrides CSV for the same key).
 - Still never edit `i18n.csv`.
+- Glossary bodies are shown with **`MarkdownRenderer`** — use the **Markdown** dialect below.
+
+## FormattedParagraphs / formatted text
+
+Formatting codes are **game-ui renderer dialects**, not Managed C#. `FormattedParagraphs` splits on newlines; each paragraph is rendered by `FormattedText` with either:
+
+- **Markup** (default `MarkupRenderer`) — short strings in default `FormattedParagraphs` (e.g. SIP / managed groups)
+- **Markdown** (`new MarkdownRenderer()` / glossary) — long-form `i18n/{lang}/*.md` bodies
+
+Pick the dialect by where the string is shown. Do **not** invent HTML, CSS, or markdown beyond the chosen dialect.
+
+| Feature | Markup (default) | Markdown (glossary / opt-in) |
+|---|---|---|
+| Bold | `**text**` | `**text**` |
+| Escape `*` | `\*` | (not supported) |
+| List item | paragraph starts with `- ` | (not supported) |
+| Headings | (not supported) | leading `#` … `###### ` |
+| Line break in paragraph | (not supported) | `<br>` (any case) |
+| Links | `<data>` or `<data\|label>` | `[label](data)` |
+| Images | (not supported) | `![alt](src)` |
+| Newlines | separate paragraphs | separate paragraphs |
+
+Also unsupported in both: single-`*` italics, tables, arbitrary HTML.
+
+Tutorial link prefixes inside Markup `<…>` data (`inputAction:`, `icon:`, `image:`) only work when `tutorialTextRenderer` is wired — **do not use** them in general i18n unless that renderer is in place.
 
 ## `::` special keys
 
@@ -65,3 +90,17 @@ Resolved at load by `BasicIMod.ProcessKey`. Prefixes (see `BelzontCommons/README
 For `::` rows: leave unused middle columns empty; column 5 is the CSV key (e.g. `::TUI`). Do not invent new `::` shapes — consult `BasicIMod` / Commons README when unsure.
 
 Frontend/C# should reference the **assembled** key; agents only write the pending `*_entries.txt` or `i18n/{lang}/*.md`.
+
+## `translate` fallbacks
+
+Do **not** pass a fallback to `translate` / `engine.translate` for **new** entries unless the user **explicitly** asks for one.
+
+```ts
+// ❌ BAD (new code)
+translate("lineStationDetail.waiting.passengers", "Passengers waiting")
+
+// ✅ GOOD
+translate("lineStationDetail.waiting.passengers")
+```
+
+When editing a file for any other reason, **remove fallbacks** from existing `translate(...)` / `engine.translate(...)` calls in the code you touch (opportunistic cleanup). Do not do a repo-wide sweep unless asked.
