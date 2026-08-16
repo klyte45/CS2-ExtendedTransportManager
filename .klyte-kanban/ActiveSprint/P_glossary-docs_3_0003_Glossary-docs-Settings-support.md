@@ -22,12 +22,12 @@ Documentation-planning task for one XTM encyclopedia topic group. Expand each su
 
 ## Acceptance Criteria / Definition of Done (DoD)
 
-- [ ] Document subsection "UI defaults" in BelzontTLM/i18n/en-US/glossary.content.start.settings.uiDefaults.md (accurate, complete, aligned with current behavior)
-- [ ] Document subsection "Logging and diagnostics" in BelzontTLM/i18n/en-US/glossary.content.start.settings.logging.md (accurate, complete, aligned with current behavior)
-- [ ] Document subsection "Localization" in BelzontTLM/i18n/en-US/glossary.content.start.settings.localization.md (accurate, complete, aligned with current behavior)
-- [ ] Document subsection "Support links" in BelzontTLM/i18n/en-US/glossary.content.start.settings.support.md (accurate, complete, aligned with current behavior)
-- [ ] Keep short title/category strings consistent with glossaryContent.ts
-- [ ] Review the whole topic group against current UI behavior and terminology
+- [x] Document subsection "UI defaults" in BelzontTLM/i18n/en-US/glossary.content.start.settings.uiDefaults.md (accurate, complete, aligned with current behavior)
+- [x] Document subsection "Logging and diagnostics" in BelzontTLM/i18n/en-US/glossary.content.start.settings.logging.md (accurate, complete, aligned with current behavior)
+- [x] Document subsection "Localization" in BelzontTLM/i18n/en-US/glossary.content.start.settings.localization.md (accurate, complete, aligned with current behavior)
+- [x] Document subsection "Support links" in BelzontTLM/i18n/en-US/glossary.content.start.settings.support.md (accurate, complete, aligned with current behavior)
+- [x] Keep short title/category strings consistent with glossaryContent.ts
+- [x] Review the whole topic group against current UI behavior and terminology
 
 ---
 
