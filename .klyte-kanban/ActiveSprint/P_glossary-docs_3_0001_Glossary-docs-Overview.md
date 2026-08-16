@@ -22,11 +22,11 @@ Documentation-planning task for one XTM encyclopedia topic group. Expand each su
 
 ## Acceptance Criteria / Definition of Done (DoD)
 
-- [ ] Document subsection "What XTM adds" in BelzontTLM/i18n/en-US/glossary.content.start.overview.whatAdds.md (accurate, complete, aligned with current behavior)
-- [ ] Document subsection "Main screens and the XTM toggle" in BelzontTLM/i18n/en-US/glossary.content.start.overview.mainScreens.md (accurate, complete, aligned with current behavior)
-- [ ] Document subsection "Passenger lines versus cargo routes" in BelzontTLM/i18n/en-US/glossary.content.start.overview.linesVsCargo.md (accurate, complete, aligned with current behavior)
-- [ ] Keep short title/category strings consistent with glossaryContent.ts
-- [ ] Review the whole topic group against current UI behavior and terminology
+- [x] Document subsection "What XTM adds" in BelzontTLM/i18n/en-US/glossary.content.start.overview.whatAdds.md (accurate, complete, aligned with current behavior)
+- [x] Document subsection "Main screens and the XTM toggle" in BelzontTLM/i18n/en-US/glossary.content.start.overview.mainScreens.md (accurate, complete, aligned with current behavior)
+- [x] Document subsection "Passenger lines versus cargo routes" in BelzontTLM/i18n/en-US/glossary.content.start.overview.linesVsCargo.md (accurate, complete, aligned with current behavior)
+- [x] Keep short title/category strings consistent with glossaryContent.ts
+- [x] Review the whole topic group against current UI behavior and terminology
 
 ---
 
