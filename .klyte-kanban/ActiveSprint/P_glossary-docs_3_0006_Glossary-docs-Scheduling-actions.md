@@ -22,13 +22,13 @@ Documentation-planning task for one XTM encyclopedia topic group. Expand each su
 
 ## Acceptance Criteria / Definition of Done (DoD)
 
-- [ ] Document subsection "Day and night" in BelzontTLM/i18n/en-US/glossary.content.lines.scheduling.dayNight.md (accurate, complete, aligned with current behavior)
-- [ ] Document subsection "Day only" in BelzontTLM/i18n/en-US/glossary.content.lines.scheduling.dayOnly.md (accurate, complete, aligned with current behavior)
-- [ ] Document subsection "Night only" in BelzontTLM/i18n/en-US/glossary.content.lines.scheduling.nightOnly.md (accurate, complete, aligned with current behavior)
-- [ ] Document subsection "Disabled" in BelzontTLM/i18n/en-US/glossary.content.lines.scheduling.disabled.md (accurate, complete, aligned with current behavior)
-- [ ] Document subsection "Opening line details" in BelzontTLM/i18n/en-US/glossary.content.lines.scheduling.openDetails.md (accurate, complete, aligned with current behavior)
-- [ ] Keep short title/category strings consistent with glossaryContent.ts
-- [ ] Review the whole topic group against current UI behavior and terminology
+- [x] Document subsection "Day and night" in BelzontTLM/i18n/en-US/glossary.content.lines.scheduling.dayNight.md (accurate, complete, aligned with current behavior)
+- [x] Document subsection "Day only" in BelzontTLM/i18n/en-US/glossary.content.lines.scheduling.dayOnly.md (accurate, complete, aligned with current behavior)
+- [x] Document subsection "Night only" in BelzontTLM/i18n/en-US/glossary.content.lines.scheduling.nightOnly.md (accurate, complete, aligned with current behavior)
+- [x] Document subsection "Disabled" in BelzontTLM/i18n/en-US/glossary.content.lines.scheduling.disabled.md (accurate, complete, aligned with current behavior)
+- [x] Document subsection "Opening line details" in BelzontTLM/i18n/en-US/glossary.content.lines.scheduling.openDetails.md (accurate, complete, aligned with current behavior)
+- [x] Keep short title/category strings consistent with glossaryContent.ts
+- [x] Review the whole topic group against current UI behavior and terminology
 
 ---
 
