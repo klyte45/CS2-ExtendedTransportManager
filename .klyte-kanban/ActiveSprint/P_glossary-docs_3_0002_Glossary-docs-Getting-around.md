@@ -33,7 +33,13 @@ Documentation-planning task for one XTM encyclopedia topic group. Expand each su
 
 ## Implementation Notes
 
-
+1. Research verified Transportation Overview entry paths, six XTM modes, session persistence, empty-city restrictions, SIP contexts, linear-map defaults/interactions, and editor palette behavior.
+2. Reuse image: _Frontends/UI/images/Encyclopedia/xtm-overview-modes.jpg — include the XTM toggle, filters, a complete line card, and all six Change mode entries.
+3. Image required: _Frontends/UI/images/Encyclopedia/xtm-sip-route-sections.jpg — show a selected passenger route SIP with Color, Ticket Price, vehicle selection, and Line Data; include group controls, fixed-color toggle, identifiers, and Write Everywhere when available.
+4. Image required: _Frontends/UI/images/Encyclopedia/xtm-sip-stop-vehicle.jpg — side-by-side stop and vehicle selections, showing parent/inverse/first-stop/approaching-vehicle controls and odometer/maintenance respectively.
+5. Image required: _Frontends/UI/images/Encyclopedia/xtm-linear-map-overlays.jpg — show a symmetric route with XTM map enabled, toolbar, distances, districts, connections, platform crowding, occupancy, and half-trip mode; vehicles off.
+6. Image required: _Frontends/UI/images/Encyclopedia/xtm-linear-map-segment-detail.jpg — show the map with a selected segment occupancy value and its historical chart, with direction and daily average readable.
+7. Image required: _Frontends/UI/images/Encyclopedia/xtm-editor-palettes.jpg — show the active XTM editor tool and Available palettes dialog with list, color grid, editing controls, save/delete, and passenger/cargo assignments.
 
 ---
 
