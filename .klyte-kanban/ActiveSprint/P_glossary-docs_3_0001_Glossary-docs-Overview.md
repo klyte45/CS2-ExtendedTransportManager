@@ -1,7 +1,7 @@
+**Start time:** 2026-08-16 20:24 -0300
 # [0001] Glossary docs: Overview
 
-**Developed by:** 
-
+**Developed by:** Auto <auto@kwyt.com.br>
 ## User Story
 
 > Acting as **a player reading the XTM encyclopedia**, I want **accurate documentation for the Overview topic group**, so that I **so the in-game glossary teaches that feature area clearly without leaving the game**.
