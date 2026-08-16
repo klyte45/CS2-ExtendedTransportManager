@@ -1,3 +1,4 @@
+**End time:** 2026-08-16 20:33 -0300
 **Start time:** 2026-08-16 20:29 -0300
 # [0002] Glossary docs: Getting around
 
