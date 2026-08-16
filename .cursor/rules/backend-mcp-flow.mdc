@@ -1,0 +1,32 @@
+---
+description: Recommended kcs2m backend MCP call sequence (cache, search, context)
+alwaysApply: true
+---
+
+# Backend MCP research flow
+
+Use this sequence when researching vanilla / Managed C# via kcs2m. Scope and bans live in `backend-research.mdc`.
+
+## Recommended sequence
+
+1. **Optional** — `kcs2m_backend_dlls_list` with `nameFilter` when unsure which DLL to open (e.g. `Game`).
+2. **`kcs2m_backend_search`** — regex `pattern`, preferably with `dlls` scoped (usually `["Game.dll"]`). Widen only if needed.
+3. **Optional** — `kcs2m_backend_files_list` with `dll` + `pathFilter` to see neighboring types in a folder.
+4. **`kcs2m_backend_context`** — pass `dll`, `file`, and `line` from a search hit; set `before` / `after` for the window you need.
+
+## Cache and timeouts
+
+- Tools validate/refresh the decompilation cache first (**~5-minute cooldown** after a completed check).
+- A **cold** session can rebuild many DLLs and may **time out** if you fire heavy searches in parallel during that rebuild.
+- Warm the cache with one successful list/search, **then** run further searches. Prefer sequential first-hit over parallel storms on a cold cache.
+
+## Search tips
+
+- Patterns are **case-sensitive** regex. Prefer concrete shapes: `struct RouteWaypoint`, `class FooSystem`, `m_SomeField`.
+- Limits: **200 matches** total, **20 per file**. Narrow the pattern or `dlls` if results truncate.
+- Pass search hit fields straight into context: `dll`, `file` (e.g. `Game/Routes/RouteWaypoint.cs`), `line`.
+
+## Refresh
+
+- Do **not** call `kcs2m_backend_refresh` with `force: true` unless checksum/cache failure or the user explicitly asks.
+- On refresh / cache failure: **halt** dependent work and report the error to the user.

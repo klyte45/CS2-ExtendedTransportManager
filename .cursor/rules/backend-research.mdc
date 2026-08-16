@@ -1,19 +1,39 @@
 ---
-description: Out-of-workspace backend research only when explicitly requested
+description: MCP-first game/Managed C# research; halt if kcs2m backend tools are insufficient
 alwaysApply: true
 ---
 
-# Backend research scope
+# Backend research via MCP
 
-## Default
+## In-repo C#
 
-Stay **inside the workspace** for normal C# / backend work.
+Stay **inside the workspace** for normal mod C# work (systems, controllers, binders, etc.).
 
-## Outside the workspace
+## Game / vanilla Managed C#
 
-Searching outside the workspace (game assemblies, other repos, AppData, etc.) is allowed **only when the user explicitly requests** it.
+When researching **game assemblies**, ECS types, systems, or other decompiled Managed APIs:
 
-Even then:
+1. Use **kcs2m backend MCP tools** (see `backend-mcp-flow.mdc` for the recommended call sequence).
+2. Prefer: `kcs2m_backend_search`, `kcs2m_backend_context`, `kcs2m_backend_files_list`, `kcs2m_backend_dlls_list`. Use `kcs2m_backend_refresh` only when the cache is broken or the user asks for a force rebuild.
 
-1. **Narrow first** using MCP linkages (kcs2m, kanban, project binders) to get concrete type / path / name targets.
-2. Only then query the filesystem with that narrowed scope — no broad fishing expeditions.
+## Frontend-first narrowing (recommendation only)
+
+UI module / binder / frontend names can help pick search terms, but agents **may start directly** with backend MCP when the task is clearly C# / ECS / game API work. Do not treat frontend research as a required first step.
+
+## Forbidden (unless the user explicitly asks)
+
+Do **not** open, grep, or browse as a substitute for MCP:
+
+- Game install `Managed` / assembly trees
+- Decompiled cache folders (e.g. `.kcs2m/backend`)
+- Other out-of-repo backend dumps
+
+## If MCP cannot answer
+
+**Stop immediately.** Report clearly:
+
+- What was needed
+- Which MCP tool(s) were tried
+- What capability should be added to kcs2m
+
+Do **not** fall back to raw game assemblies or cache folders on disk.

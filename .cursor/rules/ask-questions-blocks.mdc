@@ -1,0 +1,25 @@
+---
+description: When told "ask questions blocks via AskQuestions", clear plan open-question blocks one at a time
+alwaysApply: true
+---
+
+# AskQuestions blocks (plan open questions)
+
+When the user says **ask questions blocks via AskQuestions** (or equivalent), follow this loop for the plan’s open-question blocks.
+
+## Flow
+
+1. Pick **one** open-questions block (any order that best unblocks the plan).
+2. Ask that block’s questions via **AskQuestion** (one block per turn — do not batch multiple blocks).
+3. After the user responds:
+   - **Update the plan** with the answers.
+   - Check whether the responses create **new** questions.
+   - If yes → AskQuestion those follow-ups, update the plan again, and repeat until that line of questioning is settled.
+4. When a response block yields **no** new questions, mark that open-questions block cleared and move to the **next** remaining block; repeat from step 2.
+5. Stop when **all** open-question blocks are cleared.
+
+## Constraints
+
+- One open-questions block at a time (plus any follow-ups spawned by its answers).
+- Do not skip updating the plan between rounds.
+- Do not implement the planned work until the user asks — this protocol only clears questions.
