@@ -1,0 +1,22 @@
+---
+description: Klyte Kanban — MCP only; no board work unless asked; halt if tools insufficient
+alwaysApply: true
+---
+
+# Klyte Kanban usage
+
+## Default
+
+Do **not** work with Kanban tasks, sprints, epics, backlog, or the board unless the user **explicitly** asks.
+
+Under `.klyte-kanban/`, agents may **only** read and write files in **`RefsLibrary/`** (reference docs beyond board scope). Do **not** open, create, or edit other `.klyte-kanban/` paths (tasks, sprints, archive, board files, etc.) by hand — those go through MCP when board work is requested.
+
+## How to call Kanban
+
+When Kanban **is** requested, use the **user-klyte-kanban MCP** tools only (`kk_workspace`, `kk_task`, `kk_sprint`, `kk_backlog`, `kk_epic`, `kk_batch`).
+
+**Never** invoke Kanban via the shell / CLI / “line command” (or any non-MCP wrapper) as a substitute for those tools.
+
+## If MCP is insufficient
+
+**Stop immediately.** Tell the user what was needed, which `kk_*` tool(s) were tried, and what is missing or broken. Ask for help — do **not** invent workarounds (CLI, editing kanban files by hand, etc.) unless the user explicitly directs that.
