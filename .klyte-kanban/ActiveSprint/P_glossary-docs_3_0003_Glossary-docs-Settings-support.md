@@ -33,7 +33,10 @@ Documentation-planning task for one XTM encyclopedia topic group. Expand each su
 
 ## Implementation Notes
 
-
+1. Research verified both UI defaults and timing, effective diagnostic levels, stack-trace/error-popup gating, locale-source precedence and reload behavior, supported locales, and exact support destinations.
+2. Image required: _Frontends/UI/images/Encyclopedia/xtm-settings-ui-defaults.jpg — show the XTM options UI tab with both default toggles enabled and descriptions readable; if practical, include the resulting Overview toggle and editor tool in a split composition.
+3. Image required: _Frontends/UI/images/Encyclopedia/xtm-settings-diagnostics.jpg — show About/Logging with Debug selected, stack-trace and error-popup controls visible, plus version and Go to log folder.
+4. Image required: _Frontends/UI/images/Encyclopedia/xtm-settings-localization-support.jpg — show the lower About section with translation folder, reload translations, forum, repository, and log-folder buttons together; version readable.
 
 ---
 
