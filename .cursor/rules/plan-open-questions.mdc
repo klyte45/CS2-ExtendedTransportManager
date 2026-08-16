@@ -1,0 +1,32 @@
+---
+description: Use when writing, creating, or revising a plan (CreatePlan / plan mode) — require Open questions blocks grouped by subject at the end
+alwaysApply: false
+---
+
+# Plan open questions
+
+Whenever you write or revise a plan (CreatePlan or editing a plan file), always end with **open-question blocks**.
+
+## Format
+
+At the end of the plan, add a section such as `## Open questions` containing one or more blocks:
+
+- Group unclear / undecided points **by subject** (one block per subject).
+- Each block has a clear subject heading and a short list of concrete questions.
+- Prefer questions that unblock implementation decisions (scope, behavior, UX, APIs, defaults).
+- If nothing is unclear, still include the section with a single note that there are no open questions (so the AskQuestions flow can clear it).
+
+## Example shape
+
+```markdown
+## Open questions
+
+### Subject A
+- Question 1?
+- Question 2?
+
+### Subject B
+- Question 1?
+```
+
+These blocks are what **ask questions blocks via AskQuestions** consumes (see `ask-questions-blocks.mdc`).

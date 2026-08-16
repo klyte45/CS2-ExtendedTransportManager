@@ -1,6 +1,6 @@
 ---
-description: When told "ask questions blocks via AskQuestions", clear plan open-question blocks one at a time
-alwaysApply: true
+description: Use when the user says "ask questions blocks via AskQuestions" (or AskQuestion / open-question blocks) — clear plan Open questions one subject block at a time
+alwaysApply: false
 ---
 
 # AskQuestions blocks (plan open questions)
