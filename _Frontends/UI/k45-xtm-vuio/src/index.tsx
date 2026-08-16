@@ -30,6 +30,7 @@ import { XtmInfoSection } from "#components/XtmInfoSection";
 import { bindValue, useValue } from "cs2/api";
 import { PalettesEditorDialog } from "#components/mainWindow/palettes/PalettesEditorDialog";
 import { XtmTransportationOverviewRegister } from "#components/mainWindow/XtmTransportationOverviewRegister";
+import { XtmGlossaryPanelRegister } from "#components/glossary/XtmGlossaryPanelRegister";
 import "#styles/ticketPriceManaged.scss";
 import "#styles/palettes.scss";
 import { requestXtmLineMapRefresh, setXtmMapEnabled } from "#utility/xtmLineMapRefresh";
@@ -81,6 +82,11 @@ const register: ModRegistrar = (moduleRegistry) => {
         "game-ui/game/components/transportation-overview-panel/transportation-overview-panel.tsx",
         "TransportationOverviewPanel",
         XtmTransportationOverviewRegister,
+    );
+    moduleRegistry.extend(
+        "game-ui/game/components/glossary-panel/glossary-panel.tsx",
+        "GlossaryPanel",
+        XtmGlossaryPanelRegister,
     );
 }
 
