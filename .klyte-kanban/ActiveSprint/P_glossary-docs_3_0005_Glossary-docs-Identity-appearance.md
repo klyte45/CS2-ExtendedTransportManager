@@ -22,13 +22,13 @@ Documentation-planning task for one XTM encyclopedia topic group. Expand each su
 
 ## Acceptance Criteria / Definition of Done (DoD)
 
-- [ ] Document subsection "Line name" in BelzontTLM/i18n/en-US/glossary.content.lines.identity.name.md (accurate, complete, aligned with current behavior)
-- [ ] Document subsection "Internal route number" in BelzontTLM/i18n/en-US/glossary.content.lines.identity.routeNumber.md (accurate, complete, aligned with current behavior)
-- [ ] Document subsection "Display identifier" in BelzontTLM/i18n/en-US/glossary.content.lines.identity.displayId.md (accurate, complete, aligned with current behavior)
-- [ ] Document subsection "Shield shapes and badges" in BelzontTLM/i18n/en-US/glossary.content.lines.identity.shields.md (accurate, complete, aligned with current behavior)
-- [ ] Document subsection "Fixed color versus palette color" in BelzontTLM/i18n/en-US/glossary.content.lines.identity.color.md (accurate, complete, aligned with current behavior)
-- [ ] Keep short title/category strings consistent with glossaryContent.ts
-- [ ] Review the whole topic group against current UI behavior and terminology
+- [x] Document subsection "Line name" in BelzontTLM/i18n/en-US/glossary.content.lines.identity.name.md (accurate, complete, aligned with current behavior)
+- [x] Document subsection "Internal route number" in BelzontTLM/i18n/en-US/glossary.content.lines.identity.routeNumber.md (accurate, complete, aligned with current behavior)
+- [x] Document subsection "Display identifier" in BelzontTLM/i18n/en-US/glossary.content.lines.identity.displayId.md (accurate, complete, aligned with current behavior)
+- [x] Document subsection "Shield shapes and badges" in BelzontTLM/i18n/en-US/glossary.content.lines.identity.shields.md (accurate, complete, aligned with current behavior)
+- [x] Document subsection "Fixed color versus palette color" in BelzontTLM/i18n/en-US/glossary.content.lines.identity.color.md (accurate, complete, aligned with current behavior)
+- [x] Keep short title/category strings consistent with glossaryContent.ts
+- [x] Review the whole topic group against current UI behavior and terminology
 
 ---
 
