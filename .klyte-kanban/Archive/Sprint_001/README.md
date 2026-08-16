@@ -10,10 +10,10 @@ Replace introductory glossary drafts with detailed, code-verified documentation 
 
 - **Sprint number**: 001
 - **Start date**: 2026-08-16 20:23 -0300
-- **End date**:
+- **End date**: 2026-08-16 20:51 -0300
 - **Original tasks**: 06
 - **Original task IDs**: [0001], [0002], [0003], [0004], [0005], [0006]
-- **Delivered tasks (from original)**:
+- **Delivered tasks (from original)**: 6
 - **Added tasks**: 0
-- **Delivered tasks (from added)**:
-- **Total delivered tasks**:
+- **Delivered tasks (from added)**: 0
+- **Total delivered tasks**: 6
