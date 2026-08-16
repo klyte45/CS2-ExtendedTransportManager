@@ -34,7 +34,12 @@ Documentation-planning task for one XTM encyclopedia topic group. Expand each su
 
 ## Implementation Notes
 
-
+1. Research verified name generation and precedence, route-number editing and palette indexing, display-identifier storage and placement, exact shield shapes/badges, and fixed/palette color behavior.
+2. Code caveats found outside this documentation task: display-identifier trimming differs between listing and SIP and lacks safe byte-length validation; auto-color update reads setup data from the prefab instead of the route owner and never updates paletteChecksum; fixed-color parsing does not enforce six RGB digits.
+3. Reuse image: _Frontends/UI/images/Encyclopedia/xtm-line-card-editing.jpg — identifier editor and color picker with Restore palette color, same route.
+4. Reuse image: _Frontends/UI/images/Encyclopedia/xtm-line-card-anatomy.jpg — names, identifiers, transport shield, color, and schedule controls legible across passenger/cargo/disabled cards.
+5. Reuse image: _Frontends/UI/images/Encyclopedia/xtm-listing-service-states.jpg — same-mode routes showing all schedule badges.
+6. Image required: _Frontends/UI/images/Encyclopedia/xtm-line-shield-shapes.jpg — arrange bus, tram, subway, train, ferry, ship, and airplane shields; include cargo examples and day-only/night-only/disabled/day-and-night states with both badge corners visible.
 
 ---
 
