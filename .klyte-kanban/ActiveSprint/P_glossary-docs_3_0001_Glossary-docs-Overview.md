@@ -32,7 +32,10 @@ Documentation-planning task for one XTM encyclopedia topic group. Expand each su
 
 ## Implementation Notes
 
-
+1. Code research covered Transportation Overview modes and defaults, Encyclopedia switching, Selected Info extensions, linear-map switching, passenger/cargo units and filters, palette separation, fare-group eligibility, and vehicle-group scope.
+2. Image required: _Frontends/UI/images/Encyclopedia/xtm-overview-modes.jpg — show Transportation Overview in XTM listing mode with the XTM toggle selected, passenger and cargo filters visible, and Change mode open so all six modes are readable.
+3. Image required: _Frontends/UI/images/Encyclopedia/xtm-route-tools.jpg — show a selected passenger route with the Selected Info Panel Line Data section and enhanced linear map visible; include the map XTM toggle and overlay controls.
+4. Image required: _Frontends/UI/images/Encyclopedia/xtm-passenger-cargo.jpg — show a passenger line card and cargo route card together, with readable icons/labels, passenger count versus cargo weight, and both quick-filter buttons visible.
 
 ---
 
