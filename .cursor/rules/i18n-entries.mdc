@@ -1,5 +1,5 @@
 ---
-description: Never edit i18n.csv; write tab-separated *_entries.txt instead
+description: Never edit i18n.csv; write tab-separated *_entries.txt or lang md for long bodies
 alwaysApply: true
 ---
 
@@ -7,7 +7,7 @@ alwaysApply: true
 
 Do **not** modify `BelzontTLM/i18n/i18n.csv`, `i18n.xlsm`, or locale CSVs. Humans merge via Excel macros.
 
-## New strings
+## New short strings
 
 Create or append a tab-separated file:
 
@@ -34,6 +34,28 @@ K45::XTM	vuio	lineStationDetail	waiting.passengers	K45::XTM.vuio[lineStationDeta
 
 Older in-repo `*_entries.txt` files may have 6 columns (no assembled key). **New agent output uses 7 columns.**
 
+## Long-form / markdown bodies
+
+For glossary section bodies and other multiline markdown, do **not** use `*_entries.txt`. Create one file per locale under:
+
+`BelzontTLM/i18n/{langCode}/{key}.md`
+
+Example: `BelzontTLM/i18n/en-US/` and `BelzontTLM/i18n/pt-BR/`.
+
+```markdown
+---
+key: K45::XTM.vuio[glossary.section.smoke]
+---
+Long **markdown** body for this locale.
+```
+
+- Frontmatter field **`key`** (alias **`entry`**) = assembled locale id.
+- Body after frontmatter = locale value (newlines preserved).
+- Filename should match the key when the filesystem allows; frontmatter is authoritative.
+- **`en-US/` is the base:** every language gets those entries first. If a key/file is missing under another `i18n/{lang}/`, the en-US body is used. Present lang files overlay en-US for matching keys.
+- Loaded by `BasicIMod.LoadLocales` after CSV; **last loaded wins** on key conflict (lang md overlays en-US md; md overrides CSV for the same key).
+- Still never edit `i18n.csv`.
+
 ## `::` special keys
 
 Resolved at load by `BasicIMod.ProcessKey`. Prefixes (see `BelzontCommons/README.md`):
@@ -42,4 +64,4 @@ Resolved at load by `BasicIMod.ProcessKey`. Prefixes (see `BelzontCommons/README
 
 For `::` rows: leave unused middle columns empty; column 5 is the CSV key (e.g. `::TUI`). Do not invent new `::` shapes — consult `BasicIMod` / Commons README when unsure.
 
-Frontend/C# should reference the **assembled** key; agents only write the pending `*_entries.txt`.
+Frontend/C# should reference the **assembled** key; agents only write the pending `*_entries.txt` or `i18n/{lang}/*.md`.
