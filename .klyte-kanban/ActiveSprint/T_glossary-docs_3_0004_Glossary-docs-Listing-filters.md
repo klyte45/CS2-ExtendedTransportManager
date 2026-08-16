@@ -1,3 +1,4 @@
+**End time:** 2026-08-16 20:43 -0300
 **Start time:** 2026-08-16 20:38 -0300
 # [0004] Glossary docs: Listing & filters
 
