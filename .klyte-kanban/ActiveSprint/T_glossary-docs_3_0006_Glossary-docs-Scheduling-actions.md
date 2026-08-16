@@ -1,3 +1,4 @@
+**End time:** 2026-08-16 20:51 -0300
 **Start time:** 2026-08-16 20:47 -0300
 # [0006] Glossary docs: Scheduling & actions
 
