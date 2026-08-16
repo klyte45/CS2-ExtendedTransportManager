@@ -1,3 +1,4 @@
+**End time:** 2026-08-16 20:38 -0300
 **Start time:** 2026-08-16 20:33 -0300
 # [0003] Glossary docs: Settings & support
 
