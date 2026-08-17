@@ -1,6 +1,12 @@
 ---
 key: K45::XTM.vuio[glossary.content.groups.incompatibilities.external]
 ---
-Other mods or vanilla edits can fight XTM when they rewrite ticket prices or model selection buffers. XTM retries applying the group policy after external changes.
+For each member line, XTM expects the vehicle-model list to exactly match the group's compositions, including order and primary and secondary models. Vanilla actions or another mod can conflict by rewriting that list.
 
-> **Alert:** After repeated unresolved conflicts (around sixteen), XTM stops re-enforcing that group on the affected line. Clear the conflicting change, then re-assign or edit the group to resume enforcement.
+XTM checks managed lines periodically and normally reapplies the group's compositions after a mismatch. Ticket-price conflicts are handled separately; this watchdog only monitors model selection.
+
+## Conflict cutoff
+
+**After the sixteenth detected mismatch, XTM stops enforcing the vehicle model group on that individual line.** The first fifteen mismatches can trigger reapplication; other members continue normally.
+
+There is currently no visible conflict warning. Remove or disable the source of the conflicting changes, then edit the group or remove and reassign the affected line to resume enforcement. Reloading the city also clears this transient conflict state.
