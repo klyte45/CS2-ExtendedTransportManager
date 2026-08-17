@@ -22,20 +22,23 @@ Documentation-planning task for one XTM encyclopedia topic group. Expand each su
 
 ## Acceptance Criteria / Definition of Done (DoD)
 
-- [ ] Document subsection "Occupancy versus platform crowding" in BelzontTLM/i18n/en-US/glossary.content.statistics.occupancy.concepts.md (accurate, complete, aligned with current behavior)
-- [ ] Document subsection "How occupancy is calculated" in BelzontTLM/i18n/en-US/glossary.content.statistics.occupancy.howCalculated.md (accurate, complete, aligned with current behavior)
-- [ ] Document subsection "Map display modes" in BelzontTLM/i18n/en-US/glossary.content.statistics.occupancy.mapDisplay.md (accurate, complete, aligned with current behavior)
-- [ ] Document subsection "Segment details" in BelzontTLM/i18n/en-US/glossary.content.statistics.occupancy.segmentDetails.md (accurate, complete, aligned with current behavior)
-- [ ] Document subsection "City reports" in BelzontTLM/i18n/en-US/glossary.content.statistics.occupancy.cityReports.md (accurate, complete, aligned with current behavior)
-- [ ] Document subsection "Listing integration" in BelzontTLM/i18n/en-US/glossary.content.statistics.occupancy.listing.md (accurate, complete, aligned with current behavior)
-- [ ] Keep short title/category strings consistent with glossaryContent.ts
-- [ ] Review the whole topic group against current UI behavior and terminology
+- [x] Document subsection "Occupancy versus platform crowding" in BelzontTLM/i18n/en-US/glossary.content.statistics.occupancy.concepts.md (accurate, complete, aligned with current behavior)
+- [x] Document subsection "How occupancy is calculated" in BelzontTLM/i18n/en-US/glossary.content.statistics.occupancy.howCalculated.md (accurate, complete, aligned with current behavior)
+- [x] Document subsection "Map display modes" in BelzontTLM/i18n/en-US/glossary.content.statistics.occupancy.mapDisplay.md (accurate, complete, aligned with current behavior)
+- [x] Document subsection "Segment details" in BelzontTLM/i18n/en-US/glossary.content.statistics.occupancy.segmentDetails.md (accurate, complete, aligned with current behavior)
+- [x] Document subsection "City reports" in BelzontTLM/i18n/en-US/glossary.content.statistics.occupancy.cityReports.md (accurate, complete, aligned with current behavior)
+- [x] Document subsection "Listing integration" in BelzontTLM/i18n/en-US/glossary.content.statistics.occupancy.listing.md (accurate, complete, aligned with current behavior)
+- [x] Keep short title/category strings consistent with glossaryContent.ts
+- [x] Review the whole topic group against current UI behavior and terminology
 
 ---
 
 ## Implementation Notes
 
-
+1. Research verified departure-based six-bucket history, peak-biased smoothing, stale handling, live platform crowding, map modes, segment charts, report ranking formulas, and listing integration.
+2. Code caveats: map no-data appears as zero; values cap at 100%; daily averages are unweighted; platform capacity is volatile; reports are snapshots and capped; listing order can become stale.
+3. Images required: xtm-occupancy-report-overview.jpg and xtm-occupancy-report-detail.jpg with report columns, filters, timestamps, rankings, sorting and drilldown visible.
+4. Reuse xtm-linear-map-overlays.jpg, xtm-linear-map-segment-detail.jpg, xtm-line-card-anatomy.jpg and xtm-listing-sort-menu.jpg.
 
 ---
 

@@ -1,6 +1,10 @@
 ---
 key: K45::XTM.vuio[glossary.content.statistics.occupancy.concepts]
 ---
-**Vehicle occupancy** measures how full vehicles are on segments over time. **Platform crowding** estimates how busy a stop is relative to its capacity.
+XTM shows two separate measurements: **vehicle occupancy** and **platform crowding**.
 
-Passenger and cargo networks use the same tooling with different units. Historical buckets can be missing or stale until enough samples accumulate.
+Vehicle occupancy records how full a vehicle was when it departed a stop toward the next stop. Passenger load excludes pets; cargo load sums carried resources. Multi-unit consists combine every unit's load and capacity. Historical percentages are capped at 100%.
+
+Platform crowding compares the load currently waiting at a stop with the largest capacity among the route's positioned vehicles. It is a live visual reference, not the platform's physical capacity. Without a positioned vehicle or known capacity, crowding displays as zero.
+
+On the linear map, increasingly crowded stop markers gain fill and a thicker border; ratios of 75% or more pulse. The tooltip can still report waiting load beyond one vehicle's capacity.
