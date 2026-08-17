@@ -22,15 +22,16 @@ Documentation-planning task for one XTM encyclopedia topic group. Expand each su
 
 ## Acceptance Criteria / Definition of Done (DoD)
 
-- [ ] Document subsection "Assigning from a line or in bulk" in BelzontTLM/i18n/en-US/glossary.content.groups.modelMembership.assign.md (accurate, complete, aligned with current behavior)
-- [ ] Keep short title/category strings consistent with glossaryContent.ts
-- [ ] Review the whole topic group against current UI behavior and terminology
+- [x] Document subsection "Assigning from a line or in bulk" in BelzontTLM/i18n/en-US/glossary.content.groups.modelMembership.assign.md (accurate, complete, aligned with current behavior)
+- [x] Keep short title/category strings consistent with glossaryContent.ts
+- [x] Review the whole topic group against current UI behavior and terminology
 
 ---
 
 ## Implementation Notes
 
-
+1. Verified SIP compatible-group filtering, managed actions, affected counts, editor activity and assigned-line filters, bulk moves and zero-member validity.
+2. Images required: xtm-model-group-sip.jpg and xtm-model-group-membership.jpg.
 
 ---
 
