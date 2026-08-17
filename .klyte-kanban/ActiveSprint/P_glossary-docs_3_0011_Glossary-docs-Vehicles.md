@@ -22,17 +22,21 @@ Documentation-planning task for one XTM encyclopedia topic group. Expand each su
 
 ## Acceptance Criteria / Definition of Done (DoD)
 
-- [ ] Document subsection "Live vehicle positions" in BelzontTLM/i18n/en-US/glossary.content.map.vehicles.live.md (accurate, complete, aligned with current behavior)
-- [ ] Document subsection "Next-arrival data" in BelzontTLM/i18n/en-US/glossary.content.map.vehicles.nextArrival.md (accurate, complete, aligned with current behavior)
-- [ ] Document subsection "Odometer and maintenance" in BelzontTLM/i18n/en-US/glossary.content.map.vehicles.odometer.md (accurate, complete, aligned with current behavior)
-- [ ] Keep short title/category strings consistent with glossaryContent.ts
-- [ ] Review the whole topic group against current UI behavior and terminology
+- [x] Document subsection "Live vehicle positions" in BelzontTLM/i18n/en-US/glossary.content.map.vehicles.live.md (accurate, complete, aligned with current behavior)
+- [x] Document subsection "Next-arrival data" in BelzontTLM/i18n/en-US/glossary.content.map.vehicles.nextArrival.md (accurate, complete, aligned with current behavior)
+- [x] Document subsection "Odometer and maintenance" in BelzontTLM/i18n/en-US/glossary.content.map.vehicles.odometer.md (accurate, complete, aligned with current behavior)
+- [x] Keep short title/category strings consistent with glossaryContent.ts
+- [x] Review the whole topic group against current UI behavior and terminology
 
 ---
 
 ## Implementation Notes
 
-
+1. Research verified vehicle-overlay defaults and exclusivity, normalized route-position rendering, marker load/capacity display, cyclic next-vehicle calculation, odometer source, maintenance range, and selection limits.
+2. Code caveats found: marker strip uses equal stop spacing; cargo tooltips lack units; next arrival is positional rather than time-based; focus links may require two activations; maintenance remaining can be negative and unsupported vehicles may expose a negative range.
+3. Image required: _Frontends/UI/images/Encyclopedia/xtm-linear-map-vehicles.jpg — full route with Vehicles selected, Connections off, several markers, one selected marker, and readable passenger load/capacity tooltip.
+4. Image required: _Frontends/UI/images/Encyclopedia/xtm-route-next-maintenance.jpg — selected route with Line Data Advanced data open and next-maintenance vehicle name plus remaining distance readable.
+5. Reuse image: _Frontends/UI/images/Encyclopedia/xtm-sip-stop-vehicle.jpg — show next-arrival Stop Data together with selected Vehicle Data odometer and maintenance range.
 
 ---
 
