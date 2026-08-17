@@ -10,10 +10,10 @@ Replace the next six XTM Encyclopedia topic-group drafts with code-verified play
 
 - **Sprint number**: 002
 - **Start date**: 2026-08-17 00:12 -0300
-- **End date**:
+- **End date**: 2026-08-17 00:38 -0300
 - **Original tasks**: 06
 - **Original task IDs**: [0007], [0008], [0009], [0010], [0011], [0012]
-- **Delivered tasks (from original)**:
+- **Delivered tasks (from original)**: 6
 - **Added tasks**: 0
-- **Delivered tasks (from added)**:
-- **Total delivered tasks**:
+- **Delivered tasks (from added)**: 0
+- **Total delivered tasks**: 6
