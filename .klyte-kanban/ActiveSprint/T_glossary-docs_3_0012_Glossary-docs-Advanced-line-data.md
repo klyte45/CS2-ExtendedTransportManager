@@ -1,3 +1,4 @@
+**End time:** 2026-08-17 00:38 -0300
 **Start time:** 2026-08-17 00:34 -0300
 # [0012] Glossary docs: Advanced line data
 
