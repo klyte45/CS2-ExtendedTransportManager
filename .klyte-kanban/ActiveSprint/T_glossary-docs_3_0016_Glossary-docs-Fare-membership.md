@@ -1,3 +1,4 @@
+**End time:** 2026-08-17 00:50 -0300
 **Start time:** 2026-08-17 00:49 -0300
 # [0016] Glossary docs: Fare membership
 
