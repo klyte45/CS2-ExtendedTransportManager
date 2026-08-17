@@ -22,16 +22,18 @@ Documentation-planning task for one XTM encyclopedia topic group. Expand each su
 
 ## Acceptance Criteria / Definition of Done (DoD)
 
-- [ ] Document subsection "Transport-type and cargo scope" in BelzontTLM/i18n/en-US/glossary.content.groups.modelBasics.scope.md (accurate, complete, aligned with current behavior)
-- [ ] Document subsection "Creating, renaming, deleting" in BelzontTLM/i18n/en-US/glossary.content.groups.modelBasics.crud.md (accurate, complete, aligned with current behavior)
-- [ ] Keep short title/category strings consistent with glossaryContent.ts
-- [ ] Review the whole topic group against current UI behavior and terminology
+- [x] Document subsection "Transport-type and cargo scope" in BelzontTLM/i18n/en-US/glossary.content.groups.modelBasics.scope.md (accurate, complete, aligned with current behavior)
+- [x] Document subsection "Creating, renaming, deleting" in BelzontTLM/i18n/en-US/glossary.content.groups.modelBasics.crud.md (accurate, complete, aligned with current behavior)
+- [x] Keep short title/category strings consistent with glossaryContent.ts
+- [x] Review the whole topic group against current UI behavior and terminology
 
 ---
 
 ## Implementation Notes
 
-
+1. Verified immutable transport/cargo scope, creation prerequisites, autosave and naming, deletion and delayed association cleanup.
+2. Corrected deletion semantics: the last applied VehicleModel buffer remains on former members.
+3. Image required: xtm-model-groups-overview.jpg with scope menu, cards, editor, compositions and linked lines.
 
 ---
 
