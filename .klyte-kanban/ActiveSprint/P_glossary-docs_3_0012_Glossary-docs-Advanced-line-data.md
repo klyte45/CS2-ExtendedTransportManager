@@ -1,7 +1,7 @@
+**Start time:** 2026-08-17 00:34 -0300
 # [0012] Glossary docs: Advanced line data
 
-**Developed by:** 
-
+**Developed by:** Auto <auto@kwyt.com.br>
 ## User Story
 
 > Acting as **a player reading the XTM encyclopedia**, I want **accurate documentation for the Advanced line data topic group**, so that I **so the in-game glossary teaches that feature area clearly without leaving the game**.
