@@ -22,18 +22,20 @@ Documentation-planning task for one XTM encyclopedia topic group. Expand each su
 
 ## Acceptance Criteria / Definition of Done (DoD)
 
-- [ ] Document subsection "Availability" in BelzontTLM/i18n/en-US/glossary.content.appearance.we.availability.md (accurate, complete, aligned with current behavior)
-- [ ] Document subsection "Steps and destination stops" in BelzontTLM/i18n/en-US/glossary.content.appearance.we.steps.md (accurate, complete, aligned with current behavior)
-- [ ] Document subsection "Dynamic and static keyframes" in BelzontTLM/i18n/en-US/glossary.content.appearance.we.keyframes.md (accurate, complete, aligned with current behavior)
-- [ ] Document subsection "Prefixes, suffixes, and clipboard" in BelzontTLM/i18n/en-US/glossary.content.appearance.we.extras.md (accurate, complete, aligned with current behavior)
-- [ ] Keep short title/category strings consistent with glossaryContent.ts
-- [ ] Review the whole topic group against current UI behavior and terminology
+- [x] Document subsection "Availability" in BelzontTLM/i18n/en-US/glossary.content.appearance.we.availability.md (accurate, complete, aligned with current behavior)
+- [x] Document subsection "Steps and destination stops" in BelzontTLM/i18n/en-US/glossary.content.appearance.we.steps.md (accurate, complete, aligned with current behavior)
+- [x] Document subsection "Dynamic and static keyframes" in BelzontTLM/i18n/en-US/glossary.content.appearance.we.keyframes.md (accurate, complete, aligned with current behavior)
+- [x] Document subsection "Prefixes, suffixes, and clipboard" in BelzontTLM/i18n/en-US/glossary.content.appearance.we.extras.md (accurate, complete, aligned with current behavior)
+- [x] Keep short title/category strings consistent with glossaryContent.ts
+- [x] Review the whole topic group against current UI behavior and terminology
 
 ---
 
 ## Implementation Notes
 
-
+1. Verified assembly/hook gating, SIP and glossary filtering, destination-step selection, defaults, first-stop behavior, static and dynamic keyframes, text types, persistence, prefix/suffix, and session-only full-replacement clipboard.
+2. Recorded code caveats: route-update job does not write adjusted step values back; C# and UI choose different middle stops on odd routes; FixedString32 storage is shorter than UI maximum; static index and frame edge cases exist.
+3. Images required: xtm-we-sip-entry.jpg, xtm-we-blinds-list.jpg, xtm-we-keyframes-editor.jpg and xtm-we-clipboard-actions.jpg.
 
 ---
 
