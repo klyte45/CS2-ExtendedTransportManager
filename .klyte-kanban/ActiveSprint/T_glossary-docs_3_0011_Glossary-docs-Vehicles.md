@@ -1,3 +1,4 @@
+**End time:** 2026-08-17 00:34 -0300
 **Start time:** 2026-08-17 00:30 -0300
 # [0011] Glossary docs: Vehicles
 
