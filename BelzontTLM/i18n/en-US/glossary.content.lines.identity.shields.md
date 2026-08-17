@@ -11,4 +11,4 @@ The shield fill uses the route's current color. Identifier text and the optional
 
 ## Badges
 
-Day-and-night service has no schedule badge. Day-only routes receive a yellow circle, night-only routes a purple circle, and disabled routes a red circle at the upper-left. Cargo routes also receive a beige circle at the upper-right. These badges are color markers without icons.
+Day-and-night service has no schedule badge. Day-only routes receive a yellow circle, night-only routes a purple circle, and disabled routes a red circle at the lower-left. Cargo routes also receive a beige circle at the lower-right. These badges are color markers without icons.

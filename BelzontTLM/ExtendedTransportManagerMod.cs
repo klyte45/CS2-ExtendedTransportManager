@@ -17,6 +17,9 @@ namespace BelzontTLM
 
         public override void DoOnCreateWorld(UpdateSystem updateSystem)
         {
+            // Wipe standalone XTM entities before deserialize (same relative slot as vanilla ClearSystem).
+            updateSystem.UpdateBefore<XTMClearSystem>(SystemUpdatePhase.Deserialize);
+
             updateSystem.UpdateAfter<XTMStopsLinkingSystem>(SystemUpdatePhase.UIUpdate);
 
             updateSystem.UpdateBefore<XTMRouteAutoColorSystem>(SystemUpdatePhase.UIUpdate);
