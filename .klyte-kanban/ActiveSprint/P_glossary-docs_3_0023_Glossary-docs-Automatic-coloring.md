@@ -22,16 +22,18 @@ Documentation-planning task for one XTM encyclopedia topic group. Expand each su
 
 ## Acceptance Criteria / Definition of Done (DoD)
 
-- [ ] Document subsection "Assign palette by transport type" in BelzontTLM/i18n/en-US/glossary.content.appearance.autoColor.assign.md (accurate, complete, aligned with current behavior)
-- [ ] Document subsection "Number-based indexing" in BelzontTLM/i18n/en-US/glossary.content.appearance.autoColor.indexing.md (accurate, complete, aligned with current behavior)
-- [ ] Keep short title/category strings consistent with glossaryContent.ts
-- [ ] Review the whole topic group against current UI behavior and terminology
+- [x] Document subsection "Assign palette by transport type" in BelzontTLM/i18n/en-US/glossary.content.appearance.autoColor.assign.md (accurate, complete, aligned with current behavior)
+- [x] Document subsection "Number-based indexing" in BelzontTLM/i18n/en-US/glossary.content.appearance.autoColor.indexing.md (accurate, complete, aligned with current behavior)
+- [x] Keep short title/category strings consistent with glossaryContent.ts
+- [x] Review the whole topic group against current UI behavior and terminology
 
 ---
 
 ## Implementation Notes
 
-
+1. Verified supported passenger/cargo types, independent assignment persistence, exact (routeNumber - 1) modulo indexing, fixed-color exclusion and recalculation triggers.
+2. Recorded implementation defects: update job reads setup metadata from prefab instead of route; palette edits bypass checksum recalculation; deleting assigned palette leaves a stale GUID; initial setup omits checksum.
+3. Image required: xtm-palette-indexing.jpg; reuse xtm-palettes-overview.jpg for assignments.
 
 ---
 
