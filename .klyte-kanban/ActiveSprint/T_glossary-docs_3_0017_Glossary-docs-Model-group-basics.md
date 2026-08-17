@@ -1,3 +1,4 @@
+**End time:** 2026-08-17 00:51 -0300
 **Start time:** 2026-08-17 00:50 -0300
 # [0017] Glossary docs: Model group basics
 
