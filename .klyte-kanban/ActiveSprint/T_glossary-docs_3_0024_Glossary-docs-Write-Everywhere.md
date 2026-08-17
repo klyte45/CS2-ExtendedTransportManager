@@ -1,3 +1,4 @@
+**End time:** 2026-08-17 00:57 -0300
 **Start time:** 2026-08-17 00:56 -0300
 # [0024] Glossary docs: Write Everywhere
 
