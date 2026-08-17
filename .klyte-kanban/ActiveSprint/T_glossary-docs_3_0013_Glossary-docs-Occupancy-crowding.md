@@ -1,3 +1,4 @@
+**End time:** 2026-08-17 00:47 -0300
 **Start time:** 2026-08-17 00:46 -0300
 # [0013] Glossary docs: Occupancy & crowding
 
