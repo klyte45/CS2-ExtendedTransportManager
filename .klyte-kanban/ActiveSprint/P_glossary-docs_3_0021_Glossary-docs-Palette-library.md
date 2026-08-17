@@ -22,18 +22,20 @@ Documentation-planning task for one XTM encyclopedia topic group. Expand each su
 
 ## Acceptance Criteria / Definition of Done (DoD)
 
-- [ ] Document subsection "City palettes" in BelzontTLM/i18n/en-US/glossary.content.appearance.library.city.md (accurate, complete, aligned with current behavior)
-- [ ] Document subsection "Default library" in BelzontTLM/i18n/en-US/glossary.content.appearance.library.default.md (accurate, complete, aligned with current behavior)
-- [ ] Document subsection "Importing .hex files" in BelzontTLM/i18n/en-US/glossary.content.appearance.library.import.md (accurate, complete, aligned with current behavior)
-- [ ] Document subsection "Editor-mode access" in BelzontTLM/i18n/en-US/glossary.content.appearance.library.editor.md (accurate, complete, aligned with current behavior)
-- [ ] Keep short title/category strings consistent with glossaryContent.ts
-- [ ] Review the whole topic group against current UI behavior and terminology
+- [x] Document subsection "City palettes" in BelzontTLM/i18n/en-US/glossary.content.appearance.library.city.md (accurate, complete, aligned with current behavior)
+- [x] Document subsection "Default library" in BelzontTLM/i18n/en-US/glossary.content.appearance.library.default.md (accurate, complete, aligned with current behavior)
+- [x] Document subsection "Importing .hex files" in BelzontTLM/i18n/en-US/glossary.content.appearance.library.import.md (accurate, complete, aligned with current behavior)
+- [x] Document subsection "Editor-mode access" in BelzontTLM/i18n/en-US/glossary.content.appearance.library.editor.md (accurate, complete, aligned with current behavior)
+- [x] Keep short title/category strings consistent with glossaryContent.ts
+- [x] Review the whole topic group against current UI behavior and terminology
 
 ---
 
 ## Implementation Notes
 
-
+1. Verified city-save persistence, GUID identity, embedded preset hierarchy, disk parsing and limits, append behavior, editor preload setting and shared dialog.
+2. Corrected drafts: presets are imported rather than copied directly; editor access edits the current editor world, not an offline library.
+3. Images required: xtm-palettes-overview.jpg and xtm-palettes-library-import.jpg. Recapture existing xtm-editor-palettes.jpg in the actual Asset Editor.
 
 ---
 
