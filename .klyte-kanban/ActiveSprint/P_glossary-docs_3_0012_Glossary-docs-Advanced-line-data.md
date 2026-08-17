@@ -22,17 +22,20 @@ Documentation-planning task for one XTM encyclopedia topic group. Expand each su
 
 ## Acceptance Criteria / Definition of Done (DoD)
 
-- [ ] Document subsection "Waiting and loaded demand" in BelzontTLM/i18n/en-US/glossary.content.map.advanced.demand.md (accurate, complete, aligned with current behavior)
-- [ ] Document subsection "Full-lap estimate" in BelzontTLM/i18n/en-US/glossary.content.map.advanced.lap.md (accurate, complete, aligned with current behavior)
-- [ ] Document subsection "Average occupancy" in BelzontTLM/i18n/en-US/glossary.content.map.advanced.avgOccupancy.md (accurate, complete, aligned with current behavior)
-- [ ] Keep short title/category strings consistent with glossaryContent.ts
-- [ ] Review the whole topic group against current UI behavior and terminology
+- [x] Document subsection "Waiting and loaded demand" in BelzontTLM/i18n/en-US/glossary.content.map.advanced.demand.md (accurate, complete, aligned with current behavior)
+- [x] Document subsection "Full-lap estimate" in BelzontTLM/i18n/en-US/glossary.content.map.advanced.lap.md (accurate, complete, aligned with current behavior)
+- [x] Document subsection "Average occupancy" in BelzontTLM/i18n/en-US/glossary.content.map.advanced.avgOccupancy.md (accurate, complete, aligned with current behavior)
+- [x] Keep short title/category strings consistent with glossaryContent.ts
+- [x] Review the whole topic group against current UI behavior and terminology
 
 ---
 
 ## Implementation Notes
 
-
+1. Research verified live passenger/cargo waiting and loaded sums, per-tick refresh, pathfinding-based round-trip estimate, live average formulas, platform capacity proxy, and historical stale-bucket handling.
+2. Code caveats found: unpositioned vehicles are omitted from loaded demand; missing segment path data undercounts lap time; the estimate uses an undocumented fixed scaling heuristic; empty or zero-capacity routes can produce meaningless live averages.
+3. Image required: _Frontends/UI/images/Encyclopedia/xtm-sip-advanced-line-data.jpg — selected passenger route with Line Data Advanced stats expanded; show waiting, loaded, expected round trip, both live averages, historical chart and daily average. A second cargo crop may demonstrate weight units.
+4. Reuse image: _Frontends/UI/images/Encyclopedia/xtm-route-next-maintenance.jpg — related advanced panel context if captured broadly enough to include next-maintenance data.
 
 ---
 
