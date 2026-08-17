@@ -1,4 +1,10 @@
 ---
 key: K45::XTM.vuio[glossary.content.lines.stopOrder.firstStop]
 ---
-You can pick a stop to become the new first stop of the line. That reorders the sequence used by naming, blinds steps, and some map displays.
+Select a stop on the XTM linear map, then use the **1** button in **Stop Data** to make it the route's first stop. The button is disabled for the stop that is already first.
+
+XTM rotates the route's stop order without reversing its direction. The chosen stop becomes the top of the full linear map and the starting terminus used by the symmetric half-trip view.
+
+Changing the first stop also changes stop indices and Write Everywhere destination-blind boundaries. Destination text configured to use the end of the line resolves to the new first stop.
+
+A symmetric route may stop qualifying for half-trip mode if you choose an intermediate platform. Choosing the opposite terminus normally preserves the out-and-back pairing while exchanging the two ends.

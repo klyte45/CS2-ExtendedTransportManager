@@ -22,17 +22,20 @@ Documentation-planning task for one XTM encyclopedia topic group. Expand each su
 
 ## Acceptance Criteria / Definition of Done (DoD)
 
-- [ ] Document subsection "First stop" in BelzontTLM/i18n/en-US/glossary.content.lines.stopOrder.firstStop.md (accurate, complete, aligned with current behavior)
-- [ ] Document subsection "Symmetric routes" in BelzontTLM/i18n/en-US/glossary.content.lines.stopOrder.symmetric.md (accurate, complete, aligned with current behavior)
-- [ ] Document subsection "Opposite platforms" in BelzontTLM/i18n/en-US/glossary.content.lines.stopOrder.opposite.md (accurate, complete, aligned with current behavior)
-- [ ] Keep short title/category strings consistent with glossaryContent.ts
-- [ ] Review the whole topic group against current UI behavior and terminology
+- [x] Document subsection "First stop" in BelzontTLM/i18n/en-US/glossary.content.lines.stopOrder.firstStop.md (accurate, complete, aligned with current behavior)
+- [x] Document subsection "Symmetric routes" in BelzontTLM/i18n/en-US/glossary.content.lines.stopOrder.symmetric.md (accurate, complete, aligned with current behavior)
+- [x] Document subsection "Opposite platforms" in BelzontTLM/i18n/en-US/glossary.content.lines.stopOrder.opposite.md (accurate, complete, aligned with current behavior)
+- [x] Keep short title/category strings consistent with glossaryContent.ts
+- [x] Review the whole topic group against current UI behavior and terminology
 
 ---
 
 ## Implementation Notes
 
-
+1. Research verified canonical RouteWaypoint rotation for first-stop changes, frontend parent/order-based symmetry detection, half-trip consequences, and same-parent opposite-platform lookup.
+2. Code caveats found: odd-length symmetry check uses length % 1; parentless stops can falsely pair; SetFirstStop has unsafe buffer handling and questionable alias disposal; frontend mutation is not awaited; WE cached stop order may not be written back.
+3. Reuse image: _Frontends/UI/images/Encyclopedia/xtm-sip-stop-vehicle.jpg — show selected non-first stop and Stop Data with the 1 and circular-arrow actions readable.
+4. Reuse image: _Frontends/UI/images/Encyclopedia/xtm-linear-map-overlays.jpg — show symmetric half-trip view with split platform markers, direction triangle, paired occupancy arrows, and Half trip selected.
 
 ---
 
