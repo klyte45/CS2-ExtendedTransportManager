@@ -1,3 +1,4 @@
+**End time:** 2026-08-17 00:48 -0300
 **Start time:** 2026-08-17 00:47 -0300
 # [0014] Glossary docs: Fare groups
 
