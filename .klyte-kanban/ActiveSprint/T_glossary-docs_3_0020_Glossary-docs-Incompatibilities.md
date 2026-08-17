@@ -1,3 +1,4 @@
+**End time:** 2026-08-17 00:53 -0300
 **Start time:** 2026-08-17 00:52 -0300
 # [0020] Glossary docs: Incompatibilities
 
