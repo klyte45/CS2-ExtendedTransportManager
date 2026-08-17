@@ -37,6 +37,16 @@
     pointer-events: auto;
 }
 
+// Screenshots embedded in glossary markdown bodies.
+.xtm-glossary-image {
+    display: block;
+    width: 100%;
+    max-width: 100%;
+    height: auto;
+    margin: 8rem 0;
+    border-radius: 4rem;
+}
+
 // Narrow overrides only — layout comes from glossaryPanelTheme classes.
 .xtm-glossary-content .container_DZ3,
 .xtm-glossary-content [class*="container_"] {

@@ -13,6 +13,8 @@ For a supported transport line, the Selected Info Panel can show XTM's enhanced 
 
 Write Everywhere destination-blind controls appear only when that mod is available.
 
+![Route opened from Details, showing the XTM info panel sections and the enhanced linear map](coui://xtm.k45/UI/images/xtm-route-tools.jpg)
+
 ## Navigating from the map
 
 Select the route shield above the linear map to return selection to the route. Connected-line shields switch the Selected Info Panel to that route.

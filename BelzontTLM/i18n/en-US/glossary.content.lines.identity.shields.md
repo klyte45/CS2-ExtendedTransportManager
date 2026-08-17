@@ -9,6 +9,10 @@ Passenger buses use a hexagon, trams a trapezoid, ferries a diamond, and subway 
 
 The shield fill uses the route's current color. Identifier text and the optional listing border use a contrasting light or dark color, and long text is reduced to fit on one line.
 
+![Shield shapes for each passenger and cargo transport type](coui://xtm.k45/UI/images/xtm-line-shield-shapes.jpg)
+
 ## Badges
 
 Day-and-night service has no schedule badge. Day-only routes receive a yellow circle, night-only routes a purple circle, and disabled routes a red circle at the lower-left. Cargo routes also receive a beige circle at the lower-right. These badges are color markers without icons.
+
+![Routes of the same mode showing the day-only, night-only, and disabled shield badges](coui://xtm.k45/UI/images/xtm-listing-service-states.jpg)

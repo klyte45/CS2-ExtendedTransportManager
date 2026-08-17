@@ -5,6 +5,8 @@ XTM uses **passenger line** for services carrying people and **cargo route** for
 
 The main listing includes both families. Passenger transport types appear first and cargo types follow them, with separate transport icons and quick filters for **Passenger lines** and **Cargo routes**. Names, identifiers, colors, schedules, shields, route details, and the enhanced map work for both.
 
+![Listing showing passenger line sections above cargo route sections with their separate quick filters](coui://xtm.k45/UI/images/xtm-passenger-cargo.jpg)
+
 Passenger activity is displayed as a number of people. Cargo activity is displayed as weight. This distinction applies to monthly volume, waiting load, loaded vehicles, and related route-map information.
 
 Passenger and cargo occupancy reports are separate screens. Palette assignments are also separate, so passenger trains and cargo trains can follow different color palettes.

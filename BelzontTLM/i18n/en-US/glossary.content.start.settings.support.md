@@ -5,13 +5,9 @@ key: K45::XTM.vuio[glossary.content.start.settings.support]
 
 The XTM options page displays the installed mod version and provides shortcuts to the forum, source repository, translation folder, and log folder.
 
-Use the forum for player support and discussion:
+Use the forum for player support and discussion: [XTM forum topic](https://forum.paradoxplaza.com/forum/threads/xtm-extended-transport-manager.1651555/)
 
-https://forum.paradoxplaza.com/forum/threads/xtm-extended-transport-manager.1651555/
-
-Use the GitHub repository for source code and technical issue tracking:
-
-https://github.com/klyte45/CS2-ExtendedTransportManager
+Use the GitHub repository for source code and technical issue tracking: [klyte45/CS2-ExtendedTransportManager](https://github.com/klyte45/CS2-ExtendedTransportManager)
 
 ## What to include
 

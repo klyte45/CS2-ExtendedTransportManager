@@ -5,6 +5,8 @@ key: K45::XTM.vuio[glossary.content.lines.listing.sorting]
 
 Open **Sort lines** to choose internal line number, line acronym, line length, historical usage, passengers or cargo per month, or scheduling state.
 
+![Sort lines menu open with every sort key and the direction arrow](coui://xtm.k45/UI/images/xtm-listing-sort-menu.jpg)
+
 The default is internal line number with smaller numbers first.
 
 **Line acronym** uses natural, case-insensitive text order. If a line has no acronym, its internal number is used as the sortable identifier.

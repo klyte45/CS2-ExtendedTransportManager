@@ -7,6 +7,8 @@ Open the game's **Transportation Overview**, then use the XTM button in the pane
 
 Press **Change mode** to choose **Line listing**, **Fare Groups**, **Vehicle Model Groups**, **Available palettes**, **Occupancy Report: Passengers**, or **Occupancy Report: Cargo**. The chosen XTM screen, listing filters, and sorting are remembered during the current frontend session. Changing to another XTM screen clears the listing filters.
 
+![Change mode menu open over the XTM line listing, showing every XTM screen](coui://xtm.k45/UI/images/xtm-overview-modes.jpg)
+
 ## Line listing
 
 Use the transport-type and activity buttons to filter the list. **Show all**, **Hide all**, **Passenger lines**, and **Cargo routes** provide quick filter presets. The sort menu orders routes by number, acronym, length, usage, monthly passenger or cargo volume, or schedule.

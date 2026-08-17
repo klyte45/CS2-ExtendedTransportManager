@@ -5,6 +5,8 @@ Enable **Show editor palettes button** in the mod options before entering a game
 
 Select the XTM icon in the editor toolbar to open the draggable **Available palettes** dialog. Select another editor tool when you are finished.
 
+![Available palettes dialog opened from the XTM tool in the Asset Editor toolbar](coui://xtm.k45/UI/images/xtm-editor-palettes.jpg)
+
 ## Manage palettes
 
 Create a palette, import a `.hex` file, or import a preset from XTM's embedded library. Select a palette to rename it, delete it, add or remove colors, edit individual colors, drag colors into a new order, shuffle them, or append another palette.

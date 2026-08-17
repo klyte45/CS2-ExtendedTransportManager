@@ -11,4 +11,6 @@ Select the first button in a card's schedule strip to enable the route and apply
 
 Day-and-night cards use the normal light card text and a green selected schedule button. Their route shields do not receive a service-state badge.
 
+![Cards in all four service states, with the day-and-night button highlighted on the first](coui://xtm.k45/UI/images/xtm-listing-service-states.jpg)
+
 Use the **Day & night** toolbar button to include or exclude these routes from the listing. Service-state filters combine with transport-type filters, so a card must pass both.

@@ -25,4 +25,6 @@ Markdown bodies load after CSV entries, so a Markdown file overrides a CSV value
 
 Use **Go To Translations folder** to open the installed XTM i18n directory. After editing a file, use **Reload translations** to remove and rebuild all XTM localization sources without restarting the game.
 
+![Options page with the translations folder and reload buttons beside the forum, repository, and log folder shortcuts](coui://xtm.k45/UI/images/xtm-settings-localization-support.jpg)
+
 If already-open text does not refresh visually, close and reopen that panel after reloading.

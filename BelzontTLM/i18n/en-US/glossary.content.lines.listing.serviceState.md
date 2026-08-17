@@ -18,3 +18,5 @@ The **Passenger lines** and **Cargo routes** presets preserve the current servic
 Every card has four schedule buttons in this order: Day & night, Day only, Night only, and Disabled. Selecting a schedule enables the line and applies that schedule. Selecting Disabled stops service without deleting the route or changing its path.
 
 Disabled cards are gray, show their length, and replace the normal vehicle and occupancy information with **Line disabled**. Day-only cards use a pale-yellow tint, night-only cards use purple, and day-and-night cards use the normal light text.
+
+![Cards in the day-and-night, day-only, night-only, and disabled states](coui://xtm.k45/UI/images/xtm-listing-service-states.jpg)

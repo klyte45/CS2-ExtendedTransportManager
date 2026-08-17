@@ -7,6 +7,8 @@ Passenger **lines** and cargo **routes** have separate mode buttons. A selected 
 
 Use individual mode buttons when you want a precise combination, such as passenger buses together with cargo trains.
 
+![Listing with passenger and cargo sections and their quick filter buttons](coui://xtm.k45/UI/images/xtm-passenger-cargo.jpg)
+
 ## Quick filters
 
 **Passenger lines** hides every cargo mode currently present and re-enables all passenger modes. **Cargo routes** does the opposite. These presets keep your day, night, and disabled service-state choices unchanged.

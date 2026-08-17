@@ -9,6 +9,8 @@ The XTM button in the panel header always remains available. Switching it change
 
 A direct link from another XTM screen can still open Transportation Overview in XTM mode even when the default is disabled.
 
+![XTM options page showing the default listing mode and editor palette button toggles](coui://xtm.k45/UI/images/xtm-settings-ui-defaults.jpg)
+
 ## Editor palette tool
 
 **Show palettes button in Editor** is enabled by default. It adds the XTM palette tool to the Editor toolbar, where it opens the Available palettes interface.

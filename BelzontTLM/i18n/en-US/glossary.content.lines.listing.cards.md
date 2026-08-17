@@ -5,11 +5,15 @@ key: K45::XTM.vuio[glossary.content.lines.listing.cards]
 
 The colored diagonal stripe shows the route's **display identifier**. A non-empty acronym takes priority; otherwise the internal route number is shown. Select the identifier to edit both values.
 
+![Line card with the identifier stripe, shield, name, type, statistics, and schedule strip](coui://xtm.k45/UI/images/xtm-line-card-anatomy.jpg)
+
 The small shield below it shows the transport icon. Its shape follows the transport mode, cargo routes receive a cargo badge, and day-only, night-only, or disabled service receives a colored state badge.
 
 Select the shield to open the color picker. Choosing a color creates a fixed-color override. When the route has an assigned palette and the card recognizes a fixed override, **Restore palette color** returns control to automatic coloring.
 
 Select the route name to rename it in place. Leaving the editor commits a changed, non-empty name; Escape cancels the edit.
+
+![Card editing controls with the identifier editor, name field, and color picker](coui://xtm.k45/UI/images/xtm-line-card-editing.jpg)
 
 ## Type and details
 

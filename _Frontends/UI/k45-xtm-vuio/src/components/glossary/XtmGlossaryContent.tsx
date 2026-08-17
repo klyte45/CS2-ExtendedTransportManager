@@ -1,5 +1,6 @@
 import translate from "#utility/translate";
 import { VanillaComponentResolver } from "@klyte45/vuio-commons";
+import { trigger } from "cs2/api";
 import { FocusDisabled } from "cs2/input";
 import { FormattedParagraphs, MarkdownRenderer, Scrollable } from "cs2/ui";
 import {
@@ -16,6 +17,21 @@ import { GlossaryCategoryDef, GlossarySectionDef } from "./glossaryTypes";
 import { VANILLA_SCROLLABLE_RESERVE_PROPS } from "./glossaryScrollable";
 
 const markdownBase = new MarkdownRenderer();
+
+const EXTERNAL_LINK_PATTERN = /^https?:\/\//i;
+
+// Vanilla trigger used by the Paradox panel; hands the URL to Application.OpenURL.
+function openGlossaryLink(data: string) {
+    if (EXTERNAL_LINK_PATTERN.test(data)) trigger("paradox", "showLink", data);
+}
+
+function styleImages(node: ReactNode): ReactNode {
+    if (Array.isArray(node)) return node.map((child) => styleImages(child));
+    if (isValidElement(node) && node.type === "img") {
+        return cloneElement(node as any, { className: "xtm-glossary-image" });
+    }
+    return node;
+}
 
 function highlightNode(node: ReactNode, query: string, highlightClass: string): ReactNode {
     if (!query.trim()) return node;
@@ -101,8 +117,8 @@ function SectionBlock({
             // Typings declare a tuple, but the runtime result is an object carrying `node`.
             render: (str: string) => {
                 const result = markdownBase.render(str) as any;
-                if (!searchQuery.trim()) return result;
-                const rawNode = result?.node;
+                const rawNode = styleImages(result?.node);
+                if (!searchQuery.trim()) return { ...result, node: rawNode };
                 const node = Array.isArray(rawNode)
                     ? rawNode.map((n: ReactNode, i: number) => (
                         <Fragment key={i}>{highlightNode(n, searchQuery, glossaryPanelTheme.textHighlight)}</Fragment>
@@ -126,6 +142,7 @@ function SectionBlock({
                 className={glossaryPanelTheme.sectionParagraph}
                 renderer={renderer}
                 text={body}
+                onLinkSelect={openGlossaryLink}
             />
         </div>
     );

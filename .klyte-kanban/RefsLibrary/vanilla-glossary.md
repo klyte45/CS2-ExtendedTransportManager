@@ -164,6 +164,7 @@ flowchart LR
 - Plain `translate(assembledKey)` for titles and bodies; custom markdown renderer path matching the **vanilla glossary subset** (bold, paragraphs, lists as supported today).
 - Do **not** register under `Sc.Glossary.*[hash]` for mod content.
 - Icons from DTO paths. Optional **pack** filter ids = **release version tags** (empty / unused at first release).
+- **Images and links for encyclopedia/glossary section bodies must be embedded in the `i18n/{lang}/*.md` bodies** using the Markdown dialect (`![alt](src)`, `[label](data)`). Do not rely on separate non-md side channels for those assets in section content.
 
 ### Discovery
 
@@ -210,6 +211,7 @@ Long **markdown** body for this locale.
 - **`en-US/` is the base locale for md:** registered for every language first (same pattern as the CSV en-US column). If a key has no file under `i18n/{lang}/`, the en-US body is used. Language-specific md overlays en-US for keys that exist in that folder.
 - **Conflict rule:** last loaded entry for a key wins. Order per language: CSV → ModGen → en-US md → lang md. So lang md overrides en-US md; md overrides CSV for the same key.
 - Agents never edit `i18n.csv`; short keys still go to `*_entries.txt`.
+- **Embed images and links in section md bodies** (`![alt](src)`, `[label](data)`). Category/section chrome icons may still come from DTO paths; body media and hyperlinks live in the locale md.
 
 Loader: `BasicIMod.LoadLocales` — see Commons implementation.
 

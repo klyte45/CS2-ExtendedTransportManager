@@ -12,3 +12,5 @@ Select the fourth button in a card's schedule strip to disable the route. XTM ch
 Disabled cards use gray information text and a red selected schedule button. Their shields receive a red circular badge at the upper-left.
 
 The card still shows route length, but monthly volume, vehicle count, and occupancy are replaced by **Line disabled**. Disabled routes have a listing filter but are omitted from occupancy reports.
+
+![Enabled and disabled cards side by side, showing the Details button and the four schedule buttons](coui://xtm.k45/UI/images/xtm-line-card-anatomy.jpg)

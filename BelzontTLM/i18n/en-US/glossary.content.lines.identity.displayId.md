@@ -5,6 +5,8 @@ The **display identifier**, also called the line acronym or route identifier in 
 
 Select the identifier on an XTM listing card to edit the acronym and internal number together. The acronym can also be edited in the selected route's **Line Data** section. Clear it to return generated names and XTM shields to the internal number.
 
+![Identifier editor open on a line card, with the acronym and internal number fields](coui://xtm.k45/UI/images/xtm-line-card-editing.jpg)
+
 ## Precedence
 
 A custom route name remains independent and is not replaced by the identifier. When the game generates a route name, a non-empty identifier is used as its number token; otherwise the internal number is used.

@@ -3,6 +3,8 @@ key: K45::XTM.vuio[glossary.content.lines.identity.name]
 ---
 A route has a **name** in addition to its number and optional display identifier. In the XTM listing, select the displayed name to edit it. Leaving the field saves a trimmed, non-empty name; press Escape to cancel. The normal rename control remains available in the route's Selected Info Panel.
 
+![Line card with its name, identifier stripe, shield, and Details button](coui://xtm.k45/UI/images/xtm-line-card-anatomy.jpg)
+
 ## Custom and generated names
 
 A custom name is shown as entered and takes priority over the game's generated name. The internal route number and display identifier do not replace a custom name.

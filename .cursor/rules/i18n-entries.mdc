@@ -56,6 +56,7 @@ Long **markdown** body for this locale.
 - Loaded by `BasicIMod.LoadLocales` after CSV; **last loaded wins** on key conflict (lang md overlays en-US md; md overrides CSV for the same key).
 - Still never edit `i18n.csv`.
 - Glossary bodies are shown with **`MarkdownRenderer`** — use the **Markdown** dialect below.
+- Encyclopedia/glossary **images and links belong in the i18n md body** (`![alt](src)`, `[label](data)`), not as separate non-md content for the section. See `.klyte-kanban/RefsLibrary/vanilla-glossary.md`.
 
 ## FormattedParagraphs / formatted text
 

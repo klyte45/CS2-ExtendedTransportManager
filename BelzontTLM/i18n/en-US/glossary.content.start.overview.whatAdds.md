@@ -9,4 +9,6 @@ XTM also records historical occupancy. The passenger and cargo reports rank line
 
 Selecting a route, stop, or vehicle reveals additional information in the Selected Info Panel. XTM adds route identifiers and generated shields, group assignment controls, trip and maintenance data, and optional Write Everywhere destination-blind tools.
 
+![Selected route with the XTM Selected Info Panel sections and the enhanced linear map](coui://xtm.k45/UI/images/xtm-route-tools.jpg)
+
 This XTM Encyclopedia documents those features inside the game.

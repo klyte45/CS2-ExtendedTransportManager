@@ -11,6 +11,8 @@ The **Line Data** section edits the internal route number and optional display i
 
 When Write Everywhere is installed and available, its button in Line Data opens destination-blind editing.
 
+![Selected route info panel showing the XTM color, ticket price, vehicle selection, and Line Data sections](coui://xtm.k45/UI/images/xtm-sip-route-sections.jpg)
+
 ## Selected stop
 
 Select a stop in the XTM linear map to see Stop Data. From there you can focus its parent building, switch to the opposite platform when one exists, make the stop the first stop of the route, and inspect the approaching vehicle.
@@ -18,6 +20,8 @@ Select a stop in the XTM linear map to see Stop Data. From there you can focus i
 ## Selected vehicle
 
 Enable vehicles on the XTM linear map and select a vehicle to see its odometer and maintenance interval.
+
+![Stop Data and Vehicle Data sections shown for a selected stop and a selected vehicle](coui://xtm.k45/UI/images/xtm-sip-stop-vehicle.jpg)
 
 ## Selection limits
 
