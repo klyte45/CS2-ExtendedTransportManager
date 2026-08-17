@@ -1,3 +1,4 @@
+**End time:** 2026-08-17 00:49 -0300
 **Start time:** 2026-08-17 00:48 -0300
 # [0015] Glossary docs: Time-based fares
 
