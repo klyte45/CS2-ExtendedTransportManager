@@ -22,16 +22,18 @@ Documentation-planning task for one XTM encyclopedia topic group. Expand each su
 
 ## Acceptance Criteria / Definition of Done (DoD)
 
-- [ ] Document subsection "Hour exceptions" in BelzontTLM/i18n/en-US/glossary.content.groups.fareTime.exceptions.md (accurate, complete, aligned with current behavior)
-- [ ] Document subsection "Fare schedule preview" in BelzontTLM/i18n/en-US/glossary.content.groups.fareTime.preview.md (accurate, complete, aligned with current behavior)
-- [ ] Keep short title/category strings consistent with glossaryContent.ts
-- [ ] Review the whole topic group against current UI behavior and terminology
+- [x] Document subsection "Hour exceptions" in BelzontTLM/i18n/en-US/glossary.content.groups.fareTime.exceptions.md (accurate, complete, aligned with current behavior)
+- [x] Document subsection "Fare schedule preview" in BelzontTLM/i18n/en-US/glossary.content.groups.fareTime.preview.md (accurate, complete, aligned with current behavior)
+- [x] Keep short title/category strings consistent with glossaryContent.ts
+- [x] Review the whole topic group against current UI behavior and terminology
 
 ---
 
 ## Implementation Notes
 
-
+1. Verified whole-hour inclusive ranges, overlap and midnight rules, 20-exception limit, free periods, automatic hourly application and exact schedule-foldout behavior.
+2. Corrected the draft: Fare schedule summarizes default and exception rows; it is not a complete 24-hour visualization.
+3. Images required: xtm-fare-group-hour-exceptions.jpg and xtm-fare-group-fare-schedule.jpg.
 
 ---
 
