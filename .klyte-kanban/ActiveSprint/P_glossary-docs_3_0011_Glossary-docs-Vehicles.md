@@ -1,7 +1,7 @@
+**Start time:** 2026-08-17 00:30 -0300
 # [0011] Glossary docs: Vehicles
 
-**Developed by:** 
-
+**Developed by:** Auto <auto@kwyt.com.br>
 ## User Story
 
 > Acting as **a player reading the XTM encyclopedia**, I want **accurate documentation for the Vehicles topic group**, so that I **so the in-game glossary teaches that feature area clearly without leaving the game**.
