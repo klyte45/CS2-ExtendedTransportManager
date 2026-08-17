@@ -22,16 +22,18 @@ Documentation-planning task for one XTM encyclopedia topic group. Expand each su
 
 ## Acceptance Criteria / Definition of Done (DoD)
 
-- [ ] Document subsection "Assigning lines" in BelzontTLM/i18n/en-US/glossary.content.groups.fareMembership.assign.md (accurate, complete, aligned with current behavior)
-- [ ] Document subsection "Shared-change warning" in BelzontTLM/i18n/en-US/glossary.content.groups.fareMembership.shared.md (accurate, complete, aligned with current behavior)
-- [ ] Keep short title/category strings consistent with glossaryContent.ts
-- [ ] Review the whole topic group against current UI behavior and terminology
+- [x] Document subsection "Assigning lines" in BelzontTLM/i18n/en-US/glossary.content.groups.fareMembership.assign.md (accurate, complete, aligned with current behavior)
+- [x] Document subsection "Shared-change warning" in BelzontTLM/i18n/en-US/glossary.content.groups.fareMembership.shared.md (accurate, complete, aligned with current behavior)
+- [x] Keep short title/category strings consistent with glossaryContent.ts
+- [x] Review the whole topic group against current UI behavior and terminology
 
 ---
 
 ## Implementation Notes
 
-
+1. Verified SIP assign/edit/remove/move actions, bulk membership filters, warning behavior, passenger-only editor scope, single-group membership and affected-member summaries.
+2. Corrected the draft: valid edits auto-save without confirmation; removals retain the last applied ticket price.
+3. Images required: xtm-fare-group-sip-membership-menu.jpg and xtm-fare-group-membership-editor.jpg; reuse xtm-sip-route-sections.jpg.
 
 ---
 
