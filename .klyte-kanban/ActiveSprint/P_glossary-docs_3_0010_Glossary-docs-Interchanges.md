@@ -22,16 +22,19 @@ Documentation-planning task for one XTM encyclopedia topic group. Expand each su
 
 ## Acceptance Criteria / Definition of Done (DoD)
 
-- [ ] Document subsection "Connected lines" in BelzontTLM/i18n/en-US/glossary.content.map.interchanges.connected.md (accurate, complete, aligned with current behavior)
-- [ ] Document subsection "Selecting linked routes" in BelzontTLM/i18n/en-US/glossary.content.map.interchanges.select.md (accurate, complete, aligned with current behavior)
-- [ ] Keep short title/category strings consistent with glossaryContent.ts
-- [ ] Review the whole topic group against current UI behavior and terminology
+- [x] Document subsection "Connected lines" in BelzontTLM/i18n/en-US/glossary.content.map.interchanges.connected.md (accurate, complete, aligned with current behavior)
+- [x] Document subsection "Selecting linked routes" in BelzontTLM/i18n/en-US/glossary.content.map.interchanges.select.md (accurate, complete, aligned with current behavior)
+- [x] Keep short title/category strings consistent with glossaryContent.ts
+- [x] Review the whole topic group against current UI behavior and terminology
 
 ---
 
 ## Implementation Notes
 
-
+1. Research verified station/building/road-neighborhood route discovery, work-route exclusion, frontend deduplication and type/number sorting, compact shield thresholds, selection behavior, and half-trip limitations.
+2. Code caveats found: vehicle and connection overlays are mutually exclusive without automatic restoration; return-platform connections are omitted in half trip; connection stop metadata is unused; unknown line entries are skipped; odd symmetry check remains broken.
+3. Image required: _Frontends/UI/images/Encyclopedia/xtm-map-interchanges-compact.jpg — show normal and compact connection groups together, more than six distinct colors producing a gray stem, mixed transport types, one hovered tooltip, Connecting lines on and Vehicles off.
+4. Reuse image: _Frontends/UI/images/Encyclopedia/xtm-route-tools.jpg — show the Selected Info Panel and map after selecting a linked route.
 
 ---
 
