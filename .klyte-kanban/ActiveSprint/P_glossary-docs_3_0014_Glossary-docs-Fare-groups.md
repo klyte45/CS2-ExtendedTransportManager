@@ -22,16 +22,18 @@ Documentation-planning task for one XTM encyclopedia topic group. Expand each su
 
 ## Acceptance Criteria / Definition of Done (DoD)
 
-- [ ] Document subsection "Creating and deleting groups" in BelzontTLM/i18n/en-US/glossary.content.groups.fareBasics.create.md (accurate, complete, aligned with current behavior)
-- [ ] Document subsection "Default fare and free travel" in BelzontTLM/i18n/en-US/glossary.content.groups.fareBasics.default.md (accurate, complete, aligned with current behavior)
-- [ ] Keep short title/category strings consistent with glossaryContent.ts
-- [ ] Review the whole topic group against current UI behavior and terminology
+- [x] Document subsection "Creating and deleting groups" in BelzontTLM/i18n/en-US/glossary.content.groups.fareBasics.create.md (accurate, complete, aligned with current behavior)
+- [x] Document subsection "Default fare and free travel" in BelzontTLM/i18n/en-US/glossary.content.groups.fareBasics.default.md (accurate, complete, aligned with current behavior)
+- [x] Keep short title/category strings consistent with glossaryContent.ts
+- [x] Review the whole topic group against current UI behavior and terminology
 
 ---
 
 ## Implementation Notes
 
-
+1. Verified creation defaults, naming, list cards, deletion, default-fare clamping, free travel, exception precedence, propagation and membership cleanup.
+2. Caveat: deleting a group does not restore former lines' earlier fares; valid saves are optimistic and automatic.
+3. Images required: xtm-fare-groups-editor.jpg and xtm-fare-groups-default-fare.jpg.
 
 ---
 
