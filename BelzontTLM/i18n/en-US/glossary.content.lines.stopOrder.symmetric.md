@@ -8,3 +8,5 @@ When **Half trip** is enabled and vehicles are hidden, the linear map shows the 
 A triangle beside a selected stop shows whether its platform belongs to the outbound or return direction. Segment-occupancy values use down and up arrows for the two directions.
 
 Enable vehicles or turn off **Half trip** to see the complete loop. Changing the first stop can change or disable symmetry detection because it rotates the positions used for pairing.
+
+![Half-trip and round display mode of same line](coui://xtm.k45/UI/images/xtm-linear-map-switch.jpg)

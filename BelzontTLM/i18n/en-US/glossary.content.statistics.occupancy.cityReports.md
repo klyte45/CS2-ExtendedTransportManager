@@ -10,3 +10,7 @@ Line rankings use the nearest-rank 30th percentile of usable segment percentages
 The overview shows up to three lines and ten segments per column. Select a heading for a detailed ranking of up to 200 entries, then choose most-used-first or least-used-first sorting.
 
 Selecting a line shield opens that route. Selecting a segment shield focuses its departure stop. Percentages are capped at 100%, and entries without recorded capacity are omitted.
+
+![Passenger Occupancy Report showing Overall and six time columns for line and segment rankings](coui://xtm.k45/UI/images/xtm-occupancy-report-overview.jpg)
+
+![Detailed occupancy ranking for one selected time column, with sorting and back controls](coui://xtm.k45/UI/images/xtm-occupancy-report-detail.jpg)

@@ -16,3 +16,5 @@ When a stop has more than four connections, the shields are drawn smaller. The s
 **Connecting lines** and **Vehicles** cannot be shown together. Selecting either overlay clears the other, and hiding vehicles does not restore connections automatically.
 
 In **Half trip** mode, connections come only from the displayed outbound platform and are not merged with its paired return platform.
+
+![Normal and compact connection groups with mixed transport types, color summary bar, and one hovered tooltip](coui://xtm.k45/UI/images/xtm-map-interchanges-compact.jpg)

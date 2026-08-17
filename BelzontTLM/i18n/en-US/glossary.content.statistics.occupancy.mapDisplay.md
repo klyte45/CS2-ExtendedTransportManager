@@ -10,3 +10,5 @@ In symmetric half-trip mode, down and up arrows distinguish the two directions. 
 Platform crowding changes stop markers using live waiting load. It can be displayed together with historical segment occupancy. Both overlays start enabled, with segment occupancy set to Current hour.
 
 Stale or unavailable periods appear as 0% on the map. Open the segment chart to distinguish complete history from gaps.
+
+![XTM linear map with platform crowding, segment occupancy toolbar, and directional percentages](coui://xtm.k45/UI/images/xtm-linear-map-overlays.jpg)

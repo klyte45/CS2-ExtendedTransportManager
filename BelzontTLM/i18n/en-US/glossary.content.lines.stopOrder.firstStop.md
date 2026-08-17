@@ -8,3 +8,5 @@ XTM rotates the route's stop order without reversing its direction. The chosen s
 Changing the first stop also changes stop indices and Write Everywhere destination-blind boundaries. Destination text configured to use the end of the line resolves to the new first stop.
 
 A symmetric route may stop qualifying for half-trip mode if you choose an intermediate platform. Choosing the opposite terminus normally preserves the out-and-back pairing while exchanging the two ends.
+
+![Selected non-first stop with Stop Data showing the 1 and circular-arrow actions](coui://xtm.k45/UI/images/xtm-sip-first-stop.jpg)

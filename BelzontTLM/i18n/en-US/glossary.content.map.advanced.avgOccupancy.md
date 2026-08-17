@@ -8,3 +8,5 @@ Under **Advanced stats**, XTM shows two live percentages for the selected route.
 Below those rows, **Historical occupancy** charts the selected route's recorded segment occupancy by four-hour block. Its daily average ignores stale blocks. This history belongs only to the selected route and is separate from the city Occupancy Report.
 
 A route with no positioned vehicles can leave the live averages empty or meaningless until vehicles appear.
+
+![Line Data Advanced stats with live averages, historical occupancy chart, and daily average](coui://xtm.k45/UI/images/xtm-sip-advanced-line-data.jpg)

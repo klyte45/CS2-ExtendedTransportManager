@@ -10,3 +10,5 @@ Each segment has six periods: **00:00–04:00**, **04:00–08:00**, **08:00–12
 A sample above the stored value replaces it immediately. A lower sample blends 70% of the previous value with 30% of the new sample. Capacity follows the same rule. This exposes sudden crowding quickly while repeated quieter departures reduce the history gradually.
 
 A period becomes stale when its last sample is older than yesterday. Stale periods appear as chart gaps and are excluded from averages, listing ranges, and rankings. Missing or stale map values currently appear as 0%.
+
+![Segment occupancy history with six four-hour periods and the non-stale daily average](coui://xtm.k45/UI/images/xtm-linear-map-segment-detail.jpg)

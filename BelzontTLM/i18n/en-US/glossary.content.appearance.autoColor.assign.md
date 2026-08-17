@@ -9,4 +9,4 @@ Select a transport type and choose a city palette, or choose **Auto color disabl
 
 An individual route with **Use fixed color** enabled takes priority over its transport-type assignment.
 
-![Passenger and cargo palette assignments](coui://xtm.k45/UI/images/xtm-palettes-overview.jpg)
+![Passenger and cargo palette assignments at bottom of the screen](coui://xtm.k45/UI/images/xtm-palettes-overview.jpg)

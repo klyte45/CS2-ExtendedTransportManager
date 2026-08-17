@@ -8,3 +8,5 @@ Select a route, open **Line Data**, and expand **Advanced stats**.
 **Loaded** is the sum of load aboard vehicles that XTM can position on the route. Passenger counts exclude pets. Cargo uses the weight stored on each vehicle, and multi-car consists add every car.
 
 Both values are live snapshots that refresh while the panel remains open. They are not historical averages or values from the city Occupancy Report. Compare waiting with loaded demand when deciding whether the problem is a stop backlog or vehicles already carrying the load.
+
+![Line Data Advanced stats showing waiting and loaded demand for a passenger route](coui://xtm.k45/UI/images/xtm-sip-advanced-line-data.jpg)

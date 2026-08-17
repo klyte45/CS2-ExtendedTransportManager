@@ -12,3 +12,5 @@ Hover over a shield to read the route's full name. The shield shows its transpor
 ## Focus while browsing
 
 When a stop or vehicle is selected, the map fades rows unrelated to that selection so the relevant stop remains emphasized. Select the main route shield above the strip to return selection to the displayed route.
+
+![Selected Info Panel and linear map after selecting a linked route from a connection shield](coui://xtm.k45/UI/images/xtm-route-tools.jpg)

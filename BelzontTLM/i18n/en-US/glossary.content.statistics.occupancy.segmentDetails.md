@@ -8,3 +8,5 @@ The draggable panel identifies the route, departure stop, and next stop. Its cha
 Use the chart to see whether high occupancy is limited to one part of the day or continues across several periods. Inspect the opposite direction separately because its history belongs to another departure waypoint.
 
 Choosing **None**, selecting another route, or using the close button closes the panel. The panel shows percentages only, not raw load, capacity, or sample count.
+
+![Segment occupancy detail for one directed segment, showing its six-period chart and daily average](coui://xtm.k45/UI/images/xtm-linear-map-segment-detail.jpg)
