@@ -22,16 +22,18 @@ Documentation-planning task for one XTM encyclopedia topic group. Expand each su
 
 ## Acceptance Criteria / Definition of Done (DoD)
 
-- [ ] Document subsection "Add and reorder colors" in BelzontTLM/i18n/en-US/glossary.content.appearance.editing.colors.md (accurate, complete, aligned with current behavior)
-- [ ] Document subsection "Copy, paste, replace, append" in BelzontTLM/i18n/en-US/glossary.content.appearance.editing.clipboard.md (accurate, complete, aligned with current behavior)
-- [ ] Keep short title/category strings consistent with glossaryContent.ts
-- [ ] Review the whole topic group against current UI behavior and terminology
+- [x] Document subsection "Add and reorder colors" in BelzontTLM/i18n/en-US/glossary.content.appearance.editing.colors.md (accurate, complete, aligned with current behavior)
+- [x] Document subsection "Copy, paste, replace, append" in BelzontTLM/i18n/en-US/glossary.content.appearance.editing.clipboard.md (accurate, complete, aligned with current behavior)
+- [x] Keep short title/category strings consistent with glossaryContent.ts
+- [x] Review the whole topic group against current UI behavior and terminology
 
 ---
 
 ## Implementation Notes
 
-
+1. Verified white-color append, picker, remove/reorder/shuffle, save/reset/rename semantics, file append, clipboard parsing and 500-color cap.
+2. Caveats recorded: visible numbering may become misleading after reorder/shuffle; excess pasted colors truncate; paste is a draft until saved.
+3. Images required: xtm-palette-color-editing.jpg and xtm-palette-clipboard.jpg.
 
 ---
 
