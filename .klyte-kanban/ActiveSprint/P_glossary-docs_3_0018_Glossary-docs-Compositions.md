@@ -22,16 +22,18 @@ Documentation-planning task for one XTM encyclopedia topic group. Expand each su
 
 ## Acceptance Criteria / Definition of Done (DoD)
 
-- [ ] Document subsection "Primary and secondary vehicles" in BelzontTLM/i18n/en-US/glossary.content.groups.compositions.primary.md (accurate, complete, aligned with current behavior)
-- [ ] Document subsection "Duplicate prevention and limits" in BelzontTLM/i18n/en-US/glossary.content.groups.compositions.duplicates.md (accurate, complete, aligned with current behavior)
-- [ ] Keep short title/category strings consistent with glossaryContent.ts
-- [ ] Review the whole topic group against current UI behavior and terminology
+- [x] Document subsection "Primary and secondary vehicles" in BelzontTLM/i18n/en-US/glossary.content.groups.compositions.primary.md (accurate, complete, aligned with current behavior)
+- [x] Document subsection "Duplicate prevention and limits" in BelzontTLM/i18n/en-US/glossary.content.groups.compositions.duplicates.md (accurate, complete, aligned with current behavior)
+- [x] Keep short title/category strings consistent with glossaryContent.ts
+- [x] Review the whole topic group against current UI behavior and terminology
 
 ---
 
 ## Implementation Notes
 
-
+1. Verified exact composition application, cargo Train/Tram/Subway secondary support, model metadata, duplicate-pair prevention, catalog-derived limits and sorting.
+2. Corrected vague secondary support and documented the exact composition-limit formula.
+3. Image required: xtm-model-group-compositions.jpg with engine/carriage pickers, count, limit, model metadata, sort controls and disabled duplicate choice.
 
 ---
 
