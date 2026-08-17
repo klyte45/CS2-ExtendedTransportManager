@@ -1,7 +1,7 @@
+**Start time:** 2026-08-17 00:56 -0300
 # [0024] Glossary docs: Write Everywhere
 
-**Developed by:** 
-
+**Developed by:** Auto <auto@kwyt.com.br>
 ## User Story
 
 > Acting as **a player reading the XTM encyclopedia**, I want **accurate documentation for the Write Everywhere topic group**, so that I **so the in-game glossary teaches that feature area clearly without leaving the game**.
