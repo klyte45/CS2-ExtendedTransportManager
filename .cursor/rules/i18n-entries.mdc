@@ -57,6 +57,14 @@ Long **markdown** body for this locale.
 - Still never edit `i18n.csv`.
 - Glossary bodies are shown with **`MarkdownRenderer`** — use the **Markdown** dialect below.
 - Encyclopedia/glossary **images and links belong in the i18n md body** (`![alt](src)`, `[label](data)`), not as separate non-md content for the section. See `.klyte-kanban/RefsLibrary/vanilla-glossary.md`.
+- Glossary images use the same sizing as vanilla tutorial/glossary content: default height **300rem**, max width **850rem**, centered. Optional per-image height override (vanilla `height:` suffix) goes in the markdown `src`:
+
+```markdown
+![Screenshot of the line listing](coui://xtm.k45/UI/images/xtm-overview-modes.jpg)
+![Taller screenshot](coui://xtm.k45/UI/images/xtm-overview-modes.jpg height:420)
+```
+
+  Prefer `coui://xtm.k45/UI/images/...` for mod-shipped encyclopedia screenshots. Do not rely on CSS `height: auto` — Gameface collapses that to 0.
 
 ## FormattedParagraphs / formatted text
 
@@ -75,7 +83,7 @@ Pick the dialect by where the string is shown. Do **not** invent HTML, CSS, or m
 | Headings | (not supported) | leading `#` … `###### ` |
 | Line break in paragraph | (not supported) | `<br>` (any case) |
 | Links | `<data>` or `<data\|label>` | `[label](data)` |
-| Images | (not supported) | `![alt](src)` |
+| Images | (not supported) | `![alt](src)` or `![alt](src height:N)` |
 | Newlines | separate paragraphs | separate paragraphs |
 
 Also unsupported in both: single-`*` italics, tables, arbitrary HTML.

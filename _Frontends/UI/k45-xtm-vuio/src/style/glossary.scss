@@ -38,13 +38,58 @@
 }
 
 // Screenshots embedded in glossary markdown bodies.
+// Dimensions are set inline on load (vanilla tutorial/glossary pattern); CSS is spacing only.
 .xtm-glossary-image {
+    padding: 0rem;
+    margin-top: 8rem;
+    margin-bottom: 8rem;
+    cursor: pointer;
+}
+
+// Lightbox: the panel shrink-wraps the image, which is sized inline on load.
+.xtm-glossary-imagePreview {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 20000;
+    pointer-events: none;
+
+    > * {
+        pointer-events: auto;
+    }
+}
+
+.xtm-glossary-imagePreview_backdrop {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(0, 0, 0, 0.6);
+}
+
+.xtm-glossary-imagePreview_panel {
+    position: relative;
+    max-width: 95vw;
+    max-height: 95vh;
+}
+
+.xtm-glossary-imagePreview_body {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 8rem;
+}
+
+.xtm-glossary-imagePreview_img {
+    padding: 0rem;
     display: block;
-    width: 100%;
-    max-width: 100%;
-    height: auto;
-    margin: 8rem 0;
-    border-radius: 4rem;
+    flex: 0 0 auto;
 }
 
 // Narrow overrides only — layout comes from glossaryPanelTheme classes.
