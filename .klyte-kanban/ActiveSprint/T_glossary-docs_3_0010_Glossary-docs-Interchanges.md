@@ -1,3 +1,4 @@
+**End time:** 2026-08-17 00:30 -0300
 **Start time:** 2026-08-17 00:26 -0300
 # [0010] Glossary docs: Interchanges
 
