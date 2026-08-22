@@ -1,4 +1,4 @@
-﻿---
+---
 key: K45::XTM.vuio[glossary.content.groups.fareBasics.default]
 ---
 当当前比赛时间没有任何例外情况时，每个会员线路都使用**默认票价**。

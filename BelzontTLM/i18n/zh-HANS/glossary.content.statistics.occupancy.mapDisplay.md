@@ -1,4 +1,4 @@
-﻿---
+---
 key: K45::XTM.vuio[glossary.content.statistics.occupancy.mapDisplay]
 ---
 XTM 线性地图工具栏具有针对 **平台拥挤** 和 **路段占用** 的单独控件。

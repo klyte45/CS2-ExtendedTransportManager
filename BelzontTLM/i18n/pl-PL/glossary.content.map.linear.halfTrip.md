@@ -1,4 +1,4 @@
-﻿---
+---
 key: K45::XTM.vuio[glossary.content.map.linear.halfTrip]
 ---
 **Rozpoczęcie połowy podróży** jest włączone, ale ma zastosowanie tylko wtedy, gdy XTM wykryje symetryczną trasę tam i z powrotem, a pojazdy są ukryte. Wykrywanie porównuje przystanki w odzwierciedlonych pozycjach trasy według stacji nadrzędnej lub budynku.

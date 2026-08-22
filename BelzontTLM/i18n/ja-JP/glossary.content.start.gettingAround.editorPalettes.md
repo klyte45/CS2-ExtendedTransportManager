@@ -1,4 +1,4 @@
-﻿---
+---
 key: K45::XTM.vuio[glossary.content.start.gettingAround.editorPalettes]
 ---
 ゲームエディターに入る前に、MOD オプションで **エディターパレットボタンを表示** を有効にしてください。この設定はデフォルトで有効になっており、エディターのロード時に適用されます。

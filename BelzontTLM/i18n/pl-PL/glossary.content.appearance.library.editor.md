@@ -1,4 +1,4 @@
-﻿---
+---
 key: K45::XTM.vuio[glossary.content.appearance.library.editor]
 ---
 **Przycisk Pokaż palety w Edytorze** jest domyślnie włączony w opcjach XTM i jest stosowany podczas ładowania edytora.

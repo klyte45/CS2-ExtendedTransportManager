@@ -1,4 +1,4 @@
-﻿---
+---
 key: K45::XTM.vuio[glossary.content.appearance.we.steps]
 ---
 Un destino ciego es una secuencia de pasos a lo largo de la ruta seleccionada. Cada paso se utiliza hasta una parada elegida o hasta el **final de la línea**.

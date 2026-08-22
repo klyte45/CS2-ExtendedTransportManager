@@ -1,4 +1,4 @@
-﻿---
+---
 key: K45::XTM.vuio[glossary.content.appearance.library.import]
 ---
 Wybierz **Importuj paletę**, aby otworzyć selektor plików `.hex`. Rozpoczyna się w folderze palet XTM i zawiera zakładkę **XTM: Biblioteka** dla dołączonych ustawień wstępnych.

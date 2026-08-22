@@ -1,4 +1,4 @@
-﻿---
+---
 key: K45::XTM.vuio[glossary.content.appearance.we.availability]
 ---
 Les stores de destination XTM nécessitent **Write Everywhere** (`BelzontWE`). Lorsque ce mod est présent et que XTM peut attacher ses crochets d'intégration, des stores sont disponibles pour chaque ligne de transport.

@@ -1,4 +1,4 @@
-﻿---
+---
 key: K45::XTM.vuio[glossary.content.start.gettingAround.sip]
 ---
 選擇一條交通路線以開啟其**所選資訊面板**。您也可以按 XTM 清單卡上的 **詳細資料** 或在佔用報告中選擇路線盾牌。

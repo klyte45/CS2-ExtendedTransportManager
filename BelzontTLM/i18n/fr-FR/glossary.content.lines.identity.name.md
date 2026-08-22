@@ -1,4 +1,4 @@
-﻿---
+---
 key: K45::XTM.vuio[glossary.content.lines.identity.name]
 ---
 Un itinéraire a un **nom** en plus de son numéro et de son identifiant d'affichage facultatif. Dans la liste XTM, sélectionnez le nom affiché pour le modifier. Quitter le champ enregistre un nom tronqué et non vide ; appuyez sur Échap pour annuler. Le contrôle normal de changement de nom reste disponible dans le panneau d'informations sélectionnées de l'itinéraire.

@@ -1,4 +1,4 @@
-﻿---
+---
 key: K45::XTM.vuio[glossary.content.map.interchanges.select]
 ---
 选择连接线屏蔽以移至该路线。游戏自行选择路线，因此选定的信息面板和线性地图会切换到该路线，并为新选择的服务重建地带。

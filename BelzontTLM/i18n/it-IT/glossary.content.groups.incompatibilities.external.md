@@ -1,4 +1,4 @@
-﻿---
+---
 key: K45::XTM.vuio[glossary.content.groups.incompatibilities.external]
 ---
 Per ciascuna linea membro, XTM si aspetta che l'elenco dei modelli di veicoli corrisponda esattamente alle composizioni del gruppo, inclusi ordine e modelli primari e secondari. Le azioni Vanilla o un'altra mod possono entrare in conflitto riscrivendo l'elenco.

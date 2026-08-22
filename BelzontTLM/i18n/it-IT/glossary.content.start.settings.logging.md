@@ -1,4 +1,4 @@
-﻿---
+---
 key: K45::XTM.vuio[glossary.content.start.settings.logging]
 ---
 ## Livelli di registrazione

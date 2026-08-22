@@ -1,4 +1,4 @@
-﻿---
+---
 key: K45::XTM.vuio[glossary.content.map.interchanges.connected]
 ---
 **Linie łączące** to jedna z nakładek mapy liniowej XTM, która umożliwia uruchamianie. Rysuje drugą poręcz obok trasy, wymieniając inne trasy transportowe znalezione wokół każdego przystanku. Tarcze korzystają z tej samej trasy, co w innych miejscach XTM.

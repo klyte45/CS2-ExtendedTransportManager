@@ -1,4 +1,4 @@
-﻿---
+---
 key: K45::XTM.vuio[glossary.content.groups.fareBasics.create]
 ---
 Otwórz **Przegląd transportu**, wybierz **Zmień tryb**, a następnie **Grupy taryfowe**. Wybierz przycisk plus obok Grup, aby utworzyć grupę.

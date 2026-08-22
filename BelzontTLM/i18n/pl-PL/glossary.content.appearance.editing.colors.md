@@ -1,4 +1,4 @@
-﻿---
+---
 key: K45::XTM.vuio[glossary.content.appearance.editing.colors]
 ---
 Wybierz paletę miast, aby edytować jej sekwencję. **Dodaj kolor** dodaje kolor biały. Wybierz ponumerowaną próbkę, aby otworzyć koło kolorów i kontrolki RGB, lub X, aby ją usunąć.

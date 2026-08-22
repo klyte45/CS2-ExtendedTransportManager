@@ -1,4 +1,4 @@
-﻿---
+---
 key: K45::XTM.vuio[glossary.content.groups.fareMembership.assign]
 ---
 Para una línea de pasajeros no administrada, abra **Precio del boleto** en el panel de información seleccionada y use su menú de ajustes para asignar un grupo de tarifas. El menú de una línea administrada puede editar su grupo, eliminar la línea o moverla a otro grupo.

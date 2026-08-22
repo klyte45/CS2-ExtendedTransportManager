@@ -1,4 +1,4 @@
-﻿---
+---
 key: K45::XTM.vuio[glossary.content.appearance.autoColor.assign]
 ---
 La parte inferior de **Paletas disponibles** asigna una paleta de ciudad a cada tipo de transporte admitido. Las asignaciones de pasajeros y carga son independientes.

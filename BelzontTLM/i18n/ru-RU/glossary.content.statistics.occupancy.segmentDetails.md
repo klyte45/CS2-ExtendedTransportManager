@@ -1,4 +1,4 @@
-﻿---
+---
 key: K45::XTM.vuio[glossary.content.statistics.occupancy.segmentDetails]
 ---
 Включите режим занятости сегмента на линейной карте XTM, затем выберите процент между двумя остановками.

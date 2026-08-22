@@ -1,4 +1,4 @@
-﻿---
+---
 key: K45::XTM.vuio[glossary.content.lines.scheduling.disabled]
 ---
 ## 停止服务

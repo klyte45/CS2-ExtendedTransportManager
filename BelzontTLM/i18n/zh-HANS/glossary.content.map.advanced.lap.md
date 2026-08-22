@@ -1,4 +1,4 @@
-﻿---
+---
 key: K45::XTM.vuio[glossary.content.map.advanced.lap]
 ---
 **高级统计**下的**预期往返时间**估算车辆完成一次路线需要多少游戏分钟。

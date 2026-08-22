@@ -1,4 +1,4 @@
-﻿---
+---
 key: K45::XTM.vuio[glossary.content.map.interchanges.connected]
 ---
 **連接線** 是啟用的 XTM 線性地圖疊加和啟動之一。它在路線旁邊畫了第二個欄桿，列出了每個車站周圍的其他交通路線。盾牌使用 XTM 中其他地方顯示的相同路線標識。

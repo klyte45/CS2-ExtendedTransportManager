@@ -1,4 +1,4 @@
-﻿---
+---
 key: K45::XTM.vuio[glossary.content.lines.listing.passengerCargo]
 ---
 ## Pasażer i ładunek to oddzielne filtry

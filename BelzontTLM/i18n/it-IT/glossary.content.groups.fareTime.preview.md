@@ -1,4 +1,4 @@
-﻿---
+---
 key: K45::XTM.vuio[glossary.content.groups.fareTime.preview]
 ---
 Espandi **Programma tariffario** sotto il campo della tariffa predefinita. La prima riga mostra l'impostazione predefinita; le righe rimanenti mostrano ogni intervallo e tariffa di eccezione inclusi, ordinati per ora di inizio. Zero appare come **Gratis**.

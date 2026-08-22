@@ -1,4 +1,4 @@
-﻿---
+---
 key: K45::XTM.vuio[glossary.content.lines.identity.routeNumber]
 ---
 Le **numéro de route interne** est le numéro numérique modifiable de la route. Il est distinct du nom de l'itinéraire, de l'identifiant d'affichage facultatif et de l'entité de simulation elle-même.

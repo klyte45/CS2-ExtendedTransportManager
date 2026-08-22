@@ -1,4 +1,4 @@
-﻿---
+---
 key: K45::XTM.vuio[glossary.content.appearance.library.default]
 ---
 XTM zawiera gotową bibliotekę tylko do odczytu zorganizowaną w foldery według regionu i kolekcji. Przeglądaj ją poprzez zakładkę **Biblioteka domyślna** lub zakładkę **XTM: Biblioteka** w selektorze palet.

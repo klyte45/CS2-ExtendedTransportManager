@@ -1,4 +1,4 @@
-﻿---
+---
 key: K45::XTM.vuio[glossary.content.lines.stopOrder.firstStop]
 ---
 Seleziona una fermata sulla mappa lineare XTM, quindi utilizza il pulsante **1** in **Dati fermate** per impostarla come prima fermata del percorso. Il pulsante è disabilitato per la fermata già prima.

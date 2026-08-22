@@ -1,4 +1,4 @@
-﻿---
+---
 key: K45::XTM.vuio[glossary.content.statistics.occupancy.howCalculated]
 ---
 當客運或貨運車輛完成登機並開始前往下一站時，XTM 會記錄歷史佔用情況。此樣本屬於從出發站開始的有向路段。

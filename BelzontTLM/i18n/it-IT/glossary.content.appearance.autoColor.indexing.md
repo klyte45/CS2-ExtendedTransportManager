@@ -1,4 +1,4 @@
-﻿---
+---
 key: K45::XTM.vuio[glossary.content.appearance.autoColor.indexing]
 ---
 Per un'assegnazione valida e non vuota, XTM seleziona un colore della tavolozza dal **numero di percorso interno**. Il percorso 1 utilizza il primo colore, il percorso 2 il secondo e la sequenza prosegue dopo l'ultimo colore.

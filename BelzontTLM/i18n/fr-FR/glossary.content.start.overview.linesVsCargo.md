@@ -1,4 +1,4 @@
-﻿---
+---
 key: K45::XTM.vuio[glossary.content.start.overview.linesVsCargo]
 ---
 XTM utilise la **passager line** pour les services transportant des personnes et la **cargo route** pour les services transportant des ressources. En interne, de nombreux contrôles et systèmes utilisent le mot plus court « ligne » pour les deux.

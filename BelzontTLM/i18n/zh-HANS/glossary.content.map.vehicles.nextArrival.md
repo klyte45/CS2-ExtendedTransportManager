@@ -1,4 +1,4 @@
-﻿---
+---
 key: K45::XTM.vuio[glossary.content.map.vehicles.nextArrival]
 ---
 将鼠标悬停在 XTM 线性地图上的停靠点上可查看下一辆车接近它。工具提示显示车辆名称、剩余路线距离以及中间停靠站数量。 **即将到来！** 表示没有中间停留。

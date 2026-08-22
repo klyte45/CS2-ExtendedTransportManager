@@ -1,4 +1,4 @@
-﻿---
+---
 key: K45::XTM.vuio[glossary.content.start.gettingAround.editorPalettes]
 ---
 Activez **Afficher le bouton des palettes de l'éditeur** dans les options du mod avant d'accéder à un éditeur de jeu. Ce paramètre est activé par défaut et est appliqué lors du chargement de l'éditeur.

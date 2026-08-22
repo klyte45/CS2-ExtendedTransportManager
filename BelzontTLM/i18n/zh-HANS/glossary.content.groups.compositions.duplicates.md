@@ -1,4 +1,4 @@
-﻿---
+---
 key: K45::XTM.vuio[glossary.content.groups.compositions.duplicates]
 ---
 两个组合不能包含完全相同的主次对。会禁用复制另一对的选项，并且在后端验证期间也会删除重复的对。

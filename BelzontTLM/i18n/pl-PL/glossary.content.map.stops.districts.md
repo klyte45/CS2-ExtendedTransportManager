@@ -1,4 +1,4 @@
-﻿---
+---
 key: K45::XTM.vuio[glossary.content.map.stops.districts]
 ---
 **Granice dzielnic** są uruchamiane i można je przełączać za pomocą przycisku dzielnicy na pasku narzędzi mapy liniowej XTM.

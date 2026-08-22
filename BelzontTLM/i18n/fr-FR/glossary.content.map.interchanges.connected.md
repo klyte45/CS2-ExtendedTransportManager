@@ -1,4 +1,4 @@
-﻿---
+---
 key: K45::XTM.vuio[glossary.content.map.interchanges.connected]
 ---
 **Les lignes de connexion** sont l'une des superpositions de cartes linéaires XTM et démarrent activées. Il dessine une deuxième balustrade à côté de l'itinéraire, répertoriant les autres itinéraires de transport trouvés autour de chaque arrêt. Les boucliers utilisent la même identité de route indiquée ailleurs dans XTM.

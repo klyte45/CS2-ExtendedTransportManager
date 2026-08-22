@@ -1,4 +1,4 @@
-﻿---
+---
 key: K45::XTM.vuio[glossary.content.start.gettingAround.linearMap]
 ---
 Seleccione una ruta de transporte y busque su visualizador de líneas en el **Panel de información seleccionado**. Utilice el botón XTM a la izquierda de la barra de herramientas del visualizador para cambiar entre el boceto de ruta del juego y el mapa lineal XTM.

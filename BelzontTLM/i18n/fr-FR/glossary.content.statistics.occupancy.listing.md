@@ -1,4 +1,4 @@
-﻿---
+---
 key: K45::XTM.vuio[glossary.content.statistics.occupancy.listing]
 ---
 Chaque carte d'itinéraire activée affiche une plage d'occupation historique à côté de son nombre de véhicules.

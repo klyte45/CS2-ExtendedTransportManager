@@ -1,4 +1,4 @@
-﻿---
+---
 key: K45::XTM.vuio[glossary.content.map.advanced.avgOccupancy]
 ---
 В разделе **Расширенная статистика** XTM показывает два текущих процента для выбранного маршрута.

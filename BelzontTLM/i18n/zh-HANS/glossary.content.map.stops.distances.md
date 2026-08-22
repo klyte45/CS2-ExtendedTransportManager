@@ -1,4 +1,4 @@
-﻿---
+---
 key: K45::XTM.vuio[glossary.content.map.stops.distances]
 ---
 **距离** 开始启用，并且可以通过 XTM 线性地图工具栏上的标尺按钮进行切换。

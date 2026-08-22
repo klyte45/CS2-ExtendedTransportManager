@@ -1,4 +1,4 @@
-﻿---
+---
 key: K45::XTM.vuio[glossary.content.map.linear.switch]
 ---
 Sélectionnez un itinéraire de transport et utilisez le bouton **Carte XTM** à l'extrême gauche de la barre d'outils du visualiseur de ligne. Lorsqu'il est sélectionné, il remplace le croquis d'itinéraire compact du jeu par la carte linéaire plus large de XTM et révèle les commandes de superposition de carte. Sélectionnez-le à nouveau pour restaurer le visualiseur d'origine.

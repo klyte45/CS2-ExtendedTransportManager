@@ -1,4 +1,4 @@
-﻿---
+---
 key: K45::XTM.vuio[glossary.content.appearance.we.steps]
 ---
 Un aveugle de destination est une séquence d'étapes le long de l'itinéraire sélectionné. Chaque étape est utilisée jusqu'à un arrêt choisi, ou jusqu'à la **fin de la ligne**.

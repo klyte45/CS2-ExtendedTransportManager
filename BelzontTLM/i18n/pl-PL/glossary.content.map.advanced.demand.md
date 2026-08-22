@@ -1,4 +1,4 @@
-﻿---
+---
 key: K45::XTM.vuio[glossary.content.map.advanced.demand]
 ---
 Wybierz trasę, otwórz **Dane linii** i rozwiń **Zaawansowane statystyki**.

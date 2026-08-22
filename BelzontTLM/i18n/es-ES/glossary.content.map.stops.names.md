@@ -1,4 +1,4 @@
-﻿---
+---
 key: K45::XTM.vuio[glossary.content.map.stops.names]
 ---
 Cada parada está etiquetada con el nombre resuelto por el juego para esa entidad de parada. Pase el cursor sobre su marcador para ver el nombre de su edificio o estación principal cuando XTM encuentre uno principal.

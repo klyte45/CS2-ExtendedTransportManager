@@ -1,4 +1,4 @@
-﻿---
+---
 key: K45::XTM.vuio[glossary.content.lines.identity.color]
 ---
 Chaque itinéraire a une couleur actuelle. XTM peut soit conserver une **couleur fixe** choisie pour cet itinéraire, soit laisser une palette de ville attribuée le contrôler.

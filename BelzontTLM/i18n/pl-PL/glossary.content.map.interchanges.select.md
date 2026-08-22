@@ -1,4 +1,4 @@
-﻿---
+---
 key: K45::XTM.vuio[glossary.content.map.interchanges.select]
 ---
 Wybierz tarczę linii łączącej, aby przejść na tę trasę. Gra sama wybiera trasę, więc Panel Wybranych Informacji i mapa liniowa przełączają się na nią, a pas zostaje przebudowany pod nowo wybraną usługę.

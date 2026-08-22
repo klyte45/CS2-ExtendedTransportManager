@@ -1,4 +1,4 @@
-﻿---
+---
 key: K45::XTM.vuio[glossary.content.appearance.we.keyframes]
 ---
 Każdy krok zawiera jedną lub więcej **klatek kluczowych**. Dynamiczne rolety przełączają je na skonfigurowany czas trwania klatki symulacyjnej. Rolety statyczne używają tylko wybranej statycznej klatki kluczowej.

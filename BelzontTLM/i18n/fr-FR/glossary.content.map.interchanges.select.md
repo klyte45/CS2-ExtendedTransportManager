@@ -1,4 +1,4 @@
-﻿---
+---
 key: K45::XTM.vuio[glossary.content.map.interchanges.select]
 ---
 Sélectionnez un bouclier de ligne de connexion pour vous déplacer vers cet itinéraire. Le jeu sélectionne l'itinéraire lui-même, de sorte que le panneau d'informations sélectionnées et la carte linéaire y basculent et que la bande est reconstruite pour le service nouvellement sélectionné.

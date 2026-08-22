@@ -1,4 +1,4 @@
-﻿---
+---
 key: K45::XTM.vuio[glossary.content.start.overview.linesVsCargo]
 ---
 XTM utiliza **línea de pasajeros** para servicios que transportan personas y **ruta de carga** para servicios que transportan recursos. Internamente, muchos controles y sistemas utilizan la palabra más corta "línea" para ambos.

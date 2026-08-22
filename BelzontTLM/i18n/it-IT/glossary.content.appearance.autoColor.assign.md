@@ -1,4 +1,4 @@
-﻿---
+---
 key: K45::XTM.vuio[glossary.content.appearance.autoColor.assign]
 ---
 La parte inferiore delle **Tavolozze disponibili** assegna una tavolozza di città a ciascun tipo di trasporto supportato. Le assegnazioni di passeggeri e merci sono indipendenti.

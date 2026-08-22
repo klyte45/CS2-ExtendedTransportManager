@@ -1,4 +1,4 @@
-﻿---
+---
 key: K45::XTM.vuio[glossary.content.appearance.autoColor.assign]
 ---
 Dolna część **Dostępne palety** przypisuje jedną paletę miast do każdego obsługiwanego rodzaju transportu. Przydział pasażerów i ładunków jest niezależny.

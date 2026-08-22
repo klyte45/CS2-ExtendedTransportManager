@@ -1,4 +1,4 @@
-﻿---
+---
 key: K45::XTM.vuio[glossary.content.statistics.occupancy.cityReports]
 ---
 開啟 XTM 的運送概覽，然後透過 **更改模式** 選擇 **佔用報告：乘客** 或 **佔用報告：貨物**。該報告只是一個快照；使用**刷新資料**產生另一個。不活動的路由被省略。

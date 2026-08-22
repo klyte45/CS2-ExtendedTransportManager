@@ -1,4 +1,4 @@
-﻿---
+---
 key: K45::XTM.vuio[glossary.content.start.gettingAround.linearMap]
 ---
 輸送ルートを選択し、**選択情報パネル**でそのライン ビジュアライザを見つけます。ビジュアライザ ツールバーの左側にある XTM ボタンを使用して、ゲームのルート スケッチと XTM 線形マップを切り替えます。

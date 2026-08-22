@@ -1,4 +1,4 @@
-﻿---
+---
 key: K45::XTM.vuio[glossary.content.groups.modelBasics.scope]
 ---
 Każda grupa modeli pojazdów należy do jednego rodzaju transportu i do linii pasażerskich lub tras towarowych. Wybierz ten zakres przed utworzeniem grupy. Menu zawiera tylko kombinacje reprezentowane obecnie przez linie w mieście.

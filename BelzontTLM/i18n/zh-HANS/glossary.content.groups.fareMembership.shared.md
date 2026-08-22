@@ -1,4 +1,4 @@
-﻿---
+---
 key: K45::XTM.vuio[glossary.content.groups.fareMembership.shared]
 ---
 对于托管线路，**票价** 显示票价组名称、当前有效票价以及受共享更改影响的线路数量。它的工具提示列出了成员标识符和名称，将大型组缩短为五个名称加上溢出计数。

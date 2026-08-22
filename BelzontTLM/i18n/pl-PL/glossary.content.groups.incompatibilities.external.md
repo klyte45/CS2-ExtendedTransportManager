@@ -1,4 +1,4 @@
-﻿---
+---
 key: K45::XTM.vuio[glossary.content.groups.incompatibilities.external]
 ---
 XTM oczekuje, że dla każdej linii członkowskiej lista modeli pojazdów będzie dokładnie odpowiadać składowi grupy, włączając kolejność oraz modele podstawowe i dodatkowe. Działania waniliowe lub inny mod mogą powodować konflikt poprzez przepisanie tej listy.

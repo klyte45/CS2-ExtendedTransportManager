@@ -1,4 +1,4 @@
-﻿---
+---
 key: K45::XTM.vuio[glossary.content.lines.stopOrder.symmetric]
 ---
 XTM detecta una ruta de ida y vuelta cuando las paradas en posiciones reflejadas comparten la misma estación principal o edificio. La detección utiliza el orden de ruta y la identidad de los padres; no compara nombres, distancia o dirección de la plataforma.

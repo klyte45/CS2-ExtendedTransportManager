@@ -1,4 +1,4 @@
-﻿---
+---
 key: K45::XTM.vuio[glossary.content.lines.stopOrder.firstStop]
 ---
 Wybierz przystanek na mapie liniowej XTM, a następnie użyj przycisku **1** w **Dane zatrzymania**, aby ustawić go jako pierwszy przystanek na trasie. Przycisk jest wyłączony dla przystanku, który jest już pierwszy.

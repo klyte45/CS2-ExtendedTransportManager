@@ -1,4 +1,4 @@
-﻿---
+---
 key: K45::XTM.vuio[glossary.content.map.stops.names]
 ---
 每個網站都標有遊戲為該網站實體解析的名稱。當 XTM 找到父級時，將滑鼠懸停在其標記上即可查看其主建築物或車站的名稱。

@@ -1,4 +1,4 @@
-﻿---
+---
 key: K45::XTM.vuio[glossary.content.lines.identity.routeNumber]
 ---
 **內部路線編號**是路線的可編輯數字編號。它與路線名稱、可選顯示標識符和模擬實體本身分開。

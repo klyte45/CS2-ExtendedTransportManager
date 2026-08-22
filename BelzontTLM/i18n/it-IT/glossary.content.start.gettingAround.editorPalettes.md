@@ -1,4 +1,4 @@
-﻿---
+---
 key: K45::XTM.vuio[glossary.content.start.gettingAround.editorPalettes]
 ---
 Abilita **Mostra pulsante tavolozze editor** nelle opzioni mod prima di accedere a un editor di gioco. Questa impostazione è abilitata per impostazione predefinita e viene applicata al caricamento dell'editor.

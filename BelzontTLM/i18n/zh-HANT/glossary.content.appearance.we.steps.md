@@ -1,4 +1,4 @@
-﻿---
+---
 key: K45::XTM.vuio[glossary.content.appearance.we.steps]
 ---
 目的地盲區是沿著選定路線的一系列步驟。每個步驟都會使用到選定的站點，或通過**線路末端**。

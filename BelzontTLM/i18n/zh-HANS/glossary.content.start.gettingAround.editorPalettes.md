@@ -1,4 +1,4 @@
-﻿---
+---
 key: K45::XTM.vuio[glossary.content.start.gettingAround.editorPalettes]
 ---
 在进入游戏编辑器之前，在模组选项中启用**显示编辑器调色板按钮**。默认情况下启用此设置，并在加载编辑器时应用。

@@ -1,4 +1,4 @@
-﻿---
+---
 key: K45::XTM.vuio[glossary.content.map.linear.halfTrip]
 ---
 **El medio viaje** comienza habilitado, pero se aplica solo cuando XTM detecta una ruta simétrica de ida y vuelta y los vehículos están ocultos. La detección compara las paradas en posiciones de ruta reflejadas según su estación principal o edificio.

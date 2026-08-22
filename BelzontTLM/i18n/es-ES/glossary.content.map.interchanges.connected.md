@@ -1,4 +1,4 @@
-﻿---
+---
 key: K45::XTM.vuio[glossary.content.map.interchanges.connected]
 ---
 **Líneas de conexión** es una de las superposiciones e inicios de mapas lineales de XTM habilitados. Dibuja una segunda barandilla al lado de la ruta, enumerando otras rutas de transporte que se encuentran alrededor de cada parada. Los escudos utilizan la misma identidad de ruta que se muestra en otras partes de XTM.

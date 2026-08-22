@@ -1,4 +1,4 @@
-﻿---
+---
 key: K45::XTM.vuio[glossary.content.groups.fareMembership.assign]
 ---
 W przypadku niezarządzanej linii pasażerskiej otwórz **Cena biletu** w panelu wybranych informacji i użyj menu koła zębatego, aby przypisać grupę taryfową. W menu zarządzanej linii można edytować jej grupę, usunąć linię lub przenieść ją do innej grupy.

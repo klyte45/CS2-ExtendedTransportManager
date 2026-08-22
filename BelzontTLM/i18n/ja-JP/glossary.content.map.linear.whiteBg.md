@@ -1,4 +1,4 @@
-﻿---
+---
 key: K45::XTM.vuio[glossary.content.map.linear.whiteBg]
 ---
 XTM マップ ツールバーの右側にあるひし形のボタンを使用して、マップ キャンバスを明るい背景に切り替えます。

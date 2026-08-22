@@ -1,4 +1,4 @@
-﻿---
+---
 key: K45::XTM.vuio[glossary.content.lines.identity.displayId]
 ---
 **顯示識別符**，在某些控制項中也稱為行首字母縮寫或路線標識符，是取代內部路線編號顯示的可選文字。

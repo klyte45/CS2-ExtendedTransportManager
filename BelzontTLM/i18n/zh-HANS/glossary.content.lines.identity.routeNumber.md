@@ -1,4 +1,4 @@
-﻿---
+---
 key: K45::XTM.vuio[glossary.content.lines.identity.routeNumber]
 ---
 **内部路线编号**是路线的可编辑数字编号。它与路线名称、可选显示标识符和模拟实体本身分开。

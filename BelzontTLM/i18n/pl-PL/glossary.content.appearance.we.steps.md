@@ -1,4 +1,4 @@
-﻿---
+---
 key: K45::XTM.vuio[glossary.content.appearance.we.steps]
 ---
 Ślepota docelowa to sekwencja kroków na wybranej trasie. Każdy krok jest używany aż do wybranego przystanku lub do **końca linii**.

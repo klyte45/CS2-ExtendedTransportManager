@@ -1,4 +1,4 @@
-﻿---
+---
 key: K45::XTM.vuio[glossary.content.groups.fareBasics.create]
 ---
 打开 **交通概览**，选择 **更改模式**，然后选择 **票价组**。选择“组”旁边的加号按钮以创建组。

@@ -1,4 +1,4 @@
-﻿---
+---
 key: K45::XTM.vuio[glossary.content.appearance.library.default]
 ---
 XTM 包括一个只读预设库，按区域和集合组织到文件夹中。通过调色板选择器中的 **默认库** 或 **XTM：库** 书签进行浏览。

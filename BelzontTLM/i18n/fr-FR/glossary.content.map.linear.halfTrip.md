@@ -1,4 +1,4 @@
-﻿---
+---
 key: K45::XTM.vuio[glossary.content.map.linear.halfTrip]
 ---
 **Demi-trajet** est activé, mais s'applique uniquement lorsque XTM détecte un itinéraire aller-retour symétrique et que les véhicules sont masqués. La détection compare les arrêts aux positions d'itinéraire en miroir par leur gare ou bâtiment parent.

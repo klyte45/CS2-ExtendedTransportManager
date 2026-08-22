@@ -1,4 +1,4 @@
-﻿---
+---
 key: K45::XTM.vuio[glossary.content.groups.fareBasics.default]
 ---
 La **tarifa predeterminada** es utilizada por todas las líneas miembro siempre que ninguna excepción horaria cubra la hora del juego actual.

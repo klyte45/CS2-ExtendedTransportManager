@@ -1,4 +1,4 @@
-﻿---
+---
 key: K45::XTM.vuio[glossary.content.appearance.we.keyframes]
 ---
 每個步驟都包含一個或多個**關鍵影格**。動態百葉窗在其配置的模擬幀持續時間內循環它們。靜態百葉窗僅使用選定的靜態關鍵影格。

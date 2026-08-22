@@ -1,4 +1,4 @@
-﻿---
+---
 key: K45::XTM.vuio[glossary.content.lines.identity.displayId]
 ---
 L'**identifiant d'affichage**, également appelé acronyme de ligne ou identifiant d'itinéraire dans certaines commandes, est un texte facultatif affiché à la place du numéro d'itinéraire interne.

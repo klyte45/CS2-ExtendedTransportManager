@@ -1,4 +1,4 @@
-﻿---
+---
 key: K45::XTM.vuio[glossary.content.appearance.we.keyframes]
 ---
 Chaque étape contient une ou plusieurs **images clés**. Les stores dynamiques les font défiler pendant leurs durées de trame de simulation configurées. Les stores statiques utilisent uniquement l'image clé statique sélectionnée.

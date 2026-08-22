@@ -1,4 +1,4 @@
-﻿---
+---
 key: K45::XTM.vuio[glossary.content.map.linear.whiteBg]
 ---
 使用 XTM 地图工具栏右侧附近的菱形按钮将地图画布切换为浅色背景。

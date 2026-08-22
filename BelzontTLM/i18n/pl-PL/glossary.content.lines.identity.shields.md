@@ -1,4 +1,4 @@
-﻿---
+---
 key: K45::XTM.vuio[glossary.content.lines.identity.shields]
 ---
 Tarcze XTM łączą rodzaj transportu trasy, aktualny kolor, identyfikator wyświetlacza, rodzaj ładunku i stan usługi. Większość widoków XTM umieszcza identyfikator wyświetlacza wewnątrz tarczy, cofając się do wewnętrznego numeru trasy. Zamiast tego karty aukcji pokazują identyfikator obok tarczy zawierającej ikonę transportu.

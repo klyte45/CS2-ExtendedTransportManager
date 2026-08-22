@@ -1,4 +1,4 @@
-﻿---
+---
 key: K45::XTM.vuio[glossary.content.groups.fareBasics.default]
 ---
 Le **Tarif par défaut** est utilisé par chaque ligne membre chaque fois qu'aucune exception horaire ne couvre l'heure actuelle du chronomètre de jeu.

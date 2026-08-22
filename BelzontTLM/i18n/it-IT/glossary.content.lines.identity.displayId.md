@@ -1,4 +1,4 @@
-﻿---
+---
 key: K45::XTM.vuio[glossary.content.lines.identity.displayId]
 ---
 L'**identificatore di visualizzazione**, chiamato anche acronimo di linea o identificatore di percorso in alcuni controlli, è un testo facoltativo mostrato al posto del numero di percorso interno.

@@ -1,4 +1,4 @@
-﻿---
+---
 key: K45::XTM.vuio[glossary.content.map.stops.distances]
 ---
 **Odległości** są włączone i można je przełączać za pomocą przycisku linijki na pasku narzędzi mapy liniowej XTM.

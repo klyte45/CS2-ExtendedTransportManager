@@ -1,4 +1,4 @@
-﻿---
+---
 key: K45::XTM.vuio[glossary.content.statistics.occupancy.howCalculated]
 ---
 XTM registra l'occupazione storica quando un passeggero o un veicolo merci termina l'imbarco e inizia a viaggiare verso la fermata successiva. Il campione appartiene al segmento diretto che inizia alla fermata di partenza.

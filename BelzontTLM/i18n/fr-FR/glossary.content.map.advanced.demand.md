@@ -1,4 +1,4 @@
-﻿---
+---
 key: K45::XTM.vuio[glossary.content.map.advanced.demand]
 ---
 Sélectionnez un itinéraire, ouvrez **Line Data** et développez **Statistiques avancées**.

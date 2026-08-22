@@ -1,4 +1,4 @@
-﻿---
+---
 key: K45::XTM.vuio[glossary.content.groups.modelMembership.assign]
 ---
 Ouvrez la section de sélection de véhicules d'une ligne et utilisez son menu de vitesse. Une ligne non gérée peut rejoindre n'importe quel groupe ayant le même type de transport et la même catégorie de passagers/fret, ou ouvrir **Gérer les groupes de modèles de véhicules**.

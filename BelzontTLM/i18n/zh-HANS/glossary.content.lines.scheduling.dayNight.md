@@ -1,4 +1,4 @@
-﻿---
+---
 key: K45::XTM.vuio[glossary.content.lines.scheduling.dayNight]
 ---
 ## 持续服务

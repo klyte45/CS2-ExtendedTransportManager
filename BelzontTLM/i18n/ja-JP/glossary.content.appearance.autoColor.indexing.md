@@ -1,4 +1,4 @@
-﻿---
+---
 key: K45::XTM.vuio[glossary.content.appearance.autoColor.indexing]
 ---
 空ではない有効な割り当ての場合、XTM は **内部ルート番号** からパレットの色を選択します。ルート 1 は最初の色を使用し、ルート 2 は 2 番目の色を使用し、シーケンスは最後の色の後で折り返されます。

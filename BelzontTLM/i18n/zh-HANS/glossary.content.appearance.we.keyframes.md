@@ -1,4 +1,4 @@
-﻿---
+---
 key: K45::XTM.vuio[glossary.content.appearance.we.keyframes]
 ---
 每个步骤都包含一个或多个**关键帧**。动态百叶窗在其配置的模拟帧持续时间内循环它们。静态百叶窗仅使用选定的静态关键帧。

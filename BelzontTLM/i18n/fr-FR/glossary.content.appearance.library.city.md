@@ -1,4 +1,4 @@
-﻿---
+---
 key: K45::XTM.vuio[glossary.content.appearance.library.city]
 ---
 Les palettes de villes appartiennent à la ville ou au monde de l'éditeur actuel et sont stockées dans sa sauvegarde. Seules les palettes de villes peuvent être affectées aux types de transport pour une coloration automatique.

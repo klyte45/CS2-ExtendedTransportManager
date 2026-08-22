@@ -1,4 +1,4 @@
-﻿---
+---
 key: K45::XTM.vuio[glossary.content.start.gettingAround.linearMap]
 ---
 選擇一條運輸路線並在**所選資訊面板**中找到其線路視覺化工具。使用視覺化工具列左側的 XTM 按鈕可在遊戲的路線草圖和 XTM 線性地圖之間切換。

@@ -1,4 +1,4 @@
-﻿---
+---
 key: K45::XTM.vuio[glossary.content.appearance.editing.clipboard]
 ---
 **複製調色盤** 將每行一種「#RRGGBB」顏色寫入系統剪貼簿。

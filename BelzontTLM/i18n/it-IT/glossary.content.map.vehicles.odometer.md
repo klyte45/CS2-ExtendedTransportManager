@@ -1,4 +1,4 @@
-﻿---
+---
 key: K45::XTM.vuio[glossary.content.map.vehicles.odometer]
 ---
 Abilita gli indicatori di veicolo e selezionane uno per aprire **Dati veicolo**. **Contachilometri** è la distanza registrata per quel veicolo. **Intervallo di manutenzione** è l'intervallo di distanza di manutenzione definito dal modello di veicolo. Entrambi i valori utilizzano le unità di misura selezionate.

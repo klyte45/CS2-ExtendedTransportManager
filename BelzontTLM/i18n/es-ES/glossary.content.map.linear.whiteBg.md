@@ -1,4 +1,4 @@
-﻿---
+---
 key: K45::XTM.vuio[glossary.content.map.linear.whiteBg]
 ---
 Utilice el botón de diamante cerca del lado derecho de la barra de herramientas del mapa XTM para cambiar el lienzo del mapa a un fondo claro.

@@ -1,4 +1,4 @@
-﻿---
+---
 key: K45::XTM.vuio[glossary.content.appearance.we.keyframes]
 ---
 Ogni passaggio contiene uno o più **fotogrammi chiave**. Le tende dinamiche le ciclano per le durate dei fotogrammi di simulazione configurate. Le tende statiche utilizzano solo il fotogramma chiave statico selezionato.

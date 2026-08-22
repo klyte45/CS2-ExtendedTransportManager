@@ -1,4 +1,4 @@
-﻿---
+---
 key: K45::XTM.vuio[glossary.content.start.overview.mainScreens]
 ---
 XTM étend plusieurs écrans de jeu existants, mais chaque écran conserve son propre mode.

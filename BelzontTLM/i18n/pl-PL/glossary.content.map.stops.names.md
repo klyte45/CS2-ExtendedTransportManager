@@ -1,4 +1,4 @@
-﻿---
+---
 key: K45::XTM.vuio[glossary.content.map.stops.names]
 ---
 Każdy przystanek jest oznaczony nazwą ustaloną przez grę dla tego obiektu zatrzymującego. Najedź kursorem na jego znacznik, aby zobaczyć nazwę głównego budynku lub stacji, gdy XTM znajdzie element nadrzędny.

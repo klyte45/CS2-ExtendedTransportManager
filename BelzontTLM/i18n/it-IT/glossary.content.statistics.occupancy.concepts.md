@@ -1,4 +1,4 @@
-﻿---
+---
 key: K45::XTM.vuio[glossary.content.statistics.occupancy.concepts]
 ---
 XTM mostra due misurazioni separate: **occupazione del veicolo** e **affollamento della piattaforma**.

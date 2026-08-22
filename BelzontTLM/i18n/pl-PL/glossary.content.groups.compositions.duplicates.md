@@ -1,4 +1,4 @@
-﻿---
+---
 key: K45::XTM.vuio[glossary.content.groups.compositions.duplicates]
 ---
 Dwie kompozycje nie mogą zawierać dokładnie tej samej pary pierwotnej i wtórnej. Opcje umożliwiające odtworzenie innej pary są wyłączone, a powtarzające się pary są również usuwane podczas sprawdzania poprawności zaplecza.

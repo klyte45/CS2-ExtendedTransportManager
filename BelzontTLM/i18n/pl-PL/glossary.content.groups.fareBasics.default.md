@@ -1,4 +1,4 @@
-﻿---
+---
 key: K45::XTM.vuio[glossary.content.groups.fareBasics.default]
 ---
 **Taryfa domyślna** jest używana przez każdą linię członkowską, jeśli żaden wyjątek godzinowy nie obejmuje bieżącej godziny zegara gry.

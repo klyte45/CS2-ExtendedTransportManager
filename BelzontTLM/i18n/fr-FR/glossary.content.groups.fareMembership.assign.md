@@ -1,4 +1,4 @@
-﻿---
+---
 key: K45::XTM.vuio[glossary.content.groups.fareMembership.assign]
 ---
 Pour une ligne de passagers non gérée, ouvrez **Prix du billet** dans le panneau d'informations sélectionnées et utilisez son menu d'engrenage pour attribuer un groupe tarifaire. Le menu d'une ligne gérée peut modifier son groupe, supprimer la ligne ou la déplacer vers un autre groupe.

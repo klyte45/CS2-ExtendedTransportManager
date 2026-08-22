@@ -1,4 +1,4 @@
-﻿---
+---
 key: K45::XTM.vuio[glossary.content.lines.identity.name]
 ---
 Una ruta tiene un **nombre** además de su número y un identificador de visualización opcional. En el listado de XTM, seleccione el nombre mostrado para editarlo. Al salir del campo se guarda un nombre recortado y no vacío; presione Escape para cancelar. El control de cambio de nombre normal permanece disponible en el Panel de información seleccionada de la ruta.

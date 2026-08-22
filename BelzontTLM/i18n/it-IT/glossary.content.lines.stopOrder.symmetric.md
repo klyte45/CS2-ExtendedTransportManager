@@ -1,4 +1,4 @@
-﻿---
+---
 key: K45::XTM.vuio[glossary.content.lines.stopOrder.symmetric]
 ---
 XTM rileva un percorso di andata e ritorno quando le fermate in posizioni speculari condividono la stessa stazione o edificio principale. Il rilevamento utilizza l'ordine del percorso e l'identità principale; non confronta nomi, distanza o direzione della piattaforma.

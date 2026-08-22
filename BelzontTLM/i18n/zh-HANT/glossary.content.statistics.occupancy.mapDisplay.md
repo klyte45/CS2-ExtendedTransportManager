@@ -1,4 +1,4 @@
-﻿---
+---
 key: K45::XTM.vuio[glossary.content.statistics.occupancy.mapDisplay]
 ---
 XTM 線性地圖工具列具有針對 **平台擁擠** 和 **路段佔用** 的單獨控制。

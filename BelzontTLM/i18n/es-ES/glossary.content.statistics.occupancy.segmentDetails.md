@@ -1,4 +1,4 @@
-﻿---
+---
 key: K45::XTM.vuio[glossary.content.statistics.occupancy.segmentDetails]
 ---
 Habilite un modo de ocupación de segmento en el mapa lineal XTM, luego seleccione el porcentaje entre dos paradas.

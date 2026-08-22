@@ -1,4 +1,4 @@
-﻿---
+---
 key: K45::XTM.vuio[glossary.content.map.stops.names]
 ---
 Chaque arrêt est étiqueté avec le nom résolu par le jeu pour cette entité d'arrêt. Passez la souris sur son marqueur pour voir le nom de son bâtiment principal ou de sa gare lorsque XTM trouve un parent.

@@ -1,4 +1,4 @@
-﻿---
+---
 key: K45::XTM.vuio[glossary.content.lines.identity.shields]
 ---
 Les boucliers XTM combinent le type de transport d'un itinéraire, la couleur actuelle, l'identifiant d'affichage, le mode de fret et l'état du service. La plupart des vues XTM placent l'identifiant d'affichage à l'intérieur du bouclier, retombant sur le numéro de route interne. Les cartes de liste affichent à la place l'identifiant à côté d'un bouclier contenant l'icône de transport.

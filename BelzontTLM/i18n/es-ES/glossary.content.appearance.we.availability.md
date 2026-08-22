@@ -1,4 +1,4 @@
-﻿---
+---
 key: K45::XTM.vuio[glossary.content.appearance.we.availability]
 ---
 Las persianas de destino XTM requieren **Write Everywhere** (`BelzontWE`). Cuando ese mod está presente y XTM puede colocar sus ganchos de integración, hay persianas disponibles para cada línea de transporte.

@@ -1,4 +1,4 @@
-﻿---
+---
 key: K45::XTM.vuio[glossary.content.map.advanced.demand]
 ---
 ルートを選択し、**Line Data** を開き、**Advanced stats** を展開します。

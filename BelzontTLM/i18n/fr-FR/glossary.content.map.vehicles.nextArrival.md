@@ -1,4 +1,4 @@
-﻿---
+---
 key: K45::XTM.vuio[glossary.content.map.vehicles.nextArrival]
 ---
 Passez la souris sur un arrêt sur la carte linéaire XTM pour voir le prochain véhicule qui s'en approche. L'info-bulle affiche le nom du véhicule, la distance restante et le nombre d'arrêts intermédiaires. **Entrant !** signifie qu'il ne reste aucun arrêt intermédiaire.

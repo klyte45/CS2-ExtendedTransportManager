@@ -1,4 +1,4 @@
-﻿---
+---
 key: K45::XTM.vuio[glossary.content.groups.fareBasics.create]
 ---
 Apri **Panoramica trasporti**, scegli **Cambia modalità**, quindi **Gruppi tariffari**. Seleziona il pulsante più accanto a Gruppi per creare un gruppo.

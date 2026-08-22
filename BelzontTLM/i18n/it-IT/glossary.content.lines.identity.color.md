@@ -1,4 +1,4 @@
-﻿---
+---
 key: K45::XTM.vuio[glossary.content.lines.identity.color]
 ---
 Ogni percorso ha un colore corrente. XTM può mantenere un **colore fisso** scelto per quel percorso o lasciarlo controllare da una tavolozza di città assegnata.

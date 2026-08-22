@@ -1,4 +1,4 @@
-﻿---
+---
 key: K45::XTM.vuio[glossary.content.start.gettingAround.overview]
 ---
 Apri la **Panoramica trasporti** del gioco, quindi utilizza il pulsante XTM nell'intestazione del pannello per passare dalla panoramica originale all'interfaccia di gestione di XTM.

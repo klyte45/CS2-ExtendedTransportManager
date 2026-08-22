@@ -1,4 +1,4 @@
-﻿---
+---
 key: K45::XTM.vuio[glossary.content.groups.modelMembership.assign]
 ---
 Abra la sección de selección de vehículos de una línea y use su menú de ajustes. Una línea no administrada puede unirse a cualquier grupo con el mismo tipo de transporte y categoría de pasajeros/carga, o abrir **Administrar grupos de modelos de vehículos**.

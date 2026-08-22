@@ -1,4 +1,4 @@
-﻿---
+---
 key: K45::XTM.vuio[glossary.content.map.linear.halfTrip]
 ---
 **Mezzo viaggio** inizia abilitato, ma si applica solo quando XTM rileva un percorso di andata e ritorno simmetrico e i veicoli sono nascosti. Il rilevamento confronta le fermate nelle posizioni del percorso rispecchiate dalla stazione o dall'edificio principale.

@@ -1,4 +1,4 @@
-﻿---
+---
 key: K45::XTM.vuio[glossary.content.map.interchanges.select]
 ---
 選擇連接線屏蔽以移至該路線。遊戲自行選擇路線，因此選定的資訊面板和線性地圖會切換到該路線，並為新選擇的服務重建地帶。

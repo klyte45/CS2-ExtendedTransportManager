@@ -1,4 +1,4 @@
-﻿---
+---
 key: K45::XTM.vuio[glossary.content.appearance.editing.colors]
 ---
 Seleccione una paleta de ciudad para editar su secuencia. **Agregar color** agrega blanco. Seleccione una muestra numerada para abrir la rueda de color y los controles RGB, o su X para eliminarla.

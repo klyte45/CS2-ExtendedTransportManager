@@ -1,4 +1,4 @@
-﻿---
+---
 key: K45::XTM.vuio[glossary.content.groups.compositions.primary]
 ---
 每种组合都是一种允许的车辆选择。 XTM 将组的有序组合列表复制到每个成员行，因此多个组合让游戏可以在这些条目中进行选择。

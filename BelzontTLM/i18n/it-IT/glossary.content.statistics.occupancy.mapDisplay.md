@@ -1,4 +1,4 @@
-﻿---
+---
 key: K45::XTM.vuio[glossary.content.statistics.occupancy.mapDisplay]
 ---
 La barra degli strumenti della mappa lineare XTM dispone di controlli separati per **Affollamento della piattaforma** e **Occupazione del segmento**.

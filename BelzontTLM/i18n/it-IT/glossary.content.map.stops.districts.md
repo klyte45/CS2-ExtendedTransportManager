@@ -1,4 +1,4 @@
-﻿---
+---
 key: K45::XTM.vuio[glossary.content.map.stops.districts]
 ---
 I **Confini del distretto** iniziano abilitati e possono essere attivati ​​tramite il pulsante del distretto sulla barra degli strumenti della mappa lineare XTM.

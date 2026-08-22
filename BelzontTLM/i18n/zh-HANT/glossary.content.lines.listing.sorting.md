@@ -1,4 +1,4 @@
-﻿---
+---
 key: K45::XTM.vuio[glossary.content.lines.listing.sorting]
 ---
 ## 對鍵進行排序

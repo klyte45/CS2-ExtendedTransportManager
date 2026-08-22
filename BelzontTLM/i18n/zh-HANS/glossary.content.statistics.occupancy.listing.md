@@ -1,4 +1,4 @@
-﻿---
+---
 key: K45::XTM.vuio[glossary.content.statistics.occupancy.listing]
 ---
 每个启用的路线卡在其车辆数量旁边都会显示历史占用范围。

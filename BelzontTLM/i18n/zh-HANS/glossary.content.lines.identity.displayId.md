@@ -1,4 +1,4 @@
-﻿---
+---
 key: K45::XTM.vuio[glossary.content.lines.identity.displayId]
 ---
 **显示标识符**，在某些控件中也称为行首字母缩略词或路线标识符，是代替内部路线编号显示的可选文本。

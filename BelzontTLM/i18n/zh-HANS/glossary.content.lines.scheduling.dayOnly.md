@@ -1,4 +1,4 @@
-﻿---
+---
 key: K45::XTM.vuio[glossary.content.lines.scheduling.dayOnly]
 ---
 ## 日间服务

@@ -1,4 +1,4 @@
-﻿---
+---
 key: K45::XTM.vuio[glossary.content.map.vehicles.odometer]
 ---
 Activez les marqueurs de véhicule et sélectionnez-en un pour ouvrir les **Données du véhicule**. **Le compteur kilométrique** est la distance enregistrée pour ce véhicule. **La plage d'entretien** est l'intervalle de distance d'entretien défini par son modèle de véhicule. Les deux valeurs utilisent les unités de mesure sélectionnées.

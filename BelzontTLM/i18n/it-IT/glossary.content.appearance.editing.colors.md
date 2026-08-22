@@ -1,4 +1,4 @@
-﻿---
+---
 key: K45::XTM.vuio[glossary.content.appearance.editing.colors]
 ---
 Seleziona una tavolozza di città per modificarne la sequenza. **Aggiungi colore** aggiunge il bianco. Seleziona un campione numerato per aprire la ruota dei colori e i controlli RGB oppure la sua X per rimuoverlo.

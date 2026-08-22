@@ -1,4 +1,4 @@
-﻿---
+---
 key: K45::XTM.vuio[glossary.content.groups.modelBasics.scope]
 ---
 Cada grupo de modelos de vehículos pertenece a un tipo de transporte y a líneas de pasajeros o de carga. Elija este alcance antes de crear el grupo. El menú solo enumera combinaciones actualmente representadas por líneas en la ciudad.

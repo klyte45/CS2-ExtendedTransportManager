@@ -1,4 +1,4 @@
-﻿---
+---
 key: K45::XTM.vuio[glossary.content.lines.stopOrder.opposite]
 ---
 在 XTM 線性地圖上選擇一個停靠點以開啟 **停靠點資料**。當路線上的另一個車站具有相同的父車站或建築物時，請使用圓形箭頭按鈕聚焦並選擇平台。

@@ -1,4 +1,4 @@
-﻿---
+---
 key: K45::XTM.vuio[glossary.content.start.gettingAround.sip]
 ---
 Sélectionnez un itinéraire de transport pour ouvrir son **panneau d'informations sélectionné**. Vous pouvez également appuyer sur **Détails** sur une carte d'inscription XTM ou sélectionner un bouclier d'itinéraire dans un rapport d'occupation.

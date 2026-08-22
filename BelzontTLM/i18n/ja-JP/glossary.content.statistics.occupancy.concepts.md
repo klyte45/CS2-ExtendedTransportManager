@@ -1,4 +1,4 @@
-﻿---
+---
 key: K45::XTM.vuio[glossary.content.statistics.occupancy.concepts]
 ---
 XTM は、**車両占有率**と**プラットフォームの混雑度**という 2 つの個別の測定値を表示します。

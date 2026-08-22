@@ -1,4 +1,4 @@
-﻿---
+---
 key: K45::XTM.vuio[glossary.content.lines.stopOrder.opposite]
 ---
 Seleziona una fermata sulla mappa lineare XTM per aprire **Dati fermate**. Quando un'altra fermata del percorso ha la stessa stazione o edificio principale, utilizza il pulsante freccia circolare per focalizzare e selezionare quella piattaforma.

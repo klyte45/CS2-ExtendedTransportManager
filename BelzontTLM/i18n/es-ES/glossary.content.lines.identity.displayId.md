@@ -1,4 +1,4 @@
-﻿---
+---
 key: K45::XTM.vuio[glossary.content.lines.identity.displayId]
 ---
 El **identificador de visualización**, también llamado acrónimo de línea o identificador de ruta en algunos controles, es un texto opcional que se muestra en lugar del número de ruta interna.

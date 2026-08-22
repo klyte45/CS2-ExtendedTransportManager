@@ -1,4 +1,4 @@
-﻿---
+---
 key: K45::XTM.vuio[glossary.content.lines.listing.passengerCargo]
 ---
 ## Пассажирский и грузовой — отдельные фильтры

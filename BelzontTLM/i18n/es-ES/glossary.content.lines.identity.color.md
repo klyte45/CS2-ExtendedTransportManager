@@ -1,4 +1,4 @@
-﻿---
+---
 key: K45::XTM.vuio[glossary.content.lines.identity.color]
 ---
 Cada ruta tiene un color actual. XTM puede mantener un **color fijo** elegido para esa ruta o dejar que una paleta de ciudad asignada la controle.

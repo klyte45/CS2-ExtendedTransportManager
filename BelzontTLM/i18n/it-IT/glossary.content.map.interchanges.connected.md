@@ -1,4 +1,4 @@
-﻿---
+---
 key: K45::XTM.vuio[glossary.content.map.interchanges.connected]
 ---
 **Linee di collegamento** è una delle sovrapposizioni di mappe lineari XTM e inizia abilitata. Disegna una seconda ringhiera accanto al percorso, elencando gli altri percorsi di trasporto trovati attorno a ciascuna fermata. Gli scudi utilizzano la stessa identità di percorso mostrata altrove in XTM.

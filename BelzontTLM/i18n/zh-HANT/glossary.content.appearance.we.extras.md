@@ -1,4 +1,4 @@
-﻿---
+---
 key: K45::XTM.vuio[glossary.content.appearance.we.extras]
 ---
 產生的關鍵影格可以在其文字周圍添加可選的**前綴**和**後綴**。靜態文字關鍵影格使用一個固定文字欄位。

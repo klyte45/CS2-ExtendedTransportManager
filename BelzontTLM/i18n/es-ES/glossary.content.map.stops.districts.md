@@ -1,4 +1,4 @@
-﻿---
+---
 key: K45::XTM.vuio[glossary.content.map.stops.districts]
 ---
 **Límites del distrito** comienza habilitado y se puede alternar desde el botón del distrito en la barra de herramientas del mapa lineal XTM.

@@ -1,4 +1,4 @@
-﻿---
+---
 key: K45::XTM.vuio[glossary.content.lines.listing.modes]
 ---
 ## Modes affichés dans la liste

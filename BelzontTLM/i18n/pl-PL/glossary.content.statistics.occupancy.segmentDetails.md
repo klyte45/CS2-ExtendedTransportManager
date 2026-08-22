@@ -1,4 +1,4 @@
-﻿---
+---
 key: K45::XTM.vuio[glossary.content.statistics.occupancy.segmentDetails]
 ---
 Włącz tryb zajętości segmentu na mapie liniowej XTM, a następnie wybierz procent między dwoma przystankami.

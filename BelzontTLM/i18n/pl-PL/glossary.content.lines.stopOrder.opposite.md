@@ -1,4 +1,4 @@
-﻿---
+---
 key: K45::XTM.vuio[glossary.content.lines.stopOrder.opposite]
 ---
 Wybierz przystanek na mapie liniowej XTM, aby otworzyć **Dane przystanku**. Jeśli inny przystanek na trasie ma tę samą stację nadrzędną lub budynek, użyj przycisku ze strzałką okrągłą, aby ustawić ostrość i wybrać ten peron.

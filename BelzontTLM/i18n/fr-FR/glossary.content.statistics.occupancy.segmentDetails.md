@@ -1,4 +1,4 @@
-﻿---
+---
 key: K45::XTM.vuio[glossary.content.statistics.occupancy.segmentDetails]
 ---
 Activez un mode d'occupation Segment sur la carte linéaire XTM, puis sélectionnez le pourcentage entre deux arrêts.

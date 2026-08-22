@@ -1,4 +1,4 @@
-﻿---
+---
 key: K45::XTM.vuio[glossary.content.appearance.autoColor.indexing]
 ---
 对于有效的非空分配，XTM 从**内部路径号**中选择调色板颜色。路线 1 使用第一种颜色，路线 2 使用第二种颜色，序列在最后一种颜色之后换行。

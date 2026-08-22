@@ -1,4 +1,4 @@
-﻿---
+---
 key: K45::XTM.vuio[glossary.content.appearance.library.city]
 ---
 城市调色板属于当前城市或编辑器世界，并存储在其保存中。只有城市调色板可以分配给交通类型以进行自动着色。

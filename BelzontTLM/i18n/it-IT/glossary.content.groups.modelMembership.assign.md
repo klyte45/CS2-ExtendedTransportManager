@@ -1,4 +1,4 @@
-﻿---
+---
 key: K45::XTM.vuio[glossary.content.groups.modelMembership.assign]
 ---
 Apri la sezione di selezione del veicolo di una linea e utilizza il relativo menu a forma di ingranaggio. Una linea non gestita può unirsi a qualsiasi gruppo con lo stesso tipo di trasporto e categoria passeggeri/carico oppure aprire **Gestisci gruppi di modelli di veicoli**.

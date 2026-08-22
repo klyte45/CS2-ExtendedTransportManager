@@ -1,4 +1,4 @@
-﻿---
+---
 key: K45::XTM.vuio[glossary.content.statistics.occupancy.howCalculated]
 ---
 XTM enregistre l'occupation historique lorsqu'un véhicule de tourisme ou de fret termine l'embarquement et commence à se diriger vers son prochain arrêt. L'échantillon appartient au segment dirigé commençant à l'arrêt de départ.

@@ -1,4 +1,4 @@
-﻿---
+---
 key: K45::XTM.vuio[glossary.content.lines.identity.name]
 ---
 Un percorso ha un **nome** oltre al numero e all'identificatore di visualizzazione opzionale. Nell'elenco XTM, seleziona il nome visualizzato per modificarlo. Se si lascia il campo viene salvato un nome troncato e non vuoto; premere Esc per annullare. Il normale controllo di ridenominazione rimane disponibile nel pannello informativo selezionato del percorso.

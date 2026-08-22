@@ -1,4 +1,4 @@
-﻿---
+---
 key: K45::XTM.vuio[glossary.content.groups.modelBasics.crud]
 ---
 Apri **Gruppi di modelli di veicoli**, seleziona un tipo di trasporto e scegli **Aggiungi gruppo di modelli di veicoli**. Si apre un nuovo gruppo con l'etichetta localizzata senza nome.

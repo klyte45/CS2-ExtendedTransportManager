@@ -1,4 +1,4 @@
-﻿---
+---
 key: K45::XTM.vuio[glossary.content.groups.fareTime.exceptions]
 ---
 Utilizza le **Eccezioni orarie** quando una tariffa deve differire da quella predefinita durante una parte della giornata. **Aggiungi eccezione** crea un intervallo di un'ora nella prima ora non coperta e copia la tariffa predefinita arrotondata.

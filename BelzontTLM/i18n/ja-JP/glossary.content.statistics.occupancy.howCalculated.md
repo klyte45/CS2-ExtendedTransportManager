@@ -1,4 +1,4 @@
-﻿---
+---
 key: K45::XTM.vuio[glossary.content.statistics.occupancy.howCalculated]
 ---
 XTM は、旅客車両または貨物車両が乗車を終えて次の停留所に向かって走行を開始したときに、乗車状況の履歴を記録します。サンプルは、出発地から始まる有向セグメントに属します。

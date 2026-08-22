@@ -1,4 +1,4 @@
-﻿---
+---
 key: K45::XTM.vuio[glossary.content.start.gettingAround.linearMap]
 ---
 Sélectionnez un itinéraire de transport et recherchez son visualiseur de ligne dans le **Panneau d'informations sélectionné**. Utilisez le bouton XTM à gauche de la barre d'outils du visualiseur pour basculer entre le croquis d'itinéraire du jeu et la carte linéaire XTM.

@@ -1,4 +1,4 @@
-﻿---
+---
 key: K45::XTM.vuio[glossary.content.map.advanced.lap]
 ---
 Il **Tempo di andata e ritorno previsto** in **Statistiche avanzate** stima il numero di minuti di gioco necessari a un veicolo per completare il percorso una volta.

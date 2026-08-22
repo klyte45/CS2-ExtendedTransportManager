@@ -1,4 +1,4 @@
-﻿---
+---
 key: K45::XTM.vuio[glossary.content.map.stops.districts]
 ---
 **區域邊界** 開始啟用，並且可以透過 XTM 線性地圖工具列上的區域按鈕進行切換。

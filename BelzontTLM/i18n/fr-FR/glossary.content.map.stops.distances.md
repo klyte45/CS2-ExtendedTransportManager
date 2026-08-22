@@ -1,4 +1,4 @@
-﻿---
+---
 key: K45::XTM.vuio[glossary.content.map.stops.distances]
 ---
 **Distances** est activé et peut être activé à partir du bouton de règle de la barre d'outils de la carte linéaire XTM.

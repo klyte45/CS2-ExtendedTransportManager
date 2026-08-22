@@ -1,4 +1,4 @@
-﻿---
+---
 key: K45::XTM.vuio[glossary.content.map.vehicles.live]
 ---
 I veicoli iniziano nascosti sulla mappa lineare XTM. Seleziona il pulsante della barra degli strumenti **Veicoli** per visualizzare tutti i veicoli attivi restituiti per il percorso. Le sovrapposizioni dei veicoli e delle linee di collegamento si escludono a vicenda e la visualizzazione dei veicoli espande una mappa simmetrica di metà viaggio all'intero percorso.

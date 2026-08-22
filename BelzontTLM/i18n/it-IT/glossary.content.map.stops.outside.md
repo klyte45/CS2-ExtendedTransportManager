@@ -1,4 +1,4 @@
-﻿---
+---
 key: K45::XTM.vuio[glossary.content.map.stops.outside]
 ---
 XTM riconosce una connessione esterna quando l'entità fermata connessa al percorso ha il componente di connessione esterna del gioco.

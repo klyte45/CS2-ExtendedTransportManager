@@ -1,4 +1,4 @@
-﻿---
+---
 key: K45::XTM.vuio[glossary.content.map.stops.names]
 ---
 每个站点都标有游戏为该站点实体解析的名称。当 XTM 找到父级时，将鼠标悬停在其标记上即可查看其主建筑物或车站的名称。

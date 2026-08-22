@@ -1,4 +1,4 @@
-﻿---
+---
 key: K45::XTM.vuio[glossary.content.map.advanced.lap]
 ---
 **高度な統計** の **予想往復時間** は、車両がルートを 1 回完了するのに必要な試合時間の推定値です。

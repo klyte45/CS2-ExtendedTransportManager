@@ -1,4 +1,4 @@
-﻿---
+---
 key: K45::XTM.vuio[glossary.content.start.overview.whatAdds]
 ---
 Rozszerzony menedżer transportu rozszerza istniejące w grze ekrany transportu, zamiast dodawać osobne okno zarządzania. Zapewnia szczegółowy wykaz każdej linii pasażerskiej i trasy towarowej, z filtrami typów transportu i usług, sortowaniem, wbudowaną kontrolą tożsamości i kolorów oraz bezpośrednim dostępem do szczegółów trasy.

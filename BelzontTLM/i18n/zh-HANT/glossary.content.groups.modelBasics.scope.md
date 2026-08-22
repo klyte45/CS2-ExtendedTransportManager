@@ -1,4 +1,4 @@
-﻿---
+---
 key: K45::XTM.vuio[glossary.content.groups.modelBasics.scope]
 ---
 每個車型組都屬於一種運輸類型，並且屬於客運線路或貨運線路。在建立群組之前選擇此範圍。此選單僅列出目前由城市中的線路表示的組合。

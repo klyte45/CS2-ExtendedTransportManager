@@ -1,4 +1,4 @@
-﻿---
+---
 key: K45::XTM.vuio[glossary.content.map.linear.switch]
 ---
 Seleccione una ruta de transporte y use el botón **Mapa XTM** en el extremo izquierdo de la barra de herramientas del visualizador de líneas. Cuando se selecciona, reemplaza el boceto de ruta compacto del juego con el mapa lineal más amplio de XTM y revela los controles de superposición del mapa. Selecciónelo nuevamente para restaurar el visualizador original.

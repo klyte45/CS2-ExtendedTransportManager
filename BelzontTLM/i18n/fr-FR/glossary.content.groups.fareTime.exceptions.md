@@ -1,4 +1,4 @@
-﻿---
+---
 key: K45::XTM.vuio[glossary.content.groups.fareTime.exceptions]
 ---
 Utilisez **Exceptions horaires** lorsqu'un tarif doit différer du tarif par défaut pendant une partie de la journée. **Ajouter une exception** crée une plage d'une heure dans la première heure non couverte et copie le tarif par défaut arrondi.

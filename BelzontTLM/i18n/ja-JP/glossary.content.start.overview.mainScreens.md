@@ -1,4 +1,4 @@
-﻿---
+---
 key: K45::XTM.vuio[glossary.content.start.overview.mainScreens]
 ---
 XTM はいくつかの既存のゲーム画面を拡張しますが、各画面は独自のモードを維持します。

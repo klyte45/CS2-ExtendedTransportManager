@@ -1,4 +1,4 @@
-﻿---
+---
 key: K45::XTM.vuio[glossary.content.lines.stopOrder.symmetric]
 ---
 XTM détecte un itinéraire aller-retour lorsque les arrêts aux positions en miroir partagent la même gare ou bâtiment parent. La détection utilise l'ordre de routage et l'identité du parent ; il ne compare pas les noms, la distance ou la direction de la plate-forme.

@@ -1,4 +1,4 @@
-﻿---
+---
 key: K45::XTM.vuio[glossary.content.appearance.library.import]
 ---
 選擇 **匯入調色板** 開啟「.hex」檔案的檔案選擇器。它從 XTM 的調色板資料夾開始，並包含用於捆綁預設的 **XTM：庫** 書籤。

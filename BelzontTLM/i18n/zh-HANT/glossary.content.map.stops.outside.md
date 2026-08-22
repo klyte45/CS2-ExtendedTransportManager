@@ -1,4 +1,4 @@
-﻿---
+---
 key: K45::XTM.vuio[glossary.content.map.stops.outside]
 ---
 當路線的連接停靠點實體具有遊戲的外部連接元件時，XTM 會識別外部連線。

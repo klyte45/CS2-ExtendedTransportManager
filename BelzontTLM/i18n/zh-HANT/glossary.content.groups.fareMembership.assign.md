@@ -1,4 +1,4 @@
-﻿---
+---
 key: K45::XTM.vuio[glossary.content.groups.fareMembership.assign]
 ---
 對於非託管客運線路，請在所選資訊面板中開啟**票價**，然後使用其齒輪選單來分配票價組。受管理線路的選單可以編輯其群組、刪除線路或將其移至另一個群組。

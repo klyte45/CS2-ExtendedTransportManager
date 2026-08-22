@@ -1,4 +1,4 @@
-﻿---
+---
 key: K45::XTM.vuio[glossary.content.map.advanced.avgOccupancy]
 ---
 在**高级统计数据**下，XTM 显示所选路线的两个实时百分比。

@@ -1,4 +1,4 @@
-﻿---
+---
 key: K45::XTM.vuio[glossary.content.statistics.occupancy.howCalculated]
 ---
 XTM registra la ocupación histórica cuando un vehículo de pasajeros o de carga termina de abordar y comienza a viajar hacia su siguiente parada. La muestra pertenece al segmento dirigido que comienza en la parada de salida.

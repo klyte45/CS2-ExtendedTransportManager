@@ -1,4 +1,4 @@
-﻿---
+---
 key: K45::XTM.vuio[glossary.content.groups.fareMembership.shared]
 ---
 Pour une ligne gérée, **Ticket Price** affiche le nom du groupe tarifaire, le tarif effectif actuel et le nombre de lignes affectées par les modifications partagées. Son info-bulle répertorie les identifiants et les noms des membres, raccourcissant les grands groupes à cinq noms plus un nombre de dépassement.

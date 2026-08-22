@@ -1,4 +1,4 @@
-﻿---
+---
 key: K45::XTM.vuio[glossary.content.statistics.occupancy.listing]
 ---
 Każda aktywna karta trasy obok liczby pojazdów pokazuje historyczny zakres obłożenia.

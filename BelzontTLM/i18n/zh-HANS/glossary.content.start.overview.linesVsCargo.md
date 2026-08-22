@@ -1,4 +1,4 @@
-﻿---
+---
 key: K45::XTM.vuio[glossary.content.start.overview.linesVsCargo]
 ---
 XTM 使用**客运线路**来承载人员服务，使用**货运线路**来承载资源服务。在内部，许多控制和系统都使用较短的词“线”来表示两者。

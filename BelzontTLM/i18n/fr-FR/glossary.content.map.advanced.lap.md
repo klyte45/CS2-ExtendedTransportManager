@@ -1,4 +1,4 @@
-﻿---
+---
 key: K45::XTM.vuio[glossary.content.map.advanced.lap]
 ---
 **La durée prévue du trajet aller-retour** sous **Statistiques avancées** estime le nombre de minutes de jeu dont un véhicule a besoin pour terminer l'itinéraire une fois.

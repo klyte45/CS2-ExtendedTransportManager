@@ -1,4 +1,4 @@
-﻿---
+---
 key: K45::XTM.vuio[glossary.content.statistics.occupancy.cityReports]
 ---
 Apri la panoramica dei trasporti di XTM e scegli **Report sull'occupazione: Passeggeri** o **Report sull'occupazione: Cargo** tramite **Modifica modalità**. Il rapporto è un'istantanea; utilizza **Aggiorna dati** per generarne un altro. I percorsi inattivi vengono omessi.

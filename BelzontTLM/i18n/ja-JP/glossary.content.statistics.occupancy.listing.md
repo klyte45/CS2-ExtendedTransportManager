@@ -1,4 +1,4 @@
-﻿---
+---
 key: K45::XTM.vuio[glossary.content.statistics.occupancy.listing]
 ---
 有効になっている各ルート カードには、車両数の横に過去の占有範囲が表示されます。

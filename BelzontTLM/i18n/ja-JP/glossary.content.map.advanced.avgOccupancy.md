@@ -1,4 +1,4 @@
-﻿---
+---
 key: K45::XTM.vuio[glossary.content.map.advanced.avgOccupancy]
 ---
 [**詳細統計**] の下に、XTM は選択したルートの 2 つのライブ パーセンテージを表示します。

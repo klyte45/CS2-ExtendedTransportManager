@@ -1,4 +1,4 @@
-﻿---
+---
 key: K45::XTM.vuio[glossary.content.groups.modelBasics.scope]
 ---
 Ogni gruppo di modelli di veicoli appartiene a un tipo di trasporto e a linee passeggeri o rotte merci. Scegli questo ambito prima di creare il gruppo. Il menu elenca solo le combinazioni attualmente rappresentate dalle linee della città.

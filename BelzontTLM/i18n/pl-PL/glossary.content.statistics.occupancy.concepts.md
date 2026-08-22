@@ -1,4 +1,4 @@
-﻿---
+---
 key: K45::XTM.vuio[glossary.content.statistics.occupancy.concepts]
 ---
 XTM pokazuje dwa oddzielne pomiary: **obłożenie pojazdu** i **zapełnienie peronu**.

@@ -1,4 +1,4 @@
-﻿---
+---
 key: K45::XTM.vuio[glossary.content.appearance.library.editor]
 ---
 **Il pulsante Mostra tavolozze nell'editor** è abilitato per impostazione predefinita nelle opzioni XTM e viene applicato quando viene caricato un editor.

@@ -1,4 +1,4 @@
-﻿---
+---
 key: K45::XTM.vuio[glossary.content.start.gettingAround.sip]
 ---
 Seleziona un percorso di trasporto per aprire il **pannello informativo selezionato**. Puoi anche premere **Dettagli** su una scheda di elenco XTM o selezionare uno scudo di percorso in un rapporto di occupazione.

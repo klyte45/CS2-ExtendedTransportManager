@@ -1,4 +1,4 @@
-﻿---
+---
 key: K45::XTM.vuio[glossary.content.groups.modelBasics.scope]
 ---
 每个车型组都属于一种运输类型，并且属于客运线路或货运线路。在创建组之前选择此范围。该菜单仅列出当前由城市中的线路表示的组合。

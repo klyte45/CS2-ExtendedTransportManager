@@ -1,4 +1,4 @@
-﻿---
+---
 key: K45::XTM.vuio[glossary.content.appearance.library.editor]
 ---
 **在编辑器中显示调色板按钮** 默认情况下在 XTM 选项中启用，并在编辑器加载时应用。

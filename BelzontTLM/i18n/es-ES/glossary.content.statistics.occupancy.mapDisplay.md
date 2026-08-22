@@ -1,4 +1,4 @@
-﻿---
+---
 key: K45::XTM.vuio[glossary.content.statistics.occupancy.mapDisplay]
 ---
 La barra de herramientas del mapa lineal XTM tiene controles separados para **Aglomeración de plataformas** y **Ocupación de segmentos**.

@@ -1,4 +1,4 @@
-﻿---
+---
 key: K45::XTM.vuio[glossary.content.map.stops.distances]
 ---
 **Distancias** comienza habilitada y se puede alternar desde el botón de regla en la barra de herramientas del mapa lineal XTM.

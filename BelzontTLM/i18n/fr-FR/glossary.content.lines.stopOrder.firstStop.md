@@ -1,4 +1,4 @@
-﻿---
+---
 key: K45::XTM.vuio[glossary.content.lines.stopOrder.firstStop]
 ---
 Sélectionnez un arrêt sur la carte linéaire XTM, puis utilisez le bouton **1** dans **Stop Data** pour en faire le premier arrêt de l'itinéraire. Le bouton est désactivé pour l'arrêt qui est déjà le premier.

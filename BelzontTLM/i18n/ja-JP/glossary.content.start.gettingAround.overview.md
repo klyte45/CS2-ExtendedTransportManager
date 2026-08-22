@@ -1,4 +1,4 @@
-﻿---
+---
 key: K45::XTM.vuio[glossary.content.start.gettingAround.overview]
 ---
 ゲームの **トランスポート概要** を開き、パネル ヘッダーの XTM ボタンを使用して、元の概要と XTM の管理インターフェイスを切り替えます。

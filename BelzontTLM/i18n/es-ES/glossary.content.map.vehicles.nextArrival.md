@@ -1,4 +1,4 @@
-﻿---
+---
 key: K45::XTM.vuio[glossary.content.map.vehicles.nextArrival]
 ---
 Pase el cursor sobre una parada en el mapa lineal XTM para ver el siguiente vehículo que se acerca. La información sobre herramientas muestra el nombre del vehículo, la distancia restante de la ruta y el número de paradas intermedias. **¡Entrante!** significa que no queda ninguna parada intermedia.

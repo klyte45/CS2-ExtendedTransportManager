@@ -1,4 +1,4 @@
-﻿---
+---
 key: K45::XTM.vuio[glossary.content.map.stops.outside]
 ---
 XTM reconnaît une connexion extérieure lorsque l'entité d'arrêt connectée à l'itinéraire possède le composant de connexion extérieure du jeu.

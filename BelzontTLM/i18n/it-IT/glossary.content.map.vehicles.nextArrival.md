@@ -1,4 +1,4 @@
-﻿---
+---
 key: K45::XTM.vuio[glossary.content.map.vehicles.nextArrival]
 ---
 Passa il mouse sopra una fermata sulla mappa lineare XTM per vedere il prossimo veicolo che si avvicina ad essa. La descrizione comando mostra il nome del veicolo, la distanza rimanente del percorso e il numero di fermate intermedie. **Incoming!** significa che non rimane alcuna fermata intermedia.

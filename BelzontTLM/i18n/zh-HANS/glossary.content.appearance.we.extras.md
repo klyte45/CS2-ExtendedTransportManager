@@ -1,4 +1,4 @@
-﻿---
+---
 key: K45::XTM.vuio[glossary.content.appearance.we.extras]
 ---
 生成的关键帧可以在其文本周围添加可选的**前缀**和**后缀**。静态文本关键帧使用一个固定文本字段。

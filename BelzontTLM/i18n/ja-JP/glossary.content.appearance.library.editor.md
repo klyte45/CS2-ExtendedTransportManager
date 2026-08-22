@@ -1,4 +1,4 @@
-﻿---
+---
 key: K45::XTM.vuio[glossary.content.appearance.library.editor]
 ---
 **エディターにパレット ボタンを表示** は、XTM オプションでデフォルトで有効になっており、エディターのロード時に適用されます。

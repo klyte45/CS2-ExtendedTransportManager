@@ -1,4 +1,4 @@
-﻿---
+---
 key: K45::XTM.vuio[glossary.content.map.vehicles.odometer]
 ---
 Włącz znaczniki pojazdów i wybierz jeden, aby otworzyć **Dane pojazdu**. **Drogomierz** to odległość zarejestrowana dla tego pojazdu. **Zakres konserwacji** to odstęp między przeglądami określony przez model pojazdu. Obie wartości wykorzystują wybrane jednostki miary.

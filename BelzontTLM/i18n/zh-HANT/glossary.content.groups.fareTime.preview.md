@@ -1,4 +1,4 @@
-﻿---
+---
 key: K45::XTM.vuio[glossary.content.groups.fareTime.preview]
 ---
 展開預設票價欄位下方的**票價表**。第一行顯示預設值；其餘行顯示每個包含的例外範圍和票價，按開始時間排序。零顯示為**免費**。

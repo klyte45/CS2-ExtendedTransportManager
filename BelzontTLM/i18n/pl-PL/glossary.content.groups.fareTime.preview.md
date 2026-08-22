@@ -1,4 +1,4 @@
-﻿---
+---
 key: K45::XTM.vuio[glossary.content.groups.fareTime.preview]
 ---
 Rozwiń **Harmonogram taryf** poniżej pola taryfy domyślnej. Pierwszy wiersz pokazuje wartość domyślną; pozostałe wiersze pokazują każdy obejmujący zakres wyjątków i taryfę, posortowane według godziny rozpoczęcia. Zero pojawia się jako **Bezpłatne**.

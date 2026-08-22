@@ -1,4 +1,4 @@
-﻿---
+---
 key: K45::XTM.vuio[glossary.content.appearance.library.city]
 ---
 Las paletas de la ciudad pertenecen a la ciudad actual o al mundo del editor y se almacenan en su archivo guardado. Solo se pueden asignar paletas de ciudades a tipos de transporte para colorear automáticamente.

@@ -1,4 +1,4 @@
-﻿---
+---
 key: K45::XTM.vuio[glossary.content.appearance.autoColor.assign]
 ---
 La partie inférieure des **Palettes disponibles** attribue une palette de villes à chaque type de transport pris en charge. Les affectations de passagers et de fret sont indépendantes.

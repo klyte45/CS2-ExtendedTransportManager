@@ -1,4 +1,4 @@
-﻿---
+---
 key: K45::XTM.vuio[glossary.content.appearance.we.keyframes]
 ---
 Cada paso contiene uno o más **fotogramas clave**. Las persianas dinámicas las ciclan durante las duraciones configuradas del cuadro de simulación. Las persianas estáticas utilizan solo el fotograma clave estático seleccionado.

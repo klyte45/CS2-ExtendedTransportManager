@@ -1,4 +1,4 @@
-﻿---
+---
 key: K45::XTM.vuio[glossary.content.groups.fareBasics.create]
 ---
 開啟 **交通概覽**，選擇 **變更模式**，然後選擇 **票價群組**。選擇“群組”旁邊的加號按鈕以建立群組。

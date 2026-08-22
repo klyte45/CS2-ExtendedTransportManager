@@ -1,4 +1,4 @@
-﻿---
+---
 key: K45::XTM.vuio[glossary.content.appearance.editing.clipboard]
 ---
 **Copiar paleta** escribe un color `#RRGGBB` por línea en el portapapeles del sistema.

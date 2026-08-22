@@ -1,4 +1,4 @@
-﻿---
+---
 key: K45::XTM.vuio[glossary.content.groups.fareBasics.default]
 ---
 當當前比賽時間沒有任何例外情況時，每個會員線路都使用**預設票價**。

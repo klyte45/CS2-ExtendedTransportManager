@@ -1,4 +1,4 @@
-﻿---
+---
 key: K45::XTM.vuio[glossary.content.groups.fareMembership.shared]
 ---
 Per una linea gestita, il **Prezzo del biglietto** mostra il nome del gruppo tariffario, la tariffa attualmente effettiva e il numero di linee interessate dalle modifiche condivise. La descrizione comando elenca gli identificatori e i nomi dei membri, abbreviando i gruppi di grandi dimensioni a cinque nomi più un conteggio in eccesso.

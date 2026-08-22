@@ -1,4 +1,4 @@
-﻿---
+---
 key: K45::XTM.vuio[glossary.content.appearance.we.availability]
 ---
 Le tende di destinazione XTM richiedono **Write Everywhere** ("BelzontWE"). Quando questa modalità è presente e XTM può collegare i suoi ganci di integrazione, le tende sono disponibili per ogni linea di trasporto.

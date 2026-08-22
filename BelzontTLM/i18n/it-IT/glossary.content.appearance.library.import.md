@@ -1,4 +1,4 @@
-﻿---
+---
 key: K45::XTM.vuio[glossary.content.appearance.library.import]
 ---
 Scegli **Importa tavolozza** per aprire un selettore di file per i file `.hex`. Inizia nella cartella delle palette di XTM e include un segnalibro **XTM: Library** per i preset in bundle.

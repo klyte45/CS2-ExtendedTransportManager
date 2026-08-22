@@ -1,4 +1,4 @@
-﻿---
+---
 key: K45::XTM.vuio[glossary.content.appearance.we.availability]
 ---
 XTM 宛先ブラインドには **Write Everywhere** (`BelzontWE`) が必要です。その MOD が存在し、XTM がその統合フックを接続できる場合、ブラインドはすべてのトランスポート ラインで使用できます。

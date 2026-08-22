@@ -1,4 +1,4 @@
-﻿---
+---
 key: K45::XTM.vuio[glossary.content.start.gettingAround.overview]
 ---
 Otwórz **Przegląd transportu** w grze, a następnie użyj przycisku XTM w nagłówku panelu, aby przełączać się między oryginalnym przeglądem a interfejsem zarządzania XTM.

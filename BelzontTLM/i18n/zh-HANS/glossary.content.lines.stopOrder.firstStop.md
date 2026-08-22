@@ -1,4 +1,4 @@
-﻿---
+---
 key: K45::XTM.vuio[glossary.content.lines.stopOrder.firstStop]
 ---
 在 XTM 线性地图上选择一个停靠点，然后使用 **停靠点数据** 中的 **1** 按钮将其设为路线的第一个停靠点。对于已经是第一个停靠点，该按钮被禁用。

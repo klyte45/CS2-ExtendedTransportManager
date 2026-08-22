@@ -1,4 +1,4 @@
-﻿---
+---
 key: K45::XTM.vuio[glossary.content.appearance.library.import]
 ---
 Elija **Importar paleta** para abrir un selector de archivos para archivos `.hex`. Comienza en la carpeta de paleta de XTM e incluye un marcador **XTM: Biblioteca** para ajustes preestablecidos incluidos.

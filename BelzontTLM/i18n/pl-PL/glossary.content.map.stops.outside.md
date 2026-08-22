@@ -1,4 +1,4 @@
-﻿---
+---
 key: K45::XTM.vuio[glossary.content.map.stops.outside]
 ---
 XTM rozpoznaje połączenie zewnętrzne, gdy obiekt zatrzymujący powiązany z trasą zawiera element połączenia zewnętrznego gry.

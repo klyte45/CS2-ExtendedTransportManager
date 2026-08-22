@@ -1,4 +1,4 @@
-﻿---
+---
 key: K45::XTM.vuio[glossary.content.lines.stopOrder.opposite]
 ---
 Seleccione una parada en el mapa lineal XTM para abrir **Datos de parada**. Cuando otra parada en la ruta tenga la misma estación principal o edificio, use el botón de flecha circular para enfocar y seleccionar esa plataforma.

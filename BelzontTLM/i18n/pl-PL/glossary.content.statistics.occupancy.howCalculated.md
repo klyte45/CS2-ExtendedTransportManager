@@ -1,4 +1,4 @@
-﻿---
+---
 key: K45::XTM.vuio[glossary.content.statistics.occupancy.howCalculated]
 ---
 XTM rejestruje historyczne obłożenie, gdy pojazd pasażerski lub towarowy kończy wsiadanie i rozpoczyna podróż do następnego przystanku. Próbka należy do segmentu kierowanego rozpoczynającego się na przystanku odjazdu.

@@ -1,4 +1,4 @@
-﻿---
+---
 key: K45::XTM.vuio[glossary.content.statistics.occupancy.mapDisplay]
 ---
 Pasek narzędzi mapy liniowej XTM zawiera oddzielne elementy sterujące dla **Zagęszczenia platform** i **Zapełnienia segmentu**.

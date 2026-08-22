@@ -1,4 +1,4 @@
-﻿---
+---
 key: K45::XTM.vuio[glossary.content.lines.listing.passengerCargo]
 ---
 ## 客运和货运是独立的过滤器

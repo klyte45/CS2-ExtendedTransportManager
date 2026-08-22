@@ -1,4 +1,4 @@
-﻿---
+---
 key: K45::XTM.vuio[glossary.content.appearance.editing.colors]
 ---
 选择一个城市调色板来编辑其顺序。 **添加颜色** 附加白色。选择一个编号的样本以打开色轮和 RGB 控件，或选择其 X 将其删除。

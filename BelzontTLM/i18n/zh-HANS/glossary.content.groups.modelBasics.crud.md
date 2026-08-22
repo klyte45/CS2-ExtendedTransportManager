@@ -1,4 +1,4 @@
-﻿---
+---
 key: K45::XTM.vuio[glossary.content.groups.modelBasics.crud]
 ---
 打开 **车辆型号组**，选择运输类型，然后选择 **添加车辆型号组**。将打开一个带有本地化未命名标签的新组。

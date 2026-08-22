@@ -1,4 +1,4 @@
-﻿---
+---
 key: K45::XTM.vuio[glossary.content.statistics.occupancy.mapDisplay]
 ---
 La barre d'outils de carte linéaire XTM comporte des commandes distinctes pour l'**Encombrement de la plate-forme** et l'**Occupation des segments**.

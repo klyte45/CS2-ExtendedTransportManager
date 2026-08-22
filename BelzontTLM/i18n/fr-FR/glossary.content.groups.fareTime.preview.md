@@ -1,4 +1,4 @@
-﻿---
+---
 key: K45::XTM.vuio[glossary.content.groups.fareTime.preview]
 ---
 Développez **Barème tarifaire** sous le champ du tarif par défaut. La première ligne affiche la valeur par défaut ; les lignes restantes montrent chaque plage d'exceptions et tarifs inclus, triés par heure de départ. Zero apparaît comme **Gratuit**.

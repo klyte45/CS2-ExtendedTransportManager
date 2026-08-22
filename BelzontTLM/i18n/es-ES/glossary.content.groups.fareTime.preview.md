@@ -1,4 +1,4 @@
-﻿---
+---
 key: K45::XTM.vuio[glossary.content.groups.fareTime.preview]
 ---
 Expanda **Horario de tarifas** debajo del campo de tarifa predeterminada. La primera fila muestra el valor predeterminado; Las filas restantes muestran cada rango de excepción y tarifa inclusivos, ordenados por hora de inicio. Zero aparece como **Gratis**.

@@ -1,4 +1,4 @@
-﻿---
+---
 key: K45::XTM.vuio[glossary.content.appearance.autoColor.assign]
 ---
 **可用调色板**的下半部分为每种支持的交通类型分配一个城市调色板。客运和货运分配是独立的。

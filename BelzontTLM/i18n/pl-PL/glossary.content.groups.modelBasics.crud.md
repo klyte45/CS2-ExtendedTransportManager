@@ -1,4 +1,4 @@
-﻿---
+---
 key: K45::XTM.vuio[glossary.content.groups.modelBasics.crud]
 ---
 Otwórz **Grupy modeli pojazdów**, wybierz rodzaj transportu i wybierz **Dodaj grupę modeli pojazdów**. Zostanie otwarta nowa grupa ze zlokalizowaną nienazwaną etykietą.

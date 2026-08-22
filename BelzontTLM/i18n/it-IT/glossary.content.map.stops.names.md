@@ -1,4 +1,4 @@
-﻿---
+---
 key: K45::XTM.vuio[glossary.content.map.stops.names]
 ---
 Ogni fermata è etichettata con il nome deciso dal gioco per quell'entità fermata. Passa il mouse sopra il suo indicatore per vedere il nome dell'edificio principale o della stazione quando XTM trova un genitore.

@@ -1,4 +1,4 @@
-﻿---
+---
 key: K45::XTM.vuio[glossary.content.lines.listing.passengerCargo]
 ---
 ## 旅客と貨物は別個のフィルターです

@@ -1,4 +1,4 @@
-﻿---
+---
 key: K45::XTM.vuio[glossary.content.statistics.occupancy.listing]
 ---
 Ciascuna scheda percorso abilitata mostra un intervallo di occupazione storica accanto al conteggio dei veicoli.

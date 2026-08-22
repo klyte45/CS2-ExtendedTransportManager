@@ -1,4 +1,4 @@
-﻿---
+---
 key: K45::XTM.vuio[glossary.content.appearance.we.extras]
 ---
 Do wygenerowanych klatek kluczowych można dodać opcjonalny **przedrostek** i **przyrostek** wokół tekstu. Zamiast tego klatki kluczowe ze statycznym tekstem korzystają z jednego pola ze stałym tekstem.

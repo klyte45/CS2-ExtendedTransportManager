@@ -1,4 +1,4 @@
-﻿---
+---
 key: K45::XTM.vuio[glossary.content.groups.compositions.primary]
 ---
 每種組合都是一種允許的車輛選擇。 XTM 將群組的有序組合清單複製到每個成員行，因此多個組合讓遊戲可以在這些條目中進行選擇。

@@ -1,4 +1,4 @@
-﻿---
+---
 key: K45::XTM.vuio[glossary.content.groups.fareBasics.default]
 ---
 La **tariffa predefinita** viene utilizzata da ogni linea membro ogni volta che nessuna eccezione oraria copre l'ora corrente dell'orologio di gioco.

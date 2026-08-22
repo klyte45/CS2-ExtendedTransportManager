@@ -1,4 +1,4 @@
-﻿---
+---
 key: K45::XTM.vuio[glossary.content.lines.identity.routeNumber]
 ---
 **内部ルート番号** は、ルートの編集可能な数値番号です。これは、ルート名、オプションの表示識別子、およびシミュレーション エンティティ自体とは別のものです。

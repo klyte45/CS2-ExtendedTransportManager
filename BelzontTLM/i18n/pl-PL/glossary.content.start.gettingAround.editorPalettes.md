@@ -1,4 +1,4 @@
-﻿---
+---
 key: K45::XTM.vuio[glossary.content.start.gettingAround.editorPalettes]
 ---
 Włącz **Przycisk Pokaż palety edytora** w opcjach moda przed wejściem do edytora gier. To ustawienie jest domyślnie włączone i stosowane podczas ładowania edytora.

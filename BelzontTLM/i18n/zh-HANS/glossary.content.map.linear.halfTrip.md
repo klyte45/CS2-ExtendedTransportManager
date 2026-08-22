@@ -1,4 +1,4 @@
-﻿---
+---
 key: K45::XTM.vuio[glossary.content.map.linear.halfTrip]
 ---
 **半行程** 开始启用，但仅在 XTM 检测到对称往返路线且车辆隐藏时适用。检测会比较其父车站或建筑物在镜像路线位置处的停靠点。

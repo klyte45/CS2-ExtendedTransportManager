@@ -1,4 +1,4 @@
-﻿---
+---
 key: K45::XTM.vuio[glossary.content.appearance.autoColor.indexing]
 ---
 Pour une affectation valide non vide, XTM sélectionne une couleur de palette à partir du **numéro de route interne**. La route 1 utilise la première couleur, la route 2 la seconde et la séquence s'enroule après la dernière couleur.

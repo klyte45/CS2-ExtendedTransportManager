@@ -1,4 +1,4 @@
-﻿---
+---
 key: K45::XTM.vuio[glossary.content.lines.stopOrder.symmetric]
 ---
 當鏡像位置的停靠點共用同一父車站或建築物時，XTM 會偵測往返路線。偵測使用路由順序和父身份；它不比較名稱、距離或平台方向。

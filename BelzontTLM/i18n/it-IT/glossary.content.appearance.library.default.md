@@ -1,4 +1,4 @@
-﻿---
+---
 key: K45::XTM.vuio[glossary.content.appearance.library.default]
 ---
 XTM include una libreria preimpostata di sola lettura organizzata in cartelle per regione e collezione. Sfoglialo tramite la **Libreria predefinita** o il segnalibro **XTM: Library** nel selettore tavolozza.

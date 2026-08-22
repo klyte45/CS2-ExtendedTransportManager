@@ -1,4 +1,4 @@
-﻿---
+---
 key: K45::XTM.vuio[glossary.content.appearance.editing.clipboard]
 ---
 **Kopiuj paletę** zapisuje jeden kolor `#RRGGBB` w każdej linii do schowka systemowego.

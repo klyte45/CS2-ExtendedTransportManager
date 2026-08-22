@@ -1,4 +1,4 @@
-﻿---
+---
 key: K45::XTM.vuio[glossary.content.lines.identity.shields]
 ---
 Los escudos XTM combinan el tipo de transporte de una ruta, el color actual, el identificador de visualización, el modo de carga y el estado del servicio. La mayoría de las vistas XTM colocan el identificador de pantalla dentro del escudo, recurriendo al número de ruta interna. En cambio, las tarjetas de listado muestran el identificador junto a un escudo que contiene el ícono de transporte.

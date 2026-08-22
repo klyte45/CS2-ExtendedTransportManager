@@ -1,4 +1,4 @@
-﻿---
+---
 key: K45::XTM.vuio[glossary.content.map.advanced.lap]
 ---
 **Oczekiwany czas podróży w obie strony** w sekcji **Zaawansowane statystyki** szacuje, ile minut gry potrzebuje pojazd, aby jednokrotnie pokonać trasę.

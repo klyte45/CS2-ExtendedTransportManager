@@ -1,4 +1,4 @@
-﻿---
+---
 key: K45::XTM.vuio[glossary.content.appearance.we.availability]
 ---
 Rolety docelowe XTM wymagają **Write Everywhere** („BelzontWE”). Gdy ten mod jest dostępny, a XTM może przymocować swoje haczyki integracyjne, żaluzje są dostępne dla każdej linii transportowej.

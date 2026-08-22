@@ -1,4 +1,4 @@
-﻿---
+---
 key: K45::XTM.vuio[glossary.content.groups.incompatibilities.external]
 ---
 对于每个成员系列，XTM 希望车辆型号列表与该组的组成完全匹配，包括订单以及主要和次要型号。通过重写该列表，原版操作或其他 mod 可能会发生冲突。

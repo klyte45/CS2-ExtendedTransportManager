@@ -1,4 +1,4 @@
-﻿---
+---
 key: K45::XTM.vuio[glossary.content.appearance.we.extras]
 ---
 I fotogrammi chiave generati possono aggiungere **Prefisso** e **Suffisso** facoltativi attorno al testo. I fotogrammi chiave con testo statico utilizzano invece un campo di testo fisso.

@@ -1,4 +1,4 @@
-﻿---
+---
 key: K45::XTM.vuio[glossary.content.appearance.we.extras]
 ---
 生成されたキーフレームでは、テキストの周囲にオプションの **Prefix** と **Suffix** を追加できます。静的テキスト キーフレームは、代わりに 1 つの固定テキスト フィールドを使用します。

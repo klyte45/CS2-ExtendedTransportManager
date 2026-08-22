@@ -1,4 +1,4 @@
-﻿---
+---
 key: K45::XTM.vuio[glossary.content.lines.stopOrder.firstStop]
 ---
 Seleccione una parada en el mapa lineal XTM, luego use el botón **1** en **Datos de parada** para convertirla en la primera parada de la ruta. El botón está deshabilitado para la parada que ya es primera.

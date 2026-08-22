@@ -1,4 +1,4 @@
-﻿---
+---
 key: K45::XTM.vuio[glossary.content.statistics.occupancy.cityReports]
 ---
 Abra la Descripción general de transporte de XTM y elija **Informe de ocupación: Pasajeros** o **Informe de ocupación: Carga** a través de **Cambiar modo**. El informe es una instantánea; use **Actualizar datos** para generar otro. Se omiten las rutas inactivas.

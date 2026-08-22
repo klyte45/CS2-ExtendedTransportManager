@@ -1,4 +1,4 @@
-﻿---
+---
 key: K45::XTM.vuio[glossary.content.start.gettingAround.editorPalettes]
 ---
 Habilite **Mostrar botón de paletas del editor** en las opciones de modificación antes de ingresar al editor de un juego. Esta configuración está habilitada de forma predeterminada y se aplica cuando se carga el editor.

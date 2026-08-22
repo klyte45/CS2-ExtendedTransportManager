@@ -1,4 +1,4 @@
-﻿---
+---
 key: K45::XTM.vuio[glossary.content.lines.identity.displayId]
 ---
 **表示識別子**は、一部のコントロールでは回線の頭字語またはルート識別子とも呼ばれ、内部ルート番号の代わりに表示されるオプションのテキストです。

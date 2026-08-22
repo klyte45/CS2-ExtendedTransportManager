@@ -1,4 +1,4 @@
-﻿---
+---
 key: K45::XTM.vuio[glossary.content.groups.modelBasics.crud]
 ---
 Abra **Grupos de modelos de vehículos**, seleccione un tipo de transporte y elija **Agregar grupo de modelos de vehículos**. Se abre un nuevo grupo con la etiqueta sin nombre traducida.

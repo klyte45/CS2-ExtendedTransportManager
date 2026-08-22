@@ -1,4 +1,4 @@
-﻿---
+---
 key: K45::XTM.vuio[glossary.content.start.gettingAround.linearMap]
 ---
 Seleziona un percorso di trasporto e trova il visualizzatore di linea nel **Pannello informativo selezionato**. Utilizza il pulsante XTM a sinistra della barra degli strumenti del visualizzatore per passare dallo schizzo del percorso del gioco alla mappa lineare XTM.

@@ -1,4 +1,4 @@
-﻿---
+---
 key: K45::XTM.vuio[glossary.content.groups.fareTime.preview]
 ---
 展开默认票价字段下方的**票价表**。第一行显示默认值；其余行显示每个包含的例外范围和票价，按开始时间排序。零显示为**免费**。

@@ -1,4 +1,4 @@
-﻿---
+---
 key: K45::XTM.vuio[glossary.content.groups.modelMembership.assign]
 ---
 打开线路的车辆选择部分并使用其齿轮菜单。非托管线路可以加入任何具有相同运输类型和客货类别的组，或打开**管理车型组**。

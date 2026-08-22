@@ -1,4 +1,4 @@
-﻿---
+---
 key: K45::XTM.vuio[glossary.content.lines.identity.color]
 ---
 每條路線都有當前顏色。 XTM 可以保留為該路線選擇的**固定顏色**，也可以讓指定的城市調色板控制它。

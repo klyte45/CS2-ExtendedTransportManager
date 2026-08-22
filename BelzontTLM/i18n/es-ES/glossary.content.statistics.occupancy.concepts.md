@@ -1,4 +1,4 @@
-﻿---
+---
 key: K45::XTM.vuio[glossary.content.statistics.occupancy.concepts]
 ---
 XTM muestra dos mediciones separadas: **ocupación de vehículos** y **hacinamiento de plataforma**.

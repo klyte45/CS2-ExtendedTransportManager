@@ -1,4 +1,4 @@
-﻿---
+---
 key: K45::XTM.vuio[glossary.content.statistics.occupancy.listing]
 ---
 Cada tarjeta de ruta habilitada muestra un rango de ocupación histórico junto a su recuento de vehículos.

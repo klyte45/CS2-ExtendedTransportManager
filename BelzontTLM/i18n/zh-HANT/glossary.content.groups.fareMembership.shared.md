@@ -1,4 +1,4 @@
-﻿---
+---
 key: K45::XTM.vuio[glossary.content.groups.fareMembership.shared]
 ---
 對於託管線路，**票價** 顯示票價群組名稱、當前有效票價以及受共享變更影響的線路數量。它的工具提示列出了成員標識符和名稱，將大型群組縮短為五個名稱加上溢出計數。

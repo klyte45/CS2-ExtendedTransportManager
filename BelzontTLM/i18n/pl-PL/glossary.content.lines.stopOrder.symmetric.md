@@ -1,4 +1,4 @@
-﻿---
+---
 key: K45::XTM.vuio[glossary.content.lines.stopOrder.symmetric]
 ---
 XTM wykrywa trasę tam i z powrotem, gdy przystanki w pozycjach lustrzanych dzielą tę samą stację nadrzędną lub budynek. Wykrywanie wykorzystuje kolejność tras i tożsamość nadrzędną; nie porównuje nazw, odległości ani kierunku peronu.

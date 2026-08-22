@@ -1,4 +1,4 @@
-﻿---
+---
 key: K45::XTM.vuio[glossary.content.statistics.occupancy.cityReports]
 ---
 Ouvrez l'aperçu des transports de XTM et choisissez **Rapport d'occupation : Passagers** ou **Rapport d'occupation : Cargaison** via **Modifier le mode**. Le rapport est un instantané ; utilisez **Actualiser les données** pour en générer un autre. Les itinéraires inactifs sont omis.

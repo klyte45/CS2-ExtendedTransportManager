@@ -1,4 +1,4 @@
-﻿---
+---
 key: K45::XTM.vuio[glossary.content.map.vehicles.odometer]
 ---
 Habilite los marcadores de vehículos y seleccione uno para abrir **Datos del vehículo**. **Odómetro** es la distancia registrada para ese vehículo. **Rango de mantenimiento** es el intervalo de distancia de mantenimiento definido por el modelo de su vehículo. Ambos valores utilizan las unidades de medida seleccionadas.

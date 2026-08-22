@@ -1,4 +1,4 @@
-﻿---
+---
 key: K45::XTM.vuio[glossary.content.map.interchanges.select]
 ---
 Seleccione un escudo de línea de conexión para moverse a esa ruta. El juego selecciona la ruta por sí mismo, por lo que el panel de información seleccionada y el mapa lineal cambian a ella y la franja se reconstruye para el servicio recién seleccionado.

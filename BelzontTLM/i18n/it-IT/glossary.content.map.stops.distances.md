@@ -1,4 +1,4 @@
-﻿---
+---
 key: K45::XTM.vuio[glossary.content.map.stops.distances]
 ---
 Le **Distanze** sono inizialmente abilitate e possono essere attivate utilizzando il pulsante del righello sulla barra degli strumenti della mappa lineare XTM.

@@ -1,4 +1,4 @@
-﻿---
+---
 key: K45::XTM.vuio[glossary.content.map.advanced.demand]
 ---
 選擇一條路線，開啟**線路資料**，然後展開**進階統計資料**。

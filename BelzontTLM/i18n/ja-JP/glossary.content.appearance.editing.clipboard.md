@@ -1,4 +1,4 @@
-﻿---
+---
 key: K45::XTM.vuio[glossary.content.appearance.editing.clipboard]
 ---
 **パレットのコピー** は、1 行につき 1 つの `#RRGGBB` カラーをシステム クリップボードに書き込みます。

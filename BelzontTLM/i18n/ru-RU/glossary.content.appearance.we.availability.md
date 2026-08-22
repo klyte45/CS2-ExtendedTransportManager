@@ -1,4 +1,4 @@
-﻿---
+---
 key: K45::XTM.vuio[glossary.content.appearance.we.availability]
 ---
 Для жалюзи назначения XTM требуется **Write Everywhere** («BelzontWE»). Когда этот мод присутствует и XTM может прикрепить свои крючки для интеграции, жалюзи доступны для каждой транспортной линии.

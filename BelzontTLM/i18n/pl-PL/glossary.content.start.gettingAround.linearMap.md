@@ -1,4 +1,4 @@
-﻿---
+---
 key: K45::XTM.vuio[glossary.content.start.gettingAround.linearMap]
 ---
 Wybierz trasę transportu i znajdź jej wizualizator linii w **Panelu wybranych informacji**. Użyj przycisku XTM po lewej stronie paska narzędzi wizualizatora, aby przełączać się między szkicem trasy w grze a liniową mapą XTM.

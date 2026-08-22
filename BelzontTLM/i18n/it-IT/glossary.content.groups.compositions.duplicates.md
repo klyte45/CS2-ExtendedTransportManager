@@ -1,4 +1,4 @@
-﻿---
+---
 key: K45::XTM.vuio[glossary.content.groups.compositions.duplicates]
 ---
 Due composizioni non possono contenere la stessa esatta coppia primario-secondario. Le scelte che riprodurrebbero un'altra coppia vengono disabilitate e anche le coppie ripetute vengono rimosse durante la convalida del backend.

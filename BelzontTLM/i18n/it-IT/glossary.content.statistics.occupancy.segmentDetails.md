@@ -1,4 +1,4 @@
-﻿---
+---
 key: K45::XTM.vuio[glossary.content.statistics.occupancy.segmentDetails]
 ---
 Abilita una modalità di occupazione del segmento sulla mappa lineare XTM, quindi seleziona la percentuale tra due fermate.

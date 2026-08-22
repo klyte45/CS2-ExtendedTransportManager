@@ -1,4 +1,4 @@
-﻿---
+---
 key: K45::XTM.vuio[glossary.content.map.advanced.lap]
 ---
 **El tiempo esperado de ida y vuelta** en **Estadísticas avanzadas** estima cuántos minutos de juego necesita un vehículo para completar la ruta una vez.

@@ -1,4 +1,4 @@
-﻿---
+---
 key: K45::XTM.vuio[glossary.content.appearance.library.import]
 ---
 [**パレットのインポート**] を選択して、`.hex` ファイルのファイル ピッカーを開きます。これは XTM のパレット フォルダーから始まり、バンドルされたプリセットの **XTM: Library** ブックマークが含まれています。

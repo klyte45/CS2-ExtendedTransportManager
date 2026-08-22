@@ -1,4 +1,4 @@
-﻿---
+---
 key: K45::XTM.vuio[glossary.content.groups.fareMembership.shared]
 ---
 W przypadku linii zarządzanej **Cena biletu** pokazuje nazwę grupy taryf, aktualną efektywną taryfę i liczbę linii, na które mają wpływ wspólne zmiany. Podpowiedź zawiera listę identyfikatorów i nazw członków, skracając duże grupy do pięciu nazw plus liczba przepełnień.

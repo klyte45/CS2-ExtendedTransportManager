@@ -1,4 +1,4 @@
-﻿---
+---
 key: K45::XTM.vuio[glossary.content.lines.listing.serviceState]
 ---
 ## Quattro stati di servizio

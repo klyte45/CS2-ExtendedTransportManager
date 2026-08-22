@@ -1,4 +1,4 @@
-﻿---
+---
 key: K45::XTM.vuio[glossary.content.appearance.autoColor.indexing]
 ---
 Dla prawidłowego, niepustego przypisania, XTM wybiera kolor palety z **numeru trasy wewnętrznej**. Trasa 1 używa pierwszego koloru, trasa 2 drugiego, a sekwencja kończy się po ostatnim kolorze.

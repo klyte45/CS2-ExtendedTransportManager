@@ -1,4 +1,4 @@
-﻿---
+---
 key: K45::XTM.vuio[glossary.content.statistics.occupancy.concepts]
 ---
 XTM 显示两个单独的测量结果：**车辆占用率**和**平台拥挤度**。

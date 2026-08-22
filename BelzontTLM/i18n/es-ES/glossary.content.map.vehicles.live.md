@@ -1,4 +1,4 @@
-﻿---
+---
 key: K45::XTM.vuio[glossary.content.map.vehicles.live]
 ---
 Los vehículos comienzan ocultos en el mapa lineal XTM. Seleccione el botón de la barra de herramientas **Vehículos** para mostrar todos los vehículos activos devueltos para la ruta. Las superposiciones de vehículos y líneas de conexión se excluyen mutuamente, y la visualización de vehículos expande un mapa simétrico de medio viaje a la ruta completa.

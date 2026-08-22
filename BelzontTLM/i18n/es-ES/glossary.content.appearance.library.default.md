@@ -1,4 +1,4 @@
-﻿---
+---
 key: K45::XTM.vuio[glossary.content.appearance.library.default]
 ---
 XTM incluye una biblioteca preestablecida de solo lectura organizada en carpetas por región y colección. Examínelo a través de **Biblioteca predeterminada** o el marcador **XTM: Biblioteca** en el selector de paleta.

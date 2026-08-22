@@ -1,4 +1,4 @@
-﻿---
+---
 key: K45::XTM.vuio[glossary.content.map.stops.outside]
 ---
 当路线的连接停靠点实体具有游戏的外部连接组件时，XTM 会识别外部连接。

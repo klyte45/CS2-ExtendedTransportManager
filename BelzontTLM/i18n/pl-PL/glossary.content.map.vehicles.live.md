@@ -1,4 +1,4 @@
-﻿---
+---
 key: K45::XTM.vuio[glossary.content.map.vehicles.live]
 ---
 Pojazdy zaczynają być ukryte na mapie liniowej XTM. Wybierz przycisk **Pojazdy** na pasku narzędzi, aby wyświetlić każdy aktywny pojazd, który powrócił na trasę. Nakładki pojazdów i linii łączących wzajemnie się wykluczają, a wyświetlanie pojazdów rozszerza symetryczną mapę połowy podróży na całą trasę.

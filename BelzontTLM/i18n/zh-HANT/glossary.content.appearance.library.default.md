@@ -1,4 +1,4 @@
-﻿---
+---
 key: K45::XTM.vuio[glossary.content.appearance.library.default]
 ---
 XTM 包含一個唯讀預設函式庫，按區域和集合組織到資料夾中。透過調色盤選擇器中的 **預設庫** 或 **XTM：庫** 書籤進行瀏覽。

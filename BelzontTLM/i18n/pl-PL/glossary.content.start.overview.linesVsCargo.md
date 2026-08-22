@@ -1,4 +1,4 @@
-﻿---
+---
 key: K45::XTM.vuio[glossary.content.start.overview.linesVsCargo]
 ---
 XTM wykorzystuje **linię pasażerską** do przewozu osób oraz **trasę towarową** do przewozu zasobów. Wewnętrznie wiele elementów sterujących i systemów używa krótszego słowa „linia” w obu przypadkach.

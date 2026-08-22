@@ -1,4 +1,4 @@
-﻿---
+---
 key: K45::XTM.vuio[glossary.content.appearance.we.steps]
 ---
 Una destinazione blind è una sequenza di passaggi lungo il percorso selezionato. Ogni passo viene utilizzato fino alla fermata scelta o fino alla **fine della linea**.

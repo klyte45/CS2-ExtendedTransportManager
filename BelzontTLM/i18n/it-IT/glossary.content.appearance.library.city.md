@@ -1,4 +1,4 @@
-﻿---
+---
 key: K45::XTM.vuio[glossary.content.appearance.library.city]
 ---
 Le tavolozze delle città appartengono alla città corrente o al mondo dell'editor e sono archiviate nel suo salvataggio. Solo le tavolozze delle città possono essere assegnate ai tipi di trasporto per la colorazione automatica.

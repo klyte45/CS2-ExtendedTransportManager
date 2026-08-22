@@ -1,4 +1,4 @@
-﻿---
+---
 key: K45::XTM.vuio[glossary.content.groups.compositions.duplicates]
 ---
 Dos composiciones no pueden contener exactamente el mismo par primario y secundario. Las opciones que reproducirían otro par están deshabilitadas y los pares repetidos también se eliminan durante la validación del backend.

@@ -1,4 +1,4 @@
-﻿---
+---
 key: K45::XTM.vuio[glossary.content.appearance.editing.clipboard]
 ---
 **Copia tavolozza** scrive un colore `#RRGGBB` per riga negli appunti di sistema.

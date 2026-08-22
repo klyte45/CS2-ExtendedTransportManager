@@ -1,4 +1,4 @@
-﻿---
+---
 key: K45::XTM.vuio[glossary.content.map.linear.whiteBg]
 ---
 Utilisez le bouton en forme de diamant près du côté droit de la barre d'outils de la carte XTM pour faire passer le canevas de la carte sur un arrière-plan clair.

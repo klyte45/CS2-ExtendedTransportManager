@@ -1,4 +1,4 @@
-﻿---
+---
 key: K45::XTM.vuio[glossary.content.statistics.occupancy.mapDisplay]
 ---
 XTM リニアマップ ツールバーには、**プラットフォームの混雑度**と**セグメント占有率**の個別のコントロールがあります。

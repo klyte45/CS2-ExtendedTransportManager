@@ -1,4 +1,4 @@
-﻿---
+---
 key: K45::XTM.vuio[glossary.content.lines.identity.displayId]
 ---
 **Identyfikator wyświetlany**, w niektórych kontrolkach nazywany także akronimem linii lub identyfikatorem trasy, to opcjonalny tekst wyświetlany zamiast wewnętrznego numeru trasy.

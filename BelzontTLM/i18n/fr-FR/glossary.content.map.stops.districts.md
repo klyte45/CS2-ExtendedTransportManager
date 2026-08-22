@@ -1,4 +1,4 @@
-﻿---
+---
 key: K45::XTM.vuio[glossary.content.map.stops.districts]
 ---
 Les **limites de district** sont activées et peuvent être basculées à partir du bouton de district de la barre d'outils de la carte linéaire XTM.

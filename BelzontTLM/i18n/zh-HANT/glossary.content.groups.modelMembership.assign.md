@@ -1,4 +1,4 @@
-﻿---
+---
 key: K45::XTM.vuio[glossary.content.groups.modelMembership.assign]
 ---
 打開線路的車輛選擇部分並使用其齒輪選單。非託管線路可以加入任何具有相同運輸類型和客貨類別的群組，或開啟**管理車型組**。

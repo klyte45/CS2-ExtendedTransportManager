@@ -1,4 +1,4 @@
-﻿---
+---
 key: K45::XTM.vuio[glossary.content.groups.fareMembership.assign]
 ---
 Per una linea passeggeri non gestita, apri **Prezzo del biglietto** nel pannello informativo selezionato e utilizza il menu a forma di ingranaggio per assegnare un gruppo tariffario. Il menu di una linea gestita può modificare il suo gruppo, rimuovere la linea o spostarla in un altro gruppo.

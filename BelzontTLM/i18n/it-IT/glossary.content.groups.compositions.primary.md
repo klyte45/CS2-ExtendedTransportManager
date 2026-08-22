@@ -1,4 +1,4 @@
-﻿---
+---
 key: K45::XTM.vuio[glossary.content.groups.compositions.primary]
 ---
 Ogni composizione è una selezione di veicolo consentita. XTM copia l'elenco ordinato delle composizioni del gruppo su ogni riga dei membri, quindi più composizioni consentono al gioco di scegliere tra quelle voci.

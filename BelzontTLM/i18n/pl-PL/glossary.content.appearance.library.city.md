@@ -1,4 +1,4 @@
-﻿---
+---
 key: K45::XTM.vuio[glossary.content.appearance.library.city]
 ---
 Palety miast należą do bieżącego miasta lub świata edytora i są przechowywane w jego zapisie. Do typów transportu można przypisać wyłącznie palety miast w celu automatycznego kolorowania.

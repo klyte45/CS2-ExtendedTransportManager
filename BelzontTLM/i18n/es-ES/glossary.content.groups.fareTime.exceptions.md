@@ -1,4 +1,4 @@
-﻿---
+---
 key: K45::XTM.vuio[glossary.content.groups.fareTime.exceptions]
 ---
 Utilice **Excepciones horarias** cuando una tarifa deba diferir de la predeterminada durante parte del día. **Agregar excepción** crea un rango de una hora en la primera hora descubierta y copia la tarifa predeterminada redondeada.

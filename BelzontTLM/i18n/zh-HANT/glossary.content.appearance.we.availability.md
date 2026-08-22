@@ -1,4 +1,4 @@
-﻿---
+---
 key: K45::XTM.vuio[glossary.content.appearance.we.availability]
 ---
 XTM 目的地盲注需要 **Write Everywhere** (`BelzontWE`)。當該模組存在且 XTM 可以連接其整合掛鉤時，每條運輸線路都可以使用百葉窗。

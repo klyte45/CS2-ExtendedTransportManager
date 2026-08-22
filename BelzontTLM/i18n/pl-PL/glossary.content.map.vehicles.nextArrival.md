@@ -1,4 +1,4 @@
-﻿---
+---
 key: K45::XTM.vuio[glossary.content.map.vehicles.nextArrival]
 ---
 Najedź kursorem na przystanek na mapie liniowej XTM, aby zobaczyć zbliżający się do niego następny pojazd. Etykietka pokazuje nazwę pojazdu, pozostały dystans trasy i liczbę przystanków pośrednich. **Wejście!** oznacza, że ​​nie ma już żadnego przystanku pośredniego.

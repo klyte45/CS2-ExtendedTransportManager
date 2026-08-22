@@ -1,4 +1,4 @@
-﻿---
+---
 key: K45::XTM.vuio[glossary.content.appearance.we.extras]
 ---
 Los fotogramas clave generados pueden agregar **Prefijo** y **Sufijo** opcionales alrededor de su texto. En su lugar, los fotogramas clave de texto estático utilizan un campo de texto fijo.

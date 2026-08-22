@@ -1,4 +1,4 @@
-﻿---
+---
 key: K45::XTM.vuio[glossary.content.start.overview.mainScreens]
 ---
 XTM 扩展了几个现有的游戏屏幕，但每个屏幕都保留自己的模式。

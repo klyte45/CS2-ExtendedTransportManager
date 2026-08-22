@@ -1,4 +1,4 @@
-﻿---
+---
 key: K45::XTM.vuio[glossary.content.statistics.occupancy.segmentDetails]
 ---
 在 XTM 线性地图上启用路段占用模式，然后选择两个停靠点之间的百分比。

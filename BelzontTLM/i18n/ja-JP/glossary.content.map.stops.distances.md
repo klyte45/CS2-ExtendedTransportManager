@@ -1,4 +1,4 @@
-﻿---
+---
 key: K45::XTM.vuio[glossary.content.map.stops.distances]
 ---
 **距離** は有効になり、XTM リニアマップ ツールバーのルーラー ボタンから切り替えることができます。

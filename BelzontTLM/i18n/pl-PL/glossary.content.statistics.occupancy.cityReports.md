@@ -1,4 +1,4 @@
-﻿---
+---
 key: K45::XTM.vuio[glossary.content.statistics.occupancy.cityReports]
 ---
 Otwórz Przegląd transportu XTM i wybierz **Raport obłożenia: pasażerowie** lub **Raport obłożenia: ładunek** poprzez **Tryb zmiany**. Raport jest migawką; użyj **Odśwież dane**, aby wygenerować kolejne. Trasy nieaktywne są pomijane.

@@ -1,4 +1,4 @@
-﻿---
+---
 key: K45::XTM.vuio[glossary.content.appearance.library.default]
 ---
 XTM comprend une bibliothèque de préréglages en lecture seule organisée en dossiers par région et collection. Parcourez-le via la **Bibliothèque par défaut** ou le signet **XTM : Bibliothèque** dans le sélecteur de palette.

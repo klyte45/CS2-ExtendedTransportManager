@@ -1,4 +1,4 @@
-﻿---
+---
 key: K45::XTM.vuio[glossary.content.statistics.occupancy.concepts]
 ---
 XTM affiche deux mesures distinctes : **l'occupation des véhicules** et **l'encombrement de la plate-forme**.

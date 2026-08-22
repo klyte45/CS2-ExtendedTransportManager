@@ -1,4 +1,4 @@
-﻿---
+---
 key: K45::XTM.vuio[glossary.content.lines.scheduling.openDetails]
 ---
 ## 打開一條路線

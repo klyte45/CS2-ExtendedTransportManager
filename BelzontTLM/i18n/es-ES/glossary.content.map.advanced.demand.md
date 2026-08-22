@@ -1,4 +1,4 @@
-﻿---
+---
 key: K45::XTM.vuio[glossary.content.map.advanced.demand]
 ---
 Seleccione una ruta, abra **Datos de línea** y expanda **Estadísticas avanzadas**.

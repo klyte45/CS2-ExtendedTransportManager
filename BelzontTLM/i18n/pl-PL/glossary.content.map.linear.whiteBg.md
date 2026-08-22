@@ -1,4 +1,4 @@
-﻿---
+---
 key: K45::XTM.vuio[glossary.content.map.linear.whiteBg]
 ---
 Użyj przycisku rombu znajdującego się po prawej stronie paska narzędzi mapy XTM, aby przełączyć obszar mapy na jasne tło.

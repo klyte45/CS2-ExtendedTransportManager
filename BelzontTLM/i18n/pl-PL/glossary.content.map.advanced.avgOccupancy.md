@@ -1,4 +1,4 @@
-﻿---
+---
 key: K45::XTM.vuio[glossary.content.map.advanced.avgOccupancy]
 ---
 W sekcji **Zaawansowane statystyki** XTM pokazuje dwa aktualne wartości procentowe dla wybranej trasy.

@@ -1,4 +1,4 @@
-﻿---
+---
 key: K45::XTM.vuio[glossary.content.map.stops.districts]
 ---
 **地区境界** が有効になり、XTM 線形マップ ツールバーの地区ボタンから切り替えることができます。

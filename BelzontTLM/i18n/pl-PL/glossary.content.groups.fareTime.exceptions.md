@@ -1,4 +1,4 @@
-﻿---
+---
 key: K45::XTM.vuio[glossary.content.groups.fareTime.exceptions]
 ---
 Użyj **Wyjątków godzinowych**, jeśli taryfa powinna różnić się od domyślnej w części dnia. **Dodaj wyjątek** tworzy zakres jednogodzinny w najwcześniejszej nieobjętej godzinie i kopiuje zaokrągloną stawkę domyślną.

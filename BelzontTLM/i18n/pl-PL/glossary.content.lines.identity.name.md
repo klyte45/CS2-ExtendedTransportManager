@@ -1,4 +1,4 @@
-﻿---
+---
 key: K45::XTM.vuio[glossary.content.lines.identity.name]
 ---
 Oprócz numeru i opcjonalnego identyfikatora wyświetlanego trasa ma **nazwę**. Na liście XTM wybierz wyświetlaną nazwę, aby ją edytować. Opuszczenie pola powoduje zapisanie obciętej, niepustej nazwy; naciśnij Escape, aby anulować. Normalna opcja zmiany nazwy pozostaje dostępna w panelu wybranych informacji o trasie.

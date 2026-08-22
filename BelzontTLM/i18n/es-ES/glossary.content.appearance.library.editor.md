@@ -1,4 +1,4 @@
-﻿---
+---
 key: K45::XTM.vuio[glossary.content.appearance.library.editor]
 ---
 **El botón Mostrar paletas en el Editor** está habilitado de forma predeterminada en las opciones de XTM y se aplica cuando se carga un editor.

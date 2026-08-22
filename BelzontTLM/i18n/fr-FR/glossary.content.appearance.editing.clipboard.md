@@ -1,4 +1,4 @@
-﻿---
+---
 key: K45::XTM.vuio[glossary.content.appearance.editing.clipboard]
 ---
 **Palette de copie** écrit une couleur `#RRGGBB` par ligne dans le presse-papiers du système.

@@ -1,4 +1,4 @@
-﻿---
+---
 key: K45::XTM.vuio[glossary.content.map.interchanges.select]
 ---
 Seleziona uno scudo della linea di collegamento per spostarti su quel percorso. Il gioco seleziona il percorso stesso, quindi il pannello informativo selezionato e la mappa lineare passano ad esso e la striscia viene ricostruita per il servizio appena selezionato.

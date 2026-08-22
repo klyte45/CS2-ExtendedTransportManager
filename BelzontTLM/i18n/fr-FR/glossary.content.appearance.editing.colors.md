@@ -1,4 +1,4 @@
-﻿---
+---
 key: K45::XTM.vuio[glossary.content.appearance.editing.colors]
 ---
 Sélectionnez une palette de villes pour modifier sa séquence. **Ajouter de la couleur** ajoute du blanc. Sélectionnez un échantillon numéroté pour ouvrir la roue chromatique et les commandes RVB, ou son X pour le supprimer.

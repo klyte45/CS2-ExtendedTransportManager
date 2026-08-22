@@ -1,4 +1,4 @@
-﻿---
+---
 key: K45::XTM.vuio[glossary.content.lines.identity.routeNumber]
 ---
 El **número de ruta interna** es el número numérico editable de la ruta. Está separado del nombre de la ruta, el identificador de visualización opcional y la propia entidad de simulación.

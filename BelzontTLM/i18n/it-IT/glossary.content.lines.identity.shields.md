@@ -1,4 +1,4 @@
-﻿---
+---
 key: K45::XTM.vuio[glossary.content.lines.identity.shields]
 ---
 Gli scudi XTM combinano il tipo di trasporto di un percorso, il colore corrente, l'identificatore di visualizzazione, la modalità di carico e lo stato del servizio. La maggior parte delle visualizzazioni XTM posizionano l'identificatore del display all'interno dello scudo, ricorrendo al numero di percorso interno. Le carte elenco invece mostrano l'identificatore accanto ad uno scudo contenente l'icona del trasporto.

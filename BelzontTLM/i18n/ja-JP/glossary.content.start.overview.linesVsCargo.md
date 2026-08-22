@@ -1,4 +1,4 @@
-﻿---
+---
 key: K45::XTM.vuio[glossary.content.start.overview.linesVsCargo]
 ---
 XTM は、人を運ぶサービスには **旅客線**を、資源を運ぶサービスには **貨物ルート**を使用します。内部的には、多くのコントロールとシステムは両方に短い単語「ライン」を使用します。

@@ -1,4 +1,4 @@
-﻿---
+---
 key: K45::XTM.vuio[glossary.content.lines.identity.routeNumber]
 ---
 **Wewnętrzny numer trasy** to edytowalny numer trasy. Jest ona oddzielona od nazwy trasy, opcjonalnego identyfikatora wyświetlanego i samej jednostki symulacyjnej.

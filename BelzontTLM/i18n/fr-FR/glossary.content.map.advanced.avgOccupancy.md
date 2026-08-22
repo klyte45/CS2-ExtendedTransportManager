@@ -1,4 +1,4 @@
-﻿---
+---
 key: K45::XTM.vuio[glossary.content.map.advanced.avgOccupancy]
 ---
 Sous **Statistiques avancées**, XTM affiche deux pourcentages en direct pour l'itinéraire sélectionné.

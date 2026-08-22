@@ -1,4 +1,4 @@
-﻿---
+---
 key: K45::XTM.vuio[glossary.content.start.overview.whatAdds]
 ---
 Extended Transport Manager は、別の管理ウィンドウを追加するのではなく、ゲームの既存のトランスポート画面を拡張します。輸送タイプとサービスのフィルター、並べ替え、インライン ID とカラー制御、およびルートの詳細への直接アクセスを備えた、すべての旅客路線と貨物ルートの詳細なリストが提供されます。

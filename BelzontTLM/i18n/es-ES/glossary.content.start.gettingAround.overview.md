@@ -1,4 +1,4 @@
-﻿---
+---
 key: K45::XTM.vuio[glossary.content.start.gettingAround.overview]
 ---
 Abre la **Resumen de transporte** del juego, luego usa el botón XTM en el encabezado del panel para cambiar entre la descripción general original y la interfaz de administración de XTM.

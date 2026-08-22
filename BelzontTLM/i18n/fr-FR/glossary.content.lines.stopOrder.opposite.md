@@ -1,4 +1,4 @@
-﻿---
+---
 key: K45::XTM.vuio[glossary.content.lines.stopOrder.opposite]
 ---
 Sélectionnez un arrêt sur la carte linéaire XTM pour ouvrir **Stop Data**. Lorsqu'un autre arrêt sur l'itinéraire a la même gare ou bâtiment parent, utilisez le bouton fléché circulaire pour vous concentrer et sélectionner ce quai.

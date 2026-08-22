@@ -1,4 +1,4 @@
-﻿---
+---
 key: K45::XTM.vuio[glossary.content.start.gettingAround.sip]
 ---
 Wybierz trasę transportu, aby otworzyć **Panel wybranych informacji**. Możesz także kliknąć **Szczegóły** na karcie z listą XTM lub wybrać osłonę trasy w raporcie o obłożeniu.

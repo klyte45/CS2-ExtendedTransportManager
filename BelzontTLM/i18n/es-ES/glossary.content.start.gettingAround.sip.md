@@ -1,4 +1,4 @@
-﻿---
+---
 key: K45::XTM.vuio[glossary.content.start.gettingAround.sip]
 ---
 Seleccione una ruta de transporte para abrir su **Panel de información seleccionado**. También puede presionar **Detalles** en una tarjeta de listado de XTM o seleccionar un escudo de ruta en un informe de ocupación.

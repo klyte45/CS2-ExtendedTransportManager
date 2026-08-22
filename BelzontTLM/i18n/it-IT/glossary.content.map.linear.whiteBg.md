@@ -1,4 +1,4 @@
-﻿---
+---
 key: K45::XTM.vuio[glossary.content.map.linear.whiteBg]
 ---
 Utilizza il pulsante a forma di diamante vicino al lato destro della barra degli strumenti della mappa XTM per impostare lo sfondo della mappa su uno sfondo chiaro.

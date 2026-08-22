@@ -1,4 +1,4 @@
-﻿---
+---
 key: K45::XTM.vuio[glossary.content.lines.identity.routeNumber]
 ---
 Il **numero di percorso interno** è il numero numerico modificabile del percorso. È separato dal nome del percorso, dall'identificatore di visualizzazione opzionale e dall'entità di simulazione stessa.

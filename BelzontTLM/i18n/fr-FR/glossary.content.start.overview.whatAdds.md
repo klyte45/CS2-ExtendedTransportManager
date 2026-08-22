@@ -1,4 +1,4 @@
-﻿---
+---
 key: K45::XTM.vuio[glossary.content.start.overview.whatAdds]
 ---
 Extended Transport Manager étend les écrans de transport existants du jeu plutôt que d'ajouter une fenêtre de gestion distincte. Il fournit une liste détaillée de chaque ligne de passagers et itinéraire de fret, avec des filtres de type de transport et de service, un tri, des contrôles d'identité et de couleur en ligne et un accès direct aux détails de l'itinéraire.

@@ -1,4 +1,4 @@
-﻿---
+---
 key: K45::XTM.vuio[glossary.content.start.gettingAround.overview]
 ---
 開啟遊戲的**交通概覽**，然後使用面板標題中的XTM按鈕在原始概覽和XTM的管理介面之間切換。

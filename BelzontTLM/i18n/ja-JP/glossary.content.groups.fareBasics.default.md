@@ -1,4 +1,4 @@
-﻿---
+---
 key: K45::XTM.vuio[glossary.content.groups.fareBasics.default]
 ---
 **デフォルト運賃**は、現在のゲームクロック時間をカバーする時間例外がない場合は常に、すべてのメンバー ラインで使用されます。

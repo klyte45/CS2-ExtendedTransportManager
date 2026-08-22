@@ -1,4 +1,4 @@
-﻿---
+---
 key: K45::XTM.vuio[glossary.content.groups.fareMembership.assign]
 ---
 对于非托管客运线路，请在所选信息面板中打开**票价**，然后使用其齿轮菜单来分配票价组。受管理线路的菜单可以编辑其组、删除线路或将其移动到另一个组。

@@ -1,4 +1,4 @@
-﻿---
+---
 key: K45::XTM.vuio[glossary.content.appearance.autoColor.indexing]
 ---
 Para una asignación válida que no esté vacía, XTM selecciona un color de paleta del **número de ruta interna**. La ruta 1 usa el primer color, la ruta 2 el segundo y la secuencia termina después del último color.

@@ -1,4 +1,4 @@
-﻿---
+---
 key: K45::XTM.vuio[glossary.content.appearance.editing.clipboard]
 ---
 **Копировать палитру** записывает по одному цвету #RRGGBB в каждой строке в системный буфер обмена.

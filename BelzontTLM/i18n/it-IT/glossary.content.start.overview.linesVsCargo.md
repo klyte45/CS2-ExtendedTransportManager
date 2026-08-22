@@ -1,4 +1,4 @@
-﻿---
+---
 key: K45::XTM.vuio[glossary.content.start.overview.linesVsCargo]
 ---
 XTM utilizza la **linea passeggeri** per i servizi che trasportano persone e la **linea cargo** per i servizi che trasportano risorse. Internamente, molti controlli e sistemi utilizzano la parola più breve “linea” per entrambi.

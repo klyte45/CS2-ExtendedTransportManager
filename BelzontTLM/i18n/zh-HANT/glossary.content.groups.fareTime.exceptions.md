@@ -1,4 +1,4 @@
-﻿---
+---
 key: K45::XTM.vuio[glossary.content.groups.fareTime.exceptions]
 ---
 當一天中某些時段的票價與預設票價不同時，請使用**小時例外**。 **新增例外** 在最早的未覆蓋小時內創建一小時範圍並複製四捨五入的預設票價。

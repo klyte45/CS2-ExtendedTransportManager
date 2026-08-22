@@ -1,4 +1,4 @@
-﻿---
+---
 key: K45::XTM.vuio[glossary.content.appearance.autoColor.assign]
 ---
 **利用可能なパレット** の下部では、サポートされている各トランスポート タイプに 1 つの都市パレットが割り当てられます。旅客と貨物の割り当ては独立しています。

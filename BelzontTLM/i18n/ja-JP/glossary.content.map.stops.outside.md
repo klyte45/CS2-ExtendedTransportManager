@@ -1,4 +1,4 @@
-﻿---
+---
 key: K45::XTM.vuio[glossary.content.map.stops.outside]
 ---
 XTM は、ルートの接続されたストップ エンティティにゲームの外部接続コンポーネントがある場合、外部接続を認識します。

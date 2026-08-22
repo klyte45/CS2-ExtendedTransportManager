@@ -1,4 +1,4 @@
-﻿---
+---
 key: K45::XTM.vuio[glossary.content.groups.modelMembership.assign]
 ---
 Otwórz sekcję wyboru pojazdu dla danej linii i skorzystaj z menu biegów. Linia niezarządzana może dołączyć do dowolnej grupy o tym samym rodzaju transportu i kategorii pasażera/towaru lub mieć otwartą opcję **Zarządzaj grupami modeli pojazdów**.

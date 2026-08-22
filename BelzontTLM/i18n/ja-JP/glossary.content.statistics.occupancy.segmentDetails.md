@@ -1,4 +1,4 @@
-﻿---
+---
 key: K45::XTM.vuio[glossary.content.statistics.occupancy.segmentDetails]
 ---
 XTM 線形マップでセグメント占有モードを有効にし、2 つのストップ間のパーセンテージを選択します。
