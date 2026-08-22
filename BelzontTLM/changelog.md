@@ -1,4 +1,11 @@
-# v1.1.0 (22-AUG-26)
+# v1.1.0 r1 (22-AUG-26)
+
+- Fixed many issues related to translation on the new languages
+
+## Known Issues 
+- Line icon/shields are failing to be loaded in some cases. This is currently under investigation.
+
+## FROM v1.1.0 (22-AUG-26)
 
 - **XTM Encyclopedia**: Read it to get information about this mod capabilities. Check at vanilla Encyclopedia window, top right corner (next to close button, outside dialog).
 - **Line listing:** Rebuilt the public transport line list with sorting, schedule status filter and coloring, schedule toggles on cards, richer card info, and inline editors for name, color, number, and acronym. Listing filters and view state are kept while browsing. Access from X key (Transport Overview button). Can toggle to vanilla listing via (T) button.
@@ -9,3 +16,4 @@
 - **Palettes:** Palette management moved into the transportation overview, with more default palettes, improved organization and UX, append/import workflows, drag-and-drop reordering, copy & paste colors, and a 500-color cap.
 - Fixed various SIP, palette editor, and UI spacing/position issues; improved UI performance.
 - Added all missing languages. NOTICE: They were not fully revised, so feel free to fix issues in the github code if you find something wrong at new languages/entries.
+
