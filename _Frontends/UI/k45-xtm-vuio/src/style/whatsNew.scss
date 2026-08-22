@@ -1,0 +1,91 @@
+@import "../../../_shared/vuio-commons/src/components/BaseStringInputDialog.scss";
+
+.xtm-whatsNewDialog_anchor {
+    position: fixed;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    pointer-events: none;
+    z-index: 10000;
+
+    >* {
+        pointer-events: auto;
+    }
+}
+
+.xtm-whatsNewDialog_panel {
+    width: 75vw;
+    max-width: 1200rem;
+    max-height: 60vh;
+    display: flex;
+    flex-direction: column;
+}
+
+.xtm-whatsNewDialog_titleBar {
+    width: 100%;
+}
+
+.xtm-whatsNewDialog_content {
+    display: flex;
+    flex-direction: column;
+    min-height: 0;
+    max-height: 60vh;
+    padding-top: 8rem;
+    padding-right: 12rem;
+    padding-bottom: 12rem;
+    padding-left: 12rem;
+}
+
+.xtm-whatsNewDialog_scrollable {
+    flex: 0 1 auto;
+    min-height: 0;
+    max-height: calc(60vh - 160rem);
+}
+
+.xtm-whatsNewDialog_scrollRow {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+}
+
+.xtm-whatsNewDialog_body {
+    flex: 1 1 auto;
+    min-width: 0;
+    padding-left: 12rem;
+}
+
+.xtm-whatsNewDialog_thumbnail {
+    flex: 0 0 auto;
+    width: 400rem;
+    height: 400rem;
+    padding: 0;
+    display: block;
+}
+
+.xtm-whatsNewDialog_footer {
+    display: flex;
+    flex-direction: column;
+    flex-shrink: 0;
+}
+
+.xtm-whatsNewDialog_checkboxRow {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    margin-top: 20rem;
+    justify-content: center;
+    margin-bottom: 10rem;
+}
+
+.xtm-whatsNewDialog_checkboxLabel {
+    margin-left: 8rem;
+    font-size: var(--fontSizeS);
+}
+
+.xtm-whatsNewDialog_actions {
+    margin-top: 10rem;
+}

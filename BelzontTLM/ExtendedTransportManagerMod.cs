@@ -1,4 +1,4 @@
-﻿using Belzont.Interfaces;
+using Belzont.Interfaces;
 using Belzont.Utils;
 using BelzontTLM.Palettes;
 using Game;
@@ -39,6 +39,7 @@ namespace BelzontTLM
             updateSystem.UpdateAt<XTM_WEIntegrationController>(SystemUpdatePhase.ModificationEnd);
             updateSystem.UpdateAt<XTMInfoPanelSystem>(SystemUpdatePhase.UIUpdate);
             updateSystem.UpdateAt<XTMEditorUISystem>(SystemUpdatePhase.UIUpdate);
+            updateSystem.UpdateAt<XTMWhatsNewUISystem>(SystemUpdatePhase.UIUpdate);
 
             KFileUtils.EnsureFolderCreation(ExtendedTransportManagerMod.Instance.PalettesFolder);
         }

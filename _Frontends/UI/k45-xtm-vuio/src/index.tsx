@@ -31,6 +31,7 @@ import { bindValue, useValue } from "cs2/api";
 import { PalettesEditorDialog } from "#components/mainWindow/palettes/PalettesEditorDialog";
 import { XtmTransportationOverviewRegister } from "#components/mainWindow/XtmTransportationOverviewRegister";
 import { XtmGlossaryPanelRegister } from "#components/glossary/XtmGlossaryPanelRegister";
+import { XtmWhatsNewHost } from "#components/whatsNew/XtmWhatsNewHost";
 import "#styles/ticketPriceManaged.scss";
 import "#styles/palettes.scss";
 import { requestXtmLineMapRefresh, setXtmMapEnabled } from "#utility/xtmLineMapRefresh";
@@ -79,6 +80,11 @@ const register: ModRegistrar = (moduleRegistry) => {
 
     moduleRegistry.extend("game-ui/editor/components/toolbar/toolbar.tsx", 'Toolbar', XtmPalettesEditorToolbar);
     moduleRegistry.extend(
+        "game-ui/editor/components/editor-ui.tsx",
+        "EditorUI",
+        XtmWhatsNewShell,
+    );
+    moduleRegistry.extend(
         "game-ui/game/components/transportation-overview-panel/transportation-overview-panel.tsx",
         "TransportationOverviewPanel",
         XtmTransportationOverviewRegister,
@@ -88,9 +94,23 @@ const register: ModRegistrar = (moduleRegistry) => {
         "GlossaryPanel",
         XtmGlossaryPanelRegister,
     );
+    moduleRegistry.extend(
+        "game-ui/game/components/game-main-screen.tsx",
+        "GameMainScreen",
+        XtmWhatsNewShell,
+    );
 }
 
 export default register;
+
+const XtmWhatsNewShell = (Component: any): any => {
+    return (props: any) => (
+        <>
+            <Component {...props} />
+            <XtmWhatsNewHost />
+        </>
+    );
+};
 
 const XtmLineSectionButtonRegister = (Component: any): any => {
     return (args: any) => {

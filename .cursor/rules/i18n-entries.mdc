@@ -55,6 +55,7 @@ Long **markdown** body for this locale.
 - **`en-US/` is the base:** every language gets those entries first. If a key/file is missing under another `i18n/{lang}/`, the en-US body is used. Present lang files overlay en-US for matching keys.
 - Loaded by `BasicIMod.LoadLocales` after CSV; **last loaded wins** on key conflict (lang md overlays en-US md; md overrides CSV for the same key).
 - Still never edit `i18n.csv`.
+- Always add entries to all other languages csv files when adding new en-EN entries.
 - Glossary bodies are shown with **`MarkdownRenderer`** — use the **Markdown** dialect below.
 - Encyclopedia/glossary **images and links belong in the i18n md body** (`![alt](src)`, `[label](data)`), not as separate non-md content for the section. See `.klyte-kanban/RefsLibrary/vanilla-glossary.md`.
 - Glossary images use the same sizing as vanilla tutorial/glossary content: default height **300rem**, max width **850rem**, centered. Optional per-image height override (vanilla `height:` suffix) goes in the markdown `src`:
