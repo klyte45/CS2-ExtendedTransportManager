@@ -40,6 +40,7 @@ type LineItemCardProps = {
     onActivityChange(entityIndex: number, activity: LineActivityClass): void;
     onColorChange(entityIndex: number, color: string, isFixedColor: boolean): void;
     onIdentityChange(entityIndex: number, patch: LineIdentityPatch): void;
+    onLineNameChange(entityIndex: number, name: string): void;
 };
 
 const titleTextInputTheme = getModule(
@@ -97,6 +98,7 @@ const LineItemCardCmp = ({
     onActivityChange,
     onColorChange,
     onIdentityChange,
+    onLineNameChange,
 }: LineItemCardProps) => {
     const localization = useLocalization();
     const typeIndex = `${x.type}.${x.isCargo}`;
@@ -221,6 +223,7 @@ const LineItemCardCmp = ({
         setNameValue(trimmed);
         if (trimmed === resolvedName) return;
         transport.renameLine(toVanillaEntity(x.entity as any), trimmed);
+        onLineNameChange(x.entity.Index, trimmed);
     };
 
     const onNameKeyDownCapture = (e: any) => {

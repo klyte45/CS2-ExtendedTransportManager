@@ -12,6 +12,7 @@ import {
     ContextMenuExpansion,
     calculateElementPosition,
     isOnArea,
+    NameType,
     onRecalculateContextMenuPosition,
     replaceArgs,
     toVanillaEntity,
@@ -348,6 +349,16 @@ export const XtmLineListingPage = () => {
         );
     }, []);
 
+    const patchLineName = useCallback((entityIndex: number, name: string) => {
+        setLinesList((prev) =>
+            prev.map((line) =>
+                line.entity.Index === entityIndex
+                    ? { ...line, name: { __Type: NameType.Custom, name } }
+                    : line,
+            ),
+        );
+    }, []);
+
     const onOpenLineDetails = useCallback((entity: LineData["entity"]) => {
         transport.selectLine(toVanillaEntity(entity));
     }, []);
@@ -627,7 +638,7 @@ export const XtmLineListingPage = () => {
                             ))}
                             <div className="space" />
                             <button type="button" className="neutralBtn txt" onClick={() => {
-                                setFilters([], []);
+                                setFilters([], activityExclude);
                             }}>
                                 {translate("lineList.showAll", "Show all")}
                             </button>
@@ -635,7 +646,7 @@ export const XtmLineListingPage = () => {
                                 type="button"
                                 className="neutralBtn txt"
                                 onClick={() => {
-                                    setFilters(visibleTypeKeys.slice(), visibleActivityOrder.slice());
+                                    setFilters(visibleTypeKeys.slice(), activityExclude);
                                 }}
                             >
                                 {translate("lineList.hideAll", "Hide all")}
@@ -772,6 +783,7 @@ export const XtmLineListingPage = () => {
                                         onActivityChange={patchLineActivity}
                                         onColorChange={onLineColorChange}
                                         onIdentityChange={onLineIdentityChange}
+                                        onLineNameChange={patchLineName}
                                     />,
                                 ])
                             )}
