@@ -62,12 +62,20 @@ namespace BelzontTLM
                                         ? TryGetByBorderDistrict(em, building.m_RoadEdge)
                                         : Entity.Null;
             districtName = district != Entity.Null ? nameSystem.GetName(district).ToValueableName() : default;
-            connectedLines = new LineStopConnnection[src.linesConnected.Count];
-            var enumerator = src.linesConnected.GetEnumerator();
-            int i = 0;
-            while (enumerator.MoveNext())
+            if (src.linesConnected.IsCreated)
             {
-                connectedLines[i++] = enumerator.Current;
+                connectedLines = new LineStopConnnection[src.linesConnected.Count];
+                var enumerator = src.linesConnected.GetEnumerator();
+                int i = 0;
+                while (enumerator.MoveNext())
+                {
+                    connectedLines[i++] = enumerator.Current;
+                }
+                src.linesConnected.Dispose();
+            }
+            else
+            {
+                connectedLines = [];
             }
             worldPosition = new(src.worldPosition);
             azimuth = src.rotation.eulerAngles.y;

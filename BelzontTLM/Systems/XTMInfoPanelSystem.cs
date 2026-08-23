@@ -128,7 +128,12 @@ namespace BelzontTLM
             LineDetailData resultData;
             NativeList<LineDetailDataUnsafe> output = new(Allocator.Temp);
             FillJobParams(output, e).Schedule(Dependency).Complete();
-
+            if (output.Length < 1)
+            {
+                LogUtils.DoWarnLog($"GetLineView: LineDetailDataJob produced no output for entity {e.Index}");
+                output.Dispose();
+                return default;
+            }
 
             NativeArray<int> results = new(2, Allocator.TempJob);
             if (!EntityManager.TryGetComponent<PrefabRef>(e, out var refPrefab) || !EntityManager.TryGetComponent(refPrefab.m_Prefab, out TransportLineData transportLineData))

@@ -9,7 +9,6 @@ using Game.Rendering;
 using Game.Routes;
 using Game.Vehicles;
 using System;
-using System.Linq;
 using Unity.Burst;
 using Unity.Burst.Intrinsics;
 using Unity.Collections;
@@ -47,9 +46,9 @@ namespace BelzontTLM
 
             public void Dispose()
             {
-                m_SegmentsResult.Dispose();
-                m_StopsResult.Dispose();
-                m_VehiclesResult.Dispose();
+                if (m_SegmentsResult.IsCreated) m_SegmentsResult.Dispose();
+                if (m_StopsResult.IsCreated) m_StopsResult.Dispose();
+                if (m_VehiclesResult.IsCreated) m_VehiclesResult.Dispose();
             }
 
             public LineDetailData ConvertAndDispose(NativeArray<Entity> availablePrimaryVehicles, NativeArray<Entity> availableSecondaryVehicles)
@@ -81,6 +80,18 @@ namespace BelzontTLM
                         vehiclesResult[i] = m_VehiclesResult[i];
                     }
                 }
+                int primaryCount = availablePrimaryVehicles.IsCreated ? availablePrimaryVehicles.Length : 0;
+                int secondaryCount = availableSecondaryVehicles.IsCreated ? availableSecondaryVehicles.Length : 0;
+                var availableVehicles = new AvailableVehicle[primaryCount + secondaryCount];
+                int idx = 0;
+                for (int i = 0; i < primaryCount; i++)
+                {
+                    availableVehicles[idx++] = new AvailableVehicle(availablePrimaryVehicles[i], false);
+                }
+                for (int i = 0; i < secondaryCount; i++)
+                {
+                    availableVehicles[idx++] = new AvailableVehicle(availableSecondaryVehicles[i], true);
+                }
                 try
                 {
                     return new LineDetailData()
@@ -88,15 +99,7 @@ namespace BelzontTLM
                         m_SegmentsResult = segResultArray,
                         m_StopsResult = stopsResult,
                         m_VehiclesResult = vehiclesResult,
-                        m_availableVehicles =
-                        [
-                            .. (availablePrimaryVehicles.IsCreated
-                                ? availablePrimaryVehicles.ToArray().Select(e => new AvailableVehicle(e, false))
-                                : []),
-                            .. (availableSecondaryVehicles.IsCreated
-                                ? availableSecondaryVehicles.ToArray().Select(e => new AvailableVehicle(e, true))
-                                : []),
-                        ],
+                        m_availableVehicles = availableVehicles,
                         stopCapacity = stopCapacity,
                         isCargo = isCargo
                     };
@@ -134,9 +137,10 @@ namespace BelzontTLM
             {
                 var output = new LineDetailDataUnsafe()
                 {
-                    m_SegmentsResult = new NativeList<LineSegment>(Allocator.Temp),
-                    m_StopsResult = new NativeList<LineStop>(Allocator.Temp),
-                    m_VehiclesResult = new NativeList<LineVehicle>(Allocator.Temp),
+                    // TempJob: these lists escape the job and are read/disposed on the main thread in ConvertAndDispose.
+                    m_SegmentsResult = new NativeList<LineSegment>(Allocator.TempJob),
+                    m_StopsResult = new NativeList<LineStop>(Allocator.TempJob),
+                    m_VehiclesResult = new NativeList<LineVehicle>(Allocator.TempJob),
                 };
                 Execute(entity, ref output);
                 m_output.AddNoResize(output);
@@ -232,7 +236,8 @@ namespace BelzontTLM
                         NativeHashSet<Entity> roadsMapped = new NativeHashSet<Entity>(0, Allocator.Temp);
                         NativeQueue<Entity> roadsToMap = new NativeQueue<Entity>(Allocator.Temp);
 
-                        NativeHashSet<LineStopConnnection> linesConnected = new NativeHashSet<LineStopConnnection>(0, Allocator.Persistent);
+                        // TempJob: set is stored on LineStop and disposed after copy in LineStopNamed.
+                        NativeHashSet<LineStopConnnection> linesConnected = new NativeHashSet<LineStopConnnection>(0, Allocator.TempJob);
                         Entity xtmOwner;
                         if (hasOwner)
                         {

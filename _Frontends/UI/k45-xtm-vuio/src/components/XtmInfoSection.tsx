@@ -77,10 +77,15 @@ export const XtmInfoSection = () => {
     }, [selectedEntity?.index]);
 
     useEffect(() => {
-        LineManagementService.getCurrentLineInfo().then(reloadData);
-        WEIntegrationService.isAvailable().then(setWeAvailable);
-        LineManagementService.getRouteNumber(toEntityTyped(selectedEntity)).then(setLineNumber);
-        LineManagementService.getRouteAcronym(toEntityTyped(selectedEntity)).then(setLineAcronym);
+        LineManagementService.getCurrentLineInfo().then(reloadData).catch((err) => {
+            console.warn("[XTM] getCurrentLineInfo failed", err);
+        });
+        WEIntegrationService.isAvailable().then(setWeAvailable).catch((err) => {
+            console.warn("[XTM] isAvailable failed", err);
+            setWeAvailable(false);
+        });
+        LineManagementService.getRouteNumber(toEntityTyped(selectedEntity)).then(setLineNumber).catch((err) => {console.warn("[XTM] getRouteNumber failed", err); });
+        LineManagementService.getRouteAcronym(toEntityTyped(selectedEntity)).then(setLineAcronym).catch((err) => {console.warn("[XTM] getRouteAcronym failed", err); });
     }, [selectedEntity, useValue(time.ticks$)]);
 
     async function reloadData(details: LineDetails) {

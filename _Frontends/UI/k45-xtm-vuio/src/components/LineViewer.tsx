@@ -77,15 +77,21 @@ export const XtmLineViewer = ({ children, args, isXtm, xtmOptions }: Props) => {
 
     useEffect(() => {
         if (!isXtm) return;
-        LineManagementService.getCurrentLineInfo().then(reloadData);
+        LineManagementService.getCurrentLineInfo().then(reloadData).catch((err) => {
+            console.warn("[XTM] getCurrentLineInfo failed", err);
+        });
         return () => { };
     }, [useValue(selectedInfo.selectedEntity$), useValue(time.ticks$), isXtm])
 
     useEffect(() => {
         if (!isXtm) return;
         return subscribeXtmLineMapRefresh(() => {
-            LineManagementService.listLines().then(reloadLines);
-            LineManagementService.getCurrentLineInfo().then(reloadData);
+            LineManagementService.listLines().then(reloadLines).catch((err) => {
+                console.warn("[XTM] listLines failed", err);
+            });
+            LineManagementService.getCurrentLineInfo().then(reloadData).catch((err) => {
+                console.warn("[XTM] getCurrentLineInfo failed", err);
+            });
         });
     }, [isXtm]);
 

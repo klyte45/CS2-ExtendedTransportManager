@@ -1,9 +1,6 @@
-# v1.1.0 r1 (22-AUG-26)
+# v1.1.0 r2 (23-AUG-26)
 
-- Fixed many issues related to translation on the new languages
-
-## Known Issues 
-- Line icon/shields are failing to be loaded in some cases. This is currently under investigation.
+- Possible fix for issues related to Line Viewer, including line icon/shields generator. Please report at forums if the problem persists.
 
 ## FROM v1.1.0 (22-AUG-26)
 
